@@ -20,7 +20,7 @@ V0.4-B: a real Image Converter draft, with no published tools yet. Read [docs/im
 - `src/lab`: development demos; never register them as published tools.
 - `/preview/[slug]` is a separate DEV-only real-tool preview (one fixed ToolRuntime root). The draft Converter loader uses a direct `import.meta.env.DEV` guard so its implementation is absent from production. Keep it draft pending visual polish and maintainer acceptance; promotion and removal of the guard require a separate authorized change after L2 acceptance.
 - `src/config/region.ts`: region/domain contract; `src/i18n/messages.ts`: CN/English copy.
-- Preserve LICENSE. Work on dev; do not merge main or deploy without a request.
+- Preserve LICENSE. Work on develop; integrate through PRs into pre-master, then release through PRs into master. Do not deploy without a request. Historical dev/main references in design and acceptance records describe the pre-migration branches.
 - Use StyleX, with global CSS limited to reset and HTML basics. No old React Babel configuration.
 - Read [docs/visual-foundation.md](docs/visual-foundation.md) for font delivery and visual tokens. Use action for primary controls, brand/sage for decoration, independent feedback colors; preserve primitive APIs. Font stacks have one owner in global.css; only normal Fontsource wght.css is loaded.
 - No backend, database, SSR adapter, global business store, universal canvas engine or monorepo.

@@ -14,7 +14,7 @@ const t = messages[region];
 const canonical = new URL(Astro.url.pathname, regionConfig.site);
 const resolvedTitle = fullTitle ?? `${title} · Tool4Furry`;
 const resolvedDescription = description ?? t.intro;
-const github = 'https://github.com/gofurry/tool4furry';
+const github = 'https://github.com/librecosta/tool4furry';
 ---
 <!doctype html>
 <html lang={regionConfig.lang}>
@@ -67,7 +67,7 @@ const github = 'https://github.com/gofurry/tool4furry';
             <nav aria-label={t.footerNav} {...stylex.attrs(s.footerLinks)}>
               <a {...stylex.attrs(s.navLink)} href="/tools/">{t.tools}</a>
               <a {...stylex.attrs(s.navLink)} href={github}>GitHub</a>
-              <a {...stylex.attrs(s.navLink)} href={`${github}/blob/main/LICENSE`}>BSD-3-Clause License</a>
+              <a {...stylex.attrs(s.navLink)} href={`${github}/blob/master/LICENSE`}>BSD-3-Clause License</a>
             </nav>
           </div>
           <div {...stylex.attrs(s.footerBottom)}>

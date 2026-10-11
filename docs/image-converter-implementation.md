@@ -13,7 +13,7 @@
 ## B0 — 基线及接口增量
 
 - 开始时工作区干净，`dev` 与 `origin/dev` 均为 `d9e99b15819fcb78b414c025f470046624ac84e6`，fetch 后未发现更晚提交；没有覆盖用户未知工作。
-- A 基线：13 个 Vitest 文件、117 项通过。原 CI 成功：[37953700597](https://github.com/gofurry/tool4furry/actions/runs/37953700597)。当时 Registry 为空，已具备分类、全目录、静态唯一 H1、双地区与五 Lab 隔离。
+- A 基线：13 个 Vitest 文件、117 项通过。原 CI 成功：[37953700597](https://github.com/librecosta/tool4furry/actions/runs/37953700597)。当时 Registry 为空，已具备分类、全目录、静态唯一 H1、双地区与五 Lab 隔离。
 - 未升级依赖、修改 Astro/StyleX 集成、Provider、Canvas 浮层或状态所有权。
 - 最小扩展：`setRecommendedPreset()` 只更换当前格式的推荐基线；`WorkbenchShell.formWidth='wide'` 仅扩大 opt-in Form 内容宽度；FileDropzone 可选 compact 外观及完整选择结果回调；ToolRuntime 增加受 DEV 条件限制的 preview 入口。详情见源码与文件交互文档。
 

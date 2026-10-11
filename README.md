@@ -9,7 +9,7 @@
 推荐 Node.js **22 LTS（>=22.12）**，也支持 Node.js 24 LTS。pnpm 版本由 `packageManager` 固定为 **12.8.1**。若尚未安装 pnpm，可先执行 `npm install --global pnpm@12.8.1`。
 
 ```powershell
-git clone --branch dev https://github.com/gofurry/tool4furry.git
+git clone --branch develop https://github.com/librecosta/tool4furry.git
 cd tool4furry
 pnpm install
 pnpm dev
@@ -100,7 +100,7 @@ public/brand/     可替换单一 Mark、静态 Creative Fragments SVG
 
 技术栈：Astro SSG、React、TypeScript、StyleX、Motion、Base UI、Phosphor Icons、pnpm、Vitest。没有 SSR Adapter、全局业务 Store、通用画布引擎、数据库、Docker、Monorepo、Storybook 或 Playwright 测试框架。`pnpm-workspace.yaml` 仅保存 pnpm 安装策略，不定义子项目。
 
-GitHub Actions 对 dev/main 的 push 与 PR 执行安装、检查、测试及双地区构建。**仅 CI，无 CD、部署 Secret 或生产发布。** 未来静态部署目标为 Cloudflare Workers Static Assets 与 EdgeOne Makers，本批次未部署。
+日常开发使用 develop，通过 PR 集成到 pre-master，再通过 PR 合入发布基线 master。GitHub Actions 对 develop/pre-master/master 的 push 与面向 pre-master/master 的 PR 执行安装、检查、测试及双地区构建。**仅 CI，无 CD、部署 Secret 或生产发布。** 未来静态部署目标为 Cloudflare Workers Static Assets 与 EdgeOne Makers，本批次未部署。
 
 新增工具前请阅读 [架构说明](docs/foundation.md)、[UI 原语契约](docs/ui-primitives.md) 和 [文件交互契约](docs/file-interactions.md)。
 

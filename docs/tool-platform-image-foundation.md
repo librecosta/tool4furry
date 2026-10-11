@@ -2,7 +2,7 @@
 
 **中文 Codex 总实施文档 · 正式设计冻结 / 待实施**\
 设计日期：2026-10-09\
-目标仓库：[`gofurry/tool4furry`](https://github.com/gofurry/tool4furry)\
+目标仓库：[`librecosta/tool4furry`](https://github.com/librecosta/tool4furry)\
 目标分支：`dev`（不得擅自合并 `main`、部署或接入生产服务）\
 建议仓库内存放位置：`docs/tool-platform-image-foundation.md`\
 核实基线：`dev` HEAD `7310eaeadc615d01cee10888bed923d4dbd507ff`，对应 CI 已通过；**Codex 启动时必须重新确认远端与本地状态，不得机械依赖上述提交。**
@@ -623,7 +623,7 @@ Codex 应交付：
 
 - 当前工作区为 `tool4furry-workspace/tool4furry`，分支 `dev`；开始时无已修改/暂存/未跟踪文件。fetch 后本地与远端均为 `7310eaeadc615d01cee10888bed923d4dbd507ff`，没有回滚或覆盖用户改动。
 - 仓库最初没有本文；先完整读取用户附件，再将完整合同导入本路径，依次实施 P1–P6。
-- 基线 [CI 37904284299](https://github.com/gofurry/tool4furry/actions/runs/37904284299) 为 success。CI 仍只对 dev/main 的 push/PR 执行 frozen install、check、test、双地区构建；本轮未修改工作流或增加 CD。
+- 基线 [CI 37904284299](https://github.com/librecosta/tool4furry/actions/runs/37904284299) 为 success。CI 仍只对 dev/main 的 push/PR 执行 frozen install、check、test、双地区构建；本轮未修改工作流或增加 CD。
 - Registry/loaders 均为空；原首页覆盖所有工具，`#tools` 已存在，Header/Footer/404 指向 `/#tools`；工具页仅有固定 ToolRuntime，导航的 React H1 尚无静态内容合同。地区、字体、StyleX、Lab 隔离与 Workbench 状态所有权与合同一致。
 - 修改范围为 taxonomy/types/校验、catalog/静态目录、静态工具内容与 Runtime 的 intro 插槽、纯状态合同、隔离能力探测、测试/守卫及文档。未修改 Astro 特殊集成、依赖、WorkbenchShell、Lab Demo、UI primitives、FileDropzone、ScrollDock、Tool Registry 或 loader 表。
 - LICENSE SHA256 保持 `6D71EFDA0046FEF9B229E7080766E88155D8FFF2FB192C5555D1FED70A0C0871`。

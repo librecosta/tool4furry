@@ -2,7 +2,7 @@
 
 > **中文 Codex 总实施文档｜C1–C4 已冻结设计｜待实施**\
 > 建议入库位置：`docs/site-homepage.md`\
-> 目标仓库：`https://github.com/gofurry/tool4furry`\
+> 目标仓库：`https://github.com/librecosta/tool4furry`\
 > 目标分支：`dev`（**禁止擅自合并 `main`、部署或修改生产环境**）\
 > 设计日期：2026-10-09\
 > 核实基线：`dev` HEAD `4b14fe2bbcc12836a2515b611d64ce4405781f3a`；开始前 Codex 必须重新检查远端和本地状态，不得机械依赖这一 SHA。
@@ -63,7 +63,7 @@
 | `tests/contracts.test.ts` | 已验证地区、发布、Lab 和工具入口基础约束；可扩展首页有关的纯数据测试 |
 | `.github/workflows/ci.yml` | frozen install → check → test → build:cn → build:global；不要增加部署动作 |
 
-当前 `dev` 最新一次核实 CI 成功：`https://github.com/gofurry/tool4furry/actions/runs/37890579758`。这是**改动前基线**，不是本任务完成证据。
+当前 `dev` 最新一次核实 CI 成功：`https://github.com/librecosta/tool4furry/actions/runs/37890579758`。这是**改动前基线**，不是本任务完成证据。
 
 ### 不可变工程边界
 
@@ -101,7 +101,7 @@
 |---|---|
 | 左侧 | Mark + `Tool4Furry`，整体品牌链接 `href="/"` |
 | 右侧主入口 | 当前地区“工具箱 / Toolbox”链接 `href="/#tools"` |
-| 右侧辅助 | 真实 GitHub 仓库 `https://github.com/gofurry/tool4furry`；移动端可用仅图标链接但需 `aria-label` |
+| 右侧辅助 | 真实 GitHub 仓库 `https://github.com/librecosta/tool4furry`；移动端可用仅图标链接但需 `aria-label` |
 | 首页链接 | 不再冗余设置独立“首页”按钮；Logo 已能返回首页 |
 | 移动导航 | 元素数量很少，不建立汉堡菜单/抽屉菜单 |
 | Sticky | 暂不吸顶、不做滚动缩放/渐变 Header |
@@ -229,7 +229,7 @@ Footer 两层结构：
 1. **品牌/导航层**：占位 Mark + Tool4Furry、1 句品牌介绍、简短生态关系文案（可写 “A GoFurry project.”）、工具箱 `/#tools`、GitHub、真实 BSD-3-Clause 许可证链接。
 2. **元信息层**：`© 2026 Tool4Furry` 或构建期取当前年份；“前端开源 · 浏览器本地处理优先 / Open-source frontend · Local processing first”。
 
-建议 License 链接 `https://github.com/gofurry/tool4furry/blob/main/LICENSE`（仓库现有真实许可证）；GitHub 链接 `https://github.com/gofurry/tool4furry`。如果站点需要显式标记 GoFurry 生态关系，仅作简短真实文案，不额外添加不确定 URL。
+建议 License 链接 `https://github.com/librecosta/tool4furry/blob/master/LICENSE`（仓库现有真实许可证）；GitHub 链接 `https://github.com/librecosta/tool4furry`。如果站点需要显式标记 GoFurry 生态关系，仅作简短真实文案，不额外添加不确定 URL。
 
 - 桌面两栏，移动自然纵排；不用多列企业站导航、手风琴或折叠菜单。
 - 仅真实链接；不虚构隐私政策、服务条款、备案号、联系邮箱、赞助、价格、社区图标。

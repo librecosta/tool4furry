@@ -109,7 +109,7 @@ assert.equal(
   0,
   'No empty search UI',
 );
-const github = 'https://github.com/gofurry/tool4furry';
+const github = 'https://github.com/librecosta/tool4furry';
 const mark = '/brand/tool4furry-mark.svg';
 for (const tag of ['header', 'footer']) {
   const shell = document.querySelector(tag);
@@ -127,7 +127,7 @@ for (const tag of ['header', 'footer']) {
   assert.equal(brand.querySelector('img')?.getAttribute('alt'), '');
 }
 assert(
-  document.querySelector(`footer a[href="${github}/blob/main/LICENSE"]`),
+  document.querySelector(`footer a[href="${github}/blob/master/LICENSE"]`),
   'Missing real license link',
 );
 assert(
