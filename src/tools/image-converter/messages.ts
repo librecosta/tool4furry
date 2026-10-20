@@ -3,7 +3,6 @@ import type { ImageErrorCode } from '../image/types';
 const cn = {
   local: '图片只在当前浏览器内处理，不会上传。',
   fileDetails: '支持范围与限制',
-  settingsHelp: '设置说明',
   pick: '选择图片或拖放到这里',
   replace: '替换图片',
   remove: '移除图片',
@@ -24,9 +23,9 @@ const cn = {
   precise: '精确质量（1–100）',
   qualityError: '请输入 1–100 的整数。',
   background: 'JPEG 背景色',
+  pickBackground: '选择 JPEG 背景色',
   backgroundError: '使用 #RRGGBB 格式，例如 #FFFFFF。',
-  filename: '下载文件名主体',
-  filenameHint: '留空使用默认名称；扩展名由真实输出格式决定。',
+  filename: '下载文件名主体（可选）',
   filenameError:
     '名称不能含路径/控制字符、保留名称、首尾空格/句点或超过 120 字符。',
   resetName: '恢复默认文件名',
@@ -58,9 +57,6 @@ const cn = {
     '仅静态 PNG/JPEG/WebP。转换不改变分辨率；文件可能变大，重新编码可能改变色彩并丢失元数据。',
   budget:
     '开发保护值：单文件 20 MiB、1600 万像素、单边 8192px；尚未确认为全设备发布限制。',
-  formatNote:
-    'Quick 格式选项应用推荐参数；Advanced 切换格式保留该格式上次修改的偏好。PNG 不含有损质量设置。',
-  jpegNote: 'JPEG 不支持透明，透明区域将与背景色合成。',
   qualitySummary: '质量',
   standard: '标准输出',
   saved: '输出字节变化',
@@ -88,7 +84,6 @@ const cn = {
 const global: typeof cn = {
   local: 'Images stay in this browser. Nothing is uploaded.',
   fileDetails: 'Supported files and limits',
-  settingsHelp: 'About these settings',
   pick: 'Choose an image or drop it here',
   replace: 'Replace image',
   remove: 'Remove image',
@@ -109,10 +104,9 @@ const global: typeof cn = {
   precise: 'Exact quality (1–100)',
   qualityError: 'Enter an integer from 1 to 100.',
   background: 'JPEG background',
+  pickBackground: 'Choose JPEG background color',
   backgroundError: 'Use #RRGGBB, for example #FFFFFF.',
-  filename: 'Download filename stem',
-  filenameHint:
-    'Leave empty for the default name. The extension follows the actual output format.',
+  filename: 'Download filename stem (optional)',
   filenameError:
     'Avoid paths, control characters, reserved names, leading/trailing spaces or dots, and names over 120 characters.',
   resetName: 'Use default filename',
@@ -147,10 +141,6 @@ const global: typeof cn = {
     'Static PNG/JPEG/WebP only. Resolution is unchanged. Files may grow; re-encoding can change colors and remove metadata.',
   budget:
     'Development guardrails: 20 MiB per file, 16 million pixels, 8192px per edge. These are not validated release limits for every device.',
-  formatNote:
-    'Quick format choices apply defaults. Advanced format changes recall that format’s last edited preferences. PNG has no lossy quality setting.',
-  jpegNote:
-    'JPEG has no transparency; transparent areas are composited over the background.',
   qualitySummary: 'Quality',
   standard: 'Standard output',
   saved: 'Output byte change',

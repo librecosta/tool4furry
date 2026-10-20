@@ -102,7 +102,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
       screen.getByRole('button', { name: 'Advanced' }),
     );
     await user.type(
-      screen.getByRole('textbox', { name: 'Download filename stem' }),
+      screen.getByRole('textbox', { name: 'Download filename stem (optional)' }),
       'renamed.png.webp',
     );
     expect(
@@ -232,6 +232,55 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     } finally {
       update.mockRestore();
     }
+  });
+  it.each(['cn', 'global'] as const)('synchronizes JPEG hex and the native picker in %s while retaining invalid text and filename behavior', async (region) => {
+    const user = userEvent.setup();
+    const t = converterMessages[region];
+    const { container } = render(<ImageConverter region={region} />);
+    await waitFor(() => expect(screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled')).toBe(false));
+    await user.click(screen.getByRole('button', { name: t.advanced }));
+    await user.click(screen.getByRole('radio', { name: 'JPEG' }));
+    const hex = screen.getByRole('textbox', { name: t.background }) as HTMLInputElement;
+    const picker = screen.getByLabelText(t.pickBackground) as HTMLInputElement;
+    expect(picker.type).toBe('color');
+    expect(picker.value).toBe('#ffffff');
+    fireEvent.change(hex, { target: { value: '#12AB34' } });
+    expect(picker.value).toBe('#12ab34');
+    fireEvent.change(container.querySelector('input[type=file]')!, {
+      target: { files: [new File(['png'], 'art.png')] },
+    });
+    await waitFor(() => expect(screen.getByRole('button', { name: t.generate }).hasAttribute('disabled')).toBe(false));
+    for (const value of ['#12', 'invalid', '']) {
+      fireEvent.change(hex, { target: { value } });
+      expect(hex.value).toBe(value);
+      expect(hex.getAttribute('aria-invalid')).toBe('true');
+      expect(screen.getByRole('alert').textContent).toBe(t.backgroundError);
+      expect(picker.value).toBe('#12ab34');
+      await user.click(screen.getByRole('button', { name: t.generate }));
+      expect(encode).not.toHaveBeenCalled();
+    }
+    fireEvent.change(picker, { target: { value: '#456789' } });
+    expect(hex.value).toBe('#456789');
+    expect(hex.hasAttribute('aria-invalid')).toBe(false);
+    await user.click(screen.getByRole('button', { name: t.generate }));
+    const download = await screen.findByRole('link', { name: t.download });
+    const href = download.getAttribute('href');
+    expect(encode).toHaveBeenLastCalledWith(expect.anything(), expect.objectContaining({ jpegBackground: '#456789' }), expect.anything());
+    const filename = screen.getByRole('textbox', { name: t.filename });
+    expect(filename.getAttribute('aria-describedby')).toBeNull();
+    await user.type(filename, 'renamed');
+    expect(screen.getByRole('link', { name: t.download }).getAttribute('href')).toBe(href);
+    expect(screen.getByRole('link', { name: t.download }).getAttribute('download')).toBe('renamed.jpg');
+    await user.clear(filename);
+    expect(screen.getByRole('link', { name: t.download }).getAttribute('download')).toBe('art-converted.jpg');
+    await user.type(filename, 'bad/name');
+    expect(screen.getByText(t.filenameError)).toBeTruthy();
+    expect(screen.queryByRole('link', { name: t.download })).toBeNull();
+    expect(encode).toHaveBeenCalledTimes(1);
+    expect(container.querySelector('[data-converter-part=settings] details')).toBeNull();
+    await user.click(screen.getByRole('button', { name: t.restore }));
+    expect(hex.value).toBe('#FFFFFF');
+    expect(picker.value).toBe('#ffffff');
   });
   it('only exposes ownership diagnostics for an explicit development debug URL', async () => {
     const original = window.location.href;

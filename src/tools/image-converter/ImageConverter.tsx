@@ -5,6 +5,7 @@ import WorkbenchShell from '../../workbench/WorkbenchShell';
 import { FileDropzone } from '../../ui/FileDropzone';
 import { Button } from '../../ui/Button';
 import { TextField } from '../../ui/TextField';
+import { FieldFrame, useField } from '../../ui/Field';
 import { SliderField } from '../../ui/SliderField';
 import { controls as c } from '../../styles/controls';
 import { ImageResources } from '../image/resources';
@@ -44,6 +45,7 @@ export default function ImageConverter({ region }: ToolProps) {
   const [preview, setPreview] = useState<'source' | 'output'>('source');
   const [previewError, setPreviewError] = useState<Blob>();
   const [qualityDraft, setQualityDraft] = useState<string>();
+  const [lastValidBackground, setLastValidBackground] = useState('#FFFFFF');
   const [debug, setDebug] = useState(false);
   const qualityId = useId();
   const formatGroup = useId();
@@ -84,6 +86,15 @@ export default function ImageConverter({ region }: ToolProps) {
   const backgroundInvalid =
     settings.format === 'jpeg' &&
     !/^#[0-9a-f]{6}$/i.test(settings.jpegBackground);
+  useEffect(() => {
+    if (settings.format === 'jpeg' && /^#[0-9a-f]{6}$/i.test(settings.jpegBackground))
+      setLastValidBackground(settings.jpegBackground);
+  }, [settings.format, settings.jpegBackground]);
+  const backgroundField = {
+    label: t.background,
+    error: backgroundInvalid ? t.backgroundError : undefined,
+  };
+  const backgroundIds = useField(backgroundField);
   const canGenerate =
     !!view.source &&
     !view.candidate &&
@@ -339,36 +350,35 @@ export default function ImageConverter({ region }: ToolProps) {
                 </div>
               )}
               {settings.format === 'jpeg' && (
-                <>
-                  <TextField
-                    label={t.background}
-                    value={settings.jpegBackground}
-                    maxLength={7}
-                    error={backgroundInvalid ? t.backgroundError : undefined}
-                    onChange={(jpegBackground) =>
-                      session?.settings({ ...settings, jpegBackground })
-                    }
-                  />
-                  <div {...stylex.props(s.row)}>
-                    <span
-                      aria-hidden
-                      {...stylex.props(
-                        s.swatch(
-                          backgroundInvalid
-                            ? 'transparent'
-                            : settings.jpegBackground,
-                        ),
-                      )}
+                <FieldFrame {...backgroundField} ids={backgroundIds}>
+                  <div {...stylex.props(s.backgroundControl)}>
+                    <input
+                      id={backgroundIds.id}
+                      value={settings.jpegBackground}
+                      maxLength={7}
+                      aria-invalid={backgroundInvalid || undefined}
+                      aria-describedby={backgroundIds.describedBy}
+                      {...stylex.props(c.input, backgroundInvalid && c.invalid)}
+                      onChange={(event) =>
+                        session?.settings({ ...settings, jpegBackground: event.target.value })
+                      }
                     />
-                    <p {...stylex.props(s.note)}>{t.jpegNote}</p>
+                    <input
+                      type="color"
+                      aria-label={t.pickBackground}
+                      value={backgroundInvalid ? lastValidBackground : settings.jpegBackground}
+                      {...stylex.props(c.input, s.colorPicker)}
+                      onChange={(event) =>
+                        session?.settings({ ...settings, jpegBackground: event.target.value })
+                      }
+                    />
                   </div>
-                </>
+                </FieldFrame>
               )}
               <TextField
                 label={t.filename}
                 value={view.filename}
                 maxLength={180}
-                hint={t.filenameHint}
                 error={name.error ? t.filenameError : undefined}
                 onChange={(value) => session?.name(value)}
               />
@@ -390,10 +400,6 @@ export default function ImageConverter({ region }: ToolProps) {
               {t.restore}
             </Button>
           )}
-          <details {...stylex.props(s.help)}>
-            <summary>{t.settingsHelp}</summary>
-            <p {...stylex.props(s.note)}>{t.formatNote}</p>
-          </details>
           {view.source && (
             <a href="#converter-result" {...stylex.props(c.button, c.ghost)}>
               {t.viewResult}

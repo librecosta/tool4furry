@@ -44,6 +44,8 @@ Gate 实验先于工作台实现：最小 React Island 点击计数从 0 到 1�
 
 开发验证中曾在同一目录混跑 dev/check/build，观察到 Vite 依赖缓存失配与 React hydration 错误；停止并重启后恢复。验证应顺序运行，不将构建过程与正在操作的 dev 会话混用。
 
+V0.5-B2.1（2026-10-20）定向检查：StyleX 0.19.1 的 `css-only` shim 会在 DOMContentLoaded 和 `stylex:css-update` 时改写 `/virtual:stylex.css?t=…`，端点返回当时已收集的规则；开发中异步模块编译与 CSS 重取存在短暂样式空窗的可能。保留现有集成与 HMR，不添加页面隐藏、水合等待或人为延迟。一次 `pnpm build:cn` 及产物守卫通过；生产 head 引用已提取的静态 CSS，不含虚拟 CSS/shim，Chromium 刷新首页与 `/tools/` 未观察到同类 FOUC，首页仍为零 script / Island。Converter 保持 draft，生产没有 `/preview/image-converter/`，因此该结果不代表已验证生产 Converter 页面。
+
 参考：[StyleX Vite](https://stylexjs.com/docs/learn/installation/vite/)、[unplugin 配置](https://stylexjs.com/docs/api/configuration/unplugin/)、[Astro React](https://docs.astro.build/en/guides/integrations-guide/react/)、[Hydration 指令](https://docs.astro.build/en/reference/directives-reference/)、[Base UI Dialog](https://base-ui.com/react/components/dialog)。
 
 ## 增加第一个真实工具
