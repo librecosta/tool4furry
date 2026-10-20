@@ -362,7 +362,11 @@ const s = stylex.create({
     alignItems: 'start',
   },
   form: { maxWidth: 760 },
-  formWide: { maxWidth: 1120 },
+  formWide: {
+    maxWidth: 1200,
+    paddingInline: { default: 40, '@media (max-width: 600px)': 16 },
+    paddingBlock: tokens.space24,
+  },
   batch: { maxWidth: 1280 },
   formColumns: {
     maxWidth: 1120,

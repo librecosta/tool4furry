@@ -78,6 +78,7 @@ export const siteStyles = stylex.create({
   },
   homeMain: { flex: 1 },
   toolIntro: { paddingBlock: tokens.space16 },
+  previewNote: { marginBlock: 0, fontSize: 12, color: tokens.textSecondary },
   toolTitle: {
     fontSize: { default: 32, '@media (max-width: 600px)': 24 },
     fontWeight: 700,

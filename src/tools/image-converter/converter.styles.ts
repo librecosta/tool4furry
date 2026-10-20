@@ -10,6 +10,7 @@ export const converterStyles = stylex.create({
     gap: t.space24,
     alignItems: 'start',
   },
+  emptyLayout: { gridTemplateColumns: 'minmax(0, 1fr)' },
   file: { gridColumn: '1 / -1', minWidth: 0, display: 'grid', gap: t.space12 },
   settings: {
     gridColumn: { default: '2', '@media (max-width: 900px)': 'auto' },
@@ -24,6 +25,15 @@ export const converterStyles = stylex.create({
     borderStyle: 'solid',
     borderColor: t.border,
   },
+  emptySettings: { gridColumn: '1 / -1', gridRow: 'auto' },
+  settingsHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: t.space12,
+  },
+  settingsTitle: { fontSize: 18, fontWeight: 600, margin: 0 },
   preview: {
     gridColumn: { default: '1', '@media (max-width: 900px)': 'auto' },
     gridRow: { default: '2', '@media (max-width: 900px)': 'auto' },
@@ -53,13 +63,16 @@ export const converterStyles = stylex.create({
     overflowWrap: 'anywhere',
   },
   strip: {
-    display: 'flex',
+    display: 'grid',
+    gridTemplateColumns: {
+      default: 'minmax(0, 1fr) auto auto',
+      '@media (max-width: 900px)': 'minmax(0, 1fr) auto',
+    },
     alignItems: 'center',
-    justifyContent: 'space-between',
     gap: t.space12,
     minWidth: 0,
-    flexWrap: 'wrap',
   },
+  emptyStrip: { display: 'block' },
   fileName: {
     display: 'block',
     maxWidth: '100%',
@@ -67,7 +80,11 @@ export const converterStyles = stylex.create({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
-  metadata: { minWidth: 0, flex: '1 1 180px' },
+  metadata: {
+    minWidth: 0,
+    gridColumn: { default: 'auto', '@media (max-width: 900px)': '1 / -1' },
+    fontVariantNumeric: 'tabular-nums',
+  },
   row: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -76,13 +93,18 @@ export const converterStyles = stylex.create({
   },
   group: { borderWidth: 0, padding: 0, margin: 0, minWidth: 0 },
   legend: { fontWeight: 600, marginBottom: t.space8 },
-  choices: { display: 'flex', gap: t.space8, flexWrap: 'wrap' },
+  choices: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+    gap: t.space8,
+  },
   choice: {
     display: 'flex',
     alignItems: 'center',
     gap: t.space8,
     minHeight: 44,
-    padding: '8px 12px',
+    padding: t.space8,
+    minWidth: 0,
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: t.controlBorder,
@@ -90,8 +112,8 @@ export const converterStyles = stylex.create({
     cursor: 'pointer',
     backgroundColor: { default: t.surface, ':hover': t.surfaceMuted },
     fontWeight: 500,
-    flexGrow: 1,
   },
+  choiceLabel: { minWidth: 0, overflowWrap: 'anywhere' },
   chosen: {
     backgroundColor: { default: t.actionTint, ':hover': t.actionTint },
     borderColor: t.action,
@@ -114,6 +136,7 @@ export const converterStyles = stylex.create({
     },
     gap: t.space12,
   },
+  singlePreview: { gridTemplateColumns: 'minmax(0, 1fr)' },
   figure: { margin: 0, minWidth: 0 },
   mobileHidden: {
     display: { default: 'block', '@media (max-width: 900px)': 'none' },
@@ -165,5 +188,12 @@ export const converterStyles = stylex.create({
     maxWidth: '100%',
     overflowWrap: 'anywhere',
     fontSize: 12,
+    color: t.textSecondary,
+  },
+  help: {
+    fontSize: 13,
+    color: t.textSecondary,
+    lineHeight: 1.7,
+    overflowWrap: 'anywhere',
   },
 });

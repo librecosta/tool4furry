@@ -2,6 +2,8 @@ import type { Region } from '../../config/region';
 import type { ImageErrorCode } from '../image/types';
 const cn = {
   local: '图片只在当前浏览器内处理，不会上传。',
+  fileDetails: '支持范围与限制',
+  settingsHelp: '设置说明',
   pick: '选择图片或拖放到这里',
   replace: '替换图片',
   remove: '移除图片',
@@ -83,6 +85,8 @@ const cn = {
 };
 const global: typeof cn = {
   local: 'Images stay in this browser. Nothing is uploaded.',
+  fileDetails: 'Supported files and limits',
+  settingsHelp: 'About these settings',
   pick: 'Choose an image or drop it here',
   replace: 'Replace image',
   remove: 'Remove image',

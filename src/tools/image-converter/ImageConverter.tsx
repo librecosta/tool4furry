@@ -59,6 +59,7 @@ export default function ImageConverter({ region }: ToolProps) {
   );
   const sourceUrl = useOwnedUrl(view.source?.blob, session?.resources);
   const resultUrl = useOwnedUrl(result?.blob, session?.resources);
+  const visiblePreview = result ? preview : 'source';
   const download = session?.download();
   const name = downloadName(
     view.source?.file.name ?? 'image',
@@ -90,7 +91,7 @@ export default function ImageConverter({ region }: ToolProps) {
     ? t.validating
     : state.status === 'processing'
       ? t.processing
-      : state.status === 'stale'
+      : state.status === 'stale' && result
         ? t.stale
         : state.status === 'ready'
           ? result?.kind === 'passthrough'
@@ -111,15 +112,17 @@ export default function ImageConverter({ region }: ToolProps) {
   };
   return (
     <WorkbenchShell mode="form" formWidth="wide" labels={labels}>
-      <div data-image-converter {...stylex.props(s.layout)}>
+      <div
+        data-image-converter
+        {...stylex.props(s.layout, !view.source && s.emptyLayout)}
+      >
         <section
           data-converter-part="file"
           aria-label={t.file}
           {...stylex.props(s.file)}
         >
-          <p {...stylex.props(s.note)}>{t.local}</p>
-          {view.source && (
-            <div {...stylex.props(s.strip)}>
+          <div {...stylex.props(s.strip, !view.source && s.emptyStrip)}>
+            {view.source && (
               <div {...stylex.props(s.metadata)}>
                 <strong
                   title={view.source.file.name}
@@ -132,6 +135,25 @@ export default function ImageConverter({ region }: ToolProps) {
                   × {view.source.height} · {bytes(view.source.file.size)}
                 </span>
               </div>
+            )}
+            <FileDropzone
+              id="converter-source"
+              appearance={view.source ? 'compact' : 'expanded'}
+              label={view.source ? t.replace : t.pick}
+              hint={!view.source ? `PNG / JPEG / WebP · ${t.local}` : undefined}
+              maxFiles={1}
+              maxSizeBytes={imageBudget.bytes}
+              issueMessages={{
+                type: t.disabledType,
+                size: t.disabledSize,
+                count: t.disabledCount,
+              }}
+              onSelection={(selection) => {
+                if (!selection.accepted.length) session?.rejectSelection('bytes');
+              }}
+              onFilesSelected={(files) => session?.select(files[0])}
+            />
+            {view.source && (
               <Button
                 onClick={() => {
                   session?.remove();
@@ -141,25 +163,15 @@ export default function ImageConverter({ region }: ToolProps) {
               >
                 {t.remove}
               </Button>
-            </div>
+            )}
+          </div>
+          {!view.source && (
+            <details {...stylex.props(s.help)}>
+              <summary>{t.fileDetails}</summary>
+              <p {...stylex.props(s.note)}>{t.budget}</p>
+              <p {...stylex.props(s.note)}>{t.limitations}</p>
+            </details>
           )}
-          <FileDropzone
-            id="converter-source"
-            appearance={view.source ? 'compact' : 'expanded'}
-            label={view.source ? t.replace : t.pick}
-            hint={!view.source ? `PNG / JPEG / WebP · ${t.budget}` : undefined}
-            maxFiles={1}
-            maxSizeBytes={imageBudget.bytes}
-            issueMessages={{
-              type: t.disabledType,
-              size: t.disabledSize,
-              count: t.disabledCount,
-            }}
-            onSelection={(selection) => {
-              if (!selection.accepted.length) session?.rejectSelection('bytes');
-            }}
-            onFilesSelected={(files) => session?.select(files[0])}
-          />
           {view.candidate && (
             <p role="status" {...stylex.props(s.note)}>
               {view.candidate} · {t.validating}
@@ -174,22 +186,24 @@ export default function ImageConverter({ region }: ToolProps) {
         <section
           data-converter-part="settings"
           aria-labelledby="converter-settings"
-          {...stylex.props(s.settings)}
+          {...stylex.props(s.settings, !view.source && s.emptySettings)}
         >
-          <h2 id="converter-settings" {...stylex.props(s.heading)}>
-            {t.settings}
-          </h2>
-          <div role="group" aria-label={t.modes} {...stylex.props(s.row)}>
-            {(['quick', 'advanced'] as const).map((mode) => (
-              <Button
-                key={mode}
-                aria-pressed={state.mode === mode}
-                variant={state.mode === mode ? 'primary' : 'secondary'}
-                onClick={() => session?.mode(mode)}
-              >
-                {t[mode]}
-              </Button>
-            ))}
+          <div {...stylex.props(s.settingsHeader)}>
+            <h2 id="converter-settings" {...stylex.props(s.settingsTitle)}>
+              {t.settings}
+            </h2>
+            <div role="group" aria-label={t.modes} {...stylex.props(s.row)}>
+              {(['quick', 'advanced'] as const).map((mode) => (
+                <Button
+                  key={mode}
+                  aria-pressed={state.mode === mode}
+                  variant={state.mode === mode ? 'primary' : 'secondary'}
+                  onClick={() => session?.mode(mode)}
+                >
+                  {t[mode]}
+                </Button>
+              ))}
+            </div>
           </div>
           <fieldset {...stylex.props(s.group)}>
             <legend {...stylex.props(s.legend)}>{t.formats}</legend>
@@ -214,23 +228,23 @@ export default function ImageConverter({ region }: ToolProps) {
                       checked={settings.format === format}
                       disabled={disabled}
                       onChange={() => session?.format(format)}
-                      aria-describedby={`format-${format}-hint`}
+                      aria-describedby={
+                        disabled && !view.checkingCapabilities
+                          ? `format-${format}-hint`
+                          : undefined
+                      }
                       {...stylex.props(s.radio)}
                     />
-                    <span>
+                    <span {...stylex.props(s.choiceLabel)}>
                       {format.toUpperCase()}
-                      <small
-                        id={`format-${format}-hint`}
-                        {...stylex.props(s.choiceHint)}
-                      >
-                        {disabled && !view.checkingCapabilities
-                          ? t.unavailable
-                          : format === 'png'
-                            ? t.standard
-                            : format === 'jpeg'
-                              ? '88'
-                              : '85'}
-                      </small>
+                      {disabled && !view.checkingCapabilities && (
+                        <small
+                          id={`format-${format}-hint`}
+                          {...stylex.props(s.choiceHint)}
+                        >
+                          {t.unavailable}
+                        </small>
+                      )}
                     </span>
                   </label>
                 );
@@ -343,18 +357,26 @@ export default function ImageConverter({ region }: ToolProps) {
               )}
             </>
           )}
-          <Button
-            onClick={() => session?.restore()}
-            disabled={view.checkingCapabilities}
-          >
-            {t.restore}
-          </Button>
-          <p {...stylex.props(s.note)}>{t.formatNote}</p>
-          <a href="#converter-result" {...stylex.props(c.button, c.ghost)}>
-            {t.viewResult}
-          </a>
+          {(state.mode === 'advanced' || isCustomSettings(state, sameSettings)) && (
+            <Button
+              onClick={() => session?.restore()}
+              disabled={view.checkingCapabilities}
+            >
+              {t.restore}
+            </Button>
+          )}
+          <details {...stylex.props(s.help)}>
+            <summary>{t.settingsHelp}</summary>
+            <p {...stylex.props(s.note)}>{t.formatNote}</p>
+          </details>
+          {view.source && (
+            <a href="#converter-result" {...stylex.props(c.button, c.ghost)}>
+              {t.viewResult}
+            </a>
+          )}
         </section>
         <section
+          hidden={!view.source}
           data-converter-part="preview"
           aria-labelledby="converter-preview"
           {...stylex.props(s.preview)}
@@ -362,72 +384,76 @@ export default function ImageConverter({ region }: ToolProps) {
           <h2 id="converter-preview" {...stylex.props(s.heading)}>
             {t.preview}
           </h2>
-          <div
-            role="group"
-            aria-label={t.previewToggle}
-            {...stylex.props(s.mobileTabs)}
-          >
-            <Button
-              aria-pressed={preview === 'source'}
-              onClick={() => setPreview('source')}
+          {result && (
+            <div
+              role="group"
+              aria-label={t.previewToggle}
+              {...stylex.props(s.mobileTabs)}
             >
-              {t.original}
-            </Button>
-            <Button
-              aria-pressed={preview === 'output'}
-              onClick={() => setPreview('output')}
-            >
-              {t.output}
-            </Button>
-          </div>
-          <div {...stylex.props(s.previews)}>
-            {(['source', 'output'] as const).map((which) => {
-              const source = which === 'source',
-                url = source ? sourceUrl : resultUrl,
-                blob = source ? view.source?.blob : result?.blob;
-              return (
-                <figure
-                  key={which}
-                  {...stylex.props(
-                    s.figure,
-                    preview !== which && s.mobileHidden,
-                  )}
-                >
-                  <div {...stylex.props(s.imageBox)}>
-                    {url ? (
-                      <img
-                        src={url}
-                        alt={
-                          source
-                            ? t.original
-                            : state.status === 'ready'
-                              ? t.output
-                              : t.old
-                        }
-                        onError={() => setPreviewError(blob)}
-                        {...stylex.props(s.image)}
-                      />
-                    ) : (
-                      <p {...stylex.props(s.note)}>
-                        {source ? t.idle : t.noOutput}
-                      </p>
+              <Button
+                aria-pressed={visiblePreview === 'source'}
+                onClick={() => setPreview('source')}
+              >
+                {t.original}
+              </Button>
+              <Button
+                aria-pressed={visiblePreview === 'output'}
+                onClick={() => setPreview('output')}
+              >
+                {t.output}
+              </Button>
+            </div>
+          )}
+          <div {...stylex.props(s.previews, !result && s.singlePreview)}>
+            {(['source', 'output'] as const)
+              .filter((which) => which === 'source' || result)
+              .map((which) => {
+                const source = which === 'source',
+                  url = source ? sourceUrl : resultUrl,
+                  blob = source ? view.source?.blob : result?.blob;
+                return (
+                  <figure
+                    key={which}
+                    {...stylex.props(
+                      s.figure,
+                      visiblePreview !== which && s.mobileHidden,
                     )}
-                  </div>
-                  <figcaption {...stylex.props(s.caption)}>
-                    {source
-                      ? t.original
-                      : !result || state.status === 'ready'
-                        ? t.output
-                        : t.old}
-                    {source && view.source
-                      ? ` · ${view.source.info.format.toUpperCase()} · ${view.source.width}×${view.source.height} · ${bytes(view.source.file.size)}`
-                      : !source && result
-                        ? ` · ${result.mime} · ${result.width}×${result.height} · ${bytes(result.bytes)}`
-                        : ''}
-                  </figcaption>
-                </figure>
-              );
-            })}
+                  >
+                    <div {...stylex.props(s.imageBox)}>
+                      {url ? (
+                        <img
+                          src={url}
+                          alt={
+                            source
+                              ? t.original
+                              : state.status === 'ready'
+                                ? t.output
+                                : t.old
+                          }
+                          onError={() => setPreviewError(blob)}
+                          {...stylex.props(s.image)}
+                        />
+                      ) : (
+                        <p {...stylex.props(s.note)}>
+                          {source ? t.sourceReady : t.noOutput}
+                        </p>
+                      )}
+                    </div>
+                    <figcaption {...stylex.props(s.caption)}>
+                      {source
+                        ? t.original
+                        : !result || state.status === 'ready'
+                          ? t.output
+                          : t.old}
+                      {source && view.source
+                        ? ` · ${view.source.info.format.toUpperCase()} · ${view.source.width}×${view.source.height} · ${bytes(view.source.file.size)}`
+                        : !source && result
+                          ? ` · ${result.mime} · ${result.width}×${result.height} · ${bytes(result.bytes)}`
+                          : ''}
+                    </figcaption>
+                  </figure>
+                );
+              })}
           </div>
           {previewError &&
             (previewError === view.source?.blob ||
@@ -439,6 +465,7 @@ export default function ImageConverter({ region }: ToolProps) {
         </section>
         <section
           id="converter-result"
+          hidden={!view.source}
           data-converter-part="result"
           aria-labelledby="converter-result-heading"
           {...stylex.props(s.result)}
@@ -501,7 +528,6 @@ export default function ImageConverter({ region }: ToolProps) {
               </Button>
             )}
           </div>
-          <p {...stylex.props(s.note)}>{t.limitations}</p>
         </section>
         {import.meta.env.DEV && (
           <details {...stylex.props(s.details)}>

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { setViewport } from './setup';
@@ -44,6 +44,40 @@ beforeEach(() => {
   );
 });
 describe('real workspace interaction contract (codec mocked; not browser evidence)', () => {
+  it('progressively reveals source and result without remounting settings or the file picker', async () => {
+    let finish!: (blob: Blob) => void;
+    encode.mockImplementationOnce(() => new Promise((resolve) => {
+      finish = resolve;
+    }));
+    const { container } = render(<ImageConverter region="global" />);
+    const settings = screen.getByRole('region', { name: 'Conversion settings' });
+    const input = container.querySelector('input[type=file]')!;
+    await waitFor(() => expect(
+      screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
+    ).toBe(false));
+    expect(screen.getAllByRole('radio')).toHaveLength(3);
+    expect(screen.queryByRole('region', { name: 'Image preview' })).toBeNull();
+    expect(screen.queryByRole('region', { name: 'Result and download' })).toBeNull();
+    expect(screen.queryByRole('link', { name: 'View result' })).toBeNull();
+    expect(container.querySelector('button button')).toBeNull();
+
+    fireEvent.change(input, { target: { files: [new File(['png'], 'art.png')] } });
+    await waitFor(() => expect(encode).toHaveBeenCalledTimes(1));
+    expect(screen.getByRole('region', { name: 'Image preview' })).toBeTruthy();
+    expect(screen.getAllByRole('figure')).toHaveLength(1);
+    expect(await screen.findByRole('img', { name: 'Original' })).toBeTruthy();
+    expect(
+      screen.getByRole('button', { name: 'Download result' }).hasAttribute('disabled'),
+    ).toBe(true);
+    expect(screen.getByRole('region', { name: 'Conversion settings' })).toBe(settings);
+    expect(container.querySelector('input[type=file]')).toBe(input);
+
+    await act(async () => finish(new Blob(['output'], { type: 'image/webp' })));
+    await screen.findByRole('link', { name: 'Download result' });
+    expect(screen.getAllByRole('figure')).toHaveLength(2);
+    expect(screen.getByRole('region', { name: 'Conversion settings' })).toBe(settings);
+    expect(container.querySelector('button button')).toBeNull();
+  });
   it('keeps one settings tree, mobile DOM order, filename-independent ready output and releases URLs', async () => {
     const user = userEvent.setup(),
       { container, unmount } = render(<ImageConverter region="global" />);
@@ -122,6 +156,18 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     expect(
       screen.getByRole('link', { name: '下载结果' }).getAttribute('href'),
     ).toBe(old);
+    await user.click(screen.getByRole('button', { name: '高级' }));
+    fireEvent.change(input, {
+      target: { files: [new File(['replacement'], 'replacement.png')] },
+    });
+    await screen.findByText('replacement.png');
+    await waitFor(() => expect(
+      within(screen.getByRole('region', { name: '结果与下载' }))
+        .getByRole('status').textContent,
+    ).toBe(converterMessages.cn.sourceReady));
+    expect(screen.queryByText(converterMessages.cn.stale)).toBeNull();
+    expect(screen.getAllByRole('figure')).toHaveLength(1);
+    expect(screen.queryByRole('link', { name: '下载结果' })).toBeNull();
     await user.click(screen.getByRole('button', { name: '移除图片' }));
     await waitFor(() =>
       expect(document.activeElement).toBe(
