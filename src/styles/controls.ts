@@ -94,6 +94,8 @@ export const controls = stylex.create({
     borderColor: {
       default: tokens.controlBorder,
       ':hover': tokens.textSecondary,
+      ':focus': tokens.focus,
+      ':is([aria-invalid="true"]):focus': tokens.danger,
       ':disabled': tokens.controlBorder,
     },
     borderRadius: tokens.radiusMd,
@@ -103,7 +105,13 @@ export const controls = stylex.create({
     fontSize: 14,
     fontWeight: 400,
     lineHeight: 1.5,
-    outlineColor: tokens.focus,
+    // Keep focus on this boundary; other components retain the global outline.
+    outlineStyle: 'none',
+    boxShadow: {
+      default: tokens.shadowNone,
+      ':focus-visible': `inset 0 0 0 1px ${tokens.focus}`,
+      ':is([aria-invalid="true"]):focus-visible': `inset 0 0 0 1px ${tokens.danger}`,
+    },
     opacity: { default: 1, ':disabled': 0.55 },
     cursor: { default: 'auto', ':disabled': 'not-allowed' },
   },

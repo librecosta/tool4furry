@@ -1,5 +1,6 @@
 import { Slider } from '@base-ui/react/slider';
 import { Field } from '@base-ui/react/field';
+import type { ReactNode } from 'react';
 import * as stylex from '@stylexjs/stylex';
 import { controls } from '../styles/controls';
 import { tokens } from '../styles/tokens.stylex';
@@ -13,6 +14,7 @@ export interface SliderFieldProps extends Omit<FieldProps, 'required'> {
   step?: number;
   unit?: string;
   name?: string;
+  valueControl?: ReactNode;
 }
 export function SliderField({
   value,
@@ -22,6 +24,7 @@ export function SliderField({
   step = 1,
   unit = '',
   name,
+  valueControl,
   ...field
 }: SliderFieldProps) {
   const ids = useField(field);
@@ -43,10 +46,12 @@ export function SliderField({
       >
         <div {...stylex.props(styles.label)}>
           <Slider.Label>{field.label}</Slider.Label>
-          <span aria-hidden="true">
-            {value}
-            {unit}
-          </span>
+          {valueControl ?? (
+            <span aria-hidden="true">
+              {value}
+              {unit}
+            </span>
+          )}
         </div>
         <Slider.Control {...stylex.props(styles.control)}>
           <Slider.Track {...stylex.props(styles.track)}>
@@ -66,6 +71,7 @@ export function SliderField({
 const styles = stylex.create({
   label: {
     display: 'flex',
+    alignItems: 'center',
     justifyContent: 'space-between',
     gap: tokens.space12,
     fontWeight: 500,
@@ -96,12 +102,10 @@ const styles = stylex.create({
       ':hover': tokens.surfaceMuted,
       ':active': tokens.surfaceMuted,
     },
-    borderWidth: 2,
+    borderWidth: { default: 2, ':has(:focus-visible)': 3 },
     borderStyle: 'solid',
     borderColor: tokens.action,
-    outlineColor: tokens.focus,
-    outlineWidth: { default: 0, ':focus-within': 2 },
-    outlineStyle: 'solid',
-    outlineOffset: 2,
+    // Base UI focuses its clipped range input. Emphasize this one ring for keys.
+    outlineStyle: 'none',
   },
 });

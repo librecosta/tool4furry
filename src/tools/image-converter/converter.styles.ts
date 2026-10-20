@@ -34,6 +34,40 @@ export const converterStyles = stylex.create({
     gap: t.space12,
   },
   settingsTitle: { fontSize: 18, fontWeight: 600, margin: 0 },
+  modes: {
+    display: 'flex',
+    padding: t.space4,
+    backgroundColor: t.surfaceMuted,
+    borderRadius: t.radiusMd,
+  },
+  mode: {
+    minHeight: 44,
+    minWidth: 44,
+    paddingInline: t.space12,
+    borderWidth: 0,
+    borderRadius: t.radiusSm,
+    backgroundColor: { default: 'transparent', ':hover': t.border },
+    color: t.textSecondary,
+    fontSize: 13,
+    fontWeight: 500,
+  },
+  currentMode: {
+    backgroundColor: t.border,
+    color: t.textPrimary,
+  },
+  qualityInput: {
+    width: 64,
+    flexShrink: 0,
+    textAlign: 'center',
+    fontVariantNumeric: 'tabular-nums',
+  },
+  qualityScale: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: t.space12,
+    fontSize: 12,
+    color: t.textSecondary,
+  },
   preview: {
     gridColumn: { default: '1', '@media (max-width: 900px)': 'auto' },
     gridRow: { default: '2', '@media (max-width: 900px)': 'auto' },
@@ -115,10 +149,8 @@ export const converterStyles = stylex.create({
   },
   choiceLabel: { minWidth: 0, overflowWrap: 'anywhere' },
   chosen: {
-    backgroundColor: { default: t.actionTint, ':hover': t.actionTint },
+    backgroundColor: { default: t.actionTint, ':hover': t.surfaceMuted },
     borderColor: t.action,
-    textDecoration: 'underline',
-    textUnderlineOffset: 4,
   },
   disabled: { opacity: 0.55, cursor: 'not-allowed' },
   radio: {

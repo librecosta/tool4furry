@@ -43,8 +43,13 @@ export default function ImageConverter({ region }: ToolProps) {
   }));
   const [preview, setPreview] = useState<'source' | 'output'>('source');
   const [previewError, setPreviewError] = useState<Blob>();
+  const [qualityDraft, setQualityDraft] = useState<string>();
+  const [debug, setDebug] = useState(false);
+  const qualityId = useId();
   const formatGroup = useId();
   useEffect(() => {
+    if (import.meta.env.DEV)
+      setDebug(new URLSearchParams(window.location.search).get('debug') === '1');
     const current = new ConverterSession(setView);
     setSession(current);
     current.start();
@@ -67,13 +72,15 @@ export default function ImageConverter({ region }: ToolProps) {
     result?.kind ?? 'encoded',
     view.filename,
   );
-  const downloadable =
-    download && resultUrl && !name.error && previewError !== download.blob;
+  const qualityText = qualityDraft ?? String(settings.quality ?? '');
   const qualityInvalid =
     settings.format !== 'png' &&
-    (!Number.isInteger(settings.quality) ||
-      settings.quality! < 1 ||
-      settings.quality! > 100);
+    (!/^\d+$/.test(qualityText) ||
+      !Number.isInteger(Number(qualityText)) ||
+      Number(qualityText) < 1 || Number(qualityText) > 100);
+  const downloadable =
+    download && resultUrl && !name.error && !qualityInvalid &&
+    previewError !== download.blob;
   const backgroundInvalid =
     settings.format === 'jpeg' &&
     !/^#[0-9a-f]{6}$/i.test(settings.jpegBackground);
@@ -82,6 +89,7 @@ export default function ImageConverter({ region }: ToolProps) {
     !view.candidate &&
     !view.checkingCapabilities &&
     !!view.capabilities?.[settings.format].supported &&
+    !qualityInvalid &&
     state.validSettings;
   const summary =
     settings.format === 'png'
@@ -192,16 +200,20 @@ export default function ImageConverter({ region }: ToolProps) {
             <h2 id="converter-settings" {...stylex.props(s.settingsTitle)}>
               {t.settings}
             </h2>
-            <div role="group" aria-label={t.modes} {...stylex.props(s.row)}>
+            <div role="group" aria-label={t.modes} {...stylex.props(s.modes)}>
               {(['quick', 'advanced'] as const).map((mode) => (
-                <Button
+                <button
                   key={mode}
+                  type="button"
                   aria-pressed={state.mode === mode}
-                  variant={state.mode === mode ? 'primary' : 'secondary'}
-                  onClick={() => session?.mode(mode)}
+                  {...stylex.props(s.mode, state.mode === mode && s.currentMode)}
+                  onClick={() => {
+                    setQualityDraft(undefined);
+                    session?.mode(mode);
+                  }}
                 >
                   {t[mode]}
-                </Button>
+                </button>
               ))}
             </div>
           </div>
@@ -227,7 +239,10 @@ export default function ImageConverter({ region }: ToolProps) {
                       value={format}
                       checked={settings.format === format}
                       disabled={disabled}
-                      onChange={() => session?.format(format)}
+                      onChange={() => {
+                        setQualityDraft(undefined);
+                        session?.format(format);
+                      }}
                       aria-describedby={
                         disabled && !view.checkingCapabilities
                           ? `format-${format}-hint`
@@ -282,8 +297,9 @@ export default function ImageConverter({ region }: ToolProps) {
           {state.mode === 'advanced' && (
             <>
               {settings.format !== 'png' && (
-                <>
+                <div>
                   <SliderField
+                    id={qualityId}
                     label={t.quality}
                     value={
                       Number.isFinite(settings.quality)
@@ -293,28 +309,34 @@ export default function ImageConverter({ region }: ToolProps) {
                     min={1}
                     max={100}
                     step={1}
-                    onValueChange={(quality) =>
-                      session?.settings({ ...settings, quality })
-                    }
-                  />
-                  <TextField
-                    label={t.precise}
-                    inputMode="numeric"
-                    value={
-                      Number.isFinite(settings.quality)
-                        ? String(settings.quality)
-                        : ''
-                    }
-                    maxLength={3}
                     error={qualityInvalid ? t.qualityError : undefined}
-                    onChange={(value) =>
-                      session?.settings({
-                        ...settings,
-                        quality: /^\d+$/.test(value) ? Number(value) : NaN,
-                      })
+                    onValueChange={(quality) => {
+                      setQualityDraft(undefined);
+                      session?.settings({ ...settings, quality });
+                    }}
+                    valueControl={
+                      <input
+                        aria-label={t.precise}
+                        aria-invalid={qualityInvalid || undefined}
+                        aria-describedby={`${qualityId}-scale${qualityInvalid ? ` ${qualityId}-error` : ''}`}
+                        inputMode="numeric"
+                        value={qualityText}
+                        {...stylex.props(c.input, s.qualityInput, qualityInvalid && c.invalid)}
+                        onChange={(event) => {
+                          const text = event.target.value;
+                          setQualityDraft(text);
+                          const quality = Number(text);
+                          if (/^\d+$/.test(text) && Number.isInteger(quality) &&
+                              quality >= 1 && quality <= 100)
+                            session?.settings({ ...settings, quality });
+                        }}
+                      />
                     }
                   />
-                </>
+                  <div id={`${qualityId}-scale`} {...stylex.props(s.qualityScale)}>
+                    <span>{t.smallerFile}</span><span>{t.higherQuality}</span>
+                  </div>
+                </div>
               )}
               {settings.format === 'jpeg' && (
                 <>
@@ -359,7 +381,10 @@ export default function ImageConverter({ region }: ToolProps) {
           )}
           {(state.mode === 'advanced' || isCustomSettings(state, sameSettings)) && (
             <Button
-              onClick={() => session?.restore()}
+              onClick={() => {
+                setQualityDraft(undefined);
+                session?.restore();
+              }}
               disabled={view.checkingCapabilities}
             >
               {t.restore}
@@ -529,7 +554,7 @@ export default function ImageConverter({ region }: ToolProps) {
             )}
           </div>
         </section>
-        {import.meta.env.DEV && (
+        {import.meta.env.DEV && debug && (
           <details {...stylex.props(s.details)}>
             <summary>DEV · ownership diagnostics</summary>
             <pre data-converter-diagnostics>

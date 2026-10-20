@@ -8,6 +8,7 @@ import { converterMessages } from '../src/tools/image-converter/messages';
 import { getToolPreviewPaths } from '../src/tools/preview-paths';
 import { getPublishedTools } from '../src/tools/registry';
 import { toolPageContents } from '../src/site/tool-content';
+import { ConverterSession } from '../src/tools/image-converter/session';
 const { encode } = vi.hoisted(() => ({
   encode: vi.fn(
     async () => new Blob(['unit-test-output'], { type: 'image/webp' }),
@@ -175,6 +176,83 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
       ),
     );
     expect(screen.queryByRole('link', { name: '下载结果' })).toBeNull();
+  });
+  it('keeps invalid quality drafts out of the session and synchronizes valid edits with the slider', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<ImageConverter region="global" />);
+    await waitFor(() => expect(
+      screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
+    ).toBe(false));
+    fireEvent.change(container.querySelector('input[type=file]')!, {
+      target: { files: [new File(['png'], 'art.png')] },
+    });
+    await screen.findByRole('link', { name: 'Download result' });
+    await user.click(screen.getByRole('button', { name: 'Advanced' }));
+    const input = screen.getByRole('textbox', { name: 'Exact quality (1–100)' }) as HTMLInputElement;
+    expect(input.value).toBe('85');
+    const update = vi.spyOn(ConverterSession.prototype, 'settings');
+    try {
+      for (const value of ['', '0', '101', '85.5', 'abc']) {
+        fireEvent.change(input, { target: { value } });
+        expect(input.value).toBe(value);
+        expect(input.getAttribute('aria-invalid')).toBe('true');
+        expect(screen.getByRole('slider').getAttribute('aria-valuenow')).toBe('85');
+        expect(screen.queryByRole('link', { name: 'Download result' })).toBeNull();
+        expect(screen.getByRole('button', { name: 'Generate result' }).hasAttribute('disabled')).toBe(true);
+      }
+      expect(update).not.toHaveBeenCalled();
+      fireEvent.change(input, { target: { value: '86' } });
+      expect(update).toHaveBeenLastCalledWith(expect.objectContaining({ quality: 86 }));
+      expect(input.hasAttribute('aria-invalid')).toBe(false);
+      const slider = screen.getByRole('slider');
+      expect(slider.getAttribute('aria-valuenow')).toBe('86');
+      act(() => slider.focus());
+      await user.keyboard('{ArrowRight}');
+      expect(input.value).toBe('87');
+      expect(update).toHaveBeenLastCalledWith(expect.objectContaining({ quality: 87 }));
+      expect(encode).toHaveBeenCalledTimes(1);
+      expect(screen.queryByRole('link', { name: 'Download result' })).toBeNull();
+      await user.click(screen.getByRole('button', { name: 'Generate result' }));
+      const download = await screen.findByRole('link', { name: 'Download result' });
+      const href = download.getAttribute('href');
+      expect(encode).toHaveBeenCalledTimes(2);
+      await user.click(screen.getByRole('button', { name: 'Quick' }));
+      await user.click(screen.getByRole('button', { name: 'Advanced' }));
+      expect((screen.getByRole('textbox', { name: 'Exact quality (1–100)' }) as HTMLInputElement).value).toBe('87');
+      expect(screen.getByRole('link', { name: 'Download result' }).getAttribute('href')).toBe(href);
+      expect(encode).toHaveBeenCalledTimes(2);
+      await user.click(screen.getByRole('radio', { name: 'JPEG' }));
+      expect((screen.getByRole('textbox', { name: 'Exact quality (1–100)' }) as HTMLInputElement).value).toBe('88');
+      await user.click(screen.getByRole('radio', { name: 'PNG' }));
+      expect(screen.queryByRole('slider')).toBeNull();
+      expect(screen.queryByRole('textbox', { name: 'Exact quality (1–100)' })).toBeNull();
+      await user.click(screen.getByRole('radio', { name: 'WEBP' }));
+      expect((screen.getByRole('textbox', { name: 'Exact quality (1–100)' }) as HTMLInputElement).value).toBe('87');
+      expect(encode).toHaveBeenCalledTimes(2);
+    } finally {
+      update.mockRestore();
+    }
+  });
+  it('only exposes ownership diagnostics for an explicit development debug URL', async () => {
+    const original = window.location.href;
+    try {
+      window.history.replaceState({}, '', '/preview/image-converter/');
+      const normal = render(<ImageConverter region="global" />);
+      await waitFor(() => expect(screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled')).toBe(false));
+      expect(normal.container.querySelector('[data-converter-diagnostics]')).toBeNull();
+      normal.unmount();
+      window.history.replaceState({}, '', '?debug=1');
+      const debug = render(<ImageConverter region="global" />);
+      await waitFor(() => expect(debug.container.querySelector('[data-converter-diagnostics]')).toBeTruthy());
+      debug.unmount();
+      vi.stubEnv('DEV', false);
+      const production = render(<ImageConverter region="global" />);
+      await waitFor(() => expect(screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled')).toBe(false));
+      expect(production.container.querySelector('[data-converter-diagnostics]')).toBeNull();
+    } finally {
+      vi.unstubAllEnvs();
+      window.history.replaceState({}, '', original);
+    }
   });
   it('keeps draft preview separate from published routes in both regions', () => {
     for (const region of ['cn', 'global'] as const) {
