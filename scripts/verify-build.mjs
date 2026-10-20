@@ -330,6 +330,7 @@ for (const page of htmlFiles) {
       `Test content leaked: ${page}`,
     );
   assert(!content.includes('virtual:stylex'), `Dev StyleX runtime in ${page}`);
+  assert(!content.includes('stylex-dev-css'), `Dev StyleX refresh shim in ${page}`);
   const dom = new JSDOM(content).window.document;
   if (toolPages.includes(page)) {
     const main = dom.querySelector('main[data-tool-id]');
