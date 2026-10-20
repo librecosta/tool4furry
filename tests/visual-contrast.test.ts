@@ -26,14 +26,14 @@ function contrast(foreground: string, background: string) {
 }
 
 it('keeps normal-size text and action/feedback labels above AA contrast', () => {
-  for (const background of ['page', 'surface', 'actionTint'])
+  for (const background of [
+    'page', 'workspace', 'surface', 'surfaceMuted', 'actionTint',
+  ])
     for (const foreground of ['textPrimary', 'textSecondary'])
       expect(
         contrast(foreground, background),
         `${foreground} on ${background}`,
       ).toBeGreaterThanOrEqual(4.5);
-  // Sand panels must use primary text: secondary on sand is below AA.
-  expect(contrast('textPrimary', 'surfaceMuted')).toBeGreaterThanOrEqual(4.5);
   for (const fill of [
     'action',
     'actionHover',
@@ -46,15 +46,19 @@ it('keeps normal-size text and action/feedback labels above AA contrast', () => 
       `onAction on ${fill}`,
     ).toBeGreaterThanOrEqual(4.5);
   for (const status of ['positive', 'warning', 'info', 'danger'])
-    expect(
-      contrast(status, 'surface'),
-      `${status} on surface`,
-    ).toBeGreaterThanOrEqual(4.5);
+    for (const background of ['page', 'surface', 'surfaceMuted'])
+      expect(
+        contrast(status, background),
+        `${status} on ${background}`,
+      ).toBeGreaterThanOrEqual(4.5);
   expect(contrast('action', 'actionTint')).toBeGreaterThanOrEqual(4.5);
 });
 it('keeps field boundaries and focus rings identifiable on their surfaces', () => {
-  expect(contrast('controlBorder', 'surface')).toBeGreaterThanOrEqual(3);
-  for (const background of ['page', 'surface', 'surfaceMuted', 'actionTint'])
+  for (const background of ['surface', 'surfaceMuted'])
+    expect(contrast('controlBorder', background)).toBeGreaterThanOrEqual(3);
+  for (const background of [
+    'page', 'workspace', 'surface', 'surfaceMuted', 'actionTint',
+  ])
     expect(
       contrast('focus', background),
       `focus on ${background}`,

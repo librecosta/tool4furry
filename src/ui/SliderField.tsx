@@ -84,7 +84,7 @@ const styles = stylex.create({
     width: '100%',
     height: 6,
     borderRadius: 3,
-    backgroundColor: tokens.border,
+    backgroundColor: tokens.controlBorder,
   },
   indicator: { backgroundColor: tokens.action, borderRadius: 3 },
   thumb: {
@@ -93,8 +93,8 @@ const styles = stylex.create({
     borderRadius: '50%',
     backgroundColor: {
       default: tokens.surface,
-      ':hover': tokens.actionTint,
-      ':active': tokens.actionTint,
+      ':hover': tokens.surfaceMuted,
+      ':active': tokens.surfaceMuted,
     },
     borderWidth: 2,
     borderStyle: 'solid',

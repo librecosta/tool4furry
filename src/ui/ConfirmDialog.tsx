@@ -86,7 +86,7 @@ const styles = stylex.create({
     maxHeight: 'calc(100dvh - 32px)',
     overflowY: 'auto',
     overscrollBehavior: 'contain',
-    backgroundColor: tokens.surface,
+    backgroundColor: tokens.surfaceMuted,
     color: tokens.textPrimary,
     padding: tokens.space24,
     borderRadius: tokens.radiusXl,

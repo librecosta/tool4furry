@@ -22,7 +22,6 @@ const styles = stylex.create({
     gap: tokens.space8,
   },
   hidden: { opacity: 0 },
-  selected: { textDecoration: 'underline', textUnderlineOffset: 4 },
   spinner: {
     position: 'absolute',
     animationName: spin,
@@ -53,7 +52,7 @@ export function Button({
     variant === 'danger' && controls.danger,
     size === 'sm' && controls.small,
     (props['aria-pressed'] === true || props['aria-pressed'] === 'true') &&
-      styles.selected,
+      controls.active,
   );
   return (
     <button

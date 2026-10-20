@@ -125,7 +125,7 @@ const styles = stylex.create({
     display: 'flex',
     gap: tokens.space8,
     alignItems: 'flex-start',
-    backgroundColor: tokens.surface,
+    backgroundColor: tokens.surfaceMuted,
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: tokens.border,

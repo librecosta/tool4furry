@@ -69,8 +69,8 @@ export function SelectField({
                   className={(state) =>
                     stylex.props(
                       styles.item,
-                      state.selected && styles.selected,
                       state.highlighted && styles.highlighted,
+                      state.selected && styles.selected,
                       state.disabled && styles.disabled,
                     ).className
                   }
@@ -105,7 +105,7 @@ const styles = stylex.create({
     maxHeight: 'min(320px, var(--available-height))',
     overflowY: 'auto',
     overscrollBehavior: 'contain',
-    backgroundColor: tokens.surface,
+    backgroundColor: tokens.surfaceMuted,
     color: tokens.textPrimary,
     borderWidth: 1,
     borderStyle: 'solid',
@@ -130,8 +130,8 @@ const styles = stylex.create({
   },
   selected: { backgroundColor: tokens.actionTint, color: tokens.action },
   highlighted: {
-    backgroundColor: tokens.actionTint,
-    color: tokens.action,
+    backgroundColor: tokens.border,
+    color: tokens.textPrimary,
     outline: `2px solid ${tokens.focus}`,
     outlineOffset: -2,
   },

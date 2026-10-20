@@ -164,7 +164,7 @@ const styles = stylex.create({
   zone: {
     backgroundColor: {
       default: tokens.surface,
-      ':hover': tokens.page,
+      ':hover': tokens.surfaceMuted,
       ':disabled': tokens.surface,
     },
     flexDirection: 'column',

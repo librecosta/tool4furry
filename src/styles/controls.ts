@@ -12,7 +12,7 @@ export const controls = stylex.create({
     paddingInline: tokens.space16,
     borderWidth: 1,
     borderStyle: 'solid',
-    borderColor: tokens.border,
+    borderColor: tokens.controlBorder,
     borderRadius: tokens.radiusMd,
     backgroundColor: {
       default: tokens.surface,
@@ -72,7 +72,11 @@ export const controls = stylex.create({
   small: { paddingInline: tokens.space12, fontSize: 13 },
   invalid: { borderColor: { default: tokens.danger, ':hover': tokens.danger } },
   active: {
-    backgroundColor: tokens.actionTint,
+    backgroundColor: {
+      default: tokens.actionTint,
+      ':hover': tokens.actionTint,
+      ':active': tokens.actionTint,
+    },
     borderColor: tokens.action,
     color: tokens.action,
     textDecoration: 'underline',
@@ -89,12 +93,13 @@ export const controls = stylex.create({
     borderStyle: 'solid',
     borderColor: {
       default: tokens.controlBorder,
-      ':hover': tokens.action,
+      ':hover': tokens.textSecondary,
       ':disabled': tokens.controlBorder,
     },
     borderRadius: tokens.radiusMd,
     backgroundColor: tokens.surface,
     color: tokens.textPrimary,
+    '::placeholder': { color: tokens.textSecondary, opacity: 1 },
     fontSize: 14,
     fontWeight: 400,
     lineHeight: 1.5,

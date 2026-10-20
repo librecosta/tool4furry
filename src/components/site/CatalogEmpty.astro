@@ -1,6 +1,7 @@
 ---
 import * as stylex from '@stylexjs/stylex';
 import { siteStyles as s } from '../../styles/site';
+import { tokens } from '../../styles/tokens.stylex';
 import type { Region } from '../../config/region';
 import { messages } from '../../i18n/messages';
 interface Props { region: Region }
@@ -8,10 +9,10 @@ const t = messages[Astro.props.region];
 ---
 <div data-catalog-empty {...stylex.attrs(s.empty)}>
   <svg {...stylex.attrs(s.emptyArt)} width="80" height="80" viewBox="0 0 80 80" fill="none" aria-hidden="true">
-    <rect x="13" y="16" width="44" height="52" rx="6" transform="rotate(-12 13 16)" fill="#FFFEFB" stroke="#DDD9D1" />
-    <rect x="27" y="22" width="40" height="48" rx="6" fill="#FFFEFB" stroke="#DDD9D1" />
-    <path d="M36 36h20M36 44h12" stroke="#DDD9D1" stroke-width="2" stroke-linecap="round" />
-    <path d="m59 7 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z" fill="#C97849" />
+    <rect x="13" y="16" width="44" height="52" rx="6" transform="rotate(-12 13 16)" fill={tokens.surface} stroke={tokens.border} />
+    <rect x="27" y="22" width="40" height="48" rx="6" fill={tokens.surface} stroke={tokens.border} />
+    <path d="M36 36h20M36 44h12" stroke={tokens.controlBorder} stroke-width="2" stroke-linecap="round" />
+    <path d="m59 7 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z" fill={tokens.action} />
   </svg>
   <div>
     <h3 {...stylex.attrs(s.emptyTitle)}>{t.empty}</h3>

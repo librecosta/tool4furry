@@ -169,7 +169,7 @@ const s = stylex.create({
     height: '100%',
     borderWidth: 0,
     color: tokens.textPrimary,
-    backgroundColor: tokens.page,
+    backgroundColor: tokens.workspace,
     padding: '80px 16px',
     outlineOffset: -4,
     backgroundImage: `radial-gradient(${tokens.border} 1px, transparent 1px)`,

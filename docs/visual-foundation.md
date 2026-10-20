@@ -96,3 +96,15 @@ A0：dev 基线 b460130，工作区干净，远端同提交 CI 成功。A1 首�
 V0.3-B 在当前 Token 上打磨 Workbench 顶部、两侧、中央、底栏及手机面板的构图和空间；V0.3-C 处理首页 Hero、目录、品牌呈现和站点资源。现有 Lab 两栏/自然流、工作台断点、18px 区块标题和首页 56/36px 大标题在 A 阶段保留，未按建议字号表重画层级。真实工具、TimePicker、暗色、SSR/后端/持久化均未实施。
 
 字体接入参考 [Fontsource Variable Fonts](https://fontsource.org/docs/getting-started/variable) 与 [Fontsource Vite](https://fontsource.org/docs/guides/vite)；以锁定包与实际产物为准。
+
+## V0.5-A — Graphite Studio（2026-10-20）
+
+本节取代上方历史暖白/暖橙配色。只迁移视觉；字体、密度、布局、断点和控件行为保持原合同。附件不入库。
+
+- Page `#101114`、新增实际用于 Canvas/透明预览的 workspace `#17191E`、surface `#1B1D22`、surfaceMuted / Elevated `#252830`、border `#34383F`。
+- textPrimary `#F2F3F5`、textSecondary `#A8AFBA`、action / focus `#89CCFF`、actionHover `#A8DCFF`、actionPressed `#6FB7EB`、onAction `#101820`、actionTint `#223747`。controlBorder 调至 `#6B7684`，在 Surface / Elevated 上均达到 3:1。
+- danger `#FF9BA4`、dangerHover `#FFB2B9`、positive `#83D6AE`、warning `#E7C47C`、info `#A8BEF5`。brand / sage 仍可用于 Lab 内容示例，不充当普通操作或成功反馈。
+- 原生 color-scheme 为 dark；灰阶 Hover、冰蓝 Selected 与独立焦点轮廓分开。常驻 Inspector 无投影，Sheet/菜单/Select/Tooltip/Dialog/Toast 使用 Elevated 与轻阴影。透明棋盘用 workspace / surfaceMuted 两种中性灰。Logo 与首页插画仅协调颜色，图形不变。
+- 本地 `pnpm check`：103 文件，0 errors / warnings / hints。定向 Vitest：visual-contrast、ui、workbench、converter-ui、file-dropzone、scroll-dock、tool-page-frame 共 7 文件、47 项通过；对比度测试扩展至 Workspace / Elevated，未放松阈值。
+- 内置 Chromium 实看 `/`、`/tools/`、`/preview/image-converter/`、`/lab/ui`、`/lab/canvas`，覆盖桌面 1440px、390px 与 900px，Canvas 另查 901px；未发现横向溢出。检查了透明 PNG 原图/输出、格式选中、JPEG 字段错误、过期结果/禁用下载、危险确认框、嵌套 Select、Slider 方向键与 Escape 焦点返回。跨宽度参数值保留且输入 DOM 仅一份；控制台未见 error/warn。首页实际渲染的辅助正文/Page 对比度为 8.55:1。
+- 本地未重复完整图像矩阵、全量测试或双地区构建；由 push 后现有 CI 验证。仍需维护者按实际显示器复核低亮度层次与透明图细节，以及手机真机软键盘/触摸体验。Image Converter 保持 draft，未改发布守卫、路由、SEO 或业务逻辑。

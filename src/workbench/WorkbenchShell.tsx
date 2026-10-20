@@ -212,7 +212,7 @@ const s = stylex.create({
     borderStyle: 'solid',
     borderColor: tokens.border,
     borderRadius: tokens.radiusLg,
-    boxShadow: tokens.shadowSoft,
+    boxShadow: tokens.shadowNone,
     pointerEvents: 'auto',
   },
   localHeader: {
@@ -286,6 +286,10 @@ const s = stylex.create({
   // This zero-height wrapper restores interaction without covering the viewport.
   portal: { pointerEvents: 'auto' },
   panel: {
+    backgroundColor: {
+      default: tokens.surface,
+      '@media (max-width: 900px)': tokens.surfaceMuted,
+    },
     position: { default: 'absolute', '@media (max-width: 900px)': 'fixed' },
     top: {
       default: 'max(80px, calc(env(safe-area-inset-top) + 64px))',
@@ -305,7 +309,10 @@ const s = stylex.create({
     display: 'flex',
     flexDirection: 'column',
     zIndex: tokens.layerSheet,
-    boxShadow: tokens.shadowFloating,
+    boxShadow: {
+      default: tokens.shadowNone,
+      '@media (max-width: 900px)': tokens.shadowFloating,
+    },
     borderRadius: {
       default: tokens.radiusLg,
       '@media (max-width: 900px)': '16px 16px 0 0',
