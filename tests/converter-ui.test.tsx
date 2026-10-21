@@ -70,7 +70,10 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     await waitFor(() => expect(encode).toHaveBeenCalledTimes(1));
     expect(screen.getByRole('list', { name: 'File tasks' })).toBeTruthy();
     expect(screen.queryByRole('img')).toBeNull();
-    expect(URL.createObjectURL).not.toHaveBeenCalled();
+    expect(URL.createObjectURL).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(container.querySelector('[data-image-thumbnail] img')).toBeTruthy());
+    const thumbnail = container.querySelector('[data-image-thumbnail] img')!;
+    const thumbnailUrl = thumbnail.getAttribute('src');
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: 'Image preview' }));
     expect(await screen.findByRole('img', { name: 'Original' })).toBeTruthy();
@@ -78,7 +81,8 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     expect(URL.createObjectURL).toHaveBeenCalledTimes(1);
     await user.keyboard('{Escape}');
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
-    expect(URL.revokeObjectURL).toHaveBeenCalledTimes(1);
+    expect(URL.revokeObjectURL).not.toHaveBeenCalled();
+    expect(container.querySelector('[data-image-thumbnail] img')?.getAttribute('src')).toBe(thumbnailUrl);
     expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Image preview' }));
     expect(
       screen.getByRole('button', { name: 'Download result' }).hasAttribute('disabled'),
@@ -92,11 +96,14 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     expect(screen.getAllByRole('link', { name: 'Download result' })).toHaveLength(1);
     await user.click(screen.getByRole('button', { name: 'Image preview' }));
     expect(await screen.findByRole('img', { name: 'Original' })).toBeTruthy();
-    expect(screen.getByRole('img', { name: 'Output' })).toBeTruthy();
-    expect(URL.createObjectURL).toHaveBeenCalledTimes(3);
+    expect(screen.queryByRole('img', { name: 'Output' })).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Output' }));
+    expect(await screen.findByRole('img', { name: 'Output' })).toBeTruthy();
+    expect(screen.queryByRole('img', { name: 'Original' })).toBeNull();
+    expect(URL.createObjectURL).toHaveBeenCalledTimes(2);
     await user.click(screen.getByRole('button', { name: 'Close image preview' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
-    expect(URL.revokeObjectURL).toHaveBeenCalledTimes(2);
+    expect(URL.revokeObjectURL).not.toHaveBeenCalled();
     expect(screen.getByRole('region', { name: 'Conversion settings' })).toBe(settings);
     expect(container.querySelector('button button')).toBeNull();
   });
@@ -119,6 +126,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     });
     await screen.findByRole('link', { name: 'Download result' });
     expect(encode).toHaveBeenCalledTimes(1);
+    const sourceUrl = container.querySelector('[data-image-thumbnail] img')?.getAttribute('src');
     await user.click(
       screen.getByRole('button', { name: 'Advanced' }),
     );
@@ -147,6 +155,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     );
     expect(screen.queryByRole('link', { name: 'Download result' })).toBeNull();
     expect(screen.getByText('Enter an integer from 1 to 100.')).toBeTruthy();
+    expect(container.querySelector('[data-image-thumbnail] img')?.getAttribute('src')).toBe(sourceUrl);
     const created = vi.mocked(URL.createObjectURL).mock.calls.length;
     unmount();
     expect(URL.revokeObjectURL).toHaveBeenCalledTimes(created);
@@ -320,10 +329,16 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     await user.click(screen.getByRole('button', { name: 'Generate result' }));
     await screen.findByRole('link', { name: 'Download result' });
     await user.click(screen.getByRole('button', { name: 'Image preview' }));
+    await user.click(screen.getByRole('button', { name: 'Output' }));
     fireEvent.error(await screen.findByRole('img', { name: 'Output' }));
-    expect(within(screen.getByRole('dialog')).getByRole('alert').textContent).toBe(converterMessages.global.previewError);
+    expect(within(screen.getByRole('dialog')).getByRole('alert').textContent).toBe(converterMessages.global.viewer.error);
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('link', { name: 'Download result' })).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Image preview' }));
+    await user.click(screen.getByRole('button', { name: 'Output' }));
+    fireEvent.load(await screen.findByRole('img', { name: 'Output' }));
+    await user.keyboard('{Escape}');
+    expect(screen.getByRole('link', { name: 'Download result' })).toBeTruthy();
     unmount();
     expect(URL.revokeObjectURL).toHaveBeenCalledTimes(vi.mocked(URL.createObjectURL).mock.calls.length);
   });
@@ -344,7 +359,8 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     await act(async () => finish(new Blob(['obsolete'], { type: 'image/webp' })));
     expect(screen.queryByRole('list', { name: 'File tasks' })).toBeNull();
     expect(screen.queryByRole('link', { name: 'Download result' })).toBeNull();
-    expect(URL.createObjectURL).not.toHaveBeenCalled();
+    expect(URL.createObjectURL).toHaveBeenCalledTimes(1);
+    expect(URL.revokeObjectURL).toHaveBeenCalledTimes(1);
   });
   it('keeps Quick same-format bytes and shares the download URL in its on-demand preview', async () => {
     const user = userEvent.setup();
@@ -358,6 +374,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     expect(URL.createObjectURL).toHaveBeenCalledWith(file);
     await user.click(screen.getByRole('button', { name: 'Image preview' }));
     expect((await screen.findByRole('img', { name: 'Original' })).getAttribute('src')).toBe(download.getAttribute('href'));
+    await user.click(screen.getByRole('button', { name: 'Output' }));
     expect(screen.getByRole('img', { name: 'Output' }).getAttribute('src')).toBe(download.getAttribute('href'));
     expect(URL.createObjectURL).toHaveBeenCalledTimes(1);
     unmount();

@@ -28,6 +28,7 @@ export interface FileTaskItem {
   id: string;
   name: string;
   icon?: ReactNode;
+  media?: ReactNode;
   metadata: ReactNode;
   output?: ReactNode;
   status: FileTaskStatus;
@@ -65,10 +66,10 @@ export function FileTaskList({
             data-task-status={item.status}
             {...stylex.props(s.item)}
           >
+            <div aria-hidden="true" {...stylex.props(s.media)}>
+              {item.media ?? item.icon ?? <FileIcon size={22} />}
+            </div>
             <div {...stylex.props(s.heading)}>
-              <span aria-hidden="true" {...stylex.props(s.icon)}>
-                {item.icon ?? <FileIcon size={18} />}
-              </span>
               <span id={nameId} title={item.name} {...stylex.props(s.name)}>
                 {item.name}
               </span>
@@ -153,7 +154,7 @@ const s = stylex.create({
   list: { listStyle: 'none', padding: 0, margin: 0, minWidth: 0 },
   item: {
     display: 'grid',
-    gridTemplateColumns: 'minmax(0, 1fr) auto',
+    gridTemplateColumns: '44px minmax(0, 1fr) auto',
     alignItems: 'center',
     columnGap: t.space8,
     rowGap: 2,
@@ -166,12 +167,24 @@ const s = stylex.create({
     backgroundColor: { default: 'transparent', ':hover': t.surface },
   },
   heading: {
+    gridColumn: 2,
     display: 'flex',
     alignItems: 'center',
     gap: t.space8,
     minWidth: 0,
   },
-  icon: { display: 'inline-flex', flexShrink: 0, color: t.textSecondary },
+  media: {
+    gridColumn: 1,
+    gridRow: { default: '1 / 3', '@media (max-width: 600px)': '1' },
+    width: 44,
+    height: 44,
+    display: 'grid',
+    placeItems: 'center',
+    overflow: 'hidden',
+    borderRadius: t.radiusSm,
+    backgroundColor: t.workspace,
+    color: t.textSecondary,
+  },
   name: {
     minWidth: 0,
     overflow: 'hidden',
@@ -188,7 +201,7 @@ const s = stylex.create({
   },
   ready: { color: t.action },
   metadata: {
-    gridColumn: { default: '1', '@media (max-width: 600px)': '1 / -1' },
+    gridColumn: { default: '2', '@media (max-width: 600px)': '1 / -1' },
     minWidth: 0,
     fontSize: 12,
     lineHeight: 1.6,
@@ -198,7 +211,7 @@ const s = stylex.create({
   },
   output: { color: t.textPrimary },
   actions: {
-    gridColumn: 2,
+    gridColumn: 3,
     gridRow: { default: '1 / 3', '@media (max-width: 600px)': '1' },
     display: 'flex',
     alignItems: 'center',

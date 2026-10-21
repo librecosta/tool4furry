@@ -18,7 +18,8 @@
 | `ConfirmDialog.tsx` / `ConfirmDialog` | 必须提供受控 open/onOpenChange、trigger、title/description、confirmLabel/cancelLabel、onConfirm；可选 onCancel/danger。初始聚焦取消，只有确认按钮触发 onConfirm |
 | `Toast.tsx` / `useToast` | `notify({type?,title,description?,id?,timeout?})` 返回 id；`close(id?)`；同 id 更新并刷新计时；type 为 info/success/warning/error |
 | `UiProvider.tsx` / `UiProvider` | children + `labels`（通知区域、关闭与四类状态文案）；包裹 Base UI Tooltip/Toast Provider 与 ToastViewport |
-| `FileTaskList.tsx` / `FileTaskList` | `label` + 受控 `items`：稳定 id、name、可选 icon、metadata/output、status/statusLabel、error 和 actions；状态为 validating/queued/processing/ready/stale/error，操作提供 label、回调或下载链接及禁用原因。两行紧凑布局、44px 操作区；不持有 File/Blob、Object URL 或媒体任务。 |
+| `FileTaskList.tsx` / `FileTaskList` | `label` + 受控 `items`：稳定 id、name、可选 media 槽位（44px，缺省回退 icon）、metadata/output、status/statusLabel、error 和 actions；状态为 validating/queued/processing/ready/stale/error，操作提供 label、回调或下载链接及禁用原因。两行紧凑布局、44px 操作区；不持有 File/Blob、Object URL 或媒体任务。 |
+| `FilePreviewDialog.tsx` / `FilePreviewDialog` | 受控 open/onOpenChange、title、可选 description/toolbar、媒体 children、关闭/全屏/还原 labels 与可选 finalFocus 回调。负责模态、焦点、滚动锁定、Fullscreen API（不可用时最大化）及清理；仅打开时挂载 children，不持有文件、URL 或媒体变换。 |
 
 例如工具内部直接使用 `TextField value={name} onChange={setName} label={t.name}`。工具已位于 ToolRuntime 的 Provider 内，通过 `useToast().notify({type:'success', title:t.saved})` 反馈；不要再在 SiteLayout 或 WorkbenchShell 添加 Provider。
 

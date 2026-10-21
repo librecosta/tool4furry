@@ -1,107 +1,100 @@
-import { useRef } from 'react';
-import { Dialog } from '@base-ui/react/dialog';
-import { XIcon } from '@phosphor-icons/react';
+import { useEffect, useState } from 'react';
 import * as stylex from '@stylexjs/stylex';
-import { IconButton } from '../../ui/Button';
-import type { ImageResources } from '../image/resources';
+import { FilePreviewDialog } from '../../ui/FilePreviewDialog';
+import { ImagePreviewViewport } from '../image/ImagePreviewViewport';
 import type { ImageSource, ImageResult } from '../image/types';
 import type { converterMessages } from './messages';
-import { useOwnedUrl } from './use-owned-url';
 import { converterStyles as s } from './converter.styles';
 
 interface PreviewProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   source: ImageSource;
+  sourceUrl?: string;
   output?: ImageResult;
   outputUrl?: string;
-  resources: ImageResources;
   t: (typeof converterMessages)['cn'];
-  error: boolean;
   onError: (blob: Blob) => void;
+  onLoad: (blob: Blob) => void;
 }
-export function ImagePreviewDialog(props: PreviewProps) {
-  const close = useRef<HTMLButtonElement>(null);
-  return (
-    <Dialog.Root open={props.open} onOpenChange={props.onOpenChange}>
-      <Dialog.Portal>
-        <Dialog.Backdrop forceRender {...stylex.props(s.backdrop)} />
-        <Dialog.Popup
-          initialFocus={close}
-          finalFocus={() => document.getElementById('converter-preview-button')}
-          {...stylex.props(s.dialog)}
-        >
-          <div {...stylex.props(s.settingsHeader)}>
-            <Dialog.Title {...stylex.props(s.settingsTitle)}>
-              {props.t.preview}
-            </Dialog.Title>
-            <Dialog.Close
-              render={
-                <IconButton
-                  ref={close}
-                  label={props.t.closePreview}
-                  variant="ghost"
-                  size="sm"
-                >
-                  <XIcon size={20} aria-hidden="true" />
-                </IconButton>
-              }
-            />
-          </div>
-          <Dialog.Description {...stylex.props(s.note)}>
-            {props.source.file.name}
-          </Dialog.Description>
-          {props.open && <PreviewImages {...props} />}
-        </Dialog.Popup>
-      </Dialog.Portal>
-    </Dialog.Root>
-  );
-}
-
-function PreviewImages({
+export function ImagePreviewDialog({
+  open,
+  onOpenChange,
   source,
+  sourceUrl,
   output,
   outputUrl,
-  resources,
   t,
-  error,
   onError,
+  onLoad,
 }: PreviewProps) {
-  // The download already owns the output URL. Only the source needs a temporary URL.
-  const ownedSourceUrl = useOwnedUrl(
-    output?.blob === source.blob ? undefined : source.blob,
-    resources,
-  );
-  const sourceUrl = output?.blob === source.blob ? outputUrl : ownedSourceUrl;
+  const [selection, setSelection] = useState<'source' | 'output'>('source');
+  useEffect(() => {
+    setSelection('source');
+  }, [open, source.blob, output?.blob]);
+  const showingOutput = selection === 'output' && !!output && !!outputUrl;
+  const current = showingOutput ? output! : source;
+  const url = showingOutput ? outputUrl : sourceUrl;
   return (
-    <>
-      <div {...stylex.props(s.previews, !output && s.singlePreview)}>
-        {[
-          { label: t.original, url: sourceUrl, blob: source.blob },
-          ...(output
-            ? [{ label: t.output, url: outputUrl, blob: output.blob }]
-            : []),
-        ].map((image) => (
-          <figure key={image.label} {...stylex.props(s.figure)}>
-            <div {...stylex.props(s.imageBox)}>
-              {image.url && (
-                <img
-                  src={image.url}
-                  alt={image.label}
-                  onError={() => onError(image.blob)}
-                  {...stylex.props(s.image)}
-                />
-              )}
-            </div>
-            <figcaption {...stylex.props(s.caption)}>{image.label}</figcaption>
-          </figure>
-        ))}
-      </div>
-      {error && (
-        <p role="alert" {...stylex.props(s.error)}>
-          {t.previewError}
+    <FilePreviewDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t.preview}
+      description={source.file.name}
+      finalFocus={() => document.getElementById('converter-preview-button')}
+      labels={{
+        close: t.closePreview,
+        maximize: t.maximizePreview,
+        restore: t.restorePreview,
+      }}
+      toolbar={
+        <div
+          role="group"
+          aria-label={t.previewToggle}
+          {...stylex.props(s.modes, s.previewModes)}
+        >
+          <button
+            type="button"
+            aria-pressed={!showingOutput}
+            {...stylex.props(s.mode, !showingOutput && s.currentMode)}
+            onClick={() => setSelection('source')}
+          >
+            {t.original}
+          </button>
+          <button
+            type="button"
+            aria-pressed={showingOutput}
+            disabled={!output || !outputUrl}
+            aria-description={!output ? t.outputUnavailable : undefined}
+            title={!output ? t.outputUnavailable : undefined}
+            {...stylex.props(
+              s.mode,
+              showingOutput && s.currentMode,
+              !output && s.disabled,
+            )}
+            onClick={() => setSelection('output')}
+          >
+            {t.output}
+          </button>
+        </div>
+      }
+    >
+      {url ? (
+        <ImagePreviewViewport
+          key={`${showingOutput ? 'output' : 'source'}-${url}`}
+          src={url}
+          width={current.width}
+          height={current.height}
+          alt={showingOutput ? t.output : t.original}
+          labels={t.viewer}
+          onError={() => onError(current.blob)}
+          onLoad={() => onLoad(current.blob)}
+        />
+      ) : (
+        <p role="status" {...stylex.props(s.note)}>
+          {t.viewer.loading}
         </p>
       )}
-    </>
+    </FilePreviewDialog>
   );
 }

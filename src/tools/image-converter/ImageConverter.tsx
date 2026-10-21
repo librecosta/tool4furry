@@ -8,7 +8,7 @@ import { TextField } from '../../ui/TextField';
 import { FieldFrame, useField } from '../../ui/Field';
 import { SliderField } from '../../ui/SliderField';
 import { controls as c } from '../../styles/controls';
-import { FileImageIcon } from '@phosphor-icons/react';
+import { ImageThumbnail } from '../image/ImageThumbnail';
 import { FileTaskList, type FileTaskStatus } from '../../ui/FileTaskList';
 import { ImagePreviewDialog } from './ImagePreviewDialog';
 import { useOwnedUrl } from './use-owned-url';
@@ -63,7 +63,13 @@ export default function ImageConverter({ region }: ToolProps) {
     [view.source?.blob, result?.blob],
   );
   useEffect(() => setPreviewOpen(false), [view.source?.blob]);
-  const resultUrl = useOwnedUrl(result?.blob, session?.resources);
+  const sourceUrl = useOwnedUrl(view.source?.blob, session?.resources);
+  const ownedResultUrl = useOwnedUrl(
+    result?.blob !== view.source?.blob ? result?.blob : undefined,
+    session?.resources,
+  );
+  const resultUrl =
+    result?.blob === view.source?.blob ? sourceUrl : ownedResultUrl;
   const download = session?.download();
   const name = downloadName(
     view.source?.file.name ?? 'image',
@@ -449,7 +455,12 @@ export default function ImageConverter({ region }: ToolProps) {
                 {
                   id: 'source',
                   name: view.source.file.name,
-                  icon: <FileImageIcon size={18} />,
+                  media: (
+                    <ImageThumbnail
+                      src={sourceUrl}
+                      checking={!!view.candidate}
+                    />
+                  ),
                   metadata: `${view.source.info.format.toUpperCase()} · ${view.source.width}×${view.source.height} · ${bytes(view.source.file.size)}`,
                   output: validOutput
                     ? `${validOutput.mime.replace('image/', '').toUpperCase()} · ${bytes(validOutput.bytes)} (${validOutput.bytes - view.source.file.size >= 0 ? '+' : ''}${bytes(validOutput.bytes - view.source.file.size)})`
@@ -508,14 +519,13 @@ export default function ImageConverter({ region }: ToolProps) {
             onOpenChange={setPreviewOpen}
             source={view.source}
             output={validOutput}
+            sourceUrl={sourceUrl}
             outputUrl={resultUrl}
-            resources={session.resources}
             t={t}
-            error={
-              previewError === view.source.blob ||
-              (!!previewError && previewError === validOutput?.blob)
-            }
             onError={setPreviewError}
+            onLoad={(blob) =>
+              setPreviewError((error) => (error === blob ? undefined : error))
+            }
           />
         )}
         {import.meta.env.DEV && debug && (

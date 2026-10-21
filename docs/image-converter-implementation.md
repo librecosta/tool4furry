@@ -26,7 +26,7 @@
 - `acceptImage()` 完成结构和真实解码后才交付 source，立即关闭检查位图。工具持有 File/Blob，无上传/持久存储。
 - `detectCapabilities()` 分别实际编码 PNG/JPEG/WebP，再检查非空、MIME、结构、尺寸和回解码；输入解码能力与输出编码能力不混同。不支持 WebP 时保守选可用 PNG；失败格式禁用并可重试。
 - `encodeImage()` 保持原尺寸，JPEG 默认白底并支持合法 #RRGGBB。每次真实导出重新验证 MIME、实际结构、回解码和尺寸。PNG fallback 不作为 WebP 成功，不能改后缀伪装。
-- `ImageResources` 仅是实例内所有权计数与释放入口；没有全局 Store。位图 close，Canvas 归零；下载 URL 随结果释放，原图预览 URL 仅在 Dialog 打开时创建，关闭/替换/移除/卸载时 revoke。计数平衡不是操作系统堆内存回落的证明。
+- `ImageResources` 仅是实例内所有权计数与释放入口；没有全局 Store。位图 close，Canvas 归零；Converter 持有原图缩略图 URL 并供预览复用，关闭 Dialog 不撤销它；替换/移除/卸载时释放原图 URL，结果变更时释放输出 URL，同 Blob 的直通输出共用原图 URL。计数平衡不是操作系统堆内存回落的证明。
 
 原生 API 不能硬取消正在进行的 `toBlob()`。实例内 `SerialJobs` 至多一个重型操作，新的同类等待任务替换旧等待任务。45 秒 watchdog 报错但不提前释放运行槽；原生调用真正结束前不并发重试，必要时提示重载。未采用 Worker/WASM 或通用任务池。
 
@@ -53,6 +53,8 @@
 | 旧异步结果 | 不得覆盖新版本；移除/卸载使候选与请求失效；原生任务结束后释放临时资源 |
 
 V0.5-B3-A：`ImageConverter.tsx` 的 DOM 顺序为 file → settings → tasks；<=900px 自然单列，桌面 Grid 将紧凑文件列表置左、唯一设置实例置右。仍只接收单个文件；下载和重试在文件行内，原图/当前有效输出仅按需在 Dialog 展示。公共 `FileTaskList` 接收展示数据与操作回调，不持有媒体资源或调度任务。质量、背景色、命名和 Session 规则不变；无虚构百分比、无自动下载。
+
+B3-A.1：列表采用真实原图缩略图；`FilePreviewDialog` 提供可复用外壳，`ImagePreviewViewport` 只显示单画面，原图/有效输出切换时重置视图。适应窗口、100% CSS 像素、锚点缩放、受限平移及双指手势均只改变预览；关闭时卸载查看器并清理 Pointer/Wheel/ResizeObserver，Fullscreen 由外壳清理，不影响列表或编码资源。
 
 ## B3 — Registry、SSG、SEO 与隔离
 

@@ -27,6 +27,10 @@ describe('controlled FileTaskList (presentation fixtures, no media jobs)', () =>
       id: String(index),
       name: `a-very-long-filename-${status}.png`,
       metadata: 'PNG · 80×48 · 210 B',
+      media:
+        status === 'ready' ? (
+          <span data-testid="custom-cover">Cover</span>
+        ) : undefined,
       status,
       statusLabel: status,
       output: status === 'ready' ? 'WEBP · 124 B' : undefined,
@@ -87,6 +91,7 @@ describe('controlled FileTaskList (presentation fixtures, no media jobs)', () =>
     expect(retry).toHaveBeenCalledExactlyOnceWith(5);
     expect(screen.getByRole('alert').textContent).toBe(items[5].error);
     expect(rows[3].textContent).toContain('WEBP · 124 B');
+    expect(within(rows[3]).getByTestId('custom-cover')).toBeTruthy();
   });
   it('leaves status and download eligibility under caller control', async () => {
     const item: FileTaskItem = {
