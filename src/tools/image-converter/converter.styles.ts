@@ -22,6 +22,20 @@ export const converterStyles = stylex.create({
     gap: t.space12,
   },
   emptyFile: { gridColumn: '1 / -1' },
+  intakeActions: {
+    display: 'grid',
+    gap: t.space8,
+    alignItems: 'start',
+    minWidth: 0,
+  },
+  compactIntake: { gridTemplateColumns: 'minmax(0, 1fr) auto' },
+  listActions: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: t.space8,
+    flexWrap: 'wrap',
+  },
   settings: {
     gridColumn: { default: '2', '@media (max-width: 900px)': 'auto' },
     gridRow: { default: '1 / span 2', '@media (max-width: 900px)': 'auto' },

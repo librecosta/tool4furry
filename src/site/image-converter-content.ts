@@ -7,15 +7,15 @@ export const imageConverterContent: ToolContentMap[string] = {
     description:
       '在浏览器本地转换静态 PNG、JPG 与 WebP 图片。支持快速推荐设置与高级质量调整，输出格式以浏览器实际支持为准。',
     intro:
-      '选择图片使用推荐设置转换格式，或调整质量和 JPEG 背景。可用输出格式由浏览器实测决定。',
+      '添加多张图片或文件夹，使用推荐设置转换格式，或调整质量和 JPEG 背景。可用输出格式由浏览器实测决定。',
     steps: [
-      '选择或拖入一张静态 PNG、JPEG 或 WebP。工具检查真实结构、动画、尺寸和方向后再接受文件。',
-      '快速模式默认 WebP 85；不支持 WebP 输出时选择 PNG。点击格式推荐会自动生成；高级模式调整参数后手动生成。',
+      '选择或拖入多张静态 PNG、JPEG 或 WebP，也可添加文件夹，后续添加会追加到列表。每个文件独立检查真实结构、动画、尺寸和方向。',
+      '快速模式默认 WebP 85；不支持 WebP 输出时选择 PNG。新增图片或点击格式推荐后按序自动转换；高级模式调整参数后点击“转换全部”。',
       '检查原图与输出的真实格式、分辨率和大小。修改编码参数会令旧结果过期，修改文件名不会重复编码。',
-      '点击下载保存当前已验证结果。Quick 同格式保留原始字节；需要重新编码时使用高级模式。',
+      '在文件行逐项预览和下载当前已验证结果，无需等待其他文件完成。Quick 同格式保留原始字节；需要重新编码时使用高级模式。',
     ],
     limitations: [
-      '单图静态转换，不缩放、不裁剪，不支持 APNG、动画 WebP、GIF、HEIC、AVIF、TIFF 或 SVG。',
+      '批量静态图片转换，开发保护值为 20 个文件、累计 100 MiB、单文件 20 MiB。不缩放、不裁剪，不支持 APNG、动画 WebP、GIF、HEIC、AVIF、TIFF 或 SVG。',
       'JPEG 使用指定的不透明背景，默认白色。PNG/WebP 支持透明；有损输出不保证像素或文件大小相同。',
       '重新编码可能改变色彩并移除 ICC、EXIF、C2PA 等元数据；不提供专业色彩或元数据保全保证。',
       '运行时验证 PNG/JPEG/WebP 输出能力；输入可解码不表示同格式一定可编码。开发保护值不是全设备兼容承诺，公开发布仍需设备验收。',
@@ -49,15 +49,15 @@ export const imageConverterContent: ToolContentMap[string] = {
     description:
       'Convert static PNG, JPG and WebP images locally in your browser. Quick presets and advanced quality controls; output formats depend on browser support.',
     intro:
-      'Choose an image for quick conversion, or adjust quality and JPEG background. Available export formats are checked in your browser.',
+      'Add images or a folder for quick conversion, or adjust quality and JPEG background. Available export formats are checked in your browser.',
     steps: [
-      'Choose or drop one static PNG, JPEG or WebP. Structure, animation, dimensions and orientation are checked before accepting it.',
-      'Quick starts with WebP quality 85, or PNG when WebP export is unavailable. Format presets generate automatically; Advanced changes wait for explicit generation.',
+      'Choose or drop multiple static PNG, JPEG or WebP images, or add a folder. Later imports append to the list. Each file is checked for structure, animation, dimensions and orientation.',
+      'Quick starts with WebP quality 85, or PNG when WebP export is unavailable. New images and format presets convert automatically in order; in Advanced, adjust settings and click Convert all.',
       'Compare actual formats, resolution and sizes. Encoding changes make old results stale; renaming does not re-encode.',
-      'Download the current verified result. Quick keeps original bytes for the same format; use Advanced to explicitly re-encode.',
+      'Preview and download each current verified result from its file row without waiting for other files. Quick keeps original bytes for the same format; use Advanced to explicitly re-encode.',
     ],
     limitations: [
-      'One static image only. No resizing, cropping, APNG, animated WebP, GIF, HEIC, AVIF, TIFF or SVG.',
+      'Static image batches, with development guardrails of 20 files, 100 MiB total and 20 MiB per file. No resizing, cropping, APNG, animated WebP, GIF, HEIC, AVIF, TIFF or SVG.',
       'JPEG uses an opaque background, white by default. PNG/WebP can retain transparency; lossy output is not guaranteed pixel-identical or smaller.',
       'Re-encoding may change colors and remove ICC, EXIF, C2PA or other metadata. Professional color and metadata preservation are not guaranteed.',
       'PNG/JPEG/WebP export is tested at runtime. Input decoding does not imply encoding support. Development resource guardrails are not universal device limits; public release still requires device acceptance.',

@@ -113,6 +113,7 @@ export const siteStyles = stylex.create({
     gap: tokens.space16,
     minHeight: 44,
     paddingBlock: tokens.space12,
+    paddingInline: tokens.space16,
     color: tokens.textPrimary,
     backgroundColor: { default: 'transparent', ':hover': tokens.surface },
     cursor: 'pointer',
@@ -123,7 +124,7 @@ export const siteStyles = stylex.create({
     flexShrink: 0,
     transform: 'rotate(var(--faq-chevron-rotation, 0deg))',
   },
-  faqAnswer: { color: tokens.textSecondary, marginBlock: '0 16px' },
+  faqAnswer: { color: tokens.textSecondary, marginBlock: '0 16px', paddingInline: tokens.space16 },
   catalogTitle: {
     fontSize: { default: 40, '@media (max-width: 600px)': 32 },
     fontWeight: 700,

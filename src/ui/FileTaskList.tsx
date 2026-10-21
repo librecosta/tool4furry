@@ -50,145 +50,150 @@ const icons = {
 export function FileTaskList({
   label,
   items,
+  children,
 }: {
   label: string;
-  items: readonly FileTaskItem[];
+  items?: readonly FileTaskItem[];
+  children?: ReactNode;
 }) {
-  const id = useId();
   return (
     <ul aria-label={label} {...stylex.props(s.list)}>
-      {items.map((item, index) => {
-        const nameId = `${id}-${index}-name`;
-        const errorId = `${id}-${index}-error`;
-        return (
-          <li
-            key={item.id}
-            aria-labelledby={nameId}
-            aria-describedby={item.error ? errorId : undefined}
-            data-task-status={item.status}
-            {...stylex.props(s.item)}
-          >
-            <div aria-hidden="true" {...stylex.props(s.media)}>
-              {item.media ?? item.icon ?? <FileIcon size={22} />}
-            </div>
-            <div {...stylex.props(s.heading)}>
-              <span id={nameId} title={item.name} {...stylex.props(s.name)}>
-                {item.name}
-              </span>
-              <span
-                role="status"
-                {...stylex.props(
-                  s.status,
-                  item.status === 'ready' && s.ready,
-                  item.status === 'error' && s.error,
-                )}
-              >
-                {item.statusLabel}
-              </span>
-            </div>
-            <div {...stylex.props(s.metadataRow)}>
-              <div {...stylex.props(s.metadata)}>
-                {item.error ? (
-                  <span
-                    id={errorId}
-                    role="alert"
-                    title={item.error}
-                    {...stylex.props(s.error)}
-                  >
-                    {item.error}
-                  </span>
-                ) : (
-                  <>
-                    <span>
-                      {['processing', 'queued'].includes(item.status)
-                        ? item.statusLabel
-                        : item.metadata}
-                    </span>
-                    {item.status === 'ready' && item.output && (
-                      <span {...stylex.props(s.output)}> → {item.output}</span>
-                    )}
-                  </>
-                )}
-              </div>
-              {item.status === 'processing' && (
-                <div
-                  role="progressbar"
-                  aria-label={`${item.name}: ${item.statusLabel}`}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={
-                    Number.isFinite(item.progress)
-                      ? Math.round(
-                          Math.max(0, Math.min(1, item.progress!)) * 100,
-                        )
-                      : undefined
-                  }
-                  {...stylex.props(s.progress)}
-                >
-                  <span
-                    {...stylex.props(
-                      s.bar,
-                      !Number.isFinite(item.progress) && s.indeterminate,
-                    )}
-                    style={
-                      Number.isFinite(item.progress)
-                        ? {
-                            width: `${Math.max(0, Math.min(1, item.progress!)) * 100}%`,
-                          }
-                        : undefined
-                    }
-                  />
-                </div>
-              )}
-            </div>
-            <div {...stylex.props(s.actions)}>
-              {item.actions.map((action) => {
-                const Icon = icons[action.kind];
-                const content = <Icon size={18} aria-hidden="true" />;
-                return (
-                  <Tooltip
-                    key={action.kind}
-                    content={action.disabledReason ?? action.label}
-                  >
-                    {action.href && !action.disabled ? (
-                      <a
-                        id={action.id}
-                        href={action.href}
-                        download={action.download}
-                        aria-label={action.label}
-                        onClick={action.onClick}
-                        {...stylex.props(
-                          controls.button,
-                          controls.ghost,
-                          s.action,
-                          action.kind === 'download' && s.ready,
-                        )}
-                      >
-                        {content}
-                      </a>
-                    ) : (
-                      <IconButton
-                        id={action.id}
-                        label={action.label}
-                        variant="ghost"
-                        size="sm"
-                        disabled={action.disabled}
-                        aria-description={action.disabledReason}
-                        title={action.disabledReason}
-                        onClick={action.onClick}
-                        {...stylex.props(s.action)}
-                      >
-                        {content}
-                      </IconButton>
-                    )}
-                  </Tooltip>
-                );
-              })}
-            </div>
-          </li>
-        );
-      })}
+      {items
+        ? items.map((item) => <FileTaskRow key={item.id} item={item} />)
+        : children}
     </ul>
+  );
+}
+
+/** A tool-owned row wrapper may manage resources while this component stays presentational. */
+export function FileTaskRow({ item }: { item: FileTaskItem }) {
+  const id = useId();
+  const nameId = `${id}-name`,
+    errorId = `${id}-error`;
+  return (
+    <li
+      aria-labelledby={nameId}
+      aria-describedby={item.error ? errorId : undefined}
+      data-task-id={item.id}
+      data-task-status={item.status}
+      {...stylex.props(s.item)}
+    >
+      <div aria-hidden="true" {...stylex.props(s.media)}>
+        {item.media ?? item.icon ?? <FileIcon size={22} />}
+      </div>
+      <div {...stylex.props(s.heading)}>
+        <span id={nameId} title={item.name} {...stylex.props(s.name)}>
+          {item.name}
+        </span>
+        <span
+          role="status"
+          {...stylex.props(
+            s.status,
+            item.status === 'ready' && s.ready,
+            item.status === 'error' && s.error,
+          )}
+        >
+          {item.statusLabel}
+        </span>
+      </div>
+      <div {...stylex.props(s.metadataRow)}>
+        <div {...stylex.props(s.metadata)}>
+          {item.error ? (
+            <span
+              id={errorId}
+              role="alert"
+              title={item.error}
+              {...stylex.props(s.error)}
+            >
+              {item.error}
+            </span>
+          ) : (
+            <>
+              <span>
+                {['processing', 'queued'].includes(item.status)
+                  ? item.statusLabel
+                  : item.metadata}
+              </span>
+              {item.status === 'ready' && item.output && (
+                <span {...stylex.props(s.output)}> → {item.output}</span>
+              )}
+            </>
+          )}
+        </div>
+        {item.status === 'processing' && (
+          <div
+            role="progressbar"
+            aria-label={`${item.name}: ${item.statusLabel}`}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={
+              Number.isFinite(item.progress)
+                ? Math.round(Math.max(0, Math.min(1, item.progress!)) * 100)
+                : undefined
+            }
+            {...stylex.props(s.progress)}
+          >
+            <span
+              {...stylex.props(
+                s.bar,
+                !Number.isFinite(item.progress) && s.indeterminate,
+              )}
+              style={
+                Number.isFinite(item.progress)
+                  ? {
+                      width: `${Math.max(0, Math.min(1, item.progress!)) * 100}%`,
+                    }
+                  : undefined
+              }
+            />
+          </div>
+        )}
+      </div>
+      <div {...stylex.props(s.actions)}>
+        {item.actions.map((action) => {
+          const Icon = icons[action.kind];
+          const content = <Icon size={18} aria-hidden="true" />;
+          return (
+            <Tooltip
+              key={action.kind}
+              content={action.disabledReason ?? action.label}
+            >
+              {action.href && !action.disabled ? (
+                <a
+                  id={action.id}
+                  href={action.href}
+                  download={action.download}
+                  aria-label={action.label}
+                  onClick={action.onClick}
+                  {...stylex.props(
+                    controls.button,
+                    controls.ghost,
+                    s.action,
+                    action.kind === 'download' && s.ready,
+                  )}
+                >
+                  {content}
+                </a>
+              ) : (
+                <IconButton
+                  id={action.id}
+                  label={action.label}
+                  variant="ghost"
+                  size="sm"
+                  disabled={action.disabled}
+                  aria-description={action.disabledReason}
+                  title={action.disabledReason}
+                  onClick={action.onClick}
+                  {...stylex.props(s.action)}
+                >
+                  {content}
+                </IconButton>
+              )}
+            </Tooltip>
+          );
+        })}
+      </div>
+    </li>
   );
 }
 

@@ -16,6 +16,7 @@ interface PreviewProps {
   t: (typeof converterMessages)['cn'];
   onError: (blob: Blob) => void;
   onLoad: (blob: Blob) => void;
+  finalFocus: () => HTMLElement | null;
 }
 export function ImagePreviewDialog({
   open,
@@ -27,6 +28,7 @@ export function ImagePreviewDialog({
   t,
   onError,
   onLoad,
+  finalFocus,
 }: PreviewProps) {
   const [selection, setSelection] = useState<'source' | 'output'>('source');
   useEffect(() => {
@@ -41,7 +43,7 @@ export function ImagePreviewDialog({
       onOpenChange={onOpenChange}
       title={t.preview}
       description={source.file.name}
-      finalFocus={() => document.getElementById('converter-preview-button')}
+      finalFocus={finalFocus}
       labels={{
         close: t.closePreview,
         maximize: t.maximizePreview,

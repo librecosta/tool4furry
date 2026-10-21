@@ -40,6 +40,7 @@ import {
 } from './presets';
 import { batchTime, taskFilename, validFilenameLabel } from '../file-naming';
 import { SerialJobs } from './serial-jobs';
+import { planIntake, type IntakeSummary } from './intake';
 
 export type ConverterServices = {
   accept: typeof acceptImage;
@@ -51,6 +52,7 @@ export type ConverterTask = Readonly<{
   id: string;
   sequence: number;
   file: File;
+  relativePath?: string;
   source?: ImageSource;
   status: 'validating' | 'queued' | 'processing' | 'ready' | 'stale' | 'error';
   processing: ImageState;
@@ -61,6 +63,8 @@ export type ConverterTask = Readonly<{
 export type ConverterView = Readonly<{
   batch: Readonly<{ id: string; time: string }>;
   tasks: readonly ConverterTask[];
+  controls: ImageState;
+  intake?: IntakeSummary;
   // Single-import UI projection. The batch remains the authoritative task owner.
   processing: ImageState;
   source?: ImageSource;
@@ -85,6 +89,8 @@ export class ConverterSession {
   private sequence = 0;
   private capabilityRevision = 0;
   private auto = new Set<string>();
+  private manual = new Set<string>();
+  private newBatch = true;
   private shared: ImageState = createProcessingState(recommendations.webp);
   private preferences = {
     webp: recommendations.webp.settings,
@@ -101,6 +107,7 @@ export class ConverterSession {
       batch: { id: crypto.randomUUID(), time: batchTime(new Date()) },
       tasks: [],
       processing: this.shared,
+      controls: this.shared,
       checkingCapabilities: true,
       label: '',
     };
@@ -114,6 +121,7 @@ export class ConverterSession {
     const first = next.tasks.find((task) => task.source);
     this.view = {
       ...next,
+      controls: this.shared,
       processing: first?.processing ?? this.shared,
       source: first?.source,
     };
@@ -135,6 +143,7 @@ export class ConverterSession {
       id: `${this.view.batch.id}-${sequence}`,
       sequence,
       file,
+      relativePath: file.webkitRelativePath || undefined,
       status: 'validating',
       processing: this.shared,
       validationRevision: 0,
@@ -190,11 +199,22 @@ export class ConverterSession {
       },
     );
   }
-  // B3-B1 core entry point; the production Dropzone still calls single-file select().
+  // All production intake paths share capacity checks, including pending/failed tasks.
   add(files: readonly File[]) {
     if (!this.live) return [];
-    const tasks = files.map((file) => this.createTask(file));
-    this.patch({ tasks: [...this.view.tasks, ...tasks] });
+    const intake = planIntake(files, this.view.tasks);
+    if (intake.accepted.length && this.newBatch) {
+      this.newBatch = false;
+      this.sequence = 0;
+      this.patch({
+        batch: { id: crypto.randomUUID(), time: batchTime(new Date()) },
+      });
+    }
+    const tasks = intake.accepted.map((file) => this.createTask(file));
+    this.patch({
+      tasks: [...this.view.tasks, ...tasks],
+      intake: intake.summary,
+    });
     tasks.forEach((task) => this.validate(task.id));
     return tasks.map((task) => task.id);
   }
@@ -226,6 +246,7 @@ export class ConverterSession {
             processing: replaceSource(this.shared),
           }));
           if (this.shared.mode === 'quick') this.auto.add(id);
+          if (this.manual.delete(id)) this.generate(id);
           this.consumeAuto();
         } catch (error) {
           if (current())
@@ -328,6 +349,7 @@ export class ConverterSession {
         next.validSettings,
       );
       if (processing !== before) {
+        this.manual.delete(task.id);
         this.jobs.cancel(`encode:${task.id}`);
         // Release obsolete output Blobs rather than accumulating stale images per task.
         const stale = !!task.processing.result || task.status === 'stale';
@@ -350,6 +372,7 @@ export class ConverterSession {
   mode(mode: ToolMode) {
     if (mode === this.shared.mode) return;
     this.auto.clear();
+    this.manual.clear();
     this.applyControls(setToolMode(this.shared, mode));
     if (mode === 'advanced') this.patch({ label: this.labelPreference });
   }
@@ -433,6 +456,13 @@ export class ConverterSession {
       ? this.view.tasks.filter((task) => task.id === id)
       : this.view.tasks;
     targets.forEach((task) => this.enqueue(task));
+  }
+  generateAll() {
+    this.view.tasks.forEach((task) => {
+      if (task.status === 'validating') this.manual.add(task.id);
+      else if (['queued', 'stale'].includes(task.status))
+        this.generate(task.id);
+    });
   }
   private enqueue(task: ConverterTask) {
     const source = task.source,
@@ -540,8 +570,10 @@ export class ConverterSession {
   retry(id: string) {
     const task = this.task(id);
     if (!task || !['error', 'stale', 'queued'].includes(task.status)) return;
-    if (!task.source) this.validate(id);
-    else this.generate(id);
+    if (!task.source) {
+      if (this.shared.mode === 'advanced') this.manual.add(id);
+      this.validate(id);
+    } else this.generate(id);
   }
   cancel(id: string) {
     this.cancelJobs(id);
@@ -560,6 +592,7 @@ export class ConverterSession {
   }
   private cancelJobs(id: string) {
     this.auto.delete(id);
+    this.manual.delete(id);
     this.jobs.cancel(`accept:${id}`);
     this.jobs.cancel(`encode:${id}`);
   }
@@ -577,13 +610,16 @@ export class ConverterSession {
     this.view.tasks
       .filter((task) => !id || task.id === id)
       .forEach((task) => this.cancelJobs(task.id));
+    const tasks = id ? this.view.tasks.filter((task) => task.id !== id) : [];
+    if (!tasks.length) this.newBatch = true;
     this.patch({
-      tasks: id ? this.view.tasks.filter((task) => task.id !== id) : [],
+      tasks,
       ...(!id
         ? {
             candidate: undefined,
             inputError: undefined,
             errorDetail: undefined,
+            intake: undefined,
           }
         : {}),
     });
@@ -593,6 +629,7 @@ export class ConverterSession {
     ++this.selection;
     ++this.capabilityRevision;
     this.auto.clear();
+    this.manual.clear();
     this.jobs.dispose();
     this.view = {
       ...this.view,

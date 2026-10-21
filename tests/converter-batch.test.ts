@@ -44,6 +44,75 @@ async function setup(overrides: Partial<ConverterServices> = {}) {
   return { session, encode };
 }
 describe('image batch core (real task objects, controlled native service boundaries)', () => {
+  it('bounds repeated appends at the session entry point, including tasks still validating', async () => {
+    const pending = deferred<ImageSource>();
+    const { session } = await setup({ accept: () => pending.promise });
+    const first = session.add(
+      Array.from({ length: 19 }, () => file('same.png')),
+    );
+    const second = session.add([file('same.png'), file('overflow.png')]);
+    expect(first).toHaveLength(19);
+    expect(second).toHaveLength(1);
+    expect(session.snapshot.tasks).toHaveLength(20);
+    expect(session.snapshot.intake?.rejected.count).toBe(1);
+    session.remove(first[1]);
+    expect(session.add([file('new.png')])).toHaveLength(1);
+    expect(session.snapshot.tasks.at(-1)?.sequence).toBe(21);
+    session.dispose();
+    pending.resolve(source(file('same.png')));
+    await tick();
+  });
+  it('creates a fresh batch only after clearing, rejecting prior-batch late results', async () => {
+    vi.useFakeTimers();
+    try {
+      const pending = deferred<Blob>();
+      let calls = 0;
+      const { session } = await setup({
+        encode: async () => (++calls === 1 ? pending.promise : output('fresh')),
+      });
+      const [oldId] = session.add([file('a.png')]);
+      await tick();
+      const old = session.snapshot.batch;
+      session.remove();
+      vi.advanceTimersByTime(1);
+      const [newId] = session.add([file('a.png')]);
+      expect(session.snapshot.batch.id).not.toBe(old.id);
+      expect(session.snapshot.batch.time).not.toBe(old.time);
+      expect(session.snapshot.tasks[0].sequence).toBe(1);
+      expect(calls).toBe(1);
+      expect(session.jobs.active).toBe(true);
+      pending.resolve(output('obsolete'));
+      await tick();
+      expect(session.download(oldId)).toBeUndefined();
+      expect(await session.download(newId)?.blob.text()).toBe('fresh');
+      expect(session.snapshot.tasks).toHaveLength(1);
+      session.dispose();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+  it('applies Convert all to currently validating Advanced tasks but never to later appends or ready results', async () => {
+    const pending = deferred<ImageSource>();
+    const value = file('a.png');
+    const { session, encode } = await setup({
+      accept: async (input) =>
+        input === value ? pending.promise : source(input),
+    });
+    session.mode('advanced');
+    const [id] = session.add([value]);
+    session.generateAll();
+    pending.resolve(source(value));
+    await tick();
+    expect(session.download(id)).toBeTruthy();
+    const [later] = session.add([file('later.png')]);
+    await tick();
+    expect(session.download(later)).toBeUndefined();
+    session.generateAll();
+    await tick();
+    expect(encode).toHaveBeenCalledTimes(2);
+    expect(session.download(later)).toBeTruthy();
+    session.dispose();
+  });
   it('can retry an active cancellation without accepting its late result or releasing the lane early', async () => {
     const pending = deferred<Blob>();
     let calls = 0;
@@ -169,8 +238,8 @@ describe('image batch core (real task objects, controlled native service boundar
     badAccept = false;
     session.retry(ids[1]);
     await tick();
-    expect(session.snapshot.tasks[1].status).toBe('queued');
-    session.generate();
+    expect(session.snapshot.tasks[1].status).toBe('ready');
+    session.generateAll();
     await tick();
     expect(encode).toHaveBeenCalledTimes(3);
     const names = ids.map((id) => session.filename(id).name);

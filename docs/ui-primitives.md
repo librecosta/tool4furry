@@ -23,6 +23,8 @@
 
 B3-B1：`FileTaskList` 的 processing 行在第二行右侧显示 80px 不确定进度；可选 `progress` 为工具实际测得的 0–1 数值，未提供时不宣称百分比。queued/ready/error 不显示进度，错误替代元信息以保持行高；减少动态效果时使用静止条。`FilePreviewDialog.toolbar` 位于桌面顶部中间，左侧身份、右侧关闭/全屏；窄屏工具栏换行，关闭入口始终保留在首行。
 
+B3-B2：列表也可接受 `children`，配合导出的纯展示 `FileTaskRow item={...}` 使用，让工具按稳定任务 ID 挂载自己的资源所有者。原有 `items` API 不变；列表和行仍不持有 File/Blob、URL 或业务状态。
+
 例如工具内部直接使用 `TextField value={name} onChange={setName} label={t.name}`。工具已位于 ToolRuntime 的 Provider 内，通过 `useToast().notify({type:'success', title:t.saved})` 反馈；不要再在 SiteLayout 或 WorkbenchShell 添加 Provider。
 
 ## 实现边界与版本差异
