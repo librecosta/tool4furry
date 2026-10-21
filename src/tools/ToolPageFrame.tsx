@@ -10,6 +10,7 @@ import { messages } from '../i18n/messages';
 import { controls as c } from '../styles/controls';
 import { tokens } from '../styles/tokens.stylex';
 import { menuStyles as menu } from '../styles/menu';
+import { siteStyles as site } from '../styles/site';
 
 // Product navigation belongs to page composition, never to a tool's local modes.
 export default function ToolPageFrame({
@@ -32,83 +33,112 @@ export default function ToolPageFrame({
   const t = messages[region];
   const published = getPublishedTools(region);
   const shortcuts = getSwitcherTools(published, currentToolId);
+  const floating = mode === 'canvas' && !intro;
   return (
     <div {...stylex.props(s.frame)}>
       <header
         data-tool-page-entry
-        {...stylex.props(s.header, mode === 'canvas' && !intro && s.floating)}
+        {...stylex.props(
+          !floating && site.productHeader,
+          !floating && site.fullBleed,
+          floating && s.header,
+          floating && s.floating,
+        )}
       >
-        <div {...stylex.props(s.entry, mode === 'canvas' && s.elevated)}>
-          <a
-            href="/"
-            aria-label={`Tool4Furry · ${t.home}`}
-            {...stylex.props(c.button, c.ghost, s.brand)}
+        <nav
+          aria-label={t.headerNav}
+          {...stylex.props(
+            !floating && site.fluid,
+            !floating && site.nav,
+            floating && s.entry,
+            floating && s.elevated,
+          )}
+        >
+          <div
+            {...stylex.props(
+              !floating && site.navLinks,
+              floating && s.canvasLinks,
+            )}
           >
-            <img
-              src="/brand/tool4furry-mark.svg"
-              alt=""
-              width={24}
-              height={24}
-            />
-            Tool4Furry
-          </a>
-          <Menu.Root>
-            <Menu.Trigger
-              aria-label={t.tools}
-              {...stylex.props(c.button, c.ghost, s.icon)}
+            <a
+              href="/"
+              aria-label={`Tool4Furry · ${t.home}`}
+              {...stylex.props(
+                !floating && site.brand,
+                floating && c.button,
+                floating && c.ghost,
+                floating && s.brand,
+              )}
             >
-              <ToolboxIcon size={20} aria-hidden />
-            </Menu.Trigger>
-            <Menu.Portal>
-              <Menu.Positioner
-                align="start"
-                sideOffset={8}
-                collisionPadding={16}
-                {...stylex.props(menu.positioner)}
+              <img
+                src="/brand/tool4furry-mark.svg"
+                alt=""
+                width={24}
+                height={24}
+                {...stylex.props(!floating && site.mark)}
+              />
+              Tool4Furry
+            </a>
+            <Menu.Root>
+              <Menu.Trigger
+                aria-label={t.tools}
+                {...stylex.props(c.button, c.ghost, s.icon)}
               >
-                <Menu.Popup aria-label={t.tools} {...stylex.props(menu.popup)}>
-                  <Menu.Group>
-                    <Menu.GroupLabel {...stylex.props(menu.label)}>
-                      {t.tools}
-                    </Menu.GroupLabel>
-                    {published.length === 0 && (
-                      <p {...stylex.props(menu.note)}>{t.empty}</p>
-                    )}
-                    {shortcuts.map((tool) => (
-                      <Menu.LinkItem
-                        key={tool.id}
-                        href={`/tools/${tool.slug}/`}
-                        aria-current={
-                          tool.id === currentToolId ? 'page' : undefined
-                        }
-                        {...stylex.props(menu.item)}
-                      >
-                        {tool.copy[region].title}
+                <ToolboxIcon size={20} aria-hidden />
+                {!floating && <span>{t.tools}</span>}
+              </Menu.Trigger>
+              <Menu.Portal>
+                <Menu.Positioner
+                  align="start"
+                  sideOffset={8}
+                  collisionPadding={16}
+                  {...stylex.props(menu.positioner)}
+                >
+                  <Menu.Popup aria-label={t.tools} {...stylex.props(menu.popup)}>
+                    <Menu.Group>
+                      <Menu.GroupLabel {...stylex.props(menu.label)}>
+                        {t.tools}
+                      </Menu.GroupLabel>
+                      {published.length === 0 && (
+                        <p {...stylex.props(menu.note)}>{t.empty}</p>
+                      )}
+                      {shortcuts.map((tool) => (
+                        <Menu.LinkItem
+                          key={tool.id}
+                          href={`/tools/${tool.slug}/`}
+                          aria-current={
+                            tool.id === currentToolId ? 'page' : undefined
+                          }
+                          {...stylex.props(menu.item)}
+                        >
+                          {tool.copy[region].title}
+                        </Menu.LinkItem>
+                      ))}
+                      <Menu.LinkItem href="/tools/" {...stylex.props(menu.item)}>
+                        {t.browseAll}
                       </Menu.LinkItem>
-                    ))}
-                    <Menu.LinkItem href="/tools/" {...stylex.props(menu.item)}>
-                      {t.browseAll}
-                    </Menu.LinkItem>
-                    <Menu.LinkItem href="/" {...stylex.props(menu.item)}>
-                      {t.back}
-                    </Menu.LinkItem>
-                  </Menu.Group>
-                </Menu.Popup>
-              </Menu.Positioner>
-            </Menu.Portal>
-          </Menu.Root>
-          {intro ? (
-            <p data-tool-identity title={title} {...stylex.props(s.title)}>
-              {title}
-            </p>
-          ) : (
+                      <Menu.LinkItem href="/" {...stylex.props(menu.item)}>
+                        {t.back}
+                      </Menu.LinkItem>
+                    </Menu.Group>
+                  </Menu.Popup>
+                </Menu.Positioner>
+              </Menu.Portal>
+            </Menu.Root>
+          </div>
+          {floating && (
             <h1 title={title} {...stylex.props(s.title)}>
               {title}
             </h1>
           )}
           {debug}
-        </div>
+        </nav>
       </header>
+      {!intro && !floating && (
+        <div {...stylex.props(site.fluid, site.toolIntro)}>
+          <h1 {...stylex.props(site.toolTitle)}>{title}</h1>
+        </div>
+      )}
       {intro}
       {children}
     </div>
@@ -150,6 +180,7 @@ const s = stylex.create({
     pointerEvents: 'auto',
   },
   brand: { paddingInline: tokens.space8, flexShrink: 0 },
+  canvasLinks: { display: 'flex', alignItems: 'center', gap: tokens.space4 },
   elevated: { boxShadow: tokens.shadowSoft },
   icon: { paddingInline: tokens.space8, flexShrink: 0 },
   title: {

@@ -5,7 +5,7 @@ import type { ToolPageContent } from '../../site/tool-content';
 interface Props { content: ToolPageContent }
 const { content } = Astro.props;
 ---
-<section data-tool-intro aria-labelledby="tool-heading" {...stylex.attrs(s.width, s.toolIntro)}>
+<section data-tool-intro aria-labelledby="tool-heading" {...stylex.attrs(s.fluid, s.toolIntro)}>
   <h1 id="tool-heading" {...stylex.attrs(s.toolTitle)}>{content.h1}</h1>
   <p {...stylex.attrs(s.toolDescription)}>{content.intro}</p>
   {content.features && content.features.length > 0 && <ul {...stylex.attrs(s.toolFeatures)}>{content.features.map(feature => <li>{feature}</li>)}</ul>}

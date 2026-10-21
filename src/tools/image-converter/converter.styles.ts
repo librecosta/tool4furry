@@ -14,7 +14,11 @@ export const converterStyles = stylex.create({
     gap: t.space24,
     alignItems: 'start',
   },
-  emptyLayout: { gridTemplateColumns: 'minmax(0, 1fr)' },
+  emptyLayout: {
+    gridTemplateColumns: 'minmax(0, 1fr)',
+    maxWidth: 960,
+    marginInline: 'auto',
+  },
   file: {
     gridColumn: { default: '1', '@media (max-width: 900px)': 'auto' },
     minWidth: 0,

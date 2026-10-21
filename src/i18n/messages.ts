@@ -38,9 +38,6 @@ const cn = {
   emptyDetail:
     '首批工具仍在打磨中。从创作中的小事出发，让每一次灵感都有更多发挥的空间。',
   development: '在 GitHub 查看进展',
-  footerIntro: '为创作腾出空间，为日常减去繁琐。',
-  ecosystem: 'GoFurry 旗下的创作者工具项目。',
-  footer: '前端开源 · 浏览器本地处理优先',
   notFound: '这里还没有页面',
   notFoundDetail: '这个地址不存在，或内容尚未发布。',
   back: '返回首页',
@@ -87,9 +84,6 @@ const global: Messages = {
   emptyDetail:
     'Our first tools are still taking shape. Starting with the little things in your creative day, so your ideas have more room to grow.',
   development: 'Follow progress on GitHub',
-  footerIntro: 'More space for creativity. Less everyday friction.',
-  ecosystem: 'A creator tools project by GoFurry.',
-  footer: 'Open-source frontend · Local processing first',
   notFound: 'Nothing here yet',
   notFoundDetail:
     'This address does not exist, or the content has not been published.',

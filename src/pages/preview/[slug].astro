@@ -16,7 +16,7 @@ if (!content) throw new Error('Missing draft preview content');
 <SiteLayout title={tool.copy[region].title} fullTitle={content.title} description={content.description} workspace noindex>
   <main id="main-content" data-tool-preview={tool.id}>
     <ToolRuntime toolId={tool.id} region={region} preview client:load>
-      <div slot="intro"><ToolIntro content={content}/><p data-dev-preview {...stylex.attrs(s.width, s.previewNote)}>{region==='cn'?'DEV · 预览':'DEV · Preview'}</p></div>
+      <div slot="intro"><ToolIntro content={content}/><p data-dev-preview {...stylex.attrs(s.fluid, s.previewNote)}>{region==='cn'?'DEV · 预览':'DEV · Preview'}</p></div>
     </ToolRuntime>
     <ToolGuide content={content} related={[]} region={region}/>
   </main>

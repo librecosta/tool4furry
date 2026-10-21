@@ -13,6 +13,38 @@ import { setViewport } from './setup';
 afterEach(() => vi.restoreAllMocks());
 
 describe('product navigation', () => {
+  it('keeps form identity in content and lets the Astro intro own the sole H1', () => {
+    const { container, rerender } = render(
+      <ToolPageFrame region="cn" mode="form" title="Form identity">
+        Workspace
+      </ToolPageFrame>,
+    );
+    const header = container.querySelector('[data-tool-page-entry]')!;
+    expect(header.querySelector('h1')).toBeNull();
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(
+      'Form identity',
+    );
+    expect(
+      screen.getByRole('navigation', { name: messages.cn.headerNav }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole('button', { name: messages.cn.tools }).textContent,
+    ).toBe(messages.cn.tools);
+    rerender(
+      <ToolPageFrame
+        region="cn"
+        mode="form"
+        title="Form identity"
+        intro={<h1>Static intro</h1>}
+      >
+        Workspace
+      </ToolPageFrame>,
+    );
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+    expect(screen.queryByText('Form identity')).toBeNull();
+    expect(container.querySelectorAll('[data-tool-page-entry]')).toHaveLength(1);
+  });
+
   it.each(['cn', 'global'] as const)(
     'shows an honest empty toolbox in %s with keyboard dismissal',
     async (region) => {

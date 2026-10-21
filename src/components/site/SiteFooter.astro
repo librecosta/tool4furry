@@ -12,29 +12,25 @@ const t = messages[region];
 const github = 'https://github.com/librecosta/tool4furry';
 const compliance = getComplianceEntries(region);
 ---
-<footer data-site-footer {...stylex.attrs(s.width, s.footerRoot)}>
-  <div {...stylex.attrs(s.footer)}>
-    <div {...stylex.attrs(s.footerTop)}>
-      <div>
-        <Brand />
-        <p {...stylex.attrs(s.footerIntro)}>{t.footerIntro}</p>
-        <p {...stylex.attrs(s.ecosystem)}>{t.ecosystem}</p>
-      </div>
-      <nav aria-label={t.footerNav} {...stylex.attrs(s.footerLinks)}>
-        <a {...stylex.attrs(s.navLink)} href="/tools/">{t.tools}</a>
-        <a {...stylex.attrs(s.navLink)} href={github}>GitHub</a>
-        <a {...stylex.attrs(s.navLink)} href={`${github}/blob/master/LICENSE`}>BSD-3-Clause License</a>
-      </nav>
+<footer data-site-footer {...stylex.attrs(s.fullBleed, s.fluid, s.footerRoot)}>
+  <div {...stylex.attrs(s.footerTop)}>
+    <div>
+      <Brand />
+      <p {...stylex.attrs(s.footerCredit)}>by LibreCosta</p>
     </div>
-    <div {...stylex.attrs(s.footerBottom)}>
-      <span>© {new Date().getFullYear()} Tool4Furry</span>
-      <span>{t.footer}</span>
-    </div>
-    {compliance.length > 0 && <div data-site-compliance aria-label={region === 'cn' ? '备案与许可信息' : 'Registrations and licenses'} {...stylex.attrs(s.footerCompliance)}>
-      {compliance.map(entry => entry.href ? <a href={entry.href} {...stylex.attrs(s.complianceLink)}>
-        {entry.iconSrc && <img src={entry.iconSrc} width="20" height="20" alt="" aria-hidden="true" {...stylex.attrs(s.complianceIcon)} />}
-        <span>{entry.label}</span>
-      </a> : <span {...stylex.attrs(s.complianceText)}>{entry.label}</span>)}
-    </div>}
+    <nav aria-label={t.footerNav} {...stylex.attrs(s.footerLinks)}>
+      <div {...stylex.attrs(s.footerGroup)}><a {...stylex.attrs(s.navLink)} href="/tools/">{t.tools}</a></div>
+      <div {...stylex.attrs(s.footerGroup)}><a {...stylex.attrs(s.navLink)} href={github}>GitHub</a></div>
+    </nav>
   </div>
+  <div {...stylex.attrs(s.footerBottom)}>
+    <span>© {new Date().getFullYear()} Tool4Furry</span>
+    <a {...stylex.attrs(s.navLink, s.footerLegalLink)} href={`${github}/blob/master/LICENSE`}>BSD-3-Clause License</a>
+  </div>
+  {compliance.length > 0 && <div data-site-compliance aria-label={region === 'cn' ? '备案与许可信息' : 'Registrations and licenses'} {...stylex.attrs(s.footerCompliance)}>
+    {compliance.map(entry => entry.href ? <a href={entry.href} {...stylex.attrs(s.complianceLink)}>
+      {entry.iconSrc && <img src={entry.iconSrc} width="20" height="20" alt="" aria-hidden="true" {...stylex.attrs(s.complianceIcon)} />}
+      <span>{entry.label}</span>
+    </a> : <span {...stylex.attrs(s.complianceText)}>{entry.label}</span>)}
+  </div>}
 </footer>

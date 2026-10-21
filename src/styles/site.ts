@@ -13,21 +13,30 @@ export const siteStyles = stylex.create({
     fontSize: 16,
   },
   frame: { minHeight: '100dvh', display: 'flex', flexDirection: 'column' },
-  width: {
+  fullBleed: { width: '100%' },
+  fluid: {
     width: '100%',
-    maxWidth: 1200,
-    paddingInline: { default: 40, '@media (max-width: 600px)': 16 },
+    paddingLeft: 'max(clamp(16px, 2vw, 36px), env(safe-area-inset-left))',
+    paddingRight: 'max(clamp(16px, 2vw, 36px), env(safe-area-inset-right))',
+  },
+  homeWidth: { maxWidth: 1600, marginInline: 'auto' },
+  readable: {
+    width: '100%',
+    maxWidth: 820,
     marginInline: 'auto',
+  },
+  productHeader: {
+    backgroundColor: tokens.page,
+    borderBottomWidth: 1,
+    borderBottomStyle: 'solid',
+    borderBottomColor: tokens.border,
   },
   nav: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: tokens.space8,
-    minHeight: { default: 72, '@media (max-width: 600px)': 64 },
-    borderBottomWidth: 1,
-    borderBottomStyle: 'solid',
-    borderBottomColor: tokens.border,
+    minHeight: 68,
   },
   brand: {
     display: 'inline-flex',
@@ -48,7 +57,8 @@ export const siteStyles = stylex.create({
   navLinks: {
     display: 'flex',
     alignItems: 'center',
-    gap: { default: 24, '@media (max-width: 600px)': 8 },
+    gap: { default: 32, '@media (max-width: 768px)': 16 },
+    minWidth: 0,
   },
   navLink: {
     display: 'inline-flex',
@@ -64,10 +74,6 @@ export const siteStyles = stylex.create({
       ':active': tokens.textSecondary,
     },
     textUnderlineOffset: 5,
-  },
-  githubLink: { gap: tokens.space8, justifyContent: 'center' },
-  githubLabel: {
-    display: { default: 'inline', '@media (max-width: 600px)': 'none' },
   },
   link: {
     color: {
@@ -271,8 +277,7 @@ export const siteStyles = stylex.create({
     display: 'grid',
     gap: tokens.space24,
     gridTemplateColumns: {
-      default: 'repeat(3, minmax(0, 1fr))',
-      '@media (max-width: 1000px)': 'repeat(2, minmax(0, 1fr))',
+      default: 'repeat(auto-fill, minmax(280px, 1fr))',
       '@media (max-width: 600px)': 'minmax(0, 1fr)',
     },
     padding: 0,
@@ -319,8 +324,9 @@ export const siteStyles = stylex.create({
     color: tokens.textSecondary,
   },
   category: { marginTop: 'auto', fontSize: 12, color: tokens.textSecondary },
-  footerRoot: { flexShrink: 0 },
-  footer: {
+  footerRoot: {
+    flexShrink: 0,
+    backgroundColor: tokens.page,
     paddingBlock: '32px 24px',
     borderTopWidth: 1,
     borderTopStyle: 'solid',
@@ -332,26 +338,35 @@ export const siteStyles = stylex.create({
     gap: tokens.space24,
     flexDirection: { default: 'row', '@media (max-width: 760px)': 'column' },
   },
-  footerIntro: {
+  footerCredit: {
     fontSize: 14,
     color: tokens.textSecondary,
-    marginBlock: '12px 4px',
+    marginBlock: '4px 0',
   },
-  ecosystem: { fontSize: 13, color: tokens.textSecondary, margin: 0 },
   footerLinks: {
     display: 'flex',
     alignItems: 'flex-start',
     flexWrap: 'wrap',
     columnGap: tokens.space24,
   },
+  footerGroup: { display: 'flex', flexDirection: 'column' },
   footerBottom: {
     display: 'flex',
     justifyContent: 'space-between',
     gap: tokens.space8,
-    flexDirection: { default: 'row', '@media (max-width: 760px)': 'column' },
-    marginTop: tokens.space32,
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    marginTop: tokens.space24,
+    paddingTop: tokens.space16,
+    borderTopWidth: 1,
+    borderTopStyle: 'solid',
+    borderTopColor: tokens.border,
     fontSize: 12,
     color: tokens.textSecondary,
+  },
+  footerLegalLink: {
+    fontSize: 12,
+    color: { default: tokens.textSecondary, ':hover': tokens.textPrimary },
   },
   footerCompliance: {
     display: 'flex',

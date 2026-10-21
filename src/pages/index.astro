@@ -11,7 +11,7 @@ const t = messages[region];
 const tools = getHomepageEntries(region);
 ---
 <SiteLayout title={t.home} fullTitle={t.homeTitle} description={t.homeDescription}>
-  <main id="main-content" {...stylex.attrs(s.width, s.homeMain)}>
+  <main id="main-content" {...stylex.attrs(s.fluid, s.homeWidth, s.homeMain)}>
     <section aria-labelledby="hero-heading" {...stylex.attrs(s.hero)}>
       <div>
         <p {...stylex.attrs(s.eyebrow)}>{t.eyebrow}</p>

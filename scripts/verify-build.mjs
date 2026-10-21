@@ -117,10 +117,17 @@ for (const tag of ['header', 'footer']) {
     shell?.querySelector('a[href="/tools/"]'),
     `${tag}: missing cross-page toolbox link`,
   );
-  assert(
-    shell.querySelector(`a[href="${github}"]`),
-    `${tag}: missing real GitHub link`,
-  );
+  if (tag === 'footer')
+    assert(
+      shell.querySelector(`a[href="${github}"]`),
+      'Footer: missing real GitHub link',
+    );
+  else
+    assert.equal(
+      shell.querySelectorAll('a').length,
+      2,
+      'Header only exposes brand and toolbox',
+    );
   const brand = shell.querySelector('a[href="/"]');
   assert.equal(brand?.textContent.trim(), 'Tool4Furry');
   assert.equal(brand.querySelector('img')?.getAttribute('src'), mark);
@@ -133,11 +140,7 @@ assert(
 assert(
   document
     .querySelector('footer')
-    ?.textContent.includes(
-      region === 'cn'
-        ? '前端开源 · 浏览器本地处理优先'
-        : 'Open-source frontend · Local processing first',
-    ),
+    ?.textContent.includes('by LibreCosta'),
 );
 assert.equal(
   document

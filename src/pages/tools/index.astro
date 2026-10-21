@@ -12,7 +12,7 @@ const sections = getCatalogSections(region);
 const discovery = getDiscoverySections(region);
 ---
 <SiteLayout title={t.tools} fullTitle={t.catalogTitle} description={t.catalogDescription}>
-  <main id="main-content" {...stylex.attrs(s.width, s.main)}>
+  <main id="main-content" {...stylex.attrs(s.fluid, s.main)}>
     <h1 {...stylex.attrs(s.catalogTitle)}>{t.tools}</h1>
     <p {...stylex.attrs(s.intro)}>{t.catalogIntro}</p>
     {sections.length === 0 ? <section aria-label={t.tools} {...stylex.attrs(s.catalogSection)}><CatalogEmpty region={region} /></section> : <>

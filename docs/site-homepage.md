@@ -1,5 +1,7 @@
 # Tool4Furry V0.3-C — Site Shell, Homepage & Tool Discovery
 
+> V0.5-C3-A（2026-10-21）：普通 Header 与 Form/Batch 产品导航共用 68px 导航行和 `clamp(16px, 2vw, 36px)` 安全边距；Footer 全宽静态渲染，简化为品牌、by LibreCosta、真实链接与原有条件合规信息。宽度分为 Full Bleed、Fluid Workspace 与 820px Readable Content；首页构图上限 1600px，Converter 空状态上限 960px，有文件时列表流式展开、设置 320px。Canvas 保持原浮动入口和 `100dvh`，900px 断点及 Footer 文档流不变；没有新增客户端入口或脚本。
+
 > V0.5-C2-A（2026-10-21）：`SiteLayout` 统一挂载静态 `components/site/SiteFooter.astro`，`workspace` 只隐藏站点 Header；正式工具、DEV 预览及 Lab 均有同一 Footer。Canvas 仍为 `100dvh`，Footer 在其后自然滚动，不参与坐标、Overlay 或 Sheet 布局。
 >
 > 合规配置位于 `src/config/compliance.ts`，CN / Global 分开且当前均为空，不输出占位区域。获得真实核准后才填写 ICP 号码、公安备案号码及实际核准链接和本地图标路径，其他真实许可可放入 `additional`。ICP 固定链接至 `https://beian.miit.gov.cn/`；Global 不继承 CN 记录。配置不能替代实际合规审核，也不代表网站已满足全部运营要求。测试记录只在测试或临时验收中使用，不得提交到正式配置或产物。

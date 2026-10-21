@@ -9,6 +9,7 @@ import * as stylex from '@stylexjs/stylex';
 import type { WorkspaceMode } from '../tools/types';
 import { controls as c } from '../styles/controls';
 import { tokens } from '../styles/tokens.stylex';
+import { siteStyles as site } from '../styles/site';
 import { useCompact } from './useCompact';
 
 export interface WorkbenchShellProps {
@@ -63,6 +64,7 @@ export default function WorkbenchShell({
         <div
           {...stylex.props(
             s.flow,
+            site.fluid,
             mode === 'form' ? s.form : mode === 'batch' ? s.batch : s.custom,
             mode === 'form' && formWidth === 'wide' && s.formWide,
             right != null && mode === 'form' && s.formColumns,
@@ -354,24 +356,19 @@ const s = stylex.create({
     display: 'grid',
     gridTemplateColumns: 'minmax(0, 1fr)',
     gap: tokens.space24,
-    padding: {
-      default: tokens.space32,
-      '@media (max-width: 900px)': tokens.space16,
-    },
+    paddingBlock: tokens.space24,
     marginInline: 'auto',
     alignItems: 'start',
   },
   form: { maxWidth: 760 },
   formWide: {
-    maxWidth: 1200,
-    paddingInline: { default: 40, '@media (max-width: 600px)': 16 },
-    paddingBlock: tokens.space24,
+    maxWidth: 'none',
   },
-  batch: { maxWidth: 1280 },
+  batch: { maxWidth: 'none' },
   formColumns: {
-    maxWidth: 1120,
+    maxWidth: 'none',
     gridTemplateColumns: {
-      default: 'minmax(0, 11fr) minmax(0, 9fr)',
+      default: 'minmax(0, 1fr) 320px',
       '@media (max-width: 900px)': 'minmax(0, 1fr)',
     },
   },

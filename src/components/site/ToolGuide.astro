@@ -9,7 +9,7 @@ interface Props { content: ToolPageContent; related: readonly ToolDefinition[]; 
 const { content, related, region } = Astro.props;
 const t = messages[region];
 ---
-<div data-tool-guide {...stylex.attrs(s.width, s.toolGuide)}>
+<div data-tool-guide {...stylex.attrs(s.fluid, s.readable, s.toolGuide)}>
   {content.steps && content.steps.length > 0 && <section aria-labelledby="tool-steps"><h2 id="tool-steps" {...stylex.attrs(s.sectionHeading)}>{t.toolSteps}</h2><ol>{content.steps.map(step => <li>{step}</li>)}</ol></section>}
   {content.limitations && content.limitations.length > 0 && <section aria-labelledby="tool-limitations"><h2 id="tool-limitations" {...stylex.attrs(s.sectionHeading)}>{t.toolLimitations}</h2><ul>{content.limitations.map(item => <li>{item}</li>)}</ul></section>}
   {content.faq && content.faq.length > 0 && <section aria-labelledby="tool-faq"><h2 id="tool-faq" {...stylex.attrs(s.sectionHeading)}>{t.toolFaq}</h2>{content.faq.map(item => <details {...stylex.attrs(s.faqItem)}><summary {...stylex.attrs(s.faqQuestion)}><span>{item.question}</span><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" {...stylex.attrs(s.faqChevron)}><path d="m6 9 6 6 6-6" /></svg></summary><p {...stylex.attrs(s.faqAnswer)}>{item.answer}</p></details>)}</section>}
