@@ -4,7 +4,7 @@ import { region, regionConfig } from '../config/site';
 import { messages } from '../i18n/messages';
 import { siteStyles as s } from '../styles/site';
 import { tokens } from '../styles/tokens.stylex';
-import { resolveTheme } from '../styles/theme';
+import { resolvePageTheme } from '../styles/theme';
 import '@fontsource-variable/dm-sans/wght.css';
 import '@fontsource-variable/noto-sans-sc/wght.css';
 import '../styles/global.css';
@@ -17,7 +17,7 @@ const canonical = new URL(Astro.url.pathname, regionConfig.site);
 const resolvedTitle = fullTitle ?? `${title} · Tool4Furry`;
 const resolvedDescription = description ?? t.intro;
 const github = 'https://github.com/librecosta/tool4furry';
-const theme = resolveTheme();
+const theme = resolvePageTheme(import.meta.env.DEV, import.meta.env.T4F_DEV_APPEARANCE);
 ---
 <!doctype html>
 <html lang={regionConfig.lang} data-color-theme={theme.colorTheme} data-appearance={theme.appearance} {...stylex.attrs(theme.style, s.themeRoot)} style={`--t4f-focus: ${tokens.focus};`}>

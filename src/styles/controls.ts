@@ -67,7 +67,7 @@ export const controls = stylex.create({
       ':disabled': tokens.danger,
     },
     borderColor: tokens.danger,
-    color: tokens.onAction,
+    color: tokens.onDanger,
   },
   small: { paddingInline: tokens.space12, fontSize: 13 },
   invalid: { borderColor: { default: tokens.danger, ':hover': tokens.danger } },

@@ -1,9 +1,10 @@
 import * as stylex from '@stylexjs/stylex';
-const defaultValues = {
+export const seaMistDarkValues = {
   page: '#1D2225',
   workspace: '#23292C',
   surface: '#292F33',
   surfaceMuted: '#343C40',
+  previewChecker: '#343C40',
   textPrimary: '#F0F2EF',
   textSecondary: '#B6C1BF',
   border: '#495358',
@@ -18,9 +19,14 @@ const defaultValues = {
   focus: '#B4D0C5',
   danger: '#FF9BA4',
   dangerHover: '#FFB2B9',
+  onDanger: '#1D2B28',
   positive: '#83D6AE',
   warning: '#E7C47C',
   info: '#ACC7D1',
+  supportClay: '#D49C7D',
+  supportAmber: '#D6B27A',
+  supportLavender: '#B9ABD0',
+  supportSlate: '#ACC7D1',
   overlay: '#10191CB3',
   shadowNone: 'none',
   shadowSoft: '0 2px 8px #10191C24, inset 0 1px 0 #FFFFFF05',
@@ -47,6 +53,46 @@ const defaultValues = {
   colorScheme: 'dark',
 } as const;
 
-export const tokens = stylex.defineVars(defaultValues);
+export const seaMistLightValues = {
+  ...seaMistDarkValues,
+  page: '#F5F6F2',
+  workspace: '#EBF0EC',
+  surface: '#FEFFFC',
+  surfaceMuted: '#E6EDE8',
+  previewChecker: '#D5DED7',
+  textPrimary: '#29342F',
+  textSecondary: '#586963',
+  border: '#CDD8D0',
+  controlBorder: '#75867C',
+  action: '#426F62',
+  actionHover: '#345F53',
+  actionPressed: '#2E5047',
+  actionTint: '#DFECE6',
+  onAction: '#FFFFFF',
+  sage: '#607D6D',
+  focus: '#426F62',
+  danger: '#A63243',
+  dangerHover: '#8B2738',
+  onDanger: '#FFFFFF',
+  positive: '#28634C',
+  warning: '#785313',
+  info: '#365F7A',
+  supportClay: '#9D533D',
+  supportAmber: '#8B5F23',
+  supportLavender: '#745F8D',
+  supportSlate: '#456B86',
+  overlay: '#29342F66',
+  shadowSoft: '0 2px 8px #29342F0D, inset 0 1px 0 #FFFFFF99',
+  shadowFloating:
+    '0 16px 40px #29342F24, 0 3px 10px #29342F14, inset 0 1px 0 #FFFFFFB3',
+  colorScheme: 'light',
+} as const;
+
+// Overrides accept semantic strings, rather than only the dark defaults' literals.
+type ThemeValues = { [Key in keyof typeof seaMistDarkValues]: string } & {
+  colorScheme: 'light' | 'dark';
+};
+export const tokens = stylex.defineVars<ThemeValues>(seaMistDarkValues);
 // One resolved theme overrides the entire group, never two partial axis themes.
-export const seaMistDarkTheme = stylex.createTheme(tokens, defaultValues);
+export const seaMistDarkTheme = stylex.createTheme(tokens, seaMistDarkValues);
+export const seaMistLightTheme = stylex.createTheme(tokens, seaMistLightValues);

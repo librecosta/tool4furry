@@ -330,7 +330,7 @@ const s = stylex.create({
     overflow: 'hidden',
     touchAction: 'none',
     backgroundColor: t.workspace,
-    backgroundImage: `repeating-conic-gradient(${t.surfaceMuted} 0% 25%, transparent 0% 50%)`,
+    backgroundImage: `repeating-conic-gradient(${t.previewChecker} 0% 25%, transparent 0% 50%)`,
     backgroundSize: '16px 16px',
     borderRadius: t.radiusSm,
   },

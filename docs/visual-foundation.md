@@ -1,6 +1,16 @@
 # V0.3-A — Visual Foundation & Design Tokens
 
-> 当前主题为 V0.5-C1 Sea Mist + Soft Graphite Dark，以下早期阶段数值保留为历史记录。
+> 当前默认主题为 Sea Mist + Soft Graphite Dark；V0.5-C2-B 补齐 Sea Mist Light，以下早期阶段数值保留为历史记录。
+
+## V0.5-C2-B — Light 与辅助色（2026-10-21）
+
+`ColorTheme = 'sea-mist'`，`Appearance = 'light' | 'dark'`。两份完整值表经原生 `createTheme` 编译，根节点只应用一个主题；空间、圆角、层级一致。Dark 原有色值保持不变。Light 使用暖雾白背景与石墨文字，反馈色、遮罩及阴影单独定义；危险按钮使用独立 `onDanger`。棋盘、浮层及原生控件从根主题继承，不由组件判断外观。
+
+透明预览使用 `workspace` / `previewChecker` 两格，Light 为 `#EBF0EC` / `#D5DED7`，Dark 保留原有 `#23292C` / `#343C40`；不改变图像本身。
+
+DEV 静态预览：`pnpm exec cross-env T4F_DEV_APPEARANCE=light pnpm dev`；检查英文时再加 `SITE_REGION=global`。停止服务后移除变量或改为 `dark` 可恢复。无效 DEV 值会明确报错；生产渲染始终忽略此变量并使用 Dark。没有切换器、系统跟随、存储或客户端主题脚本。
+
+独立辅助 Token 为 `supportClay` / `supportAmber` / `supportLavender` / `supportSlate`，分别用于未来有实际语义的装饰或分类信息，不能替代 action / focus 或反馈色。Light 值为 `#9D533D` / `#8B5F23` / `#745F8D` / `#456B86`，Dark 为 `#D49C7D` / `#D6B27A` / `#B9ABD0` / `#ACC7D1`。暖陶与柔琥珀的 Light 建议值略加深以满足主要表面上小字 4.5:1；辅助色在选中底色、图片或其他新背景上使用时仍需按实际组合验证。
 
 ## V0.5-C1 — 静态主题合同（2026-10-21）
 
