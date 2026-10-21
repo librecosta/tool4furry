@@ -12,6 +12,19 @@ const cn = {
   clearConfirm: '清空',
   cancel: '取消',
   generateAll: '转换全部',
+  zip: {
+    download: '下载 ZIP',
+    packing: '正在打包…',
+    retry: '重试下载 ZIP',
+    wait: '等待所有任务完成；过期结果需重新生成。',
+    settings: '请先修正设置或文件名标签。',
+    empty: '没有可打包的有效结果。',
+    success: '成功',
+    failedCount: '失败',
+    budget: 'ZIP 超过 128 MiB 开发保护值，请使用单项下载。',
+    changed: '工作区结果或设置已变化，请重新打包。',
+    failed: '打包失败，请重试。仍可逐项下载。',
+  },
   intakeAccepted: '已添加',
   intakeSkipped: '已跳过',
   intakeReasons: {
@@ -67,10 +80,7 @@ const cn = {
   filenameExample: '文件名示例：',
   filenameError:
     '标签最多 40 个 UTF-8 字节，不能含路径/控制字符、保留名称、首尾空格或结尾句点。',
-  checking: '正在检查浏览器输出能力…',
   unavailable: '此浏览器无法验证该格式输出。',
-  fallback:
-    '此浏览器无法输出 WebP，已选 PNG。WebP 输入仍会单独检查是否可解码。',
   retryCapability: '重新检测输出能力',
   none: '暂无可用的默认输出格式，请重试检测或选择可用格式。',
   retry: '重试当前设置',
@@ -116,6 +126,20 @@ const global: typeof cn = {
   clearConfirm: 'Clear',
   cancel: 'Cancel',
   generateAll: 'Convert all',
+  zip: {
+    download: 'Download ZIP',
+    packing: 'Packing…',
+    retry: 'Retry ZIP download',
+    wait: 'Wait for all tasks to finish. Regenerate stale results first.',
+    settings: 'Correct settings or the filename label first.',
+    empty: 'No valid results to package.',
+    success: 'Succeeded',
+    failedCount: 'Failed',
+    budget:
+      'ZIP exceeds the 128 MiB development guardrail. Download files individually.',
+    changed: 'Workspace results or settings changed. Please package again.',
+    failed: 'Packaging failed. Retry or download files individually.',
+  },
   intakeAccepted: 'Added',
   intakeSkipped: 'Skipped',
   intakeReasons: {
@@ -172,10 +196,7 @@ const global: typeof cn = {
   filenameExample: 'Filename example:',
   filenameError:
     'Use at most 40 UTF-8 bytes. Avoid paths, control characters, reserved names, surrounding spaces and trailing dots.',
-  checking: 'Checking browser export capabilities…',
   unavailable: 'This browser could not verify export in this format.',
-  fallback:
-    'WebP export is unavailable here; PNG is selected. WebP input decoding is checked separately.',
   retryCapability: 'Check export support again',
   none: 'No default export format is available. Retry detection or select a supported format.',
   retry: 'Retry current settings',
@@ -189,8 +210,7 @@ const global: typeof cn = {
     'Static PNG/JPEG/WebP only. Resolution is unchanged. Files may grow; re-encoding can change colors and remove metadata.',
   budget:
     'Development guardrails: 20 files and 100 MiB total; 20 MiB, 16 million pixels and 8192px per image. These are not universal device limits.',
-  disabledCount:
-    'Up to 20 files per workspace.',
+  disabledCount: 'Up to 20 files per workspace.',
   disabledSize: 'The file exceeds the 20 MiB development guardrail.',
   disabledType: 'Unsupported file type.',
   errors: {

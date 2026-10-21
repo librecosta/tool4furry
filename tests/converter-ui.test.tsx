@@ -21,17 +21,14 @@ import { toolPageContents } from '../src/site/tool-content';
 import { ConverterSession } from '../src/tools/image-converter/session';
 const render = (ui: ReactElement) =>
   renderUi(<UiProvider labels={messages.global}>{ui}</UiProvider>);
-const { encode } = vi.hoisted(() => ({
+const { encode, capabilities } = vi.hoisted(() => ({
+  capabilities: vi.fn(),
   encode: vi.fn(
     async () => new Blob(['unit-test-output'], { type: 'image/webp' }),
   ),
 }));
 vi.mock('../src/tools/image/browser-codec', () => ({
-  detectCapabilities: async () => ({
-    webp: { supported: true },
-    png: { supported: true },
-    jpeg: { supported: true },
-  }),
+  detectCapabilities: capabilities,
   acceptImage: async (file: File) => {
     if (file.name === 'broken.png') throw new ImageFailure('corrupt');
     return {
@@ -47,6 +44,11 @@ vi.mock('../src/tools/image/browser-codec', () => ({
 beforeEach(() => {
   setViewport(true);
   encode.mockClear();
+  capabilities.mockReset().mockResolvedValue({
+    webp: { supported: true },
+    png: { supported: true },
+    jpeg: { supported: true },
+  });
   let sequence = 0;
   vi.stubGlobal(
     'URL',
@@ -57,6 +59,69 @@ beforeEach(() => {
   );
 });
 describe('real workspace interaction contract (codec mocked; not browser evidence)', () => {
+  it('keeps normal capability initialization out of flow and gives compact unsupported reasons', async () => {
+    let finish!: (value: unknown) => void;
+    capabilities.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const { container } = render(<ImageConverter region="global" />);
+    const panel = container.querySelector('[data-converter-part="settings"]')!;
+    const structure = panel.innerHTML.replace(/class="[^"]*"/g, '');
+    expect(
+      screen
+        .getAllByRole('radio')
+        .every((input) => input.hasAttribute('disabled')),
+    ).toBe(true);
+    expect(panel.textContent).not.toContain('Checking browser');
+    expect(
+      screen.queryByRole('button', { name: 'Check export support again' }),
+    ).toBeNull();
+    await act(async () =>
+      finish({
+        webp: { supported: false },
+        png: { supported: true },
+        jpeg: { supported: true },
+      }),
+    );
+    expect(
+      screen.getByRole('radio', { name: 'PNG' }).hasAttribute('disabled'),
+    ).toBe(false);
+    const unavailable = screen.getByRole('radio', { name: 'WEBP' });
+    expect(unavailable.hasAttribute('disabled')).toBe(true);
+    expect(unavailable.getAttribute('aria-description')).toContain(
+      'could not verify',
+    );
+    expect(panel.querySelectorAll('small')).toHaveLength(0);
+    expect(panel.children.length).toBe(2);
+    expect(structure).toContain('Output format');
+  });
+  it.each(['timeout', 'empty'])(
+    'explains %s capability checks and permits retry without permanent disablement',
+    async (kind) => {
+      if (kind === 'timeout')
+        capabilities.mockRejectedValueOnce(new ImageFailure('timeout'));
+      else
+        capabilities.mockResolvedValueOnce({
+          webp: { supported: false },
+          png: { supported: false },
+          jpeg: { supported: false },
+        });
+      render(<ImageConverter region="global" />);
+      expect(await screen.findByRole('alert')).toBeTruthy();
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Check export support again' }),
+      );
+      await waitFor(() =>
+        expect(
+          screen.getByRole('radio', { name: 'WEBP' }).hasAttribute('disabled'),
+        ).toBe(false),
+      );
+      expect(screen.queryByRole('alert')).toBeNull();
+    },
+  );
   it('reveals a compact task, with lazy preview and no duplicate result/download region', async () => {
     let finish!: (blob: Blob) => void;
     encode.mockImplementationOnce(
@@ -89,13 +154,13 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     await waitFor(() => expect(encode).toHaveBeenCalledTimes(1));
     expect(screen.getByRole('list', { name: 'File tasks' })).toBeTruthy();
     expect(screen.queryByRole('img')).toBeNull();
-    expect(URL.createObjectURL).toHaveBeenCalledTimes(1);
     await waitFor(() =>
       expect(
         container.querySelector('[data-image-thumbnail] img'),
       ).toBeTruthy(),
     );
     const thumbnail = container.querySelector('[data-image-thumbnail] img')!;
+    expect(URL.createObjectURL).toHaveBeenCalledTimes(1);
     const thumbnailUrl = thumbnail.getAttribute('src');
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: 'Image preview' }));
@@ -664,15 +729,26 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     );
   });
   it('retries only the failed row while another completed download remains valid', async () => {
-    const user = userEvent.setup(); encode.mockRejectedValueOnce(new ImageFailure('encode'));
+    const user = userEvent.setup();
+    encode.mockRejectedValueOnce(new ImageFailure('encode'));
     const { container } = render(<ImageConverter region="global" />);
-    await waitFor(() => expect(screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled')).toBe(false));
-    fireEvent.change(container.querySelector('#converter-source')!, { target: { files: [new File(['a'], 'a.png'), new File(['b'], 'b.png')] } });
+    await waitFor(() =>
+      expect(
+        screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
+      ).toBe(false),
+    );
+    fireEvent.change(container.querySelector('#converter-source')!, {
+      target: { files: [new File(['a'], 'a.png'), new File(['b'], 'b.png')] },
+    });
     const failed = await screen.findByRole('listitem', { name: 'a.png' });
     const ready = screen.getByRole('listitem', { name: 'b.png' });
-    const download = await within(ready).findByRole('link', { name: 'Download result' });
+    const download = await within(ready).findByRole('link', {
+      name: 'Download result',
+    });
     const href = download.getAttribute('href');
-    await user.click(within(failed).getByRole('button', { name: 'Retry current settings' }));
+    await user.click(
+      within(failed).getByRole('button', { name: 'Retry current settings' }),
+    );
     await within(failed).findByRole('link', { name: 'Download result' });
     expect(within(ready).getByRole('link').getAttribute('href')).toBe(href);
     expect(encode).toHaveBeenCalledTimes(3);
@@ -707,9 +783,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
       expect(
         screen.getByRole('img', { name: 'Original' }).getAttribute('src'),
       ).toBe(original);
-      await user.click(
-        screen.getByRole('button', { name: 'Output' }),
-      );
+      await user.click(screen.getByRole('button', { name: 'Output' }));
       expect(
         screen.getByRole('img', { name: 'Output' }).getAttribute('src'),
       ).toBe(output);
@@ -753,21 +827,13 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     const oldId = screen
       .getByRole('listitem', { name: 'a.png' })
       .getAttribute('data-task-id');
-    await user.click(
-      screen.getByRole('button', { name: 'Clear list' }),
-    );
-    await user.click(
-      screen.getByRole('button', { name: 'Cancel' }),
-    );
+    await user.click(screen.getByRole('button', { name: 'Clear list' }));
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(
       screen.getAllByRole('link', { name: 'Download result' }),
     ).toHaveLength(2);
-    await user.click(
-      screen.getByRole('button', { name: 'Clear list' }),
-    );
-    await user.click(
-      screen.getByRole('button', { name: 'Clear' }),
-    );
+    await user.click(screen.getByRole('button', { name: 'Clear list' }));
+    await user.click(screen.getByRole('button', { name: 'Clear' }));
     expect(screen.queryByRole('list', { name: 'File tasks' })).toBeNull();
     expect(URL.revokeObjectURL).toHaveBeenCalledTimes(
       vi.mocked(URL.createObjectURL).mock.calls.length,

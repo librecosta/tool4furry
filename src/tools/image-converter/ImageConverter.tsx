@@ -11,6 +11,7 @@ import { controls as c } from '../../styles/controls';
 import { FileTaskList } from '../../ui/FileTaskList';
 import { ConfirmDialog } from '../../ui/ConfirmDialog';
 import { ConverterTaskRow } from './ConverterTaskRow';
+import { BatchDownload } from './BatchDownload';
 import { intakeBudget, sortedFolderFiles } from './intake';
 import { formats, type ImageResult } from '../image/types';
 import { createProcessingState, isCustomSettings } from '../processing-state';
@@ -252,6 +253,7 @@ export default function ImageConverter({ region }: ToolProps) {
                 <button
                   key={mode}
                   type="button"
+                  disabled={view.checkingCapabilities}
                   aria-pressed={state.mode === mode}
                   {...stylex.props(
                     s.mode,
@@ -277,6 +279,11 @@ export default function ImageConverter({ region }: ToolProps) {
                 return (
                   <label
                     key={format}
+                    title={
+                      disabled && !view.checkingCapabilities
+                        ? t.unavailable
+                        : undefined
+                    }
                     {...stylex.props(
                       s.choice,
                       settings.format === format && s.chosen,
@@ -293,53 +300,37 @@ export default function ImageConverter({ region }: ToolProps) {
                         setQualityDraft(undefined);
                         session?.format(format);
                       }}
-                      aria-describedby={
+                      aria-description={
                         disabled && !view.checkingCapabilities
-                          ? `format-${format}-hint`
+                          ? t.unavailable
                           : undefined
                       }
                       {...stylex.props(s.radio)}
                     />
                     <span {...stylex.props(s.choiceLabel)}>
                       {format.toUpperCase()}
-                      {disabled && !view.checkingCapabilities && (
-                        <small
-                          id={`format-${format}-hint`}
-                          {...stylex.props(s.choiceHint)}
-                        >
-                          {t.unavailable}
-                        </small>
-                      )}
                     </span>
                   </label>
                 );
               })}
             </div>
           </fieldset>
-          {view.checkingCapabilities ? (
-            <p role="status" {...stylex.props(s.note)}>
-              {t.checking}
-            </p>
-          ) : (
-            <>
-              {!view.capabilities?.webp.supported && (
-                <p {...stylex.props(s.note)}>
-                  {view.capabilities?.png.supported ? t.fallback : t.none}
-                </p>
-              )}
-              {view.capabilityError && (
+          {!view.checkingCapabilities &&
+            (view.capabilityError ||
+              !formats.some(
+                (format) => view.capabilities?.[format].supported,
+              )) && (
+              <>
                 <p role="alert" {...stylex.props(s.error)}>
-                  {t.errors[view.capabilityError]}
+                  {view.capabilityError
+                    ? t.errors[view.capabilityError]
+                    : t.none}
                 </p>
-              )}
-              {(!view.capabilities ||
-                formats.some((f) => !view.capabilities?.[f].supported)) && (
                 <Button onClick={() => session?.retryCapabilities()}>
                   {t.retryCapability}
                 </Button>
-              )}
-            </>
-          )}
+              </>
+            )}
           {state.mode === 'advanced' && (
             <>
               {settings.format !== 'png' && (
@@ -355,6 +346,7 @@ export default function ImageConverter({ region }: ToolProps) {
                     min={1}
                     max={100}
                     step={1}
+                    disabled={view.checkingCapabilities}
                     error={qualityInvalid ? t.qualityError : undefined}
                     onValueChange={(quality) => {
                       setQualityDraft(undefined);
@@ -366,6 +358,7 @@ export default function ImageConverter({ region }: ToolProps) {
                         aria-invalid={qualityInvalid || undefined}
                         aria-describedby={`${qualityId}-scale${qualityInvalid ? ` ${qualityId}-error` : ''}`}
                         inputMode="numeric"
+                        disabled={view.checkingCapabilities}
                         value={qualityText}
                         {...stylex.props(
                           c.input,
@@ -401,6 +394,7 @@ export default function ImageConverter({ region }: ToolProps) {
                   <div {...stylex.props(s.backgroundControl)}>
                     <input
                       id={backgroundIds.id}
+                      disabled={view.checkingCapabilities}
                       value={settings.jpegBackground}
                       maxLength={7}
                       aria-invalid={backgroundInvalid || undefined}
@@ -415,6 +409,7 @@ export default function ImageConverter({ region }: ToolProps) {
                     />
                     <input
                       type="color"
+                      disabled={view.checkingCapabilities}
                       aria-label={t.pickBackground}
                       value={
                         backgroundInvalid
@@ -464,6 +459,14 @@ export default function ImageConverter({ region }: ToolProps) {
             >
               {t.generateAll}
             </Button>
+          )}
+          {session && (
+            <BatchDownload
+              session={session}
+              view={view}
+              blocked={!!blocked || !!name.error || view.checkingCapabilities}
+              t={t}
+            />
           )}
         </section>
         <section

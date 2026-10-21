@@ -12,7 +12,7 @@ export const imageConverterContent: ToolContentMap[string] = {
       '选择或拖入多张静态 PNG、JPEG 或 WebP，也可添加文件夹，后续添加会追加到列表。每个文件独立检查真实结构、动画、尺寸和方向。',
       '快速模式默认 WebP 85；不支持 WebP 输出时选择 PNG。新增图片或点击格式推荐后按序自动转换；高级模式调整参数后点击“转换全部”。',
       '检查原图与输出的真实格式、分辨率和大小。修改编码参数会令旧结果过期，修改文件名不会重复编码。',
-      '在文件行逐项预览和下载当前已验证结果，无需等待其他文件完成。Quick 同格式保留原始字节；需要重新编码时使用高级模式。',
+      '在文件行逐项预览和下载当前已验证结果，无需等待其他文件完成。多文件任务结束后可下载成功结果的 ZIP。Quick 同格式保留原始字节；需要重新编码时使用高级模式。',
     ],
     limitations: [
       '批量静态图片转换，开发保护值为 20 个文件、累计 100 MiB、单文件 20 MiB。不缩放、不裁剪，不支持 APNG、动画 WebP、GIF、HEIC、AVIF、TIFF 或 SVG。',
@@ -54,7 +54,7 @@ export const imageConverterContent: ToolContentMap[string] = {
       'Choose or drop multiple static PNG, JPEG or WebP images, or add a folder. Later imports append to the list. Each file is checked for structure, animation, dimensions and orientation.',
       'Quick starts with WebP quality 85, or PNG when WebP export is unavailable. New images and format presets convert automatically in order; in Advanced, adjust settings and click Convert all.',
       'Compare actual formats, resolution and sizes. Encoding changes make old results stale; renaming does not re-encode.',
-      'Preview and download each current verified result from its file row without waiting for other files. Quick keeps original bytes for the same format; use Advanced to explicitly re-encode.',
+      'Preview and download each current verified result from its file row without waiting for other files. Once all tasks finish, download successful results as a ZIP. Quick keeps original bytes for the same format; use Advanced to explicitly re-encode.',
     ],
     limitations: [
       'Static image batches, with development guardrails of 20 files, 100 MiB total and 20 MiB per file. No resizing, cropping, APNG, animated WebP, GIF, HEIC, AVIF, TIFF or SVG.',

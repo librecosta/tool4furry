@@ -36,6 +36,7 @@ export const converterStyles = stylex.create({
     gap: t.space8,
     flexWrap: 'wrap',
   },
+  delivery: { display: 'grid', gap: t.space8 },
   settings: {
     gridColumn: { default: '2', '@media (max-width: 900px)': 'auto' },
     gridRow: { default: '1 / span 2', '@media (max-width: 900px)': 'auto' },
@@ -120,6 +121,11 @@ export const converterStyles = stylex.create({
     gap: t.space8,
   },
   choice: {
+    transitionProperty: 'opacity, color, background-color, border-color',
+    transitionDuration: {
+      default: '150ms',
+      '@media (prefers-reduced-motion: reduce)': '0ms',
+    },
     display: 'flex',
     alignItems: 'center',
     gap: t.space8,
@@ -147,7 +153,6 @@ export const converterStyles = stylex.create({
     margin: 0,
     flexShrink: 0,
   },
-  choiceHint: { display: 'block', fontSize: 12, fontWeight: 400 },
   backgroundControl: {
     display: 'grid',
     gridTemplateColumns: 'minmax(0, 1fr) 44px',
