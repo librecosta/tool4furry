@@ -131,14 +131,14 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
       screen.getByRole('button', { name: 'Advanced' }),
     );
     await user.type(
-      screen.getByRole('textbox', { name: 'Download filename stem (optional)' }),
-      'renamed.png.webp',
+      screen.getByRole('textbox', { name: 'Filename label (optional)' }),
+      'renamed',
     );
     expect(
       screen
         .getByRole('link', { name: 'Download result' })
         .getAttribute('download'),
-    ).toBe('renamed.webp');
+    ).toMatch(/^t4f-\d{8}-\d{9}-0001-renamed-art\.webp$/);
     expect(encode).toHaveBeenCalledTimes(1);
     await user.click(
       screen.getByRole('button', { name: 'Quick' }),
@@ -297,12 +297,13 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     const href = download.getAttribute('href');
     expect(encode).toHaveBeenLastCalledWith(expect.anything(), expect.objectContaining({ jpegBackground: '#456789' }), expect.anything());
     const filename = screen.getByRole('textbox', { name: t.filename });
-    expect(filename.getAttribute('aria-describedby')).toBeNull();
+    expect(document.getElementById(filename.getAttribute('aria-describedby')!)?.textContent).toContain(t.filenameExample);
+    const defaultName = download.getAttribute('download');
     await user.type(filename, 'renamed');
     expect(screen.getByRole('link', { name: t.download }).getAttribute('href')).toBe(href);
-    expect(screen.getByRole('link', { name: t.download }).getAttribute('download')).toBe('renamed.jpg');
+    expect(screen.getByRole('link', { name: t.download }).getAttribute('download')).toMatch(/^t4f-\d{8}-\d{9}-0001-renamed-art\.jpg$/);
     await user.clear(filename);
-    expect(screen.getByRole('link', { name: t.download }).getAttribute('download')).toBe('art-converted.jpg');
+    expect(screen.getByRole('link', { name: t.download }).getAttribute('download')).toBe(defaultName);
     await user.type(filename, 'bad/name');
     expect(screen.getByText(t.filenameError)).toBeTruthy();
     expect(screen.queryByRole('link', { name: t.download })).toBeNull();

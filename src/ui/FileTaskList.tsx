@@ -33,6 +33,8 @@ export interface FileTaskItem {
   output?: ReactNode;
   status: FileTaskStatus;
   statusLabel: string;
+  /** Actual fractional progress (0–1), only when the tool can measure it. */
+  progress?: number;
   error?: string;
   actions: readonly FileTaskAction[];
 }
@@ -84,10 +86,59 @@ export function FileTaskList({
                 {item.statusLabel}
               </span>
             </div>
-            <div {...stylex.props(s.metadata)}>
-              <span>{item.metadata}</span>
-              {item.output && (
-                <span {...stylex.props(s.output)}> → {item.output}</span>
+            <div {...stylex.props(s.metadataRow)}>
+              <div {...stylex.props(s.metadata)}>
+                {item.error ? (
+                  <span
+                    id={errorId}
+                    role="alert"
+                    title={item.error}
+                    {...stylex.props(s.error)}
+                  >
+                    {item.error}
+                  </span>
+                ) : (
+                  <>
+                    <span>
+                      {['processing', 'queued'].includes(item.status)
+                        ? item.statusLabel
+                        : item.metadata}
+                    </span>
+                    {item.status === 'ready' && item.output && (
+                      <span {...stylex.props(s.output)}> → {item.output}</span>
+                    )}
+                  </>
+                )}
+              </div>
+              {item.status === 'processing' && (
+                <div
+                  role="progressbar"
+                  aria-label={`${item.name}: ${item.statusLabel}`}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={
+                    Number.isFinite(item.progress)
+                      ? Math.round(
+                          Math.max(0, Math.min(1, item.progress!)) * 100,
+                        )
+                      : undefined
+                  }
+                  {...stylex.props(s.progress)}
+                >
+                  <span
+                    {...stylex.props(
+                      s.bar,
+                      !Number.isFinite(item.progress) && s.indeterminate,
+                    )}
+                    style={
+                      Number.isFinite(item.progress)
+                        ? {
+                            width: `${Math.max(0, Math.min(1, item.progress!)) * 100}%`,
+                          }
+                        : undefined
+                    }
+                  />
+                </div>
               )}
             </div>
             <div {...stylex.props(s.actions)}>
@@ -134,15 +185,6 @@ export function FileTaskList({
                 );
               })}
             </div>
-            {item.error && (
-              <p
-                id={errorId}
-                role="alert"
-                {...stylex.props(s.feedback, s.error)}
-              >
-                {item.error}
-              </p>
-            )}
           </li>
         );
       })}
@@ -150,6 +192,10 @@ export function FileTaskList({
   );
 }
 
+const glide = stylex.keyframes({
+  from: { transform: 'translateX(-100%)' },
+  to: { transform: 'translateX(280%)' },
+});
 const s = stylex.create({
   list: { listStyle: 'none', padding: 0, margin: 0, minWidth: 0 },
   item: {
@@ -200,14 +246,44 @@ const s = stylex.create({
     color: t.textSecondary,
   },
   ready: { color: t.action },
-  metadata: {
+  metadataRow: {
     gridColumn: { default: '2', '@media (max-width: 600px)': '1 / -1' },
+    gridRow: 2,
+    display: 'flex',
+    alignItems: 'center',
+    gap: t.space8,
     minWidth: 0,
+  },
+  metadata: {
+    minWidth: 0,
+    flexGrow: 1,
     fontSize: 12,
     lineHeight: 1.6,
     color: t.textSecondary,
     fontVariantNumeric: 'tabular-nums',
-    overflowWrap: 'anywhere',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  progress: {
+    width: 80,
+    height: 3,
+    flexShrink: 0,
+    overflow: 'hidden',
+    backgroundColor: t.border,
+    borderRadius: 2,
+  },
+  bar: { display: 'block', height: '100%', backgroundColor: t.action },
+  indeterminate: {
+    width: '35%',
+    animationName: {
+      default: glide,
+      '@media (prefers-reduced-motion: reduce)': 'none',
+    },
+    animationDuration: '1.5s',
+    animationTimingFunction: 'ease-in-out',
+    animationIterationCount: 'infinite',
+    transform: 'translateX(90%)',
   },
   output: { color: t.textPrimary },
   actions: {
@@ -217,11 +293,5 @@ const s = stylex.create({
     alignItems: 'center',
   },
   action: { width: 44, height: 44, paddingInline: 0, flexShrink: 0 },
-  feedback: {
-    gridColumn: '1 / -1',
-    margin: 0,
-    fontSize: 13,
-    overflowWrap: 'anywhere',
-  },
   error: { color: t.danger },
 });

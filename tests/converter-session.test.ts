@@ -8,7 +8,6 @@ import {
   recommendations,
   sameSettings,
 } from '../src/tools/image-converter/presets';
-import { downloadName } from '../src/tools/image-converter/filename';
 import {
   createProcessingState,
   setRecommendedPreset,
@@ -66,7 +65,7 @@ describe('converter state and scheduling', () => {
     const { session, encode } = await ready();
     expect(encode).toHaveBeenCalledTimes(1);
     const state = session.snapshot.processing;
-    session.name('new-name');
+    session.label('new-name');
     session.mode('advanced');
     session.mode('quick');
     session.format('webp');
@@ -219,11 +218,12 @@ describe('converter state and scheduling', () => {
     q.schedule('a', () => d.promise, timeout);
     q.schedule('b', second, timeout);
     await vi.advanceTimersByTimeAsync(11);
-    expect(timeout).toHaveBeenCalledTimes(2);
+    expect(timeout).toHaveBeenCalledTimes(1);
     expect(second).not.toHaveBeenCalled();
     expect(q.active).toBe(true);
     d.resolve();
     await tick();
+    expect(second).toHaveBeenCalledTimes(1);
     expect(q.active).toBe(false);
     q.dispose();
     vi.useRealTimers();
@@ -271,26 +271,4 @@ describe('effective parameters and filenames', () => {
       if (format !== 'jpeg') expect(ignored).toBe(state);
     },
   );
-  it('normalizes true extensions without treating names as encode parameters', () => {
-    expect(downloadName('art.jpg', 'webp', 'encoded').name).toBe(
-      'art-converted.webp',
-    );
-    expect(downloadName('wrong.jpg', 'png', 'passthrough').name).toBe(
-      'wrong.png',
-    );
-    expect(downloadName('a', 'jpeg', 'encoded', 'nice.png.webp').name).toBe(
-      'nice.jpg',
-    );
-    for (const name of [
-      '../path',
-      'CON',
-      'a\u0000b',
-      ' ',
-      '.',
-      'a.',
-      'a ',
-      'a'.repeat(121),
-    ])
-      expect(downloadName('a', 'png', 'encoded', name).error).toBe(true);
-  });
 });

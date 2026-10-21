@@ -10,6 +10,18 @@ import { UiProvider } from '../src/ui/UiProvider';
 import { messages } from '../src/i18n/messages';
 
 describe('controlled FileTaskList (presentation fixtures, no media jobs)', () => {
+  it('shows indeterminate progress only while processing, with optional measured progress', () => {
+    const item: FileTaskItem = { id: 'one', name: 'art.png', metadata: 'PNG',
+      status: 'processing', statusLabel: 'Processing', actions: [] };
+    const { rerender } = render(<FileTaskList label="Files" items={[item]} />);
+    expect(screen.getByRole('progressbar').hasAttribute('aria-valuenow')).toBe(false);
+    rerender(<FileTaskList label="Files" items={[{ ...item, progress: 0.4 }]} />);
+    expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('40');
+    for (const status of ['queued', 'ready', 'error'] as const) {
+      rerender(<FileTaskList label="Files" items={[{ ...item, status }]} />);
+      expect(screen.queryByRole('progressbar')).toBeNull();
+    }
+  });
   it('keeps multiple rows, statuses and keyboard actions independent', async () => {
     const user = userEvent.setup();
     const preview = vi.fn(),

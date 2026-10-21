@@ -133,6 +133,7 @@ export function FilePreviewDialog({
                 </Dialog.Description>
               )}
             </div>
+            {toolbar && <div {...stylex.props(s.toolbar)}>{toolbar}</div>}
             <div {...stylex.props(s.actions)}>
               <Tooltip content={maximized ? labels.restore : labels.maximize}>
                 <IconButton
@@ -161,7 +162,6 @@ export function FilePreviewDialog({
                 }
               />
             </div>
-            {toolbar && <div {...stylex.props(s.toolbar)}>{toolbar}</div>}
           </header>
           <div {...stylex.props(s.content)}>{open ? children : null}</div>
         </Dialog.Popup>
@@ -211,11 +211,14 @@ const s = stylex.create({
   },
   header: {
     display: 'grid',
-    gridTemplateColumns: 'minmax(0, 1fr) auto',
+    gridTemplateColumns: {
+      default: 'minmax(0, 1fr) auto minmax(0, 1fr)',
+      '@media (max-width: 600px)': 'minmax(0, 1fr) auto',
+    },
     alignItems: 'center',
     gap: t.space8,
   },
-  identity: { minWidth: 0 },
+  identity: { minWidth: 0, gridColumn: 1, gridRow: 1 },
   title: { fontSize: 18, fontWeight: 600, margin: 0 },
   description: {
     fontSize: 13,
@@ -225,7 +228,18 @@ const s = stylex.create({
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
   },
-  actions: { display: 'flex', alignItems: 'center' },
-  toolbar: { gridColumn: '1 / -1', minWidth: 0 },
+  actions: {
+    display: 'flex',
+    alignItems: 'center',
+    justifySelf: 'end',
+    gridRow: 1,
+    gridColumn: { default: 3, '@media (max-width: 600px)': 2 },
+  },
+  toolbar: {
+    minWidth: 0,
+    justifySelf: 'center',
+    gridColumn: { default: 2, '@media (max-width: 600px)': '1 / -1' },
+    gridRow: { default: 1, '@media (max-width: 600px)': 2 },
+  },
   content: { minWidth: 0, minHeight: 0, height: '100%' },
 });

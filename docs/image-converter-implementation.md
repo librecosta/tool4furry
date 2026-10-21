@@ -28,7 +28,13 @@
 - `encodeImage()` 保持原尺寸，JPEG 默认白底并支持合法 #RRGGBB。每次真实导出重新验证 MIME、实际结构、回解码和尺寸。PNG fallback 不作为 WebP 成功，不能改后缀伪装。
 - `ImageResources` 仅是实例内所有权计数与释放入口；没有全局 Store。位图 close，Canvas 归零；Converter 持有原图缩略图 URL 并供预览复用，关闭 Dialog 不撤销它；替换/移除/卸载时释放原图 URL，结果变更时释放输出 URL，同 Blob 的直通输出共用原图 URL。计数平衡不是操作系统堆内存回落的证明。
 
-原生 API 不能硬取消正在进行的 `toBlob()`。实例内 `SerialJobs` 至多一个重型操作，新的同类等待任务替换旧等待任务。45 秒 watchdog 报错但不提前释放运行槽；原生调用真正结束前不并发重试，必要时提示重载。未采用 Worker/WASM 或通用任务池。
+原生 API 不能硬取消正在进行的 `toBlob()`。实例内 `SerialJobs` 至多一个重型操作，同 key 仅替换等待任务；B3-B1 为每个文件使用独立 accept/encode key，避免不同文件相互覆盖。45 秒 watchdog 只让当前任务失败，保留后续 FIFO；原生调用真正结束前不释放运行槽、不并发重试。未采用 Worker/WASM 或通用任务池。
+
+## V0.5-B3-B1 — 批次核心与命名
+
+`ConverterSession.add(files)` 创建独立任务；批次持有共享参数，任务持有稳定 ID/加入时序号、File、校验源、请求版本、结果及错误。`generate(id?)`、`retry(id)`、`cancel(id)`、`remove(id?)` 按任务工作。`snapshot.processing/source` 仅为现有单文件 UI 的首个有效任务投影；正式 Dropzone 仍只接 `select(file)` 的两阶段替换，不开放多文件导入。Quick 自动排队，Advanced 主动处理；模式切换不编码。参数变化立即撤下过期 Blob，任务版本及存在性共同隔离晚到结果。解码/Canvas 的 finally 释放继续属于 Image Core，URL 仍由挂载的工具视图通过 useOwnedUrl 管理。
+
+`src/tools/file-naming.ts` 是无副作用的共享命名函数：本地毫秒时间、批内单调序号、清理后的原名称与实际输出扩展名，最终最多 180 UTF-8 字节。Session 创建时固定批次时间并生成独立 UUID；删除、失败、重试和替换不复用序号。Advanced 标签最多 40 UTF-8 字节，Quick 忽略标签，切回 Advanced 恢复最近合法偏好。`session.filename(id)` 是当前下载名入口；ImageResult.suggestedFilename 只保留不带标签的标准建议，不用于替代实时命名。没有 ZIP、批量 UI 或新的资源缓存。
 
 ### 大图实测发现并修复的问题
 

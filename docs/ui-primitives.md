@@ -21,6 +21,8 @@
 | `FileTaskList.tsx` / `FileTaskList` | `label` + 受控 `items`：稳定 id、name、可选 media 槽位（44px，缺省回退 icon）、metadata/output、status/statusLabel、error 和 actions；状态为 validating/queued/processing/ready/stale/error，操作提供 label、回调或下载链接及禁用原因。两行紧凑布局、44px 操作区；不持有 File/Blob、Object URL 或媒体任务。 |
 | `FilePreviewDialog.tsx` / `FilePreviewDialog` | 受控 open/onOpenChange、title、可选 description/toolbar、媒体 children、关闭/全屏/还原 labels 与可选 finalFocus 回调。负责模态、焦点、滚动锁定、Fullscreen API（不可用时最大化）及清理；仅打开时挂载 children，不持有文件、URL 或媒体变换。 |
 
+B3-B1：`FileTaskList` 的 processing 行在第二行右侧显示 80px 不确定进度；可选 `progress` 为工具实际测得的 0–1 数值，未提供时不宣称百分比。queued/ready/error 不显示进度，错误替代元信息以保持行高；减少动态效果时使用静止条。`FilePreviewDialog.toolbar` 位于桌面顶部中间，左侧身份、右侧关闭/全屏；窄屏工具栏换行，关闭入口始终保留在首行。
+
 例如工具内部直接使用 `TextField value={name} onChange={setName} label={t.name}`。工具已位于 ToolRuntime 的 Provider 内，通过 `useToast().notify({type:'success', title:t.saved})` 反馈；不要再在 SiteLayout 或 WorkbenchShell 添加 Provider。
 
 ## 实现边界与版本差异

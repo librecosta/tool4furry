@@ -13,10 +13,6 @@ export class SerialJobs {
   constructor(private deadline = 45000) {}
   schedule(key: string, run: () => Promise<void>, timeout: () => void) {
     if (this.disposed) return;
-    if (this.timedOut) {
-      timeout();
-      return;
-    }
     this.pending.set(key, { run, timeout });
     void this.pump();
   }
@@ -38,11 +34,9 @@ export class SerialJobs {
     const timer = setTimeout(() => {
       if (this.disposed) return;
       this.timedOut = true;
-      // Notify all waiting owners so no UI remains stuck in checking/processing.
+      // Only this job failed. Waiting files keep their FIFO position and cannot
+      // enter the native lane until the timed-out operation actually settles.
       job.timeout();
-      const waiting = [...this.pending.values()];
-      this.pending.clear();
-      waiting.forEach((entry) => entry.timeout());
     }, this.deadline);
     try {
       await job.run();

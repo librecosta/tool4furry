@@ -50,10 +50,11 @@ const cn = {
   background: 'JPEG 背景色',
   pickBackground: '选择 JPEG 背景色',
   backgroundError: '使用 #RRGGBB 格式，例如 #FFFFFF。',
-  filename: '下载文件名主体（可选）',
+  filename: '文件名标签（可选）',
+  filenameExample: '文件名示例：',
   filenameError:
-    '名称不能含路径/控制字符、保留名称、首尾空格/句点或超过 120 字符。',
-  resetName: '恢复默认文件名',
+    '标签最多 40 个 UTF-8 字节，不能含路径/控制字符、保留名称、首尾空格或结尾句点。',
+  resetName: '清除文件名标签',
   checking: '正在检查浏览器输出能力…',
   unavailable: '此浏览器无法验证该格式输出。',
   fallback:
@@ -145,10 +146,11 @@ const global: typeof cn = {
   background: 'JPEG background',
   pickBackground: 'Choose JPEG background color',
   backgroundError: 'Use #RRGGBB, for example #FFFFFF.',
-  filename: 'Download filename stem (optional)',
+  filename: 'Filename label (optional)',
+  filenameExample: 'Filename example:',
   filenameError:
-    'Avoid paths, control characters, reserved names, leading/trailing spaces or dots, and names over 120 characters.',
-  resetName: 'Use default filename',
+    'Use at most 40 UTF-8 bytes. Avoid paths, control characters, reserved names, surrounding spaces and trailing dots.',
+  resetName: 'Clear filename label',
   checking: 'Checking browser export capabilities…',
   unavailable: 'This browser could not verify export in this format.',
   fallback:

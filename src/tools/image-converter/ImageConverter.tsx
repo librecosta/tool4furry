@@ -16,7 +16,6 @@ import { formats, imageBudget, type ImageErrorCode } from '../image/types';
 import { createProcessingState, isCustomSettings } from '../processing-state';
 import { recommendations, sameSettings } from './presets';
 import { ConverterSession, type ConverterView } from './session';
-import { downloadName } from './filename';
 import { converterMessages } from './messages';
 import { converterStyles as s } from './converter.styles';
 
@@ -36,7 +35,9 @@ export default function ImageConverter({ region }: ToolProps) {
   const [view, setView] = useState<ConverterView>(() => ({
     processing: createProcessingState(recommendations.webp),
     checkingCapabilities: true,
-    filename: '',
+    batch: { id: '', time: '' },
+    tasks: [],
+    label: '',
   }));
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewError, setPreviewError] = useState<Blob>();
@@ -71,12 +72,7 @@ export default function ImageConverter({ region }: ToolProps) {
   const resultUrl =
     result?.blob === view.source?.blob ? sourceUrl : ownedResultUrl;
   const download = session?.download();
-  const name = downloadName(
-    view.source?.file.name ?? 'image',
-    settings.format,
-    result?.kind ?? 'encoded',
-    view.filename,
-  );
+  const name = session?.filename() ?? { name: '', error: false };
   const qualityText = qualityDraft ?? String(settings.quality ?? '');
   const qualityInvalid =
     settings.format !== 'png' &&
@@ -119,12 +115,10 @@ export default function ImageConverter({ region }: ToolProps) {
   const taskStatus: FileTaskStatus = view.candidate
     ? 'validating'
     : qualityInvalid || backgroundInvalid
-      ? result
+      ? result || state.status === 'stale'
         ? 'stale'
         : 'queued'
-      : state.status === 'idle' || (state.status === 'stale' && !result)
-        ? 'queued'
-        : state.status;
+      : view.tasks[0]?.status ?? 'queued';
   const status = t.taskStatus[taskStatus];
   const validOutput =
     state.status === 'ready' && !qualityInvalid && state.validSettings
@@ -400,13 +394,14 @@ export default function ImageConverter({ region }: ToolProps) {
               )}
               <TextField
                 label={t.filename}
-                value={view.filename}
-                maxLength={180}
+                value={view.label}
+                maxLength={80}
+                hint={!name.error ? `${t.filenameExample} ${name.name}` : undefined}
                 error={name.error ? t.filenameError : undefined}
-                onChange={(value) => session?.name(value)}
+                onChange={(value) => session?.label(value)}
               />
-              {view.filename && (
-                <Button variant="ghost" onClick={() => session?.name('')}>
+              {view.label && (
+                <Button variant="ghost" onClick={() => session?.label('')}>
                   {t.resetName}
                 </Button>
               )}
@@ -453,7 +448,7 @@ export default function ImageConverter({ region }: ToolProps) {
               label={t.tasks}
               items={[
                 {
-                  id: 'source',
+                  id: view.tasks[0].id,
                   name: view.source.file.name,
                   media: (
                     <ImageThumbnail
