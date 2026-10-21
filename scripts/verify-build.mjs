@@ -330,7 +330,10 @@ for (const page of htmlFiles) {
       `Test content leaked: ${page}`,
     );
   assert(!content.includes('virtual:stylex'), `Dev StyleX runtime in ${page}`);
-  assert(!content.includes('stylex-dev-css'), `Dev StyleX refresh shim in ${page}`);
+  assert(
+    !content.includes('stylex-dev-css'),
+    `Dev StyleX refresh shim in ${page}`,
+  );
   const dom = new JSDOM(content).window.document;
   if (toolPages.includes(page)) {
     const main = dom.querySelector('main[data-tool-id]');
@@ -454,6 +457,20 @@ for (const page of htmlFiles) {
     );
   }
   const stylesheets = [...dom.querySelectorAll('link[rel="stylesheet"]')];
+  assert.equal(
+    dom.documentElement.dataset.colorTheme,
+    'sea-mist',
+    `Missing static color theme in ${page}`,
+  );
+  assert.equal(
+    dom.documentElement.dataset.appearance,
+    'dark',
+    `Missing static appearance in ${page}`,
+  );
+  assert(
+    dom.documentElement.className,
+    `Missing root theme classes in ${page}`,
+  );
   assert(stylesheets.length > 0, `Missing extracted CSS in ${page}`);
   const linkedCSS = [];
   for (const link of stylesheets) {
@@ -499,6 +516,10 @@ for (const page of htmlFiles) {
     }
   }
   const css = linkedCSS.join('\n');
+  assert(
+    /color-scheme:\s*var\(--/.test(css),
+    `Appearance must control native color-scheme in ${page}`,
+  );
   assert(
     css.includes('@layer priority') && css.includes('--'),
     'Linked CSS must include extracted StyleX styles and tokens',

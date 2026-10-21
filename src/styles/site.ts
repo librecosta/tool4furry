@@ -2,6 +2,11 @@ import * as stylex from '@stylexjs/stylex';
 import { tokens } from './tokens.stylex';
 
 export const siteStyles = stylex.create({
+  themeRoot: {
+    colorScheme: tokens.colorScheme,
+    backgroundColor: tokens.page,
+    color: tokens.textPrimary,
+  },
   body: {
     color: tokens.textPrimary,
     backgroundColor: tokens.page,

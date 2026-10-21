@@ -10,7 +10,7 @@ export const controls = stylex.create({
     minWidth: 44,
     paddingBlock: tokens.space8,
     paddingInline: tokens.space16,
-    borderWidth: 1,
+    borderWidth: 2,
     borderStyle: 'solid',
     borderColor: tokens.controlBorder,
     borderRadius: tokens.radiusMd,
@@ -89,7 +89,7 @@ export const controls = stylex.create({
     minHeight: 44,
     paddingBlock: tokens.space8,
     paddingInline: tokens.space12,
-    borderWidth: 1,
+    borderWidth: 2,
     borderStyle: 'solid',
     borderColor: {
       default: tokens.controlBorder,
@@ -137,6 +137,6 @@ export const controls = stylex.create({
     borderColor: tokens.border,
     backgroundColor: tokens.surface,
     borderRadius: tokens.radiusLg,
-    boxShadow: tokens.shadowNone,
+    boxShadow: tokens.shadowSoft,
   },
 });

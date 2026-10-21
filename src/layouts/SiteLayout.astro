@@ -4,6 +4,7 @@ import { region, regionConfig } from '../config/site';
 import { messages } from '../i18n/messages';
 import { siteStyles as s } from '../styles/site';
 import { tokens } from '../styles/tokens.stylex';
+import { resolveTheme } from '../styles/theme';
 import '@fontsource-variable/dm-sans/wght.css';
 import '@fontsource-variable/noto-sans-sc/wght.css';
 import '../styles/global.css';
@@ -15,9 +16,10 @@ const canonical = new URL(Astro.url.pathname, regionConfig.site);
 const resolvedTitle = fullTitle ?? `${title} · Tool4Furry`;
 const resolvedDescription = description ?? t.intro;
 const github = 'https://github.com/librecosta/tool4furry';
+const theme = resolveTheme();
 ---
 <!doctype html>
-<html lang={regionConfig.lang}>
+<html lang={regionConfig.lang} data-color-theme={theme.colorTheme} data-appearance={theme.appearance} {...stylex.attrs(theme.style, s.themeRoot)} style={`--t4f-focus: ${tokens.focus};`}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -38,7 +40,7 @@ const github = 'https://github.com/librecosta/tool4furry';
       <script is:inline type="module" src="/src/styles/stylex-dev-css.ts"></script>
     </>}
   </head>
-  <body {...stylex.attrs(s.body)} style={`--t4f-focus: ${tokens.focus};`}>
+  <body {...stylex.attrs(s.body)}>
     <div {...stylex.attrs(s.frame)}>
       <a {...stylex.attrs(s.skip)} href="#main-content">{t.skip}</a>
       {!workspace && <header {...stylex.attrs(s.width)}>

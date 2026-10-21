@@ -1,5 +1,15 @@
 # V0.3-A — Visual Foundation & Design Tokens
 
+> 当前主题为 V0.5-C1 Sea Mist + Soft Graphite Dark，以下早期阶段数值保留为历史记录。
+
+## V0.5-C1 — 静态主题合同（2026-10-21）
+
+`tokens.stylex.ts` 保留 `tokens` 导出及全部既有字段；一份完整静态值表同时输入原生 `defineVars` 与 `createTheme`，新增 `colorScheme`。`theme.ts` 的 `ThemeSelection` 分为 `colorTheme` / `appearance`，目前仅接受 `sea-mist` / `dark`。未来增加真实组合时先解析成一份完整覆盖表，再选一个 StyleX theme；不把同一 VarGroup 的两个局部主题直接叠加。没有切换器、偏好存储、系统跟随或 React Provider。
+
+SiteLayout 在 html 静态输出两个 data 属性和主题 class；色彩、原生 color-scheme、全局 focus 桥接均从根继承，覆盖 React Islands 与 body 下的 Portal。0.19.1 的 unplugin 默认解析配置已通过临时异色覆盖的 Astro SSG / 静态浏览器验证，无需修改 Vite 配置。开发 FOUC 兼容模块保持原样，由 Issue #1 跟踪上游。
+
+当前基础色为 page `#1D2225`、workspace `#23292C`、surface `#292F33`、surfaceMuted `#343C40`；文字 `#F0F2EF` / `#B6C1BF`，边界 `#495358`，控件边界 `#83938F`。交互 action `#9DB8AF`、hover `#B0C8C0`、pressed `#8EA99F`、tint `#354743`、onAction `#1D2B28`，focus `#B4D0C5`。品牌、success/warning/danger 独立。圆角为 8/10/14/18px；输入、按钮、选项与 Dropzone 采用 2px 边界，常驻面板加轻微内高光和阴影，列表分隔线不变。字号、间距、密度和功能不变；功能性图片/素材颜色不参与主题替换。
+
 Creative Studio 以暖白、深墨和清楚的控件状态为基础。常驻区域用 Flat Studio（表面和细边界），菜单、提示、通知、确认框及滚动球用 Floating Studio（柔和阴影）。本轮不重画首页或工作台，公共 Props、Base UI 焦点/模态/生命周期、文件规则、滚动算法和状态归属保持 V0.2-A/B 契约。
 
 ## 字体交付

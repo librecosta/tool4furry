@@ -38,6 +38,7 @@ export const converterStyles = stylex.create({
   },
   delivery: { display: 'grid', gap: t.space8 },
   settings: {
+    boxShadow: t.shadowSoft,
     gridColumn: { default: '2', '@media (max-width: 900px)': 'auto' },
     gridRow: { default: '1 / span 2', '@media (max-width: 900px)': 'auto' },
     display: 'grid',
@@ -132,7 +133,7 @@ export const converterStyles = stylex.create({
     minHeight: 44,
     padding: t.space8,
     minWidth: 0,
-    borderWidth: 1,
+    borderWidth: 2,
     borderStyle: 'solid',
     borderColor: t.controlBorder,
     borderRadius: t.radiusMd,

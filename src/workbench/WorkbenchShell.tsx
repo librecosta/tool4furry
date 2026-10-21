@@ -212,7 +212,7 @@ const s = stylex.create({
     borderStyle: 'solid',
     borderColor: tokens.border,
     borderRadius: tokens.radiusLg,
-    boxShadow: tokens.shadowNone,
+    boxShadow: tokens.shadowSoft,
     pointerEvents: 'auto',
   },
   localHeader: {

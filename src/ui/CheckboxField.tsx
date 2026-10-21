@@ -68,7 +68,7 @@ const styles = stylex.create({
     height: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: 2,
     borderStyle: 'solid',
     borderColor: tokens.controlBorder,
     backgroundColor: {
