@@ -1,0 +1,214 @@
+import { useId, type ReactNode } from 'react';
+import * as stylex from '@stylexjs/stylex';
+import {
+  ArrowClockwiseIcon,
+  DownloadSimpleIcon,
+  EyeIcon,
+  FileIcon,
+  TrashIcon,
+} from '@phosphor-icons/react';
+import { IconButton } from './Button';
+import { Tooltip } from './Tooltip';
+import { controls } from '../styles/controls';
+import { tokens as t } from '../styles/tokens.stylex';
+
+export type FileTaskStatus =
+  'validating' | 'queued' | 'processing' | 'ready' | 'stale' | 'error';
+export interface FileTaskAction {
+  kind: 'preview' | 'download' | 'remove' | 'retry';
+  label: string;
+  id?: string;
+  disabled?: boolean;
+  disabledReason?: string;
+  onClick?: () => void;
+  href?: string;
+  download?: string;
+}
+export interface FileTaskItem {
+  id: string;
+  name: string;
+  icon?: ReactNode;
+  metadata: ReactNode;
+  output?: ReactNode;
+  status: FileTaskStatus;
+  statusLabel: string;
+  error?: string;
+  actions: readonly FileTaskAction[];
+}
+
+const icons = {
+  preview: EyeIcon,
+  download: DownloadSimpleIcon,
+  remove: TrashIcon,
+  retry: ArrowClockwiseIcon,
+};
+
+/** Presentation only: the caller owns files, results, URLs and task transitions. */
+export function FileTaskList({
+  label,
+  items,
+}: {
+  label: string;
+  items: readonly FileTaskItem[];
+}) {
+  const id = useId();
+  return (
+    <ul aria-label={label} {...stylex.props(s.list)}>
+      {items.map((item, index) => {
+        const nameId = `${id}-${index}-name`;
+        const errorId = `${id}-${index}-error`;
+        return (
+          <li
+            key={item.id}
+            aria-labelledby={nameId}
+            aria-describedby={item.error ? errorId : undefined}
+            data-task-status={item.status}
+            {...stylex.props(s.item)}
+          >
+            <div {...stylex.props(s.heading)}>
+              <span aria-hidden="true" {...stylex.props(s.icon)}>
+                {item.icon ?? <FileIcon size={18} />}
+              </span>
+              <span id={nameId} title={item.name} {...stylex.props(s.name)}>
+                {item.name}
+              </span>
+              <span
+                role="status"
+                {...stylex.props(
+                  s.status,
+                  item.status === 'ready' && s.ready,
+                  item.status === 'error' && s.error,
+                )}
+              >
+                {item.statusLabel}
+              </span>
+            </div>
+            <div {...stylex.props(s.metadata)}>
+              <span>{item.metadata}</span>
+              {item.output && (
+                <span {...stylex.props(s.output)}> → {item.output}</span>
+              )}
+            </div>
+            <div {...stylex.props(s.actions)}>
+              {item.actions.map((action) => {
+                const Icon = icons[action.kind];
+                const content = <Icon size={18} aria-hidden="true" />;
+                return (
+                  <Tooltip
+                    key={action.kind}
+                    content={action.disabledReason ?? action.label}
+                  >
+                    {action.href && !action.disabled ? (
+                      <a
+                        id={action.id}
+                        href={action.href}
+                        download={action.download}
+                        aria-label={action.label}
+                        onClick={action.onClick}
+                        {...stylex.props(
+                          controls.button,
+                          controls.ghost,
+                          s.action,
+                          action.kind === 'download' && s.ready,
+                        )}
+                      >
+                        {content}
+                      </a>
+                    ) : (
+                      <IconButton
+                        id={action.id}
+                        label={action.label}
+                        variant="ghost"
+                        size="sm"
+                        disabled={action.disabled}
+                        aria-description={action.disabledReason}
+                        title={action.disabledReason}
+                        onClick={action.onClick}
+                        {...stylex.props(s.action)}
+                      >
+                        {content}
+                      </IconButton>
+                    )}
+                  </Tooltip>
+                );
+              })}
+            </div>
+            {item.error && (
+              <p
+                id={errorId}
+                role="alert"
+                {...stylex.props(s.feedback, s.error)}
+              >
+                {item.error}
+              </p>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+const s = stylex.create({
+  list: { listStyle: 'none', padding: 0, margin: 0, minWidth: 0 },
+  item: {
+    display: 'grid',
+    gridTemplateColumns: 'minmax(0, 1fr) auto',
+    alignItems: 'center',
+    columnGap: t.space8,
+    rowGap: 2,
+    minHeight: 64,
+    paddingBlock: { default: t.space8, '@media (max-width: 600px)': t.space4 },
+    paddingInline: t.space8,
+    borderBottomWidth: 1,
+    borderBottomStyle: 'solid',
+    borderBottomColor: t.border,
+    backgroundColor: { default: 'transparent', ':hover': t.surface },
+  },
+  heading: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: t.space8,
+    minWidth: 0,
+  },
+  icon: { display: 'inline-flex', flexShrink: 0, color: t.textSecondary },
+  name: {
+    minWidth: 0,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    fontSize: 14,
+    fontWeight: 500,
+  },
+  status: {
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+    fontSize: 12,
+    color: t.textSecondary,
+  },
+  ready: { color: t.action },
+  metadata: {
+    gridColumn: { default: '1', '@media (max-width: 600px)': '1 / -1' },
+    minWidth: 0,
+    fontSize: 12,
+    lineHeight: 1.6,
+    color: t.textSecondary,
+    fontVariantNumeric: 'tabular-nums',
+    overflowWrap: 'anywhere',
+  },
+  output: { color: t.textPrimary },
+  actions: {
+    gridColumn: 2,
+    gridRow: { default: '1 / 3', '@media (max-width: 600px)': '1' },
+    display: 'flex',
+    alignItems: 'center',
+  },
+  action: { width: 44, height: 44, paddingInline: 0, flexShrink: 0 },
+  feedback: {
+    gridColumn: '1 / -1',
+    margin: 0,
+    fontSize: 13,
+    overflowWrap: 'anywhere',
+  },
+  error: { color: t.danger },
+});

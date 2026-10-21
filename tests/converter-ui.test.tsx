@@ -1,4 +1,7 @@
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import type { ReactElement } from 'react';
+import { UiProvider } from '../src/ui/UiProvider';
+import { messages } from '../src/i18n/messages';
+import { act, fireEvent, render as renderUi, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { setViewport } from './setup';
@@ -9,6 +12,7 @@ import { getToolPreviewPaths } from '../src/tools/preview-paths';
 import { getPublishedTools } from '../src/tools/registry';
 import { toolPageContents } from '../src/site/tool-content';
 import { ConverterSession } from '../src/tools/image-converter/session';
+const render = (ui: ReactElement) => renderUi(<UiProvider labels={messages.global}>{ui}</UiProvider>);
 const { encode } = vi.hoisted(() => ({
   encode: vi.fn(
     async () => new Blob(['unit-test-output'], { type: 'image/webp' }),
@@ -45,7 +49,7 @@ beforeEach(() => {
   );
 });
 describe('real workspace interaction contract (codec mocked; not browser evidence)', () => {
-  it('progressively reveals source and result without remounting settings or the file picker', async () => {
+  it('reveals a compact task, with lazy preview and no duplicate result/download region', async () => {
     let finish!: (blob: Blob) => void;
     encode.mockImplementationOnce(() => new Promise((resolve) => {
       finish = resolve;
@@ -64,9 +68,18 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
 
     fireEvent.change(input, { target: { files: [new File(['png'], 'art.png')] } });
     await waitFor(() => expect(encode).toHaveBeenCalledTimes(1));
-    expect(screen.getByRole('region', { name: 'Image preview' })).toBeTruthy();
-    expect(screen.getAllByRole('figure')).toHaveLength(1);
+    expect(screen.getByRole('list', { name: 'File tasks' })).toBeTruthy();
+    expect(screen.queryByRole('img')).toBeNull();
+    expect(URL.createObjectURL).not.toHaveBeenCalled();
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: 'Image preview' }));
     expect(await screen.findByRole('img', { name: 'Original' })).toBeTruthy();
+    expect(screen.queryByRole('img', { name: 'Output' })).toBeNull();
+    expect(URL.createObjectURL).toHaveBeenCalledTimes(1);
+    await user.keyboard('{Escape}');
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(URL.revokeObjectURL).toHaveBeenCalledTimes(1);
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Image preview' }));
     expect(
       screen.getByRole('button', { name: 'Download result' }).hasAttribute('disabled'),
     ).toBe(true);
@@ -75,7 +88,15 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
 
     await act(async () => finish(new Blob(['output'], { type: 'image/webp' })));
     await screen.findByRole('link', { name: 'Download result' });
-    expect(screen.getAllByRole('figure')).toHaveLength(2);
+    expect(screen.queryByRole('img')).toBeNull();
+    expect(screen.getAllByRole('link', { name: 'Download result' })).toHaveLength(1);
+    await user.click(screen.getByRole('button', { name: 'Image preview' }));
+    expect(await screen.findByRole('img', { name: 'Original' })).toBeTruthy();
+    expect(screen.getByRole('img', { name: 'Output' })).toBeTruthy();
+    expect(URL.createObjectURL).toHaveBeenCalledTimes(3);
+    await user.click(screen.getByRole('button', { name: 'Close image preview' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(URL.revokeObjectURL).toHaveBeenCalledTimes(2);
     expect(screen.getByRole('region', { name: 'Conversion settings' })).toBe(settings);
     expect(container.querySelector('button button')).toBeNull();
   });
@@ -91,7 +112,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
       [...container.querySelectorAll('[data-converter-part]')].map((el) =>
         el.getAttribute('data-converter-part'),
       ),
-    ).toEqual(['file', 'settings', 'preview', 'result']);
+    ).toEqual(['file', 'settings', 'tasks']);
     const file = new File(['png'], 'art.png', { type: 'image/png' });
     fireEvent.change(container.querySelector('input[type=file]')!, {
       target: { files: [file] },
@@ -163,11 +184,11 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     });
     await screen.findByText('replacement.png');
     await waitFor(() => expect(
-      within(screen.getByRole('region', { name: '结果与下载' }))
+      within(screen.getByRole('list', { name: '文件任务' }))
         .getByRole('status').textContent,
-    ).toBe(converterMessages.cn.sourceReady));
-    expect(screen.queryByText(converterMessages.cn.stale)).toBeNull();
-    expect(screen.getAllByRole('figure')).toHaveLength(1);
+    ).toBe(converterMessages.cn.taskStatus.queued));
+    expect(screen.queryByText(converterMessages.cn.taskStatus.stale)).toBeNull();
+    expect(screen.queryByRole('figure')).toBeNull();
     expect(screen.queryByRole('link', { name: '下载结果' })).toBeNull();
     await user.click(screen.getByRole('button', { name: '移除图片' }));
     await waitFor(() =>
@@ -281,6 +302,66 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     await user.click(screen.getByRole('button', { name: t.restore }));
     expect(hex.value).toBe('#FFFFFF');
     expect(picker.value).toBe('#ffffff');
+  });
+  it('keeps a stale result out of the dialog and download; preview errors also block download', async () => {
+    const user = userEvent.setup();
+    const { container, unmount } = render(<ImageConverter region="global" />);
+    await waitFor(() => expect(screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled')).toBe(false));
+    fireEvent.change(container.querySelector('input[type=file]')!, { target: { files: [new File(['png'], 'art.png')] } });
+    await screen.findByRole('link', { name: 'Download result' });
+    await user.click(screen.getByRole('button', { name: 'Advanced' }));
+    fireEvent.change(screen.getByRole('textbox', { name: 'Exact quality (1–100)' }), { target: { value: '90' } });
+    expect(screen.queryByRole('link', { name: 'Download result' })).toBeNull();
+    expect(screen.getByRole('list', { name: 'File tasks' }).querySelector('[data-task-status]')?.getAttribute('data-task-status')).toBe('stale');
+    await user.click(screen.getByRole('button', { name: 'Image preview' }));
+    expect(await screen.findByRole('img', { name: 'Original' })).toBeTruthy();
+    expect(screen.queryByRole('img', { name: 'Output' })).toBeNull();
+    await user.keyboard('{Escape}');
+    await user.click(screen.getByRole('button', { name: 'Generate result' }));
+    await screen.findByRole('link', { name: 'Download result' });
+    await user.click(screen.getByRole('button', { name: 'Image preview' }));
+    fireEvent.error(await screen.findByRole('img', { name: 'Output' }));
+    expect(within(screen.getByRole('dialog')).getByRole('alert').textContent).toBe(converterMessages.global.previewError);
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('link', { name: 'Download result' })).toBeNull();
+    unmount();
+    expect(URL.revokeObjectURL).toHaveBeenCalledTimes(vi.mocked(URL.createObjectURL).mock.calls.length);
+  });
+  it('recovers via a row retry and ignores a conversion completed after removal', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<ImageConverter region="global" />);
+    await waitFor(() => expect(screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled')).toBe(false));
+    encode.mockRejectedValueOnce(new ImageFailure('encode'));
+    fireEvent.change(container.querySelector('input[type=file]')!, { target: { files: [new File(['png'], 'art.png')] } });
+    await screen.findByText(converterMessages.global.errors.encode);
+    const row = screen.getByRole('listitem', { name: 'art.png' });
+    expect(within(row).getByRole('status').textContent).toBe('Failed');
+    let finish!: (blob: Blob) => void;
+    encode.mockImplementationOnce(() => new Promise(resolve => { finish = resolve; }));
+    await user.click(within(row).getByRole('button', { name: 'Retry current settings' }));
+    expect(within(row).getByRole('status').textContent).toBe('Processing');
+    await user.click(within(row).getByRole('button', { name: 'Remove image' }));
+    await act(async () => finish(new Blob(['obsolete'], { type: 'image/webp' })));
+    expect(screen.queryByRole('list', { name: 'File tasks' })).toBeNull();
+    expect(screen.queryByRole('link', { name: 'Download result' })).toBeNull();
+    expect(URL.createObjectURL).not.toHaveBeenCalled();
+  });
+  it('keeps Quick same-format bytes and shares the download URL in its on-demand preview', async () => {
+    const user = userEvent.setup();
+    const { container, unmount } = render(<ImageConverter region="global" />);
+    await waitFor(() => expect(screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled')).toBe(false));
+    await user.click(screen.getByRole('radio', { name: 'PNG' }));
+    const file = new File(['original bytes'], 'art.png', { type: 'image/png' });
+    fireEvent.change(container.querySelector('input[type=file]')!, { target: { files: [file] } });
+    const download = await screen.findByRole('link', { name: 'Download original' });
+    expect(encode).not.toHaveBeenCalled();
+    expect(URL.createObjectURL).toHaveBeenCalledWith(file);
+    await user.click(screen.getByRole('button', { name: 'Image preview' }));
+    expect((await screen.findByRole('img', { name: 'Original' })).getAttribute('src')).toBe(download.getAttribute('href'));
+    expect(screen.getByRole('img', { name: 'Output' }).getAttribute('src')).toBe(download.getAttribute('href'));
+    expect(URL.createObjectURL).toHaveBeenCalledTimes(1);
+    unmount();
+    expect(URL.revokeObjectURL).toHaveBeenCalledTimes(1);
   });
   it('only exposes ownership diagnostics for an explicit development debug URL', async () => {
     const original = window.location.href;

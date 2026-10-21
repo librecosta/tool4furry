@@ -8,7 +8,10 @@ import { TextField } from '../../ui/TextField';
 import { FieldFrame, useField } from '../../ui/Field';
 import { SliderField } from '../../ui/SliderField';
 import { controls as c } from '../../styles/controls';
-import { ImageResources } from '../image/resources';
+import { FileImageIcon } from '@phosphor-icons/react';
+import { FileTaskList, type FileTaskStatus } from '../../ui/FileTaskList';
+import { ImagePreviewDialog } from './ImagePreviewDialog';
+import { useOwnedUrl } from './use-owned-url';
 import { formats, imageBudget, type ImageErrorCode } from '../image/types';
 import { createProcessingState, isCustomSettings } from '../processing-state';
 import { recommendations, sameSettings } from './presets';
@@ -17,23 +20,16 @@ import { downloadName } from './filename';
 import { converterMessages } from './messages';
 import { converterStyles as s } from './converter.styles';
 
-function useOwnedUrl(
-  blob: Blob | undefined,
-  resources: ImageResources | undefined,
-) {
-  const [owned, setOwned] = useState<{ blob: Blob; url: string }>();
-  useEffect(() => {
-    if (!blob || !resources) {
-      setOwned(undefined);
-      return;
-    }
-    const url = resources.url(blob);
-    setOwned({ blob, url });
-    return () => resources.revoke(url);
-  }, [blob, resources]);
-  return owned?.blob === blob ? owned?.url : undefined;
-}
-const bytes = (value: number) => `${value.toLocaleString('en-US')} B`;
+const bytes = (value: number) => {
+  const unit =
+    Math.abs(value) >= 1024 ** 2
+      ? 'MiB'
+      : Math.abs(value) >= 1024
+        ? 'KiB'
+        : 'B';
+  const divisor = unit === 'MiB' ? 1024 ** 2 : unit === 'KiB' ? 1024 : 1;
+  return `${(value / divisor).toLocaleString('en-US', { maximumFractionDigits: 1 })} ${unit}`;
+};
 export default function ImageConverter({ region }: ToolProps) {
   const t = converterMessages[region];
   const [session, setSession] = useState<ConverterSession>();
@@ -42,7 +38,7 @@ export default function ImageConverter({ region }: ToolProps) {
     checkingCapabilities: true,
     filename: '',
   }));
-  const [preview, setPreview] = useState<'source' | 'output'>('source');
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [previewError, setPreviewError] = useState<Blob>();
   const [qualityDraft, setQualityDraft] = useState<string>();
   const [lastValidBackground, setLastValidBackground] = useState('#FFFFFF');
@@ -51,7 +47,9 @@ export default function ImageConverter({ region }: ToolProps) {
   const formatGroup = useId();
   useEffect(() => {
     if (import.meta.env.DEV)
-      setDebug(new URLSearchParams(window.location.search).get('debug') === '1');
+      setDebug(
+        new URLSearchParams(window.location.search).get('debug') === '1',
+      );
     const current = new ConverterSession(setView);
     setSession(current);
     current.start();
@@ -64,9 +62,8 @@ export default function ImageConverter({ region }: ToolProps) {
     () => setPreviewError(undefined),
     [view.source?.blob, result?.blob],
   );
-  const sourceUrl = useOwnedUrl(view.source?.blob, session?.resources);
+  useEffect(() => setPreviewOpen(false), [view.source?.blob]);
   const resultUrl = useOwnedUrl(result?.blob, session?.resources);
-  const visiblePreview = result ? preview : 'source';
   const download = session?.download();
   const name = downloadName(
     view.source?.file.name ?? 'image',
@@ -79,15 +76,22 @@ export default function ImageConverter({ region }: ToolProps) {
     settings.format !== 'png' &&
     (!/^\d+$/.test(qualityText) ||
       !Number.isInteger(Number(qualityText)) ||
-      Number(qualityText) < 1 || Number(qualityText) > 100);
+      Number(qualityText) < 1 ||
+      Number(qualityText) > 100);
   const downloadable =
-    download && resultUrl && !name.error && !qualityInvalid &&
+    download &&
+    resultUrl &&
+    !name.error &&
+    !qualityInvalid &&
     previewError !== download.blob;
   const backgroundInvalid =
     settings.format === 'jpeg' &&
     !/^#[0-9a-f]{6}$/i.test(settings.jpegBackground);
   useEffect(() => {
-    if (settings.format === 'jpeg' && /^#[0-9a-f]{6}$/i.test(settings.jpegBackground))
+    if (
+      settings.format === 'jpeg' &&
+      /^#[0-9a-f]{6}$/i.test(settings.jpegBackground)
+    )
       setLastValidBackground(settings.jpegBackground);
   }, [settings.format, settings.jpegBackground]);
   const backgroundField = {
@@ -106,19 +110,34 @@ export default function ImageConverter({ region }: ToolProps) {
     settings.format === 'png'
       ? t.standard
       : `${t.qualitySummary} ${settings.quality ?? '—'}${settings.format === 'jpeg' ? ` · ${settings.jpegBackground}` : ''}`;
-  const status = view.candidate
-    ? t.validating
-    : state.status === 'processing'
-      ? t.processing
-      : state.status === 'stale' && result
-        ? t.stale
-        : state.status === 'ready'
-          ? result?.kind === 'passthrough'
-            ? t.passthrough
-            : t.ready
-          : view.source
-            ? t.sourceReady
-            : t.idle;
+  const taskStatus: FileTaskStatus = view.candidate
+    ? 'validating'
+    : qualityInvalid || backgroundInvalid
+      ? result
+        ? 'stale'
+        : 'queued'
+      : state.status === 'idle' || (state.status === 'stale' && !result)
+        ? 'queued'
+        : state.status;
+  const status = t.taskStatus[taskStatus];
+  const validOutput =
+    state.status === 'ready' && !qualityInvalid && state.validSettings
+      ? result
+      : undefined;
+  const downloadDisabledReason = name.error
+    ? t.filenameError
+    : qualityInvalid
+      ? t.qualityError
+      : backgroundInvalid
+        ? t.backgroundError
+        : previewError && previewError === download?.blob
+          ? t.previewError
+          : status;
+  const remove = () => {
+    setPreviewOpen(false);
+    session?.remove();
+    document.getElementById('converter-source-button')?.focus();
+  };
   const labels = {
     parameters: t.settings,
     close: '',
@@ -138,52 +157,25 @@ export default function ImageConverter({ region }: ToolProps) {
         <section
           data-converter-part="file"
           aria-label={t.file}
-          {...stylex.props(s.file)}
+          {...stylex.props(s.file, !view.source && s.emptyFile)}
         >
-          <div {...stylex.props(s.strip, !view.source && s.emptyStrip)}>
-            {view.source && (
-              <div {...stylex.props(s.metadata)}>
-                <strong
-                  title={view.source.file.name}
-                  {...stylex.props(s.fileName)}
-                >
-                  {view.source.file.name}
-                </strong>
-                <span {...stylex.props(s.note)}>
-                  {view.source.info.format.toUpperCase()} · {view.source.width}{' '}
-                  × {view.source.height} · {bytes(view.source.file.size)}
-                </span>
-              </div>
-            )}
-            <FileDropzone
-              id="converter-source"
-              appearance={view.source ? 'compact' : 'expanded'}
-              label={view.source ? t.replace : t.pick}
-              hint={!view.source ? `PNG / JPEG / WebP · ${t.local}` : undefined}
-              maxFiles={1}
-              maxSizeBytes={imageBudget.bytes}
-              issueMessages={{
-                type: t.disabledType,
-                size: t.disabledSize,
-                count: t.disabledCount,
-              }}
-              onSelection={(selection) => {
-                if (!selection.accepted.length) session?.rejectSelection('bytes');
-              }}
-              onFilesSelected={(files) => session?.select(files[0])}
-            />
-            {view.source && (
-              <Button
-                onClick={() => {
-                  session?.remove();
-                  setPreview('source');
-                  document.getElementById('converter-source-button')?.focus();
-                }}
-              >
-                {t.remove}
-              </Button>
-            )}
-          </div>
+          <FileDropzone
+            id="converter-source"
+            appearance={view.source ? 'compact' : 'expanded'}
+            label={view.source ? t.replace : t.pick}
+            hint={!view.source ? `PNG / JPEG / WebP · ${t.local}` : undefined}
+            maxFiles={1}
+            maxSizeBytes={imageBudget.bytes}
+            issueMessages={{
+              type: t.disabledType,
+              size: t.disabledSize,
+              count: t.disabledCount,
+            }}
+            onSelection={(selection) => {
+              if (!selection.accepted.length) session?.rejectSelection('bytes');
+            }}
+            onFilesSelected={(files) => session?.select(files[0])}
+          />
           {!view.source && (
             <details {...stylex.props(s.help)}>
               <summary>{t.fileDetails}</summary>
@@ -191,7 +183,7 @@ export default function ImageConverter({ region }: ToolProps) {
               <p {...stylex.props(s.note)}>{t.limitations}</p>
             </details>
           )}
-          {view.candidate && (
+          {view.candidate && !view.source && (
             <p role="status" {...stylex.props(s.note)}>
               {view.candidate} · {t.validating}
             </p>
@@ -217,7 +209,10 @@ export default function ImageConverter({ region }: ToolProps) {
                   key={mode}
                   type="button"
                   aria-pressed={state.mode === mode}
-                  {...stylex.props(s.mode, state.mode === mode && s.currentMode)}
+                  {...stylex.props(
+                    s.mode,
+                    state.mode === mode && s.currentMode,
+                  )}
                   onClick={() => {
                     setQualityDraft(undefined);
                     session?.mode(mode);
@@ -332,20 +327,32 @@ export default function ImageConverter({ region }: ToolProps) {
                         aria-describedby={`${qualityId}-scale${qualityInvalid ? ` ${qualityId}-error` : ''}`}
                         inputMode="numeric"
                         value={qualityText}
-                        {...stylex.props(c.input, s.qualityInput, qualityInvalid && c.invalid)}
+                        {...stylex.props(
+                          c.input,
+                          s.qualityInput,
+                          qualityInvalid && c.invalid,
+                        )}
                         onChange={(event) => {
                           const text = event.target.value;
                           setQualityDraft(text);
                           const quality = Number(text);
-                          if (/^\d+$/.test(text) && Number.isInteger(quality) &&
-                              quality >= 1 && quality <= 100)
+                          if (
+                            /^\d+$/.test(text) &&
+                            Number.isInteger(quality) &&
+                            quality >= 1 &&
+                            quality <= 100
+                          )
                             session?.settings({ ...settings, quality });
                         }}
                       />
                     }
                   />
-                  <div id={`${qualityId}-scale`} {...stylex.props(s.qualityScale)}>
-                    <span>{t.smallerFile}</span><span>{t.higherQuality}</span>
+                  <div
+                    id={`${qualityId}-scale`}
+                    {...stylex.props(s.qualityScale)}
+                  >
+                    <span>{t.smallerFile}</span>
+                    <span>{t.higherQuality}</span>
                   </div>
                 </div>
               )}
@@ -360,16 +367,26 @@ export default function ImageConverter({ region }: ToolProps) {
                       aria-describedby={backgroundIds.describedBy}
                       {...stylex.props(c.input, backgroundInvalid && c.invalid)}
                       onChange={(event) =>
-                        session?.settings({ ...settings, jpegBackground: event.target.value })
+                        session?.settings({
+                          ...settings,
+                          jpegBackground: event.target.value,
+                        })
                       }
                     />
                     <input
                       type="color"
                       aria-label={t.pickBackground}
-                      value={backgroundInvalid ? lastValidBackground : settings.jpegBackground}
+                      value={
+                        backgroundInvalid
+                          ? lastValidBackground
+                          : settings.jpegBackground
+                      }
                       {...stylex.props(c.input, s.colorPicker)}
                       onChange={(event) =>
-                        session?.settings({ ...settings, jpegBackground: event.target.value })
+                        session?.settings({
+                          ...settings,
+                          jpegBackground: event.target.value,
+                        })
                       }
                     />
                   </div>
@@ -389,7 +406,8 @@ export default function ImageConverter({ region }: ToolProps) {
               )}
             </>
           )}
-          {(state.mode === 'advanced' || isCustomSettings(state, sameSettings)) && (
+          {(state.mode === 'advanced' ||
+            isCustomSettings(state, sameSettings)) && (
             <Button
               onClick={() => {
                 setQualityDraft(undefined);
@@ -400,166 +418,106 @@ export default function ImageConverter({ region }: ToolProps) {
               {t.restore}
             </Button>
           )}
-          {view.source && (
-            <a href="#converter-result" {...stylex.props(c.button, c.ghost)}>
-              {t.viewResult}
-            </a>
-          )}
-        </section>
-        <section
-          hidden={!view.source}
-          data-converter-part="preview"
-          aria-labelledby="converter-preview"
-          {...stylex.props(s.preview)}
-        >
-          <h2 id="converter-preview" {...stylex.props(s.heading)}>
-            {t.preview}
-          </h2>
-          {result && (
-            <div
-              role="group"
-              aria-label={t.previewToggle}
-              {...stylex.props(s.mobileTabs)}
-            >
-              <Button
-                aria-pressed={visiblePreview === 'source'}
-                onClick={() => setPreview('source')}
-              >
-                {t.original}
-              </Button>
-              <Button
-                aria-pressed={visiblePreview === 'output'}
-                onClick={() => setPreview('output')}
-              >
-                {t.output}
-              </Button>
-            </div>
-          )}
-          <div {...stylex.props(s.previews, !result && s.singlePreview)}>
-            {(['source', 'output'] as const)
-              .filter((which) => which === 'source' || result)
-              .map((which) => {
-                const source = which === 'source',
-                  url = source ? sourceUrl : resultUrl,
-                  blob = source ? view.source?.blob : result?.blob;
-                return (
-                  <figure
-                    key={which}
-                    {...stylex.props(
-                      s.figure,
-                      visiblePreview !== which && s.mobileHidden,
-                    )}
-                  >
-                    <div {...stylex.props(s.imageBox)}>
-                      {url ? (
-                        <img
-                          src={url}
-                          alt={
-                            source
-                              ? t.original
-                              : state.status === 'ready'
-                                ? t.output
-                                : t.old
-                          }
-                          onError={() => setPreviewError(blob)}
-                          {...stylex.props(s.image)}
-                        />
-                      ) : (
-                        <p {...stylex.props(s.note)}>
-                          {source ? t.sourceReady : t.noOutput}
-                        </p>
-                      )}
-                    </div>
-                    <figcaption {...stylex.props(s.caption)}>
-                      {source
-                        ? t.original
-                        : !result || state.status === 'ready'
-                          ? t.output
-                          : t.old}
-                      {source && view.source
-                        ? ` · ${view.source.info.format.toUpperCase()} · ${view.source.width}×${view.source.height} · ${bytes(view.source.file.size)}`
-                        : !source && result
-                          ? ` · ${result.mime} · ${result.width}×${result.height} · ${bytes(result.bytes)}`
-                          : ''}
-                    </figcaption>
-                  </figure>
-                );
-              })}
-          </div>
-          {previewError &&
-            (previewError === view.source?.blob ||
-              previewError === result?.blob) && (
-              <p role="alert" {...stylex.props(s.error)}>
-                {t.previewError}
-              </p>
-            )}
-        </section>
-        <section
-          id="converter-result"
-          hidden={!view.source}
-          data-converter-part="result"
-          aria-labelledby="converter-result-heading"
-          {...stylex.props(s.result)}
-        >
-          <h2 id="converter-result-heading" {...stylex.props(s.heading)}>
-            {t.result}
-          </h2>
-          <p role="status" {...stylex.props(s.note)}>
-            {status}
-          </p>
-          {state.error && (
-            <p role="alert" {...stylex.props(s.error)}>
-              {t.errors[state.error as ImageErrorCode] ?? t.errors.encode}
-            </p>
-          )}
-          {result && view.source && (
-            <p {...stylex.props(s.note)}>
-              {t.saved}: {result.bytes - view.source.file.size >= 0 ? '+' : ''}
-              {bytes(result.bytes - view.source.file.size)}
-              {state.status !== 'ready' ? ` · ${t.old}` : ''}
-            </p>
-          )}
-          {!name.error && view.source && (
-            <p {...stylex.props(s.note)}>{name.name}</p>
-          )}
-          <div {...stylex.props(s.row)}>
-            {downloadable ? (
-              <a
-                href={resultUrl}
-                download={name.name}
-                {...stylex.props(c.button, c.primary)}
-              >
-                {download.kind === 'passthrough'
-                  ? t.originalDownload
-                  : t.download}
-              </a>
-            ) : (
-              <Button disabled>
-                {result?.kind === 'passthrough'
-                  ? t.originalDownload
-                  : t.download}
-              </Button>
-            )}
-            {(state.mode === 'advanced' ||
-              state.status === 'error' ||
+          {view.source &&
+            state.status !== 'error' &&
+            (state.mode === 'advanced' ||
               state.status === 'stale' ||
-              (view.source && state.status === 'idle')) && (
+              state.status === 'idle') && (
               <Button
-                variant={!downloadable ? 'primary' : 'secondary'}
+                variant="primary"
                 loading={state.status === 'processing'}
                 disabled={!canGenerate || state.status === 'processing'}
                 onClick={() => session?.generate()}
               >
-                {state.status === 'error'
-                  ? t.retry
-                  : state.mode === 'advanced' &&
-                      view.source?.info.format === settings.format
-                    ? t.reencode
-                    : t.generate}
+                {state.mode === 'advanced' &&
+                view.source.info.format === settings.format
+                  ? t.reencode
+                  : t.generate}
               </Button>
             )}
-          </div>
         </section>
+        <section
+          hidden={!view.source}
+          data-converter-part="tasks"
+          aria-label={t.tasks}
+          {...stylex.props(s.tasks)}
+        >
+          {view.source && (
+            <FileTaskList
+              label={t.tasks}
+              items={[
+                {
+                  id: 'source',
+                  name: view.source.file.name,
+                  icon: <FileImageIcon size={18} />,
+                  metadata: `${view.source.info.format.toUpperCase()} · ${view.source.width}×${view.source.height} · ${bytes(view.source.file.size)}`,
+                  output: validOutput
+                    ? `${validOutput.mime.replace('image/', '').toUpperCase()} · ${bytes(validOutput.bytes)} (${validOutput.bytes - view.source.file.size >= 0 ? '+' : ''}${bytes(validOutput.bytes - view.source.file.size)})`
+                    : undefined,
+                  status: taskStatus,
+                  statusLabel: status,
+                  error: state.error
+                    ? (t.errors[state.error as ImageErrorCode] ??
+                      t.errors.encode)
+                    : undefined,
+                  actions: [
+                    {
+                      kind: 'preview',
+                      id: 'converter-preview-button',
+                      label: t.preview,
+                      onClick: () => setPreviewOpen(true),
+                    },
+                    {
+                      kind: 'download',
+                      label:
+                        result?.kind === 'passthrough'
+                          ? t.originalDownload
+                          : t.download,
+                      href: downloadable ? resultUrl : undefined,
+                      download: name.name,
+                      disabled: !downloadable,
+                      disabledReason: !downloadable
+                        ? downloadDisabledReason
+                        : undefined,
+                    },
+                    ...(state.status === 'error'
+                      ? [
+                          {
+                            kind: 'retry' as const,
+                            label: t.retry,
+                            disabled: !canGenerate,
+                            onClick: () => session?.generate(),
+                          },
+                        ]
+                      : []),
+                    { kind: 'remove', label: t.remove, onClick: remove },
+                  ],
+                },
+              ]}
+            />
+          )}
+          {previewError && !previewOpen && (
+            <p role="alert" {...stylex.props(s.error)}>
+              {t.previewError}
+            </p>
+          )}
+        </section>
+        {view.source && session && (
+          <ImagePreviewDialog
+            open={previewOpen}
+            onOpenChange={setPreviewOpen}
+            source={view.source}
+            output={validOutput}
+            outputUrl={resultUrl}
+            resources={session.resources}
+            t={t}
+            error={
+              previewError === view.source.blob ||
+              (!!previewError && previewError === validOutput?.blob)
+            }
+            onError={setPreviewError}
+          />
+        )}
         {import.meta.env.DEV && debug && (
           <details {...stylex.props(s.details)}>
             <summary>DEV · ownership diagnostics</summary>
