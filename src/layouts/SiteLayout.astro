@@ -9,6 +9,7 @@ import '@fontsource-variable/dm-sans/wght.css';
 import '@fontsource-variable/noto-sans-sc/wght.css';
 import '../styles/global.css';
 import Brand from '../components/site/Brand.astro';
+import SiteFooter from '../components/site/SiteFooter.astro';
 interface Props { title: string; fullTitle?: string; description?: string; workspace?: boolean; noindex?: boolean }
 const { title, fullTitle, description, workspace = false, noindex = false } = Astro.props;
 const t = messages[region];
@@ -43,7 +44,7 @@ const theme = resolveTheme();
   <body {...stylex.attrs(s.body)}>
     <div {...stylex.attrs(s.frame)}>
       <a {...stylex.attrs(s.skip)} href="#main-content">{t.skip}</a>
-      {!workspace && <header {...stylex.attrs(s.width)}>
+      {!workspace && <header data-site-header {...stylex.attrs(s.width)}>
         <nav {...stylex.attrs(s.nav)} aria-label={t.headerNav}>
           <Brand />
           <div {...stylex.attrs(s.navLinks)}>
@@ -58,26 +59,7 @@ const theme = resolveTheme();
         </nav>
       </header>}
       <slot />
-      {!workspace && <footer {...stylex.attrs(s.width)}>
-        <div {...stylex.attrs(s.footer)}>
-          <div {...stylex.attrs(s.footerTop)}>
-            <div>
-              <Brand />
-              <p {...stylex.attrs(s.footerIntro)}>{t.footerIntro}</p>
-              <p {...stylex.attrs(s.ecosystem)}>{t.ecosystem}</p>
-            </div>
-            <nav aria-label={t.footerNav} {...stylex.attrs(s.footerLinks)}>
-              <a {...stylex.attrs(s.navLink)} href="/tools/">{t.tools}</a>
-              <a {...stylex.attrs(s.navLink)} href={github}>GitHub</a>
-              <a {...stylex.attrs(s.navLink)} href={`${github}/blob/master/LICENSE`}>BSD-3-Clause License</a>
-            </nav>
-          </div>
-          <div {...stylex.attrs(s.footerBottom)}>
-            <span>© {new Date().getFullYear()} Tool4Furry</span>
-            <span>{t.footer}</span>
-          </div>
-        </div>
-      </footer>}
+      <SiteFooter region={region} />
     </div>
   </body>
 </html>

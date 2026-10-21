@@ -166,9 +166,12 @@ for (const path of [mark, '/brand/creative-fragments.svg']) {
   );
 }
 for (const image of document.querySelectorAll('img')) {
+  const src = image.getAttribute('src');
   assert(
-    image.getAttribute('src')?.startsWith('/brand/'),
-    'Homepage images must be local brand assets',
+    image.closest('[data-site-compliance]')
+      ? src?.startsWith('/') && !src.startsWith('//')
+      : src?.startsWith('/brand/'),
+    'Homepage images must be local brand assets or approved local compliance icons',
   );
   assert.equal(
     image.getAttribute('alt'),
@@ -335,7 +338,19 @@ for (const page of htmlFiles) {
     `Dev StyleX refresh shim in ${page}`,
   );
   const dom = new JSDOM(content).window.document;
+  const footers = dom.querySelectorAll('[data-site-footer]');
+  assert.equal(footers.length, 1, `Exactly one shared footer in ${page}`);
+  const footer = footers[0];
+  assert.equal(footer.tagName, 'FOOTER');
+  assert.equal(footer.closest('main, astro-island'), null, 'Footer must be static and outside the tool');
+  assert(footer.querySelector(`a[href="${github}/blob/master/LICENSE"]`));
+  assert(!/TEST_ONLY_|测试ICP备|测试公网安备|待备案/.test(footer.textContent), 'Test/placeholder compliance leaked');
+  for (const entry of footer.querySelectorAll('[data-site-compliance] a')) {
+    assert(entry.textContent.trim(), 'Empty compliance label');
+    assert(new URL(entry.href).protocol === 'https:', 'Compliance queries must use HTTPS');
+  }
   if (toolPages.includes(page)) {
+    assert.equal(dom.querySelectorAll('[data-site-header]').length, 0, 'Tool page must keep its independent navigation');
     const main = dom.querySelector('main[data-tool-id]');
     const href = '/' + page.replace(/index\.html$/, '');
     const card = allCards.find((entry) => entry.getAttribute('href') === href);
