@@ -15,7 +15,7 @@ export type SiteCompliance = Readonly<{
 export type RegionalCompliance = Readonly<Record<Region, SiteCompliance>>;
 
 // Add only approved, site-specific records and the actual approved link/icon.
-// Empty configuration deliberately renders no compliance row or placeholder.
+// Empty configuration renders no public records; only CN DEV may mark the slot.
 export const siteCompliance: RegionalCompliance = {
   cn: {},
   global: {},
@@ -41,4 +41,9 @@ export function getComplianceEntries(
   return [...entries, ...(current.additional ?? [])].filter(
     (entry) => entry.label.trim().length > 0,
   );
+}
+
+/** Presentation hint only; never represented as an approved compliance entry. */
+export function showCompliancePreview(region: Region, dev: boolean, entries: readonly ComplianceEntry[]) {
+  return dev && region === 'cn' && entries.length === 0;
 }

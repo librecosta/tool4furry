@@ -345,11 +345,6 @@ export const siteStyles = stylex.create({
     backgroundColor: { default: 'transparent', ':hover': tokens.surfaceHover },
   },
   footerSocialIcon: { display: 'block' },
-  footerCredit: {
-    fontSize: 14,
-    color: tokens.textSecondary,
-    marginBlock: '4px 0',
-  },
   footerLinks: {
     display: 'grid',
     gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
@@ -378,17 +373,17 @@ export const siteStyles = stylex.create({
     fontSize: 12,
     color: { default: tokens.textSecondary, ':hover': tokens.textPrimary },
   },
-  footerCompliance: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    columnGap: tokens.space16,
-    rowGap: tokens.space4,
+  footerComplianceSlot: {
     fontSize: 12,
     color: tokens.textSecondary,
+    textAlign: 'center',
     overflowWrap: 'anywhere',
   },
+  footerCompliance: {
+    display: 'flex', flexDirection: 'column', alignItems: 'center',
+    rowGap: tokens.space4, marginTop: tokens.space12,
+  },
+  compliancePreview: { marginBlock: '12px 0' },
   complianceLink: {
     display: 'inline-flex',
     alignItems: 'center',

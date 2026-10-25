@@ -52,7 +52,10 @@ describe('static theme selection contract', () => {
     expect(neutralDarkValues.featuredHover).toBe(neutralDarkValues.surfaceHover);
     expect(neutralDarkValues.featuredSelected).toBe(neutralDarkValues.surfaceMuted);
     expect(neutralDarkValues.featuredAccent).toBe(neutralDarkValues.textPrimary);
-    expect(neutralLightValues.featuredBackground).toBe('#E3EDF6');
+    expect(neutralLightValues.featuredBackground).toBe('#ECF0E9');
+    expect(neutralLightValues.featuredHover).toBe('#E0E8DF');
+    expect(neutralLightValues.featuredSelected).toBe('#E0E8DF');
+    expect(neutralLightValues.featuredAccent).toBe('#415B4B');
     expect(neutralLightValues.surfaceFloating).toBe('#FFFFFF');
     expect(neutralLightValues.navBackground).toBe('#E8EBEF');
     expect(neutralLightValues.page).toBe('#F8F9FA');

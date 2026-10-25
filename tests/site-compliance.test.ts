@@ -3,6 +3,7 @@ import {
   getComplianceEntries,
   icpQueryUrl,
   siteCompliance,
+  showCompliancePreview,
   type RegionalCompliance,
 } from '../src/config/compliance';
 
@@ -25,6 +26,18 @@ describe('static regional compliance configuration', () => {
     expect(siteCompliance).toEqual({ cn: {}, global: {} });
     expect(getComplianceEntries('cn')).toEqual([]);
     expect(getComplianceEntries('global')).toEqual([]);
+  });
+
+  it.each(['cn', 'global'] as const)('limits the empty-slot hint to CN DEV, without adding an entry (%s)', region => {
+    const entries = getComplianceEntries(region);
+    expect(showCompliancePreview(region, true, entries)).toBe(region === 'cn');
+    expect(showCompliancePreview(region, false, entries)).toBe(false);
+    expect(entries).toEqual([]);
+    // Approved fixtures replace the hint; Global additional notices stay valid.
+    const configured = getComplianceEntries(region, records);
+    expect(showCompliancePreview(region, true, configured)).toBe(false);
+    expect(showCompliancePreview(region, false, configured)).toBe(false);
+    expect(configured).toHaveLength(region === 'cn' ? 3 : 1);
   });
 
   it('uses only the official ICP query entry and the supplied approved police link/icon', () => {

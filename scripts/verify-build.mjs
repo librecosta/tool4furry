@@ -184,7 +184,8 @@ assert(
 assert(
   document
     .querySelector('footer')
-    ?.textContent.includes('by LibreCosta'),
+    ?.textContent.includes('by LibreCosta') === false,
+  'Footer brand does not repeat the copyright attribution',
 );
 assert.equal(
   document
@@ -376,7 +377,7 @@ for (const page of htmlFiles) {
   const footer = footers[0];
   assert.equal(footer.tagName, 'FOOTER');
   assert.equal(footer.closest('main, astro-island'), null, 'Footer must be static and outside the tool');
-  assert.deepEqual([...footer.firstElementChild.children].map(el => el.tagName), ['DIV', 'NAV', 'DIV'], 'Footer has brand, grouped navigation and legal bands');
+  assert.deepEqual([...footer.firstElementChild.children].map(el => el.tagName), ['DIV', 'NAV', 'DIV', 'DIV'], 'Footer retains three content bands followed by the compliance slot');
   const social = footer.querySelectorAll('[data-footer-social]');
   assert.equal(social.length, 1, 'Only the real GitHub social entry');
   assert.equal(social[0].getAttribute('href'), github);
@@ -389,6 +390,19 @@ for (const page of htmlFiles) {
     ['/#tools', '/tools/'], ['/about/', github], [`${github}/issues`],
   ]);
   const legal = footer.querySelector('[data-footer-legal]');
+  const slots = footer.querySelectorAll('[data-footer-compliance-slot]');
+  assert.equal(slots.length, 1, 'One stable compliance slot, even without records');
+  const slot = slots[0];
+  assert.equal(slot.previousElementSibling, legal, 'Compliance follows the complete legal/copyright row');
+  assert.equal(slot, footer.firstElementChild.lastElementChild, 'Compliance is the bottommost footer content');
+  assert.equal(legal.querySelector('[data-site-compliance]'), null, 'Compliance is no longer inside the left legal area');
+  assert.equal(dom.querySelector('[data-footer-compliance-preview]'), null, 'CN DEV compliance hint must never enter production');
+  assert(!content.includes('备案展示位'), 'Development compliance copy leaked into static HTML');
+  const records = footer.querySelectorAll('[data-site-compliance]');
+  assert(records.length <= 1, 'At most one regional compliance group');
+  for (const group of records)
+    assert.equal(group.parentElement, slot, 'All approved records, including additional notices, belong to the bottom slot');
+  if (records.length === 0) assert.equal(slot.childElementCount, 0, 'Unconfigured production slot stays empty');
   assert.deepEqual([...legal.querySelectorAll('nav a')].map(a => a.getAttribute('href')), ['/privacy/', '/terms/', `${github}/blob/master/LICENSE`]);
   assert(legal.textContent.includes(`© ${new Date().getFullYear()} Tool4Furry · LibreCosta`));
   assert(footer.querySelector(`a[href="${github}/blob/master/LICENSE"]`));
@@ -396,7 +410,7 @@ for (const page of htmlFiles) {
     assert(footer.querySelector(`a[href="/${kind}/"]`), `Missing Footer information link: ${kind} in ${page}`);
   assert(!/TEST_ONLY_|测试ICP备|测试公网安备|待备案/.test(footer.textContent), 'Test/placeholder compliance leaked');
   for (const entry of footer.querySelectorAll('[data-site-compliance] a')) {
-    assert.equal(entry.closest('[data-footer-legal]'), legal, 'Compliance stays within the legal band');
+    assert.equal(entry.closest('[data-footer-compliance-slot]'), slot, 'Approved records stay in the bottom compliance slot');
     assert(entry.textContent.trim(), 'Empty compliance label');
     assert(new URL(entry.href).protocol === 'https:', 'Compliance queries must use HTTPS');
   }

@@ -1,4 +1,4 @@
-> V0.5-C4-D（Issue #7）：精选面板仅在 Light 使用独立冷灰蓝材质，Dark 沿用原值；面板顶部裁剪揭示/收回 420ms，16×16 Chevron 居中旋转 300ms。原生 details 退出时保留 open，先撤销 ARIA 展开状态并将面板 inert，transitionend 后关闭（480ms 容错）；快速重开取消旧关闭，Reduced Motion 立即完成。Footer 使用 navBackground，静态三段为品牌/GitHub、工具/项目/支持真实链接、法务/许可/版权；备案仍由原配置条件渲染在底部法务区，无占位、装饰线或额外脚本。以下历史记录不覆盖本条。
+> V0.5-C4-D（Issue #7，含人工验收补充）：精选面板仅在 Light 使用独立浅灰绿材质（#ECF0E9 / #E0E8DF / #415B4B），Dark 沿用原值；面板顶部裁剪揭示/收回 420ms，16×16 Chevron 居中旋转 300ms。原生 details 退出时保留 open，先撤销 ARIA 展开状态并将面板 inert，transitionend 后关闭（480ms 容错）；快速重开取消旧关闭，Reduced Motion 立即完成。Footer 使用 navBackground，静态三段为品牌/GitHub、工具/项目/支持真实链接、法务/许可/版权；品牌下不再重复署名。原合规配置条件渲染在法务/版权行之后的居中底部槽，生产空槽零高度、无占位；仅 CN DEV 无记录时显示“备案展示位 · 开发预览”，Global 不继承 CN 备案。无装饰线或额外脚本。以下历史记录不覆盖本条。
 
 > V0.5-C4-C（Issue #6）：顶栏独立标签为「精选工具 / Featured Tools」（完整目录仍为工具箱）。Astro/React 直接复用 getHomepageEntries 的精选顺序、9 项上限及地区/DEV 发布过滤；移除同分类优先的旧 Switcher 投影。普通导航展开为贴合下缘的全宽色面，1280px 内层、自然高度、无卡片轮廓/阴影；手机单列，Canvas 保持原浮动导航几何。主题图标的行内基线问题以 20×20 flex 盒、零行高和 block SVG 修正；display 与互斥隐藏留在同一 global.css 层，避免 StyleX display 覆盖隐藏。首页/目录卡片、通用静态 Card、Converter 设置面与桌面 Inspector 去除装饰围边/阴影；输入、拖放、焦点、状态边界及真正浮动 Sheet/菜单保留。色板、Hero、转换业务、两段脚本精确白名单及生产隔离不变。以下历史记录不覆盖本条。
 
