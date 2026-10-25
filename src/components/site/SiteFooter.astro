@@ -19,8 +19,17 @@ const compliance = getComplianceEntries(region);
       <p {...stylex.attrs(s.footerCredit)}>by LibreCosta</p>
     </div>
     <nav aria-label={t.footerNav} {...stylex.attrs(s.footerLinks)}>
-      <div {...stylex.attrs(s.footerGroup)}><a {...stylex.attrs(s.navLink)} href="/tools/">{t.tools}</a></div>
-      <div {...stylex.attrs(s.footerGroup)}><a {...stylex.attrs(s.navLink)} href={github}>GitHub</a></div>
+      <div {...stylex.attrs(s.footerGroup)}>
+        <p {...stylex.attrs(s.footerGroupHeading)}>{t.footerProduct}</p>
+        <a {...stylex.attrs(s.navLink)} href="/tools/">{t.tools}</a>
+        <a {...stylex.attrs(s.navLink)} href={github}>GitHub</a>
+      </div>
+      <div {...stylex.attrs(s.footerGroup)}>
+        <p {...stylex.attrs(s.footerGroupHeading)}>{t.footerInformation}</p>
+        <a {...stylex.attrs(s.navLink)} href="/about/">{t.about}</a>
+        <a {...stylex.attrs(s.navLink)} href="/privacy/">{t.privacy}</a>
+        <a {...stylex.attrs(s.navLink)} href="/terms/">{t.terms}</a>
+      </div>
     </nav>
   </div>
   <div {...stylex.attrs(s.footerBottom)}>

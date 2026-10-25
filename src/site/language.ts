@@ -18,13 +18,14 @@ export function languageLink(
 ): LanguageLink {
   const target: Region = source === 'cn' ? 'global' : 'cn';
   let path = '/tools/';
-  if (pathname === '/' || pathname === '/tools/' || pathname === '/tools')
-    path = pathname === '/' ? '/' : '/tools/';
+  const staticPages = ['/', '/tools/', '/about/', '/privacy/', '/terms/'];
+  const normalized = pathname.endsWith('/') ? pathname : `${pathname}/`;
+  if (pathname && staticPages.includes(normalized))
+    path = normalized;
   else {
     const slug = /^\/tools\/([a-z0-9-]+)\/?$/.exec(pathname)?.[1];
     if (slug && getPublishedTools(target, registry).some(tool => tool.slug === slug))
       path = `/tools/${slug}/`;
-    // About/Privacy/Terms join the static-page allowlist only when implemented.
   }
   let origin: string = regions[target].site;
   if (devOrigin !== undefined) {

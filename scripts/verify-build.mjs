@@ -70,6 +70,13 @@ assert(
   'Lab entry assets leaked into production',
 );
 assert(htmlFiles.includes('404.html'), 'Missing static 404');
+const informationPages = {
+  about: region === 'cn' ? ['关于 Tool4Furry', '关于 Tool4Furry'] : ['About Tool4Furry', 'About Tool4Furry'],
+  privacy: region === 'cn' ? ['隐私说明', '隐私说明 · Tool4Furry'] : ['Privacy', 'Privacy · Tool4Furry'],
+  terms: region === 'cn' ? ['使用条款', '使用条款 · Tool4Furry'] : ['Terms', 'Terms · Tool4Furry'],
+};
+for (const kind of Object.keys(informationPages))
+  assert(htmlFiles.includes(`${kind}/index.html`), `Missing static information page: ${kind}`);
 const home = await readFile(resolve(root, 'index.html'), 'utf8');
 const document = new JSDOM(home).window.document;
 const site =
@@ -364,6 +371,8 @@ for (const page of htmlFiles) {
   assert.equal(footer.tagName, 'FOOTER');
   assert.equal(footer.closest('main, astro-island'), null, 'Footer must be static and outside the tool');
   assert(footer.querySelector(`a[href="${github}/blob/master/LICENSE"]`));
+  for (const kind of Object.keys(informationPages))
+    assert(footer.querySelector(`a[href="/${kind}/"]`), `Missing Footer information link: ${kind} in ${page}`);
   assert(!/TEST_ONLY_|测试ICP备|测试公网安备|待备案/.test(footer.textContent), 'Test/placeholder compliance leaked');
   for (const entry of footer.querySelectorAll('[data-site-compliance] a')) {
     assert(entry.textContent.trim(), 'Empty compliance label');
@@ -498,6 +507,29 @@ for (const page of htmlFiles) {
   const languageURL = new URL(language.getAttribute('href'));
   assert.equal(languageURL.origin, region === 'cn' ? 'https://tool4furry.com' : 'https://tool4furry.cn');
   assert.equal(languageURL.search + languageURL.hash, '', 'No query or hash crosses regions');
+  const informationKind = Object.keys(informationPages).find(kind => page === `${kind}/index.html`);
+  if (informationKind) {
+    assertStaticNavigation(dom);
+    assert.equal(dom.querySelectorAll('[data-site-header]').length, 1);
+    assert.equal(dom.querySelectorAll('h1').length, 1, `Unique information H1 in ${page}`);
+    const [h1, title] = informationPages[informationKind];
+    assert.equal(dom.querySelector('h1').textContent.trim(), h1);
+    assert.equal(dom.title, title);
+    const article = dom.querySelector(`main#main-content article[data-information-page="${informationKind}"]`);
+    assert(article, `Missing static information body in ${page}`);
+    assert(article.querySelector('header > p')?.textContent.trim(), 'Short summary required');
+    const sections = [...article.querySelectorAll(':scope > section')];
+    assert(sections.length >= 2 && sections.length <= 4, 'Information pages need 2–4 sections');
+    for (const section of sections)
+      assert(section.querySelector('h2')?.textContent.trim() && section.querySelector('p')?.textContent.trim());
+    assert(!/TODO|Lorem ipsum|待完善|即将补充/i.test(article.textContent), 'No placeholder information copy');
+    assert.equal(languageURL.pathname, `/${informationKind}/`, 'Information language link preserves path');
+    if (region === 'global') assert(!/[\u4e00-\u9fff]/u.test(copyWithoutLanguageLink(dom)), 'Chinese copy in Global information page');
+    for (const link of article.querySelectorAll('a[href^="/"]')) {
+      const target = link.getAttribute('href').slice(1) + 'index.html';
+      assert(htmlFiles.includes(target), `Broken local information link: ${target}`);
+    }
+  }
   assert.equal(
     dom.documentElement.dataset.colorTheme,
     'sea-mist',

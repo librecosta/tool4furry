@@ -1,0 +1,28 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { region } from '../../config/site';
+import { informationContent, type InformationKind } from '../../site/information-content';
+import { siteStyles as s } from '../../styles/site';
+
+interface Props { kind: InformationKind }
+const { kind } = Astro.props;
+const content = informationContent[region][kind];
+---
+<SiteLayout title={content.h1} fullTitle={content.title} description={content.description}>
+  <main id="main-content" {...stylex.attrs(s.fluid, s.main)}>
+    <article data-information-page={kind} aria-labelledby="information-title" {...stylex.attrs(s.readable, s.information)}>
+      <header {...stylex.attrs(s.informationHeader)}>
+        <h1 id="information-title" {...stylex.attrs(s.informationTitle)}>{content.h1}</h1>
+        <p {...stylex.attrs(s.informationSummary)}>{content.intro}</p>
+      </header>
+      {content.sections.map((section, index) => <section aria-labelledby={`information-section-${index}`} {...stylex.attrs(s.informationSection)}>
+        <h2 id={`information-section-${index}`} {...stylex.attrs(s.informationHeading)}>{section.heading}</h2>
+        {section.paragraphs.map(paragraph => <p {...stylex.attrs(s.informationText)}>{paragraph}</p>)}
+        {section.links && <div {...stylex.attrs(s.informationLinks)}>
+          {section.links.map(link => <a href={link.href} {...stylex.attrs(s.link)}>{link.label}</a>)}
+        </div>}
+      </section>)}
+    </article>
+  </main>
+</SiteLayout>

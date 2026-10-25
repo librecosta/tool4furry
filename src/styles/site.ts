@@ -88,6 +88,19 @@ export const siteStyles = stylex.create({
     textUnderlineOffset: 5,
   },
   homeMain: { flex: 1 },
+  information: { display: 'grid', gap: tokens.space32, overflowWrap: 'anywhere' },
+  informationHeader: { display: 'grid', gap: tokens.space12 },
+  informationTitle: {
+    margin: 0,
+    fontSize: { default: 32, '@media (max-width: 600px)': 28 },
+    lineHeight: 1.3,
+    fontWeight: 650,
+  },
+  informationSummary: { margin: 0, color: tokens.textSecondary, lineHeight: 1.8 },
+  informationSection: { display: 'grid', gap: tokens.space12 },
+  informationHeading: { margin: 0, fontSize: 20, fontWeight: 600, lineHeight: 1.5 },
+  informationText: { margin: 0, lineHeight: 1.85 },
+  informationLinks: { display: 'flex', flexWrap: 'wrap', columnGap: tokens.space24 },
   toolIntro: { paddingBlock: tokens.space16 },
   previewNote: { marginBlock: 0, fontSize: 12, color: tokens.textSecondary },
   toolTitle: {
@@ -350,6 +363,7 @@ export const siteStyles = stylex.create({
     columnGap: tokens.space24,
   },
   footerGroup: { display: 'flex', flexDirection: 'column' },
+  footerGroupHeading: { marginBlock: '0 4px', color: tokens.textSecondary, fontSize: 12, fontWeight: 500 },
   footerBottom: {
     display: 'flex',
     justifyContent: 'space-between',

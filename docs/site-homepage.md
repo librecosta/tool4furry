@@ -1,5 +1,9 @@
 # Tool4Furry V0.3-C — Site Shell, Homepage & Tool Discovery
 
+> V0.5-C3-C（2026-10-25，[Issue #2](https://github.com/librecosta/tool4furry/issues/2)）：`InformationPage.astro` 与仅供 Astro 使用的 `src/site/information-content.ts` 提供 About / Privacy / Terms 双语静态内容；正文沿用 820px 阅读宽度。Footer 增加真实信息页入口，语言白名单保持这三个路径，其余 DEV/未知路由仍安全回退。页面仅继承既有外观脚本，无新 JS/Island。
+>
+> 发布前事实核验：仓库只有 CI、没有生产部署配置；README 中 Cloudflare Workers Static Assets / EdgeOne Makers 是计划，不是实际部署证据。源代码未集成访问统计；实际运营主体、托管/CDN/其他处理方、访问数据的目的/类别/保存期限/存储地区及适用法律仍须维护者核实。未找到可验证的 `contact@librecosta.com` 公开来源或邮箱可用性证据，因此首版使用已有 GitHub Issues（不在公开问题提供个人信息，私密请求先索取渠道）；正式发布前须确认私密联系和权利请求的接收处理方式。这些首版说明不代表法律审核完成；合规配置仍由 C2-A 原机制管理。
+
 > V0.5-C3-B（2026-10-25）：导航增加真实地区语言链接、亮暗操作和非交互账户占位。首页/目录的零脚本历史约束仅放行 head 中逐字校验的 `appearance-controller.js`：绘制前恢复 `t4f.appearance`，仅替换完整主题类，storage 同步且存储失败时页内可用。仍无 React Island、无关脚本、JS preload 或系统主题跟随。Astro/React 共用控制器与导航样式；Canvas 将控制收纳在可键盘操作的浮层中。语言按目标 Registry 发布状态映射，未知/DEV/未实现信息页回退目标 `/tools/`；不携带 query/hash。
 >
 > DEV 语言联调可设置 `T4F_DEV_LANGUAGE_ORIGIN=http://127.0.0.1:54322` 指向另一个地区的本地预览服务（独立 checkout 的 DEV 服务，或已有的另一地区静态产物）；仅接受本地 origin，生产忽略该覆盖。未设置时链接对应正式地区的安全路由。两域主题偏好独立；旧 `T4F_DEV_APPEARANCE` 仍只决定 DEV 无偏好时的起点，手动选择优先。

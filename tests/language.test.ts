@@ -8,10 +8,17 @@ describe('regional language links', () => {
     expect(languageLink('/', source).href).toBe(origin + '/');
     expect(languageLink('/tools', source).href).toBe(origin + '/tools/');
     expect(languageLink('/tools/', source).href).toBe(origin + '/tools/');
-    for (const path of ['/preview/image-converter/', '/lab/canvas', '/404', '/unknown/',
-      '/about/', '/privacy/', '/terms/', '//evil.test/', '/tools/../', '/tools/image-converter/'])
+    for (const path of ['', '/preview/image-converter/', '/lab/canvas', '/404', '/unknown/',
+      '/about/extra/', '/privacy/?debug=1', '/terms/#section', '//evil.test/', '/tools/../', '/tools/image-converter/'])
       expect(languageLink(path, source).href).toBe(origin + '/tools/');
     expect(languageLink('/', source).target).toBe(source === 'cn' ? 'EN' : '中');
+  });
+  it.each(['cn', 'global'] as const)('preserves implemented information pages from %s', source => {
+    const origin = source === 'cn' ? 'https://tool4furry.com' : 'https://tool4furry.cn';
+    for (const kind of ['about', 'privacy', 'terms']) {
+      expect(languageLink(`/${kind}/`, source).href).toBe(`${origin}/${kind}/`);
+      expect(languageLink(`/${kind}`, source).href).toBe(`${origin}/${kind}/`);
+    }
   });
   it('preserves only tools actually published in the target region', () => {
     const registry = [fixtureTool('shared'), fixtureTool('cn-only', { regions: ['cn'] }), fixtureTool('draft', { status: 'draft' })];
