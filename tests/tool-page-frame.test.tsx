@@ -32,16 +32,24 @@ describe('product navigation', () => {
     expect(container.querySelector('[data-tool-panel] [aria-current]')).toBeNull();
     expect(screen.getByRole('link', { name: messages.cn.browseAll }).getAttribute('href')).toBe('/tools/');
   });
-  it('preserves native expansion before island hydration without mismatched attributes', async () => {
+  it.each([false, true])('preserves disclosure enhancement before hydration (closing=%s)', async closing => {
     const host = document.createElement('div');
     host.innerHTML = renderToString(<ToolboxDisclosure region="cn" />);
     document.body.append(host);
-    host.querySelector('details')!.open = true;
+    const details = host.querySelector('details')!;
+    details.open = true;
+    if (closing) details.dataset.toolMotion = 'closing';
+    details.querySelector('summary')!.setAttribute('aria-expanded', String(!closing));
+    const positioner = details.querySelector('[data-tool-positioner]')!;
+    positioner.setAttribute('aria-hidden', String(closing));
+    positioner.toggleAttribute('inert', closing);
     const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
     let root: Root | undefined;
     try {
       await act(async () => { root = hydrateRoot(host, <ToolboxDisclosure region="cn" />); });
       expect(host.querySelector('details')!.open).toBe(true);
+      expect(positioner.hasAttribute('inert')).toBe(closing);
+      expect(details.querySelector('summary')!.getAttribute('aria-expanded')).toBe(String(!closing));
       expect(errors).not.toHaveBeenCalled();
     } finally {
       await act(async () => root?.unmount());

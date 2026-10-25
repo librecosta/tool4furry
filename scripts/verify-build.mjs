@@ -376,11 +376,27 @@ for (const page of htmlFiles) {
   const footer = footers[0];
   assert.equal(footer.tagName, 'FOOTER');
   assert.equal(footer.closest('main, astro-island'), null, 'Footer must be static and outside the tool');
+  assert.deepEqual([...footer.firstElementChild.children].map(el => el.tagName), ['DIV', 'NAV', 'DIV'], 'Footer has brand, grouped navigation and legal bands');
+  const social = footer.querySelectorAll('[data-footer-social]');
+  assert.equal(social.length, 1, 'Only the real GitHub social entry');
+  assert.equal(social[0].getAttribute('href'), github);
+  assert.equal(social[0].getAttribute('rel'), 'noopener noreferrer');
+  assert.equal(social[0].getAttribute('target'), '_blank');
+  assert(social[0].getAttribute('aria-label'));
+  const groups = footer.querySelector(':scope > div > nav').children;
+  assert.deepEqual([...groups].map(el => el.querySelector('p').textContent.trim()), region === 'cn' ? ['工具', '项目', '支持'] : ['Tools', 'Project', 'Support']);
+  assert.deepEqual([...groups].map(el => [...el.querySelectorAll('a')].map(a => a.getAttribute('href'))), [
+    ['/#tools', '/tools/'], ['/about/', github], [`${github}/issues`],
+  ]);
+  const legal = footer.querySelector('[data-footer-legal]');
+  assert.deepEqual([...legal.querySelectorAll('nav a')].map(a => a.getAttribute('href')), ['/privacy/', '/terms/', `${github}/blob/master/LICENSE`]);
+  assert(legal.textContent.includes(`© ${new Date().getFullYear()} Tool4Furry · LibreCosta`));
   assert(footer.querySelector(`a[href="${github}/blob/master/LICENSE"]`));
   for (const kind of Object.keys(informationPages))
     assert(footer.querySelector(`a[href="/${kind}/"]`), `Missing Footer information link: ${kind} in ${page}`);
   assert(!/TEST_ONLY_|测试ICP备|测试公网安备|待备案/.test(footer.textContent), 'Test/placeholder compliance leaked');
   for (const entry of footer.querySelectorAll('[data-site-compliance] a')) {
+    assert.equal(entry.closest('[data-footer-legal]'), legal, 'Compliance stays within the legal band');
     assert(entry.textContent.trim(), 'Empty compliance label');
     assert(new URL(entry.href).protocol === 'https:', 'Compliance queries must use HTTPS');
   }

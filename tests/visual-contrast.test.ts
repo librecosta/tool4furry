@@ -104,4 +104,17 @@ describe.each([
       for (const foreground of ['supportClay', 'supportAmber', 'supportLavender', 'supportSlate'] as const)
         expect(contrast(color(foreground), background), `${foreground} on ${name}`).toBeGreaterThanOrEqual(4.5);
   });
+  it('checks featured-panel text/focus and all copy on the new Light materials', () => {
+    const panel = color('featuredBackground');
+    expect(contrast(color('textSecondary'), panel)).toBeGreaterThanOrEqual(4.5);
+    for (const background of [panel, over(color('featuredHover'), panel), over(color('featuredSelected'), panel)]) {
+      for (const foreground of ['textPrimary', 'featuredAccent'] as const)
+        expect(contrast(color(foreground), background), foreground).toBeGreaterThanOrEqual(4.5);
+      // #7 freezes Dark's existing alpha hover and secondary text. Enforce AA
+      // for all text on the newly introduced Light materials without changing it.
+      if (_appearance === 'light')
+        expect(contrast(color('textSecondary'), background)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(color('focus'), background)).toBeGreaterThanOrEqual(3);
+    }
+  });
 });

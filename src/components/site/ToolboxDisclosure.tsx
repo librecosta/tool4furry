@@ -14,14 +14,15 @@ export function ToolboxDisclosure({ region, currentToolId, compact = false }: {
     // The native open attribute may already change before island hydration.
     // React leaves it uncontrolled; preserve that early user interaction.
     <details data-tool-disclosure suppressHydrationWarning {...stylex.props(n.disclosure)}>
-      <summary aria-label={t.featuredTools} {...stylex.props(n.control, n.trigger, compact && n.compactTrigger)}>
+      <summary suppressHydrationWarning aria-label={t.featuredTools} {...stylex.props(n.control, n.trigger, compact && n.compactTrigger)}>
         <span {...stylex.props(!compact && n.mobileToolbox)}><ToolboxIcon size={20} aria-hidden /></span>
         {!compact && <>
           <span {...stylex.props(n.toolboxLabel)}><span {...stylex.props(n.labelFull)}>{t.featuredTools}</span><span {...stylex.props(n.labelShort)}>{t.featuredToolsShort}</span></span>
-          <CaretDownIcon size={16} aria-hidden {...stylex.props(n.chevron)} />
+          <span {...stylex.props(n.chevron)}><CaretDownIcon size={16} aria-hidden {...stylex.props(n.svg)} /></span>
         </>}
       </summary>
-      <div {...stylex.props(n.positioner, compact && n.compactPositioner)}>
+      {/* The disclosure script may update aria/inert before hydration, too. */}
+      <div data-tool-positioner suppressHydrationWarning {...stylex.props(n.positioner, compact && n.compactPositioner)}>
         <div data-tool-panel {...stylex.props(n.panel, compact && n.compactPanel)}>
           <div {...stylex.props(n.panelHeader, compact && n.compactPanelHeader)}>
             <span>{t.featuredTools}</span><a href="/tools/" {...stylex.props(n.browse)}>{t.browseAll}</a>

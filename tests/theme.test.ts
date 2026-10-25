@@ -47,6 +47,16 @@ describe('static theme selection contract', () => {
     expect(() => resolvePageTheme(true, 'invalid')).toThrow('T4F_DEV_APPEARANCE');
     expect(() => resolvePageTheme(true, '')).toThrow('T4F_DEV_APPEARANCE');
   });
+  it('isolates the featured Light material while retaining every existing Dark panel color', () => {
+    expect(neutralDarkValues.featuredBackground).toBe(neutralDarkValues.surfaceFloating);
+    expect(neutralDarkValues.featuredHover).toBe(neutralDarkValues.surfaceHover);
+    expect(neutralDarkValues.featuredSelected).toBe(neutralDarkValues.surfaceMuted);
+    expect(neutralDarkValues.featuredAccent).toBe(neutralDarkValues.textPrimary);
+    expect(neutralLightValues.featuredBackground).toBe('#E3EDF6');
+    expect(neutralLightValues.surfaceFloating).toBe('#FFFFFF');
+    expect(neutralLightValues.navBackground).toBe('#E8EBEF');
+    expect(neutralLightValues.page).toBe('#F8F9FA');
+  });
   it('rejects unimplemented combinations rather than inventing a theme fallback', () => {
     expect(() => resolveTheme({ colorTheme: 'sea-mist', appearance: 'dark' } as unknown as ThemeSelection)).toThrow(RangeError);
     expect(() =>

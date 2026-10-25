@@ -12,9 +12,9 @@ const entries = getHomepageEntries(region, undefined, undefined, import.meta.env
   <summary aria-label={t.featuredTools} {...stylex.attrs(n.control, n.trigger)}>
     <span {...stylex.attrs(n.mobileToolbox)}><ToolboxIcon size={20} aria-hidden /></span>
     <span {...stylex.attrs(n.toolboxLabel)}><span {...stylex.attrs(n.labelFull)}>{t.featuredTools}</span><span {...stylex.attrs(n.labelShort)}>{t.featuredToolsShort}</span></span>
-    <span {...stylex.attrs(n.chevron)}><CaretDownIcon size={16} aria-hidden /></span>
+    <span {...stylex.attrs(n.chevron)}><CaretDownIcon size={16} aria-hidden className={stylex.attrs(n.svg).class} /></span>
   </summary>
-  <div {...stylex.attrs(n.positioner)}>
+  <div data-tool-positioner {...stylex.attrs(n.positioner)}>
     <div data-tool-panel {...stylex.attrs(n.panel)}>
       <div {...stylex.attrs(n.panelHeader)}>
         <span>{t.featuredTools}</span><a href="/tools/" {...stylex.attrs(n.browse)}>{t.browseAll}</a>

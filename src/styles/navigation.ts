@@ -27,11 +27,18 @@ export const navigationStyles = stylex.create({
   toolboxLabel: { display: { default: 'inline', '@media (max-width: 360px)': 'none' } },
   mobileToolbox: { display: { default: 'none', '@media (max-width: 360px)': 'block' } },
   chevron: {
-    display: { default: 'block', '@media (max-width: 360px)': 'none' },
+    display: { default: 'flex', '@media (max-width: 360px)': 'none' },
+    width: 16, height: 16, flexShrink: 0, lineHeight: 0,
+    alignItems: 'center', justifyContent: 'center', transformOrigin: 'center',
     transform: 'rotate(var(--toolbox-rotation))',
+    transitionProperty: 'transform',
+    transitionDuration: { default: '300ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
+    transitionTimingFunction: 'ease',
   },
   disclosure: {
-    '--toolbox-rotation': { default: '0deg', ':is([open])': '180deg' },
+    '--toolbox-rotation': { default: '0deg', ':is([open]:not([data-tool-motion]))': '180deg' },
+    '--toolbox-hidden': { default: '100%', ':is([open]:not([data-tool-motion]))': '0%' },
+    '--toolbox-opacity': { default: '0.98', ':is([open]:not([data-tool-motion]))': '1' },
     position: 'static',
     flexShrink: 0,
   },
@@ -44,7 +51,13 @@ export const navigationStyles = stylex.create({
   compactTrigger: { minHeight: 44 },
   positioner: {
     position: 'absolute', top: '100%', left: 0, right: 0, zIndex: t.layerFloating,
-    backgroundColor: t.surfaceFloating,
+    backgroundColor: t.featuredBackground,
+    clipPath: 'inset(0 0 var(--toolbox-hidden) 0)',
+    opacity: 'var(--toolbox-opacity)',
+    pointerEvents: { default: 'auto', ':is([inert])': 'none' },
+    transitionProperty: 'clip-path, opacity',
+    transitionDuration: { default: '420ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
+    transitionTimingFunction: 'cubic-bezier(0.2, 0, 0.2, 1)',
   },
   compactPositioner: { left: 16, right: 16, top: 'calc(100% - 16px)' },
   panel: {
@@ -70,13 +83,13 @@ export const navigationStyles = stylex.create({
   },
   browse: {
     display: 'inline-flex', alignItems: 'center', minHeight: 44,
-    color: { default: t.textSecondary, ':hover': t.textPrimary },
+    color: { default: t.textSecondary, ':hover': t.featuredAccent },
     textDecoration: 'none', fontSize: 13,
   },
   tool: {
     display: 'grid', gap: t.space4, alignContent: 'start', minHeight: 44, padding: t.space8,
-    color: t.textPrimary, textDecoration: 'none',
-    backgroundColor: { default: 'transparent', ':hover': t.surfaceHover, ':is([aria-current="page"])': t.surfaceMuted },
+    color: { default: t.textPrimary, ':hover': t.featuredAccent, ':is([aria-current="page"])': t.featuredAccent }, textDecoration: 'none',
+    backgroundColor: { default: 'transparent', ':hover': t.featuredHover, ':is([aria-current="page"])': t.featuredSelected },
   },
   toolTitle: { fontSize: 14, fontWeight: 500, lineHeight: 1.5 },
   description: {
