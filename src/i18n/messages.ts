@@ -35,6 +35,8 @@ const cn = {
   intro:
     '为 Furry 创作者打造的轻巧工具箱。让素材处理与日常创作更简单，把时间留给真正喜欢的事情。',
   tools: '工具箱',
+  featuredTools: '精选工具',
+  featuredToolsShort: '精选工具',
   browseAll: '浏览全部工具',
   catalogTitle: '工具箱 — Tool4Furry',
   catalogDescription:
@@ -92,6 +94,8 @@ const global: Messages = {
   intro:
     'Thoughtful browser tools for furry creators, made to simplify everyday creative tasks.',
   tools: 'Toolbox',
+  featuredTools: 'Featured Tools',
+  featuredToolsShort: 'Featured',
   browseAll: 'Browse all tools',
   catalogTitle: 'Toolbox — Tool4Furry',
   catalogDescription:

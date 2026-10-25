@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 const source = readFileSync('src/styles/navigation-disclosure.js', 'utf8');
 let dom;
 function page(fine = true, scripted = true) {
-  dom = new JSDOM(`<body><details data-tool-disclosure><summary>Toolbox</summary><div data-tool-panel><a href="/tools/">Browse all</a><a href="/tools/example/">Example</a></div></details><button>Outside</button>${scripted ? `<script>${source}</script>` : ''}</body>`, {
+  dom = new JSDOM(`<body><details data-tool-disclosure><summary>Featured Tools</summary><div data-tool-panel><a href="/tools/">Browse all</a><a href="/tools/example/">Example</a></div></details><button>Outside</button>${scripted ? `<script>${source}</script>` : ''}</body>`, {
     runScripts: scripted ? 'dangerously' : undefined,
     beforeParse(window) { window.matchMedia = () => ({ matches: fine }); },
   });
@@ -13,23 +13,26 @@ function page(fine = true, scripted = true) {
   const details = window.document.querySelector('details');
   const summary = details.querySelector('summary');
   const link = details.querySelector('a');
+  const panel = details.querySelector('[data-tool-panel]');
   const outside = window.document.querySelector('button');
   const pointer = (target, type, relatedTarget = null, pointerType = 'mouse') => target.dispatchEvent(Object.assign(new window.Event(type, { bubbles: true }), { relatedTarget, pointerType }));
-  return { window, details, summary, link, outside, pointer };
+  return { window, details, summary, link, panel, outside, pointer };
 }
 afterEach(() => { dom?.window.close(); vi.useRealTimers(); });
 
 describe('shared native toolbox enhancement', () => {
   it('delays fine-pointer hover, bridges the panel, and delays leaving', () => {
     vi.useFakeTimers();
-    const { details, summary, link, pointer } = page();
+    const { details, summary, link, panel, pointer } = page();
     pointer(summary, 'pointerover');
     vi.advanceTimersByTime(119);
     expect(details.open).toBe(false);
     vi.advanceTimersByTime(1);
     expect(details.open).toBe(true);
-    pointer(summary, 'pointerout', link);
-    pointer(link, 'pointerover', summary);
+    pointer(summary, 'pointerout', panel);
+    pointer(panel, 'pointerover', summary);
+    pointer(panel, 'pointerout', link);
+    pointer(link, 'pointerover', panel);
     vi.advanceTimersByTime(200);
     expect(details.open).toBe(true);
     pointer(link, 'pointerout');

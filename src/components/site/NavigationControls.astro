@@ -14,8 +14,8 @@ const t = messages[region];
   </a>
   <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" aria-label={t.github} {...stylex.attrs(n.control)}><GithubLogoIcon size={20} aria-hidden /></a>
   <button type="button" data-appearance-toggle="static" data-light-label={t.switchLight} data-dark-label={t.switchDark} aria-label={t.appearanceControl} disabled {...stylex.attrs(n.control)}>
-    <span data-appearance-icon="light"><SunIcon size={20} aria-hidden /></span>
-    <span data-appearance-icon="dark"><MoonIcon size={20} aria-hidden /></span>
+    <span data-appearance-icon="light" {...stylex.attrs(n.appearanceIcon)}><SunIcon size={20} aria-hidden className={stylex.attrs(n.svg).class} /></span>
+    <span data-appearance-icon="dark" {...stylex.attrs(n.appearanceIcon)}><MoonIcon size={20} aria-hidden className={stylex.attrs(n.svg).class} /></span>
   </button>
   <span data-account-slot role="img" aria-label={t.accountReserved} {...stylex.attrs(n.account)}><UserIcon size={20} aria-hidden /></span>
 </div>

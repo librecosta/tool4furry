@@ -510,6 +510,9 @@ for (const page of htmlFiles) {
   const stylesheets = [...dom.querySelectorAll('link[rel="stylesheet"]')];
   const appearanceScript = assertAppearanceScript(dom);
   assertNavigationScript(dom);
+  const featuredTrigger = dom.querySelector('[data-tool-disclosure] > summary');
+  assert.equal(featuredTrigger?.getAttribute('aria-label'), region === 'cn' ? '精选工具' : 'Featured Tools', `Featured navigation label in ${page}`);
+  assert(dom.querySelector('[data-tool-panel] a[href="/tools/"]'), 'Featured navigation retains the real full catalog');
   for (const link of dom.querySelectorAll('[data-tool-panel] a')) {
     const href = link.getAttribute('href');
     assert(href?.startsWith('/tools/'), `Unexpected toolbox navigation in ${page}`);

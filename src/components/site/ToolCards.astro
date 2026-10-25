@@ -9,7 +9,7 @@ const Heading = headingLevel === 4 ? 'h4' : 'h3';
 <ul {...stylex.attrs(s.cards)}>{entries.map(tool => <li>
   <a href={tool.href} data-tool-card={tool.id} {...stylex.attrs(s.card)}>
     <span {...stylex.attrs(s.cardTop)}>
-      <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true" {...stylex.attrs(s.cardIcon)}>
+      <svg width="32" height="32" viewBox="8 8 28 28" fill="none" aria-hidden="true" {...stylex.attrs(s.cardIcon)}>
         <rect x="12" y="16" width="20" height="16" rx="3" stroke="currentColor" stroke-width="1.5" />
         <path d="M17 16v-3a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v3M12 23h20M22 21v4" stroke="currentColor" stroke-width="1.5" />
       </svg>

@@ -1,12 +1,10 @@
 import type { Region } from '../config/region';
 import { getAvailableTools, tools } from '../tools/registry';
 import { domains, groups, audiences, contexts } from './taxonomy';
-import type { ToolDefinition } from '../tools/types';
 
 // Editorial order, not another publication list. Unknown/unavailable IDs are ignored.
 export const featuredToolIds: readonly string[] = [];
 export const HOME_TOOL_LIMIT = 9;
-export const SWITCHER_TOOL_LIMIT = 6;
 
 // Presentation metadata only. The existing registry remains the publication gate.
 export function getCatalogEntries(region: Region, registry = tools, dev = false) {
@@ -82,14 +80,4 @@ export function getDiscoverySections(region: Region, registry = tools, dev = fal
       ),
     })),
   ].filter((section) => section.entries.length > 0);
-}
-
-export function getSwitcherTools(
-  available: readonly ToolDefinition[],
-  currentToolId?: string,
-) {
-  const current = available.find((tool) => tool.id === currentToolId);
-  const same = available.filter((tool) => tool.group === current?.group);
-  const others = available.filter((tool) => tool.group !== current?.group);
-  return [...same, ...others].slice(0, SWITCHER_TOOL_LIMIT);
 }

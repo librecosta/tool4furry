@@ -1,3 +1,5 @@
+> V0.5-C4-C（Issue #6）：顶栏独立标签为「精选工具 / Featured Tools」（完整目录仍为工具箱）。Astro/React 直接复用 getHomepageEntries 的精选顺序、9 项上限及地区/DEV 发布过滤；移除同分类优先的旧 Switcher 投影。普通导航展开为贴合下缘的全宽色面，1280px 内层、自然高度、无卡片轮廓/阴影；手机单列，Canvas 保持原浮动导航几何。主题图标的行内基线问题以 20×20 flex 盒、零行高和 block SVG 修正；display 与互斥隐藏留在同一 global.css 层，避免 StyleX display 覆盖隐藏。首页/目录卡片、通用静态 Card、Converter 设置面与桌面 Inspector 去除装饰围边/阴影；输入、拖放、焦点、状态边界及真正浮动 Sheet/菜单保留。色板、Hero、转换业务、两段脚本精确白名单及生产隔离不变。以下历史记录不覆盖本条。
+
 > V0.5-C4-B（Issue #5）：普通导航采用独立 navBackground（Light #E8EBEF / Dark rgba(20,22,25,0.97)），无底边框，桌面 64px / 手机 56px；手机品牌 T4F，操作顺序为语言、GitHub、外观、桌面非交互账户位。Astro 与 ToolPageFrame 共用原生 details 工具箱、StyleX 样式及独立 `navigation-disclosure.js`（body 末尾 #t4f-navigation）：精细指针 120ms 打开/180ms 关闭，触控点击，支持外部点击、Escape 与正常 Tab 链接导航。面板只读取当前地区 getAvailableTools(region, DEV)，无 JS 仍可展开/进入完整目录。静态脚本白名单在 C3-B 外观脚本外仅增加这段逐字审计的导航增强，不允许 Island、无关脚本或 JS preload；Canvas 保持原浮动位置、视口与控制收纳方式。以下历史记录不覆盖本条。
 
 # Tool4Furry V0.3-C — Site Shell, Homepage & Tool Discovery

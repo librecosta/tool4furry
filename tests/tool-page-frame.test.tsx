@@ -10,6 +10,7 @@ import type { ToolDefinition } from '../src/tools/types';
 import { renderToString } from 'react-dom/server';
 import { hydrateRoot, type Root } from 'react-dom/client';
 import { ToolboxDisclosure } from '../src/components/site/ToolboxDisclosure';
+import { fixtureTools } from './fixtures/tools';
 import { messages } from '../src/i18n/messages';
 import { setViewport } from './setup';
 
@@ -19,6 +20,18 @@ afterEach(() => {
 });
 
 describe('product navigation', () => {
+  it('uses the shared featured order and homepage cap, without moving the current tool first', async () => {
+    vi.stubEnv('DEV', true);
+    const entries = fixtureTools(12);
+    vi.spyOn(registry, 'getAvailableTools').mockReturnValue(entries);
+    const user = userEvent.setup();
+    const { container } = render(<ToolPageFrame region="cn" mode="form" title="Current" currentToolId="fixture-12">Workspace</ToolPageFrame>);
+    await user.click(screen.getByLabelText(messages.cn.featuredTools, { selector: 'summary' }));
+    expect([...container.querySelectorAll('[data-tool-panel] a:not([href="/tools/"])')].map(link => link.getAttribute('href')))
+      .toEqual(entries.slice(0, 9).map(tool => `/tools/${tool.slug}/`));
+    expect(container.querySelector('[data-tool-panel] [aria-current]')).toBeNull();
+    expect(screen.getByRole('link', { name: messages.cn.browseAll }).getAttribute('href')).toBe('/tools/');
+  });
   it('preserves native expansion before island hydration without mismatched attributes', async () => {
     const host = document.createElement('div');
     host.innerHTML = renderToString(<ToolboxDisclosure region="cn" />);
@@ -93,7 +106,7 @@ describe('product navigation', () => {
     expect(
       screen.getByRole('navigation', { name: messages.cn.headerNav }),
     ).toBeTruthy();
-    expect(container.querySelector('summary')!.getAttribute('aria-label')).toBe(messages.cn.tools);
+    expect(container.querySelector('summary')!.getAttribute('aria-label')).toBe(messages.cn.featuredTools);
     rerender(
       <ToolPageFrame
         region="cn"
@@ -197,14 +210,15 @@ describe('product navigation', () => {
         Workspace
       </ToolPageFrame>,
     );
-    await user.click(screen.getByText(messages.cn.tools, { selector: 'summary span' }));
+    await user.click(screen.getByLabelText(messages.cn.featuredTools, { selector: 'summary' }));
     const item = await screen.findByRole('link', { name: 'current' });
     expect(item.getAttribute('href')).toBe('/tools/current-slug/');
     expect(item.getAttribute('aria-current')).toBe('page');
     expect(screen.queryByRole('link', { name: 'draft' })?.getAttribute('href') ?? null)
       .toBe(dev ? '/tools/draft-slug/' : null);
     expect(screen.queryByText('overseas')).toBeNull();
-    expect(available).toHaveBeenCalledWith('cn', dev);
+    expect(available).toHaveBeenCalledWith('cn', dev, registry.tools);
+    expect([...document.querySelectorAll('[data-tool-panel] a[aria-current], [data-tool-panel] a[href$="draft-slug/"]')].map(link => link.getAttribute('href'))).toEqual(dev ? ['/tools/draft-slug/', '/tools/current-slug/'] : ['/tools/current-slug/']);
     expect(registry.tools).toEqual([imageConverterDefinition]); // Fixtures never populate the real registry.
     expect(imageConverterDefinition.status).toBe('draft');
     expect(original('cn', false)).toEqual([]);
@@ -215,7 +229,7 @@ describe('product navigation', () => {
     vi.stubEnv('DEV', true);
     const user = userEvent.setup();
     render(<ToolPageFrame region={region} mode="form" currentToolId="image-converter" title="Converter">Workspace</ToolPageFrame>);
-    await user.click(screen.getByText(messages[region].tools, { selector: 'summary span' }));
+    await user.click(screen.getByLabelText(messages[region].featuredTools, { selector: 'summary' }));
     const item = await screen.findByRole('link', { name: name => name.startsWith(imageConverterDefinition.copy[region].title) });
     expect(item.getAttribute('href')).toBe('/tools/image-converter/');
     expect(item.getAttribute('aria-current')).toBe('page');

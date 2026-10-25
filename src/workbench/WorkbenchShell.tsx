@@ -288,6 +288,8 @@ const s = stylex.create({
   // This zero-height wrapper restores interaction without covering the viewport.
   portal: { pointerEvents: 'auto' },
   panel: {
+    // Desktop inspector is a persistent surface; the mobile modal sheet floats.
+    borderWidth: { default: 0, '@media (max-width: 900px)': 1 },
     backgroundColor: {
       default: tokens.surfaceFloating,
       '@media (max-width: 900px)': tokens.surfaceFloating,

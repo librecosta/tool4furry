@@ -4,12 +4,10 @@ import {
   getHomepageEntries,
   getCatalogSections,
   getDiscoverySections,
-  getSwitcherTools,
 } from '../src/site/catalog';
 import type { ToolDefinition } from '../src/tools/types';
 import { fixtureTools } from './fixtures/tools';
 import { assertValidRegistry } from '../src/tools/validate-registry';
-import { getAvailableTools } from '../src/tools/registry';
 import { imageConverterDefinition } from '../src/tools/image-converter/definition';
 
 // Test-only metadata; never registered as a real tool or given a loader.
@@ -53,12 +51,10 @@ describe('static tool discovery', () => {
       for (const section of getDiscoverySections(region, undefined, true))
         expect(section.entries).toEqual(entries);
       expect(getDiscoverySections(region, undefined, true)).toHaveLength(3);
-      expect(getSwitcherTools(getAvailableTools(region, true))).toEqual([imageConverterDefinition]);
       expect(getCatalogEntries(region)).toEqual([]);
       expect(getHomepageEntries(region)).toEqual([]);
       expect(getCatalogSections(region)).toEqual([]);
       expect(getDiscoverySections(region)).toEqual([]);
-      expect(getSwitcherTools(getAvailableTools(region, false))).toEqual([]);
       expect(imageConverterDefinition.status).toBe('draft');
     },
   );
@@ -166,7 +162,6 @@ describe('static tool discovery', () => {
         ),
       ).toEqual(entries);
       expect(getHomepageEntries('cn', list)).toHaveLength(Math.min(9, count));
-      expect(getSwitcherTools(list)).toHaveLength(Math.min(6, count));
       for (const discovery of getDiscoverySections('cn', list)) {
         expect(new Set(discovery.entries.map((entry) => entry.id)).size).toBe(
           count,

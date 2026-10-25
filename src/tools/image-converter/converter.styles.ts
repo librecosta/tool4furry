@@ -42,7 +42,6 @@ export const converterStyles = stylex.create({
   },
   delivery: { display: 'grid', gap: t.space8 },
   settings: {
-    boxShadow: t.shadowSoft,
     gridColumn: { default: '2', '@media (max-width: 900px)': 'auto' },
     gridRow: { default: '1 / span 2', '@media (max-width: 900px)': 'auto' },
     display: 'grid',
@@ -51,9 +50,6 @@ export const converterStyles = stylex.create({
     padding: t.space16,
     backgroundColor: t.surface,
     borderRadius: t.radiusLg,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: t.border,
   },
   emptySettings: { gridColumn: '1 / -1', gridRow: 'auto' },
   settingsHeader: {

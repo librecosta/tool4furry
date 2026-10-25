@@ -132,11 +132,7 @@ export const controls = stylex.create({
   card: {
     padding: tokens.space24,
     minWidth: 0,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: tokens.border,
     backgroundColor: tokens.surface,
     borderRadius: tokens.radiusLg,
-    boxShadow: tokens.shadowSoft,
   },
 });

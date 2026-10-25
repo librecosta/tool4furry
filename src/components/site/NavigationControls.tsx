@@ -40,8 +40,8 @@ export function NavigationControls({ region, link }: {
         disabled={appearance === undefined}
         onClick={toggleAppearance} {...stylex.props(n.control)}
       >
-        <span data-appearance-icon="light"><SunIcon size={20} aria-hidden /></span>
-        <span data-appearance-icon="dark"><MoonIcon size={20} aria-hidden /></span>
+        <span data-appearance-icon="light" {...stylex.props(n.appearanceIcon)}><SunIcon size={20} aria-hidden {...stylex.props(n.svg)} /></span>
+        <span data-appearance-icon="dark" {...stylex.props(n.appearanceIcon)}><MoonIcon size={20} aria-hidden {...stylex.props(n.svg)} /></span>
       </button>
       <span
         data-account-slot role="img" aria-label={t.accountReserved}
