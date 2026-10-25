@@ -1,12 +1,9 @@
 import type { ReactNode } from 'react';
-import { Menu } from '@base-ui/react/menu';
 import { Popover } from '@base-ui/react/popover';
-import { ToolboxIcon, DotsThreeIcon } from '@phosphor-icons/react';
+import { DotsThreeIcon } from '@phosphor-icons/react';
 import * as stylex from '@stylexjs/stylex';
 import type { Region } from '../config/region';
 import type { WorkspaceMode } from './types';
-import { getAvailableTools } from './registry';
-import { getSwitcherTools } from '../site/catalog';
 import { messages } from '../i18n/messages';
 import { controls as c } from '../styles/controls';
 import { tokens } from '../styles/tokens.stylex';
@@ -14,6 +11,7 @@ import { menuStyles as menu } from '../styles/menu';
 import { siteStyles as site } from '../styles/site';
 import { navigationStyles as n } from '../styles/navigation';
 import { NavigationControls } from '../components/site/NavigationControls';
+import { ToolboxDisclosure } from '../components/site/ToolboxDisclosure';
 import { languageLink, type LanguageLink } from '../site/language';
 
 // Product navigation belongs to page composition, never to a tool's local modes.
@@ -37,8 +35,6 @@ export default function ToolPageFrame({
   navigation?: LanguageLink;
 }) {
   const t = messages[region];
-  const available = getAvailableTools(region, import.meta.env.DEV);
-  const shortcuts = getSwitcherTools(available, currentToolId);
   const floating = mode === 'canvas' && !intro;
   const alternate = navigation ?? languageLink('/tools/', region);
   return (
@@ -72,6 +68,7 @@ export default function ToolPageFrame({
               aria-label={`Tool4Furry · ${t.home}`}
               {...stylex.props(
                 !floating && site.brand,
+                n.brand,
                 floating && c.button,
                 floating && c.ghost,
                 floating && s.brand,
@@ -84,58 +81,10 @@ export default function ToolPageFrame({
                 height={24}
                 {...stylex.props(!floating && site.mark)}
               />
-              Tool4Furry
+              <span {...stylex.props(n.brandFull)}>Tool4Furry</span>
+              <span aria-hidden {...stylex.props(n.brandShort)}>T4F</span>
             </a>
-            <Menu.Root>
-              <Menu.Trigger
-                aria-label={t.tools}
-                {...stylex.props(
-                  c.button, c.ghost, s.icon, !floating && n.control,
-                )}
-              >
-                <ToolboxIcon size={20} aria-hidden />
-                {!floating && (
-                  <span {...stylex.props(n.toolboxLabel)}>{t.tools}</span>
-                )}
-              </Menu.Trigger>
-              <Menu.Portal>
-                <Menu.Positioner
-                  align="start"
-                  sideOffset={8}
-                  collisionPadding={16}
-                  {...stylex.props(menu.positioner)}
-                >
-                  <Menu.Popup aria-label={t.tools} {...stylex.props(menu.popup)}>
-                    <Menu.Group>
-                      <Menu.GroupLabel {...stylex.props(menu.label)}>
-                        {t.tools}
-                      </Menu.GroupLabel>
-                      {available.length === 0 && (
-                        <p {...stylex.props(menu.note)}>{t.empty}</p>
-                      )}
-                      {shortcuts.map((tool) => (
-                        <Menu.LinkItem
-                          key={tool.id}
-                          href={`/tools/${tool.slug}/`}
-                          aria-current={
-                            tool.id === currentToolId ? 'page' : undefined
-                          }
-                          {...stylex.props(menu.item)}
-                        >
-                          {tool.copy[region].title}
-                        </Menu.LinkItem>
-                      ))}
-                      <Menu.LinkItem href="/tools/" {...stylex.props(menu.item)}>
-                        {t.browseAll}
-                      </Menu.LinkItem>
-                      <Menu.LinkItem href="/" {...stylex.props(menu.item)}>
-                        {t.back}
-                      </Menu.LinkItem>
-                    </Menu.Group>
-                  </Menu.Popup>
-                </Menu.Positioner>
-              </Menu.Portal>
-            </Menu.Root>
+            <ToolboxDisclosure region={region} currentToolId={currentToolId} compact={floating} />
           </div>
           {floating && (
             <h1 title={title} {...stylex.props(s.title)}>
@@ -201,7 +150,7 @@ const s = stylex.create({
       default: 'calc(100% - 160px)',
       '@media (max-width: 900px)': '100%',
     },
-    zIndex: tokens.layerDock,
+    zIndex: { default: tokens.layerDock, ':has(details[open])': tokens.layerFloating },
     pointerEvents: 'none',
   },
   entry: {
@@ -212,7 +161,7 @@ const s = stylex.create({
     maxWidth: '100%',
     minWidth: 0,
     padding: tokens.space4,
-    backgroundColor: tokens.surfaceFloating,
+    backgroundColor: tokens.navBackground,
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: tokens.border,
@@ -222,7 +171,6 @@ const s = stylex.create({
   brand: { paddingInline: tokens.space8, flexShrink: 0 },
   canvasLinks: { display: 'flex', alignItems: 'center', gap: tokens.space4 },
   elevated: { boxShadow: tokens.shadowSoft },
-  icon: { paddingInline: tokens.space8, flexShrink: 0 },
   title: {
     minWidth: 0,
     margin: 0,

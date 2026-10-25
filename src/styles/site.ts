@@ -26,17 +26,16 @@ export const siteStyles = stylex.create({
     marginInline: 'auto',
   },
   productHeader: {
-    backgroundColor: tokens.page,
-    borderBottomWidth: 1,
-    borderBottomStyle: 'solid',
-    borderBottomColor: tokens.border,
+    position: 'relative',
+    zIndex: tokens.layerDock,
+    backgroundColor: tokens.navBackground,
   },
   nav: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: tokens.space8,
-    minHeight: 68,
+    minHeight: { default: 64, '@media (max-width: 600px)': 56 },
   },
   brand: {
     display: 'inline-flex',

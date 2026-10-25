@@ -1,0 +1,30 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { ToolboxIcon, CaretDownIcon } from '@phosphor-icons/react/ssr';
+import { region } from '../../config/site';
+import { messages } from '../../i18n/messages';
+import { getAvailableTools } from '../../tools/registry';
+import { getSwitcherTools } from '../../site/catalog';
+import { navigationStyles as n } from '../../styles/navigation';
+const t = messages[region];
+const shortcuts = getSwitcherTools(getAvailableTools(region, import.meta.env.DEV));
+---
+<details data-tool-disclosure {...stylex.attrs(n.disclosure)}>
+  <summary aria-label={t.tools} {...stylex.attrs(n.control, n.trigger)}>
+    <span {...stylex.attrs(n.mobileToolbox)}><ToolboxIcon size={20} aria-hidden /></span>
+    <span {...stylex.attrs(n.toolboxLabel)}>{t.tools}</span>
+    <span {...stylex.attrs(n.chevron)}><CaretDownIcon size={16} aria-hidden /></span>
+  </summary>
+  <div {...stylex.attrs(n.positioner)}>
+    <div data-tool-panel {...stylex.attrs(n.panel)}>
+      <div {...stylex.attrs(n.panelHeader)}>
+        <span>{t.tools}</span><a href="/tools/" {...stylex.attrs(n.browse)}>{t.browseAll}</a>
+      </div>
+      {shortcuts.length === 0 && <p {...stylex.attrs(n.empty)}>{t.empty}</p>}
+      {shortcuts.map(tool => <a href={`/tools/${tool.slug}/`} {...stylex.attrs(n.tool)}>
+        <span {...stylex.attrs(n.toolTitle)}>{tool.copy[region].title}</span>
+        <span {...stylex.attrs(n.description)}>{tool.copy[region].description}</span>
+      </a>)}
+    </div>
+  </div>
+</details>

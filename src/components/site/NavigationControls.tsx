@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import { SunIcon, MoonIcon, UserIcon } from '@phosphor-icons/react';
+import { SunIcon, MoonIcon, UserIcon, GithubLogoIcon } from '@phosphor-icons/react';
 import * as stylex from '@stylexjs/stylex';
 import type { Region } from '../../config/region';
 import type { LanguageLink } from '../../site/language';
@@ -30,6 +30,9 @@ export function NavigationControls({ region, link }: {
       >
         <span aria-hidden {...stylex.props(n.currentLanguage)}>{link.current} / </span>
         <span lang={link.hreflang}>{link.target}</span>
+      </a>
+      <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" aria-label={t.github} {...stylex.props(n.control)}>
+        <GithubLogoIcon size={20} aria-hidden />
       </a>
       <button
         type="button" data-appearance-toggle="react" aria-label={label} title={label}

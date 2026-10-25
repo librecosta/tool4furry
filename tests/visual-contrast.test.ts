@@ -53,6 +53,7 @@ describe.each([
     settings: over(color('surface'), workspace),
     muted: over(color('surfaceMuted'), page),
     floating: color('surfaceFloating'),
+    navigation: over(color('navBackground'), page),
   };
   const backgrounds = Object.entries(hosts).flatMap(([name, background]) => [
     [name, background],
@@ -88,7 +89,7 @@ describe.each([
       for (const foreground of ['controlBorder', 'focus', 'accent'] as const)
         expect(contrast(color(foreground), background), `${foreground} on ${name}`).toBeGreaterThanOrEqual(3);
     // Nested button/format and popup hover use primary text, not muted copy.
-    for (const host of [hosts.settings, hosts.floating, modeRail]) {
+    for (const host of [hosts.settings, hosts.floating, hosts.navigation, modeRail]) {
       const hover = over(color('surfaceHover'), host);
       expect(contrast(color('textPrimary'), hover)).toBeGreaterThanOrEqual(4.5);
       expect(contrast(color('focus'), hover)).toBeGreaterThanOrEqual(3);

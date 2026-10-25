@@ -7,6 +7,9 @@ import { UiProvider } from '../src/ui/UiProvider';
 import * as registry from '../src/tools/registry';
 import { imageConverterDefinition } from '../src/tools/image-converter/definition';
 import type { ToolDefinition } from '../src/tools/types';
+import { renderToString } from 'react-dom/server';
+import { hydrateRoot, type Root } from 'react-dom/client';
+import { ToolboxDisclosure } from '../src/components/site/ToolboxDisclosure';
 import { messages } from '../src/i18n/messages';
 import { setViewport } from './setup';
 
@@ -16,6 +19,22 @@ afterEach(() => {
 });
 
 describe('product navigation', () => {
+  it('preserves native expansion before island hydration without mismatched attributes', async () => {
+    const host = document.createElement('div');
+    host.innerHTML = renderToString(<ToolboxDisclosure region="cn" />);
+    document.body.append(host);
+    host.querySelector('details')!.open = true;
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    let root: Root | undefined;
+    try {
+      await act(async () => { root = hydrateRoot(host, <ToolboxDisclosure region="cn" />); });
+      expect(host.querySelector('details')!.open).toBe(true);
+      expect(errors).not.toHaveBeenCalled();
+    } finally {
+      await act(async () => root?.unmount());
+      host.remove();
+    }
+  });
   it('lets keyboard users reach the compact canvas controls and return to their trigger', async () => {
     const user = userEvent.setup();
     render(<ToolPageFrame region="cn" mode="canvas" title="Canvas">Canvas content</ToolPageFrame>);
@@ -53,6 +72,10 @@ describe('product navigation', () => {
     act(() => { appearance = 'light'; window.dispatchEvent(new Event('t4f:appearance')); });
     expect(screen.getByRole('button', { name: messages.cn.switchDark }).getAttribute('aria-pressed')).toBe('true');
     expect(container.querySelector('[data-account-slot]')?.matches('button, a, [tabindex]')).toBe(false);
+    const controls = container.querySelector('[data-navigation-controls]')!;
+    expect([...controls.children].map(element => element.tagName)).toEqual(['A', 'A', 'BUTTON', 'SPAN']);
+    expect(controls.children[1].getAttribute('href')).toBe('https://github.com/librecosta/tool4furry');
+    expect(controls.children[1].getAttribute('rel')).toBe('noopener noreferrer');
     expect(screen.getByRole('link', { name: messages.cn.switchLanguage }).getAttribute('href')).toBe('https://tool4furry.com/tools/');
   });
 
@@ -70,9 +93,7 @@ describe('product navigation', () => {
     expect(
       screen.getByRole('navigation', { name: messages.cn.headerNav }),
     ).toBeTruthy();
-    expect(
-      screen.getByRole('button', { name: messages.cn.tools }).textContent,
-    ).toBe(messages.cn.tools);
+    expect(container.querySelector('summary')!.getAttribute('aria-label')).toBe(messages.cn.tools);
     rerender(
       <ToolPageFrame
         region="cn"
@@ -89,7 +110,7 @@ describe('product navigation', () => {
   });
 
   it.each(['cn', 'global'] as const)(
-    'shows an honest empty production toolbox in %s with keyboard dismissal',
+    'keeps the native empty production toolbox and ordinary catalog link in %s',
     async (region) => {
       vi.stubEnv('DEV', false);
       const user = userEvent.setup();
@@ -107,35 +128,30 @@ describe('product navigation', () => {
           .getByRole('link', { name: `Tool4Furry · ${t.home}` })
           .getAttribute('href'),
       ).toBe('/');
-      const trigger = screen.getByRole('button', { name: t.tools });
+      const trigger = container.querySelector('summary')!;
       await user.tab(); // Brand link and toolbox are separate focus targets.
       await user.tab();
       expect(document.activeElement).toBe(trigger);
-      await user.keyboard('{Enter}');
+      await user.click(trigger); // jsdom does not implement native summary Enter activation.
       expect(await screen.findByText(t.empty)).toBeTruthy();
       expect(
         screen
-          .getByRole('menu', { name: t.tools })
+          .getByText(t.empty).closest('[data-tool-panel]')!
           .querySelectorAll(
             'a[href^="/tools/"]:not([href="/tools/"]), a[href^="/lab/"]',
           ),
       ).toHaveLength(0);
       expect(
         screen
-          .getByRole('menuitem', { name: t.browseAll })
+          .getByRole('link', { name: t.browseAll })
           .getAttribute('href'),
       ).toBe('/tools/');
-      expect(
-        screen.getByRole('menuitem', { name: t.back }).getAttribute('href'),
-      ).toBe('/');
-      await waitFor(() =>
-        expect(document.activeElement).toBe(
-          screen.getByRole('menuitem', { name: t.browseAll }),
-        ),
-      );
-      await user.keyboard('{Escape}');
-      await waitFor(() => expect(screen.queryByRole('menu')).toBeNull());
-      expect(document.activeElement).toBe(trigger);
+      expect(screen.queryByRole('menu')).toBeNull();
+      expect(container.querySelector('details')?.open).toBe(true);
+      await user.tab();
+      expect(document.activeElement).toBe(screen.getByRole('link', { name: t.browseAll }));
+      await user.click(trigger);
+      expect(container.querySelector('details')?.open).toBe(false);
       expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(
         'Current identity',
       );
@@ -181,11 +197,11 @@ describe('product navigation', () => {
         Workspace
       </ToolPageFrame>,
     );
-    await user.click(screen.getByRole('button', { name: messages.cn.tools }));
-    const item = await screen.findByRole('menuitem', { name: 'current' });
+    await user.click(screen.getByText(messages.cn.tools, { selector: 'summary span' }));
+    const item = await screen.findByRole('link', { name: 'current' });
     expect(item.getAttribute('href')).toBe('/tools/current-slug/');
     expect(item.getAttribute('aria-current')).toBe('page');
-    expect(screen.queryByRole('menuitem', { name: 'draft' })?.getAttribute('href') ?? null)
+    expect(screen.queryByRole('link', { name: 'draft' })?.getAttribute('href') ?? null)
       .toBe(dev ? '/tools/draft-slug/' : null);
     expect(screen.queryByText('overseas')).toBeNull();
     expect(available).toHaveBeenCalledWith('cn', dev);
@@ -199,8 +215,8 @@ describe('product navigation', () => {
     vi.stubEnv('DEV', true);
     const user = userEvent.setup();
     render(<ToolPageFrame region={region} mode="form" currentToolId="image-converter" title="Converter">Workspace</ToolPageFrame>);
-    await user.click(screen.getByRole('button', { name: messages[region].tools }));
-    const item = await screen.findByRole('menuitem', { name: imageConverterDefinition.copy[region].title });
+    await user.click(screen.getByText(messages[region].tools, { selector: 'summary span' }));
+    const item = await screen.findByRole('link', { name: name => name.startsWith(imageConverterDefinition.copy[region].title) });
     expect(item.getAttribute('href')).toBe('/tools/image-converter/');
     expect(item.getAttribute('aria-current')).toBe('page');
     expect(screen.queryByText(messages[region].empty)).toBeNull();

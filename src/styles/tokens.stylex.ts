@@ -2,6 +2,7 @@ import * as stylex from '@stylexjs/stylex';
 // GoFurry dev b186325 tokens.less: preserve the mapped gray values and alpha.
 export const neutralDarkValues = {
   page: '#1D1F22',
+  navBackground: 'rgba(20,22,25,0.97)',
   // Tool4Furry adaptations: workspace/checker and an opaque portal surface
   // (GoFurry strong surface composited once over page, rounded to sRGB bytes).
   workspace: '#222427',
@@ -65,6 +66,7 @@ export const neutralDarkValues = {
 export const neutralLightValues = {
   ...neutralDarkValues,
   page: '#F8F9FA',
+  navBackground: '#E8EBEF',
   workspace: '#F2F4F5',
   surface: '#FFFFFF',
   surfaceMuted: '#EEF0F2',

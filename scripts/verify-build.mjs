@@ -4,6 +4,15 @@ import { resolve } from 'node:path';
 import { JSDOM } from 'jsdom';
 
 const appearanceSource = (await readFile('src/styles/appearance-controller.js', 'utf8')).replace(/\r\n?/g, '\n');
+const navigationSource = (await readFile('src/styles/navigation-disclosure.js', 'utf8')).replace(/\r\n?/g, '\n');
+function assertNavigationScript(dom) {
+  const scripts = dom.querySelectorAll('script#t4f-navigation');
+  assert.equal(scripts.length, 1, 'Exactly one independent navigation enhancement');
+  const script = scripts[0];
+  assert.equal(script.parentElement, dom.body, 'Navigation enhancement runs after static content');
+  assert.deepEqual([...script.attributes].map(attribute => attribute.name), ['id']);
+  assert.equal(script.textContent.trim(), navigationSource.trim(), 'Only the audited disclosure script is allowed');
+}
 function assertAppearanceScript(dom) {
   const scripts = dom.querySelectorAll('script#t4f-appearance');
   assert.equal(scripts.length, 1, 'Exactly one shared appearance initializer');
@@ -17,8 +26,9 @@ function assertAppearanceScript(dom) {
 }
 function assertStaticNavigation(dom) {
   assertAppearanceScript(dom);
+  assertNavigationScript(dom);
   assert.equal(dom.querySelectorAll('astro-island').length, 0);
-  assert.equal(dom.querySelectorAll('script').length, 1, 'Only the inline appearance controller is permitted');
+  assert.equal(dom.querySelectorAll('script').length, 2, 'Only the audited inline appearance and navigation scripts are permitted');
   assert.equal(dom.querySelectorAll('link[rel="modulepreload"], link[as="script"]').length, 0);
 }
 function copyWithoutLanguageLink(dom) {
@@ -156,14 +166,14 @@ for (const tag of ['header', 'footer']) {
       shell.querySelector(`a[href="${github}"]`),
       'Footer: missing real GitHub link',
     );
-  else
-    assert.equal(
-      shell.querySelectorAll('a').length,
-      3,
-      'Header only exposes brand, toolbox and language link',
-    );
+  else {
+    assert(shell.querySelector(`a[href="${github}"][rel="noopener noreferrer"]`), 'Header: missing GitHub entry');
+    assert(shell.querySelector('details[data-tool-disclosure] > summary'), 'Native no-JS toolbox required');
+    assert.equal(shell.querySelectorAll('[role="menu"], [role="menuitem"]').length, 0, 'Toolbox contains ordinary navigation links');
+  }
   const brand = shell.querySelector('a[href="/"]');
-  assert.equal(brand?.textContent.trim(), 'Tool4Furry');
+  assert.equal(brand?.getAttribute('aria-label'), 'Tool4Furry');
+  assert.equal(brand.querySelector('span')?.textContent.trim(), 'Tool4Furry');
   assert.equal(brand.querySelector('img')?.getAttribute('src'), mark);
   assert.equal(brand.querySelector('img')?.getAttribute('alt'), '');
 }
@@ -481,6 +491,7 @@ for (const page of htmlFiles) {
     `Shared favicon missing: ${page}`,
   );
   if (page === '404.html') {
+    assertStaticNavigation(dom);
     assert.equal(
       dom.querySelector('meta[name="robots"]')?.content,
       'noindex, nofollow',
@@ -498,6 +509,12 @@ for (const page of htmlFiles) {
   }
   const stylesheets = [...dom.querySelectorAll('link[rel="stylesheet"]')];
   const appearanceScript = assertAppearanceScript(dom);
+  assertNavigationScript(dom);
+  for (const link of dom.querySelectorAll('[data-tool-panel] a')) {
+    const href = link.getAttribute('href');
+    assert(href?.startsWith('/tools/'), `Unexpected toolbox navigation in ${page}`);
+    assert(htmlFiles.includes(`${href.slice(1)}index.html`), `Toolbox links to unavailable tool: ${href}`);
+  }
   const language = dom.querySelector('[data-language-link]');
   assert(language, `Missing language entry in ${page}`);
   const languageURL = new URL(language.getAttribute('href'));
@@ -669,5 +686,5 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
 }
 assert((await stat(root)).isDirectory());
 console.log(
-  `Verified ${region}: ${htmlFiles.length} static pages, controlled inline appearance script only on homepage, SEO/OG/favicon, ${cards.length} real catalog cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
+  `Verified ${region}: ${htmlFiles.length} static pages, audited appearance/navigation scripts only on static pages, SEO/OG/favicon, ${cards.length} real catalog cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
 );

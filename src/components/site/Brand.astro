@@ -1,8 +1,12 @@
 ---
 import * as stylex from '@stylexjs/stylex';
 import { siteStyles as s } from '../../styles/site';
+import { navigationStyles as n } from '../../styles/navigation';
+interface Props { navigation?: boolean }
+const { navigation = false } = Astro.props;
 ---
-<a href="/" {...stylex.attrs(s.brand)}>
+<a href="/" aria-label="Tool4Furry" {...stylex.attrs(s.brand, navigation && n.brand)}>
   <img src="/brand/tool4furry-mark.svg" alt="" width="32" height="32" {...stylex.attrs(s.mark)} />
-  <span>Tool4Furry</span>
+  <span {...stylex.attrs(navigation && n.brandFull)}>Tool4Furry</span>
+  {navigation && <span aria-hidden="true" {...stylex.attrs(n.brandShort)}>T4F</span>}
 </a>

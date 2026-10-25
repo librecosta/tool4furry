@@ -6,9 +6,9 @@ import { siteStyles as s } from '../styles/site';
 import { tokens } from '../styles/tokens.stylex';
 import { resolvePageTheme, resolveTheme } from '../styles/theme';
 import appearanceSource from '../styles/appearance-controller.js?raw';
+import navigationSource from '../styles/navigation-disclosure.js?raw';
 import NavigationControls from '../components/site/NavigationControls.astro';
-import { navigationStyles as n } from '../styles/navigation';
-import { ToolboxIcon } from '@phosphor-icons/react/ssr';
+import ToolboxDisclosure from '../components/site/ToolboxDisclosure.astro';
 import '@fontsource-variable/dm-sans/wght.css';
 import '@fontsource-variable/noto-sans-sc/wght.css';
 import '../styles/global.css';
@@ -53,10 +53,8 @@ const lightClass = stylex.attrs(resolveTheme({colorTheme:'neutral',appearance:'l
       {!workspace && <header data-site-header {...stylex.attrs(s.fullBleed, s.productHeader)}>
         <nav {...stylex.attrs(s.fluid, s.nav)} aria-label={t.headerNav}>
           <div {...stylex.attrs(s.navLinks)}>
-            <Brand />
-            <a {...stylex.attrs(n.control)} href="/tools/" aria-label={t.tools}>
-              <span {...stylex.attrs(n.mobileToolbox)}><ToolboxIcon size={20} aria-hidden /></span><span {...stylex.attrs(n.toolboxLabel)}>{t.tools}</span>
-            </a>
+            <Brand navigation />
+            <ToolboxDisclosure />
           </div>
           <NavigationControls />
         </nav>
@@ -64,5 +62,6 @@ const lightClass = stylex.attrs(resolveTheme({colorTheme:'neutral',appearance:'l
       <slot />
       <SiteFooter region={region} />
     </div>
+    <script is:inline id="t4f-navigation" set:html={navigationSource} />
   </body>
 </html>

@@ -1,3 +1,5 @@
+> V0.5-C4-B（Issue #5）：普通导航采用独立 navBackground（Light #E8EBEF / Dark rgba(20,22,25,0.97)），无底边框，桌面 64px / 手机 56px；手机品牌 T4F，操作顺序为语言、GitHub、外观、桌面非交互账户位。Astro 与 ToolPageFrame 共用原生 details 工具箱、StyleX 样式及独立 `navigation-disclosure.js`（body 末尾 #t4f-navigation）：精细指针 120ms 打开/180ms 关闭，触控点击，支持外部点击、Escape 与正常 Tab 链接导航。面板只读取当前地区 getAvailableTools(region, DEV)，无 JS 仍可展开/进入完整目录。静态脚本白名单在 C3-B 外观脚本外仅增加这段逐字审计的导航增强，不允许 Island、无关脚本或 JS preload；Canvas 保持原浮动位置、视口与控制收纳方式。以下历史记录不覆盖本条。
+
 # Tool4Furry V0.3-C — Site Shell, Homepage & Tool Discovery
 
 > V0.5-C3-C（2026-10-25，[Issue #2](https://github.com/librecosta/tool4furry/issues/2)）：`InformationPage.astro` 与仅供 Astro 使用的 `src/site/information-content.ts` 提供 About / Privacy / Terms 双语静态内容；正文沿用 820px 阅读宽度。Footer 增加真实信息页入口，语言白名单保持这三个路径，其余 DEV/未知路由仍安全回退。页面仅继承既有外观脚本，无新 JS/Island。

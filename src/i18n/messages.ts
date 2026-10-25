@@ -9,6 +9,7 @@ const cn = {
   toastError: '错误',
   home: '首页',
   source: '源代码',
+  github: 'Tool4Furry GitHub 仓库（新标签页）',
   skip: '跳到主要内容',
   homeTitle: 'Tool4Furry — Furry 创作者的浏览器工具箱',
   homeDescription:
@@ -65,6 +66,7 @@ const global: Messages = {
   toastError: 'Error',
   home: 'Home',
   source: 'Source code',
+  github: 'Tool4Furry GitHub repository (new tab)',
   skip: 'Skip to content',
   homeTitle: 'Tool4Furry — Browser Tools for Furry Creators',
   homeDescription:

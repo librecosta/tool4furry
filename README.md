@@ -56,7 +56,7 @@ pnpm build:global
 | `pnpm preview` | 预览 CN 静态产物 |
 | `pnpm preview:global` | 预览 global 静态产物 |
 
-两套产物互不覆盖，每次构建都会检查语言、title/description/文本 OG、canonical、SVG favicon、真实工具目录与路由对应关系、首页外观脚本白名单/零 Island/JS preload、自托管字体及授权、StyleX CSS 提取和 Lab 隔离。构建脚本用 cross-env，兼容 PowerShell。Astro/Vite 缓存按地区隔离；同一地区不要将 check/build 与 dev 混跑。
+两套产物互不覆盖，每次构建都会检查语言、title/description/文本 OG、canonical、SVG favicon、真实工具目录与路由对应关系、首页外观及工具箱导航脚本精确白名单/零 Island/JS preload、自托管字体及授权、StyleX CSS 提取和 Lab 隔离。构建脚本用 cross-env，兼容 PowerShell。Astro/Vite 缓存按地区隔离；同一地区不要将 check/build 与 dev 混跑。
 
 每个输出目录都可独立作为普通 HTTP Server 的根目录，不需要 Astro 服务端。例如已安装 Python 时：
 
