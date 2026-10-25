@@ -18,7 +18,7 @@ V0.4-B: a real Image Converter draft, with no published tools yet. Read [docs/im
 - ScrollDock is opt-in document scrolling, currently only in FilesLab. Never mount it globally or control Canvas/internal panels. Preserve native scrolling.
 - `src/tools/registry.ts`: metadata only; `loaders.ts`: separate lazy implementations.
 - `src/lab`: development demos; never register them as published tools.
-- `/preview/[slug]` is a separate DEV-only real-tool preview (one fixed ToolRuntime root). The draft Converter loader uses a direct `import.meta.env.DEV` guard so its implementation is absent from production. Keep it draft pending visual polish and maintainer acceptance; promotion and removal of the guard require a separate authorized change after L2 acceptance.
+- Real tools use only `/tools/[slug]`: DEV includes regional drafts, production only regional published tools. Registry status is the single publication setting; Vite projects availability to a compile-time loader constant so draft chunks are not emitted. Keep Converter draft pending maintainer acceptance. `pnpm dev` runs isolated CN/EN services on 54321/54322; `pnpm dev stop` stops both.
 - `src/config/region.ts`: region/domain contract; `src/i18n/messages.ts`: CN/English copy.
 - Preserve LICENSE. Work on develop; integrate through PRs into pre-master, then release through PRs into master. Do not deploy without a request. Historical dev/main references in design and acceptance records describe the pre-migration branches.
 - Use StyleX, with global CSS limited to reset and HTML basics. No old React Babel configuration.
@@ -27,7 +27,7 @@ V0.4-B: a real Image Converter draft, with no published tools yet. Read [docs/im
 - Keep tool state outside WorkbenchShell; panel visibility and resizing must preserve it.
 - Hydrate only directly imported fixed React roots in Astro.
 - Choose local verification by L1 below; leave full CI primarily to existing GitHub Actions. When a full local run is warranted, use `pnpm check`, `pnpm test`, `pnpm build:cn`, `pnpm build:global` sequentially.
-- Stop the dev server before production builds: Vite shares its dependency cache.
+- Stop both dev services with `pnpm dev stop` before check/build. Astro and Vite caches are isolated by region; do not mix a build and dev for the same region.
 - See README for browser acceptance paths. Do not claim real-device testing from jsdom.
 
 ## MVP Beta release policy (2026-10-10)

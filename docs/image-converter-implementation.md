@@ -4,7 +4,7 @@
 
 ## 当前状态与入口
 
-**draft，未公开发布。** 开发运行 `pnpm install && pnpm dev` 后访问 `http://127.0.0.1:54321/preview/image-converter/`。英文：`pnpm exec cross-env SITE_REGION=global pnpm dev`。正式目标是 `/tools/image-converter/`，目前两个地区的正式构建均不生成此路由，不在首页、目录或切换器中展示草稿。
+**draft，未公开发布。** 开发运行 `pnpm install && pnpm dev` 后访问 CN `http://127.0.0.1:54321/tools/image-converter/` 或 EN `http://127.0.0.1:54322/tools/image-converter/`，可直接通过中/EN 往返。开发与生产仅有这一工具路径；目前两地区正式构建不生成 draft 路由、专用实现或目录入口。Ctrl+C 或 `pnpm dev stop` 同时停止两端。
 
 这是可真实处理图片的工具预览，不是 Lab 的模拟算法。按 2026-10-10 的 [L1/L2/L3 发布政策](../AGENTS.md#mvp-beta-release-policy-2026-10-10)，Firefox、Safari/WebKit、iOS/Android 真机及全设备资源上限的验证缺口不再自动阻断 Beta，转为后续兼容性待办，仍须如实披露。当前保持 draft，等待视觉打磨及维护者按 L2 最终确认，再单独决定是否提升 published。五个既有 `/lab/*` 保留原职责。
 
@@ -15,7 +15,7 @@
 - 开始时工作区干净，`dev` 与 `origin/dev` 均为 `d9e99b15819fcb78b414c025f470046624ac84e6`，fetch 后未发现更晚提交；没有覆盖用户未知工作。
 - A 基线：13 个 Vitest 文件、117 项通过。原 CI 成功：[37953700597](https://github.com/librecosta/tool4furry/actions/runs/37953700597)。当时 Registry 为空，已具备分类、全目录、静态唯一 H1、双地区与五 Lab 隔离。
 - 未升级依赖、修改 Astro/StyleX 集成、Provider、Canvas 浮层或状态所有权。
-- 最小扩展：`setRecommendedPreset()` 只更换当前格式的推荐基线；`WorkbenchShell.formWidth='wide'` 仅扩大 opt-in Form 内容宽度；FileDropzone 可选 compact 外观及完整选择结果回调；ToolRuntime 增加受 DEV 条件限制的 preview 入口。详情见源码与文件交互文档。
+- 最小扩展：`setRecommendedPreset()` 只更换当前格式的推荐基线；`WorkbenchShell.formWidth='wide'` 仅扩大 opt-in Form 内容宽度；FileDropzone 可选 compact 外观及完整选择结果回调。ToolRuntime 统一按环境与 Registry 状态选择工具，不另设预览入口。详情见源码与文件交互文档。
 
 ## B1 — 图片核心
 
@@ -77,11 +77,11 @@ B3-A.1：列表采用真实原图缩略图；`FilePreviewDialog` 提供可复用
 ## B3 — Registry、SSG、SEO 与隔离
 
 - metadata：`images → image-processing → image-converter`，form，CN/Global，status draft。
-- `loaders.ts` 中动态 import 直接放在 `import.meta.env.DEV` 条件下。最初跨模块 publication 布尔值仍产生草稿 chunk，被静态守卫发现；改为直接条件后隔离通过。未来经授权发布时须同时变更 status 和 loader 条件。
-- `/preview/[slug].astro` 的 getStaticPaths 在 build 返回空；复用固定 ToolRuntime + Provider + lazy + Error Boundary。noindex，不创建第六个 Lab。
+- Issue #3：Vite 在跨模块 status 检查折叠前发现动态 import，会留下草稿 chunk；配置将 Registry 的 status/regions 投影为编译期常量，让加载器在依赖发现前排除不可用实现。唯一人工发布标记仍是 Registry status，不另改 loader 开关。
+- `/tools/[slug].astro` 在 DEV 包含地区可用草稿、生产只包含 published；统一 ToolIntro、ToolGuide、ToolRuntime + Provider + lazy + Error Boundary，draft 页面 noindex。
 - Astro-only `image-converter-content.ts` 提供双语 title/description、唯一静态 H1、简介、步骤、限制、FAQ。React 不导入长文；正式路由仍按本地区 published 过滤。
-- `verify-build.mjs` 保留全部 A 守卫并新增 preview 路由、预览标记、DEV diagnostics 和未发布 Converter JS 排除。
-- `node scripts/verify-converter-fixture.mjs cn/global` 在内存里装配真实工具的 production-shaped 静态页，复用正式守卫；输出仓库外 `../.validation/converter-v04b/ssg/`。它不更改磁盘 Registry/status/loader，**仅测试、绝不部署，不算公开发布门禁通过**。
+- `verify-build.mjs` 保留全部 A 守卫，并排除旧工具路径、DEV diagnostics 与未发布 Converter JS。
+- `node scripts/verify-converter-fixture.mjs cn/global` 在仓库外隔离源码副本中只将 status 改为 published，保留真实配置与 loader，验证发布单一开关及正式静态页；输出 `../.validation/converter-v04b/ssg/`。工作区 Registry/status/loader 不变，**仅测试、绝不部署，不算公开发布门禁通过**。
 - 原 A 的 `verify-tool-fixture.mjs` 继续验证 20+ 工具、地区与首页最多 9 项；仅调整测试模块替换接缝以容纳真实 draft 元数据，没有删断言。
 
 ## B4 — 真实证据与限制
@@ -125,7 +125,7 @@ CN 和 Global 均检查：1440×900、1024×768、901×600、900×600、768×102
 
 ### 复现与待验
 
-1. `pnpm dev` → `/preview/image-converter/`：导入透明 PNG，等 WebP ready，下载并独立确认格式；点 PNG 检查“未重新编码”。
+1. `pnpm dev` → `/tools/image-converter/`：导入透明 PNG，等 WebP ready，下载并独立确认格式；点 PNG 检查“未重新编码”。
 2. Advanced 调质量、JPEG 背景和文件名，检查无效参数不能生成；改名不重新编码。切模式、901/900px 宽度不丢值。
 3. 替换损坏/动画/超限输入，检查期间暂停下载、失败后旧图旧结果恢复；快速连续选择两个有效源，最后一次选择获胜。
 4. 连续处理并移除，展开 DEV diagnostics 检查位图/Canvas/URL 释放；离开页面不能留下工具-owned URL。

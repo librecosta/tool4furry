@@ -24,12 +24,16 @@ describe('regional language links', () => {
     const registry = [fixtureTool('shared'), fixtureTool('cn-only', { regions: ['cn'] }), fixtureTool('draft', { status: 'draft' })];
     expect(languageLink('/tools/shared/', 'cn', registry).href).toBe('https://tool4furry.com/tools/shared/');
     expect(languageLink('/tools/cn-only/', 'cn', registry).href).toBe('https://tool4furry.com/tools/');
-    expect(languageLink('/tools/cn-only/', 'global', registry).href).toBe('https://tool4furry.cn/tools/cn-only/');
+    expect(languageLink('/tools/cn-only/', 'global', registry).href).toBe('https://tool4furry.cn/tools/');
     expect(languageLink('/tools/draft/', 'global', registry).href).toBe('https://tool4furry.cn/tools/');
   });
-  it('allows an explicit local counterpart for DEV, using the same safe path mapping', () => {
-    expect(languageLink('/preview/image-converter/', 'cn', [], 'http://127.0.0.1:54322').href).toBe('http://127.0.0.1:54322/tools/');
-    for (const origin of ['https://evil.test', 'javascript:alert(1)', 'http://localhost/path', 'http://user@localhost', 'http://localhost/?lang=en'])
-      expect(() => languageLink('/', 'cn', [], origin)).toThrow();
+  it.each(['cn', 'global'] as const)('automatically stays local and preserves drafts in DEV from %s', source => {
+    const origin = source === 'cn' ? 'http://127.0.0.1:54322' : 'http://127.0.0.1:54321';
+    for (const path of ['/', '/tools/', '/about/', '/privacy/', '/terms/', '/tools/image-converter/'])
+      expect(languageLink(path, source, undefined, true).href).toBe(origin + path);
+    for (const path of ['/lab/canvas', '/unknown/', '/preview/image-converter/'])
+      expect(languageLink(path, source, undefined, true).href).toBe(origin + '/tools/');
+    expect(languageLink('/tools/cn-only/', source, [fixtureTool('cn-only', { status: 'draft', regions: ['cn'] })], true).href)
+      .toBe(origin + '/tools/');
   });
 });

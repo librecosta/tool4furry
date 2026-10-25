@@ -3,9 +3,8 @@ import type { ToolProps } from './types';
 export type ToolLoader = () => Promise<{ default: ComponentType<ToolProps> }>;
 // Add a literal () => import('./my-tool/MyTool') when implementing a real tool.
 export const toolLoaders: Readonly<Partial<Record<string, ToolLoader>>> = {
-  // Draft-only: direct DEV guard excludes the import before chunk discovery.
-  // On approved publication, remove this guard together with status promotion.
-  'image-converter': import.meta.env.DEV
+  // Publication follows metadata; no additional release switch to remove.
+  'image-converter': import.meta.env.DEV || import.meta.env.T4F_IMAGE_CONVERTER_AVAILABLE
     ? () => import('./image-converter/ImageConverter')
     : undefined,
 };

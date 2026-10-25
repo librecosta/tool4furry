@@ -2,7 +2,7 @@
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { pageLanguageLink } from '../../config/navigation';
 import ToolRuntime from '../../tools/ToolRuntime';
-import { getPublishedTools } from '../../tools/registry';
+import { getAvailableTools } from '../../tools/registry';
 import { region } from '../../config/site';
 import { tools } from '../../tools/registry';
 import { toolLoaders } from '../../tools/loaders';
@@ -13,13 +13,13 @@ import ToolGuide from '../../components/site/ToolGuide.astro';
 export function getStaticPaths() {
   assertValidRegistry(tools, toolLoaders);
   assertPublishedContent();
-  return getPublishedTools(region).map(tool => ({ params: { slug: tool.slug }, props: { tool } }));
+  return getAvailableTools(region, import.meta.env.DEV).map(tool => ({ params: { slug: tool.slug }, props: { tool } }));
 }
 const { tool } = Astro.props;
-const content = getToolPageContent(tool, region);
+const content = getToolPageContent(tool, region, undefined, import.meta.env.DEV);
 const related = getRelatedTools(tool, region);
 ---
-<SiteLayout title={tool.copy[region].title} fullTitle={content.title} description={content.description} workspace>
+<SiteLayout title={tool.copy[region].title} fullTitle={content.title} description={content.description} workspace noindex={tool.status === 'draft'}>
   <main id="main-content" data-tool-id={tool.id} data-tool-region={region}>
     <ToolRuntime navigation={pageLanguageLink(Astro.url.pathname)} toolId={tool.id} region={region} client:load><ToolIntro slot="intro" content={content} /></ToolRuntime>
     <ToolGuide content={content} related={related} region={region} />

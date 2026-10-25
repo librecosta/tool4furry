@@ -15,13 +15,14 @@ pnpm install
 pnpm dev
 ```
 
-不需要 `.env`、云账号、数据库或密钥。默认 CN 简体中文，`pnpm dev` 监听 `127.0.0.1:54321`，访问 `http://127.0.0.1:54321/`；如端口被占用，以终端显示的实际地址为准。
+不需要 `.env`、云账号、数据库或密钥。一次 `pnpm dev` 启动 CN `http://127.0.0.1:54321/` 与 EN `http://127.0.0.1:54322/`；导航语言链接在两端本地切换并保留可用路径。端口占用会明确失败，不自动换端口。Ctrl+C 或 `pnpm dev stop` 同时停止两端。
 
 | 路径 | 内容 |
 | --- | --- |
 | `/`、`/#tools` | 品牌首页与最多 9 项真实精选；无工具时显示准备中的空状态 |
 | `/tools/` | 当前地区全部已发布工具，按任务/身份/场景发现；当前为空 |
-| `/preview/image-converter/` | DEV ONLY 真实图片转换草稿：推荐自动生成、高级参数、预览及下载 |
+| `/tools/image-converter/` | 真实图片转换：开发可访问 draft，生产仅在 Registry published 后生成 |
+| `/about/`、`/privacy/`、`/terms/` | 双语静态网站信息页 |
 | `/lab/canvas` | 完整视口画布、浮动 Dock、默认关闭的 Inspector、手机参数 Sheet |
 | `/lab/form` | 输入、参数、校验、模拟输出 |
 | `/lab/batch` | 增删示例任务、推进模拟状态、清空 |
@@ -29,13 +30,13 @@ pnpm dev
 | `/lab/files` | 本地文件选择/拖放、元信息、部分接受与拒绝原因、长页面滚动进度球 |
 | `/404` | 404 页面预览 |
 
-**Lab 只在 dev 可访问。** 页面明确标为 Demo；文件页仅持有本地文件引用并展示元信息，不读取内容、生成对象 URL、上传或持久存储。生产无 Lab 页面、入口或 demo 实现，首页保持零脚本、零 Astro Island。
+**Lab 只在 dev 可访问。** 页面明确标为 Demo；文件页仅持有本地文件引用并展示元信息，不读取内容、生成对象 URL、上传或持久存储。生产无 Lab 页面、入口或 demo 实现；首页仅有受控外观脚本，无 React Island 或 JS preload。
 
-**Converter 预览也只在 dev 存在**，区别于只展示元信息的 Files Lab：它由工具模块在浏览器内读取、解码、编码并管理预览 URL，文件不上传或持久保存。正式 `/tools/image-converter/` 在公开发布门禁通过前不会生成。操作与验收记录见 [Image Converter 实施记录](docs/image-converter-implementation.md)。
+**Converter 当前为 draft**，开发和生产共用 `/tools/image-converter/`，仅运行环境与 Registry 状态决定是否生成页面与加载实现。它在浏览器内读取、解码、编码并管理预览 URL，文件不上传或持久保存。生产排除 draft 的路由、目录入口及专用 JS；发布时只需经授权调整 Registry status，不再另改 loader 开关。操作与验收记录见 [Image Converter 实施记录](docs/image-converter-implementation.md)。
 
 ## 检查与构建
 
-日常按 L1 只做与改动相关的验证，完整 CI 优先由现有 GitHub Actions 执行，无需每次小修改都重跑全量。确需本地完整验证时，先用 Ctrl+C 停止 dev（也可用 `pnpm exec astro dev stop`），再顺序执行：
+日常按 L1 只做与改动相关的验证，完整 CI 优先由现有 GitHub Actions 执行，无需每次小修改都重跑全量。确需本地完整验证时，先用 Ctrl+C 或 `pnpm dev stop` 停止两端 dev，再顺序执行：
 
 ```powershell
 pnpm install --frozen-lockfile
@@ -55,7 +56,7 @@ pnpm build:global
 | `pnpm preview` | 预览 CN 静态产物 |
 | `pnpm preview:global` | 预览 global 静态产物 |
 
-两套产物互不覆盖，每次构建都会检查语言、title/description/文本 OG、canonical、SVG favicon、真实工具目录与路由对应关系、首页零脚本/Island/JS preload、自托管字体及授权、StyleX CSS 提取和 Lab 隔离。构建脚本用 cross-env，兼容 PowerShell。不要并发运行两次构建或与 dev 混跑，它们会使用 Vite 的同一依赖缓存。
+两套产物互不覆盖，每次构建都会检查语言、title/description/文本 OG、canonical、SVG favicon、真实工具目录与路由对应关系、首页外观脚本白名单/零 Island/JS preload、自托管字体及授权、StyleX CSS 提取和 Lab 隔离。构建脚本用 cross-env，兼容 PowerShell。Astro/Vite 缓存按地区隔离；同一地区不要将 check/build 与 dev 混跑。
 
 每个输出目录都可独立作为普通 HTTP Server 的根目录，不需要 Astro 服务端。例如已安装 Python 时：
 
@@ -67,7 +68,7 @@ python -m http.server 8081 --directory dist/global
 
 静态服务应支持目录下的 `index.html`；未来部署时由主机设置 `404.html` 的错误页映射。不要使用 SPA 全路由回退来伪造 Lab 页面。
 
-可选英文开发预览：`pnpm exec cross-env SITE_REGION=global pnpm dev`，使用同一监听地址和端口。无需保存 env 文件。
+无需单独启动英文服务器或配置语言目标环境变量。正式 CN/Global 产物的语言链接仍使用对应公网域名；未发布或地区不可用的工具安全回退目标工具目录。
 
 ## 目录
 

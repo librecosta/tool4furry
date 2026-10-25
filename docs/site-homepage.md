@@ -6,7 +6,7 @@
 
 > V0.5-C3-B（2026-10-25）：导航增加真实地区语言链接、亮暗操作和非交互账户占位。首页/目录的零脚本历史约束仅放行 head 中逐字校验的 `appearance-controller.js`：绘制前恢复 `t4f.appearance`，仅替换完整主题类，storage 同步且存储失败时页内可用。仍无 React Island、无关脚本、JS preload 或系统主题跟随。Astro/React 共用控制器与导航样式；Canvas 将控制收纳在可键盘操作的浮层中。语言按目标 Registry 发布状态映射，未知/DEV/未实现信息页回退目标 `/tools/`；不携带 query/hash。
 >
-> DEV 语言联调可设置 `T4F_DEV_LANGUAGE_ORIGIN=http://127.0.0.1:54322` 指向另一个地区的本地预览服务（独立 checkout 的 DEV 服务，或已有的另一地区静态产物）；仅接受本地 origin，生产忽略该覆盖。未设置时链接对应正式地区的安全路由。两域主题偏好独立；旧 `T4F_DEV_APPEARANCE` 仍只决定 DEV 无偏好时的起点，手动选择优先。
+> Issue #3（2026-10-25）替换旧本地联调方式：一次 `pnpm dev` 启动 CN 54321 / EN 54322，语言链接自动保持本地同路径（包括地区可用 draft）；`pnpm dev stop` 同时停止。真实工具只使用 `/tools/{slug}/`，生产继续由 Registry status/regions 过滤，未知/Lab 路径回退目标工具目录。两端主题偏好独立；`T4F_DEV_APPEARANCE` 仍只决定 DEV 无偏好时的起点，手动选择优先。
 
 > V0.5-C3-A（2026-10-21）：普通 Header 与 Form/Batch 产品导航共用 68px 导航行和 `clamp(16px, 2vw, 36px)` 安全边距；Footer 全宽静态渲染，简化为品牌、by LibreCosta、真实链接与原有条件合规信息。宽度分为 Full Bleed、Fluid Workspace 与 820px Readable Content；首页构图上限 1600px，Converter 空状态上限 960px，有文件时列表流式展开、设置 320px。Canvas 保持原浮动入口和 `100dvh`，900px 断点及 Footer 文档流不变；没有新增客户端入口或脚本。
 

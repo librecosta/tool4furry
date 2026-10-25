@@ -4,7 +4,10 @@ import { imageConverterDefinition } from './image-converter/definition';
 // Metadata only. Lab demos are intentionally not registered as tools.
 export const tools: readonly ToolDefinition[] = [imageConverterDefinition];
 export function getPublishedTools(region: Region, registry = tools) {
+  return getAvailableTools(region, false, registry);
+}
+export function getAvailableTools(region: Region, dev: boolean, registry = tools) {
   return registry.filter(
-    (tool) => tool.status === 'published' && tool.regions.includes(region),
+    (tool) => (dev || tool.status === 'published') && tool.regions.includes(region),
   );
 }

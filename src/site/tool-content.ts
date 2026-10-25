@@ -1,6 +1,6 @@
 import type { Region } from '../config/region';
 import type { ToolDefinition } from '../tools/types';
-import { getPublishedTools, tools } from '../tools/registry';
+import { getAvailableTools, getPublishedTools, tools } from '../tools/registry';
 import { imageConverterContent } from './image-converter-content';
 
 // Astro/build only. Never import this content module from React or the registry.
@@ -25,8 +25,9 @@ export function getToolPageContent(
   tool: ToolDefinition,
   region: Region,
   contents = toolPageContents,
+  dev = false,
 ) {
-  if (tool.status !== 'published' || !tool.regions.includes(region))
+  if (!getAvailableTools(region, dev, [tool]).length)
     throw new Error(`Unpublished tool content: ${tool.id}/${region}`);
   const content = Object.hasOwn(contents, tool.id)
     ? contents[tool.id]?.[region]

@@ -27,6 +27,8 @@ describe('Astro-only content boundary', () => {
     expect(() =>
       getToolPageContent({ ...one, status: 'draft' }, 'cn', map),
     ).toThrow('Unpublished');
+    expect(getToolPageContent({ ...one, status: 'draft' }, 'cn', map, true)).toEqual(content);
+    expect(() => getToolPageContent({ ...one, regions: ['cn'] }, 'global', map, true)).toThrow('Unpublished');
     expect(() =>
       assertPublishedContent([{ ...one, regions: ['cn'] }], {
         one: { cn: content },

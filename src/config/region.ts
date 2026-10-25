@@ -8,3 +8,4 @@ export const regions = {
   cn: { lang: 'zh-CN', site: 'https://tool4furry.cn' },
   global: { lang: 'en', site: 'https://tool4furry.com' },
 } as const;
+export { devOrigins } from './dev-origins.mjs';

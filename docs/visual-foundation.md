@@ -126,5 +126,5 @@ V0.3-B 在当前 Token 上打磨 Workbench 顶部、两侧、中央、底栏及�
 - danger `#FF9BA4`、dangerHover `#FFB2B9`、positive `#83D6AE`、warning `#E7C47C`、info `#A8BEF5`。brand / sage 仍可用于 Lab 内容示例，不充当普通操作或成功反馈。
 - 原生 color-scheme 为 dark；灰阶 Hover、冰蓝 Selected 与独立焦点轮廓分开。常驻 Inspector 无投影，Sheet/菜单/Select/Tooltip/Dialog/Toast 使用 Elevated 与轻阴影。透明棋盘用 workspace / surfaceMuted 两种中性灰。Logo 与首页插画仅协调颜色，图形不变。
 - 本地 `pnpm check`：103 文件，0 errors / warnings / hints。定向 Vitest：visual-contrast、ui、workbench、converter-ui、file-dropzone、scroll-dock、tool-page-frame 共 7 文件、47 项通过；对比度测试扩展至 Workspace / Elevated，未放松阈值。
-- 内置 Chromium 实看 `/`、`/tools/`、`/preview/image-converter/`、`/lab/ui`、`/lab/canvas`，覆盖桌面 1440px、390px 与 900px，Canvas 另查 901px；未发现横向溢出。检查了透明 PNG 原图/输出、格式选中、JPEG 字段错误、过期结果/禁用下载、危险确认框、嵌套 Select、Slider 方向键与 Escape 焦点返回。跨宽度参数值保留且输入 DOM 仅一份；控制台未见 error/warn。首页实际渲染的辅助正文/Page 对比度为 8.55:1。
+- 内置 Chromium 实看首页、工具目录、Converter 开发页、`/lab/ui`、`/lab/canvas`，覆盖桌面 1440px、390px 与 900px，Canvas 另查 901px；未发现横向溢出。检查了透明 PNG 原图/输出、格式选中、JPEG 字段错误、过期结果/禁用下载、危险确认框、嵌套 Select、Slider 方向键与 Escape 焦点返回。跨宽度参数值保留且输入 DOM 仅一份；控制台未见 error/warn。首页实际渲染的辅助正文/Page 对比度为 8.55:1。以上为该阶段记录；当前 Converter 开发入口已按 Issue #3 统一为 `/tools/image-converter/`。
 - 本地未重复完整图像矩阵、全量测试或双地区构建；由 push 后现有 CI 验证。仍需维护者按实际显示器复核低亮度层次与透明图细节，以及手机真机软键盘/触摸体验。Image Converter 保持 draft，未改发布守卫、路由、SEO 或业务逻辑。

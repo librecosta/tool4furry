@@ -59,7 +59,7 @@ assert(
 );
 assert(
   !files.some((file) => /(^|\/)preview(\/|$)/i.test(file)),
-  'DEV tool preview route leaked',
+  'Obsolete separate tool route emitted',
 );
 assert(
   !files.some((file) =>
@@ -350,10 +350,6 @@ const fontAssets = new Set();
 const inlineFonts = new Set();
 for (const page of htmlFiles) {
   const content = await readFile(resolve(root, page), 'utf8');
-  assert(
-    !content.includes('data-tool-preview'),
-    `DEV tool preview markup leaked: ${page}`,
-  );
   if (!fixtureMode)
     assert(
       !/STATIC_GUIDE_ONLY_|data-fixture-counter/.test(content),

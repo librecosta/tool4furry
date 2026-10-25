@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parseRegion, regions } from '../src/config/region';
-import { getPublishedTools, tools } from '../src/tools/registry';
+import { getAvailableTools, getPublishedTools, tools } from '../src/tools/registry';
 import { toolLoaders } from '../src/tools/loaders';
 import type { ToolDefinition } from '../src/tools/types';
 import { getLabPaths } from '../src/lab/routes';
@@ -42,6 +42,12 @@ describe('published route boundary', () => {
   it('requires a loader for every published tool', () => {
     for (const tool of tools.filter((tool) => tool.status === 'published'))
       expect(toolLoaders[tool.id]).toBeTypeOf('function');
+  });
+  it('allows regional drafts only in development, on the same tool routes', () => {
+    const registry = [fixture('draft', 'draft', ['cn']), fixture('published', 'published', ['cn', 'global'])];
+    expect(getAvailableTools('cn', true, registry).map(tool => tool.slug)).toEqual(['draft', 'published']);
+    expect(getAvailableTools('global', true, registry).map(tool => tool.slug)).toEqual(['published']);
+    expect(getAvailableTools('cn', false, registry)).toEqual(getPublishedTools('cn', registry));
   });
   it('registers all five lab URLs in dev only', () => {
     expect(getLabPaths(true).map((path) => path.params.mode)).toEqual([

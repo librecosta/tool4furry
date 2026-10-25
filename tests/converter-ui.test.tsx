@@ -15,8 +15,7 @@ import { setViewport } from './setup';
 import ImageConverter from '../src/tools/image-converter/ImageConverter';
 import { ImageFailure } from '../src/tools/image/types';
 import { converterMessages } from '../src/tools/image-converter/messages';
-import { getToolPreviewPaths } from '../src/tools/preview-paths';
-import { getPublishedTools } from '../src/tools/registry';
+import { getAvailableTools, getPublishedTools } from '../src/tools/registry';
 import { toolPageContents } from '../src/site/tool-content';
 import { ConverterSession } from '../src/tools/image-converter/session';
 const render = (ui: ReactElement) =>
@@ -852,7 +851,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
   it('only exposes ownership diagnostics for an explicit development debug URL', async () => {
     const original = window.location.href;
     try {
-      window.history.replaceState({}, '', '/preview/image-converter/');
+      window.history.replaceState({}, '', '/tools/image-converter/');
       const normal = render(<ImageConverter region="global" />);
       await waitFor(() =>
         expect(
@@ -886,11 +885,11 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
       window.history.replaceState({}, '', original);
     }
   });
-  it('keeps draft preview separate from published routes in both regions', () => {
+  it('uses the same content and tool route for regional development drafts', () => {
     for (const region of ['cn', 'global'] as const) {
-      expect(getToolPreviewPaths(false, region)).toEqual([]);
+      expect(getAvailableTools(region, false)).toEqual([]);
       expect(
-        getToolPreviewPaths(true, region).map((path) => path.params.slug),
+        getAvailableTools(region, true).map((tool) => tool.slug),
       ).toEqual(['image-converter']);
       expect(getPublishedTools(region)).toEqual([]);
       const content = toolPageContents['image-converter'][region]!;

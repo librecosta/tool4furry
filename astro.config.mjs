@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import stylex from '@stylexjs/unplugin';
 import { parseRegion, regions } from './src/config/region.ts';
+import { imageConverterDefinition } from './src/tools/image-converter/definition.ts';
 
 const region = parseRegion(process.env.SITE_REGION);
 
@@ -9,9 +10,19 @@ export default defineConfig({
   output: 'static',
   site: regions[region].site,
   outDir: `./dist/${region}`,
+  cacheDir: `./node_modules/.astro/${region}`,
   build: { inlineStylesheets: 'never' },
   integrations: [react()],
   vite: {
+    // Vite discovers dynamic imports before cross-module status checks fold away.
+    // This is a projection of Registry metadata, never a second release setting.
+    define: {
+      'import.meta.env.T4F_IMAGE_CONVERTER_AVAILABLE': JSON.stringify(
+        imageConverterDefinition.status === 'published' && imageConverterDefinition.regions.includes(region),
+      ),
+    },
+    cacheDir: `./node_modules/.vite/${region}`,
+    server: { strictPort: true },
     plugins: [
       stylex.vite({
         dev: process.env.NODE_ENV === 'development',
