@@ -8,6 +8,6 @@ export function subscribeAppearance(listener: () => void) {
 export function currentAppearance(): Appearance | undefined {
   return window.t4fAppearance?.get();
 }
-export function toggleAppearance() {
-  window.t4fAppearance?.toggle();
+export function toggleAppearance(button?: HTMLButtonElement) {
+  window.t4fAppearance?.toggle(button);
 }

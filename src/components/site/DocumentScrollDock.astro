@@ -1,0 +1,16 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { ArrowUpIcon } from '@phosphor-icons/react/ssr';
+import { documentDockStyles as s } from '../../styles/document-dock';
+import type { Region } from '../../config/region';
+interface Props { region: Region }
+const { region } = Astro.props;
+const label = region === 'cn' ? '向上滚动，当前进度' : 'Scroll up, current progress';
+---
+<button type="button" data-document-dock data-label={label} hidden inert aria-hidden="true" aria-label={label} {...stylex.attrs(s.root)}>
+  <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" {...stylex.attrs(s.ring)}>
+    <rect x="1.75" y="1.75" width="44.5" height="44.5" rx="8.25" {...stylex.attrs(s.track)} />
+    <rect data-scroll-progress x="1.75" y="1.75" width="44.5" height="44.5" rx="8.25" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" {...stylex.attrs(s.progress)} />
+  </svg>
+  <ArrowUpIcon size={20} aria-hidden className={stylex.attrs(s.icon).class} />
+</button>

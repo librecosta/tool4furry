@@ -53,7 +53,6 @@ describe.each([
     settings: over(color('surface'), workspace),
     muted: over(color('surfaceMuted'), page),
     floating: color('surfaceFloating'),
-    navigation: over(color('navBackground'), page),
   };
   const backgrounds = Object.entries(hosts).flatMap(([name, background]) => [
     [name, background],
@@ -89,7 +88,7 @@ describe.each([
       for (const foreground of ['controlBorder', 'focus', 'accent'] as const)
         expect(contrast(color(foreground), background), `${foreground} on ${name}`).toBeGreaterThanOrEqual(3);
     // Nested button/format and popup hover use primary text, not muted copy.
-    for (const host of [hosts.settings, hosts.floating, hosts.navigation, modeRail]) {
+    for (const host of [hosts.settings, hosts.floating, modeRail]) {
       const hover = over(color('surfaceHover'), host);
       expect(contrast(color('textPrimary'), hover)).toBeGreaterThanOrEqual(4.5);
       expect(contrast(color('focus'), hover)).toBeGreaterThanOrEqual(3);
@@ -103,6 +102,14 @@ describe.each([
     for (const [name, background] of Object.entries(hosts))
       for (const foreground of ['supportClay', 'supportAmber', 'supportLavender', 'supportSlate'] as const)
         expect(contrast(color(foreground), background), `${foreground} on ${name}`).toBeGreaterThanOrEqual(4.5);
+  });
+  it('keeps navigation/footer text, icons and focus readable on their dedicated chrome', () => {
+    const nav = over(color('navBackground'), page);
+    for (const background of [nav, over(color('navHover'), nav), color('navFloatingBackground')]) {
+      for (const foreground of ['navText', 'navSecondary'] as const)
+        expect(contrast(color(foreground), background), `${foreground} on chrome`).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(color('navFocus'), background)).toBeGreaterThanOrEqual(3);
+    }
   });
   it('checks featured-panel text/focus and all copy on the new Light materials', () => {
     const panel = color('featuredBackground');

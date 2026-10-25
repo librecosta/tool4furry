@@ -24,21 +24,22 @@ export const siteCompliance: RegionalCompliance = {
 export function getComplianceEntries(
   region: Region,
   configuration: RegionalCompliance = siteCompliance,
-): readonly ComplianceEntry[] {
+): readonly (ComplianceEntry & { kind: 'icp' | 'public-security' | 'additional' })[] {
   const current = configuration[region];
-  const entries: ComplianceEntry[] = [];
+  const entries: (ComplianceEntry & { kind: 'icp' | 'public-security' | 'additional' })[] = [];
   if (region === 'cn') {
     if (current.icp?.number.trim())
-      entries.push({ label: current.icp.number.trim(), href: icpQueryUrl });
+      entries.push({ kind: 'icp', label: current.icp.number.trim(), href: icpQueryUrl });
     const police = current.publicSecurity;
     if (police?.number.trim() && police.href.trim() && police.iconSrc.trim())
       entries.push({
+        kind: 'public-security',
         label: police.number.trim(),
         href: police.href,
         iconSrc: police.iconSrc,
       });
   }
-  return [...entries, ...(current.additional ?? [])].filter(
+  return [...entries, ...(current.additional ?? []).map(entry => ({ ...entry, kind: 'additional' as const }))].filter(
     (entry) => entry.label.trim().length > 0,
   );
 }

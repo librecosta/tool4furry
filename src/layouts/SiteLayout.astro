@@ -7,6 +7,10 @@ import { tokens } from '../styles/tokens.stylex';
 import { resolvePageTheme, resolveTheme } from '../styles/theme';
 import appearanceSource from '../styles/appearance-controller.js?raw';
 import navigationSource from '../styles/navigation-disclosure.js?raw';
+import scrollMetrics from '../ui/scroll-metrics.js?raw';
+import scrollSource from '../styles/document-scroll.js?raw';
+import { devOrigins, regions } from '../config/region';
+import DocumentScrollDock from '../components/site/DocumentScrollDock.astro';
 import NavigationControls from '../components/site/NavigationControls.astro';
 import ToolboxDisclosure from '../components/site/ToolboxDisclosure.astro';
 import '@fontsource-variable/dm-sans/wght.css';
@@ -14,8 +18,8 @@ import '@fontsource-variable/noto-sans-sc/wght.css';
 import '../styles/global.css';
 import Brand from '../components/site/Brand.astro';
 import SiteFooter from '../components/site/SiteFooter.astro';
-interface Props { title: string; fullTitle?: string; description?: string; workspace?: boolean; noindex?: boolean }
-const { title, fullTitle, description, workspace = false, noindex = false } = Astro.props;
+interface Props { title: string; fullTitle?: string; description?: string; workspace?: boolean; noindex?: boolean; documentScroll?: boolean }
+const { title, fullTitle, description, workspace = false, noindex = false, documentScroll = true } = Astro.props;
 const t = messages[region];
 const canonical = new URL(Astro.url.pathname, regionConfig.site);
 const resolvedTitle = fullTitle ?? `${title} · Tool4Furry`;
@@ -23,13 +27,16 @@ const resolvedDescription = description ?? t.intro;
 const theme = resolvePageTheme(import.meta.env.DEV, import.meta.env.T4F_DEV_APPEARANCE);
 const darkClass = stylex.attrs(resolveTheme({colorTheme:'neutral',appearance:'dark'}).style).class;
 const lightClass = stylex.attrs(resolveTheme({colorTheme:'neutral',appearance:'light'}).style).class;
+const languageOrigins = JSON.stringify(import.meta.env.DEV ? Object.values(devOrigins) : Object.values(regions).map(value => value.site));
+// One exact audited inline script; the React and Astro docks share the pure math.
+const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function ', 'function ')}\n${scrollSource}\n})();`;
 ---
 <!doctype html>
 <html lang={regionConfig.lang} data-color-theme={theme.colorTheme} data-appearance={theme.appearance} {...stylex.attrs(theme.style, s.themeRoot)} style={`--t4f-focus: ${tokens.focus};`}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script is:inline id="t4f-appearance" data-dark={darkClass} data-light={lightClass} data-default={theme.appearance} set:html={appearanceSource} />
+    <script is:inline id="t4f-appearance" data-dark={darkClass} data-light={lightClass} data-default={theme.appearance} data-language-origins={languageOrigins} set:html={appearanceSource} />
     <meta name="description" content={resolvedDescription} />
     <title>{resolvedTitle}</title>
     <link rel="icon" type="image/svg+xml" href="/brand/tool4furry-mark.svg" />
@@ -63,5 +70,9 @@ const lightClass = stylex.attrs(resolveTheme({colorTheme:'neutral',appearance:'l
       <SiteFooter region={region} />
     </div>
     <script is:inline id="t4f-navigation" set:html={navigationSource} />
+    {documentScroll && <>
+      <DocumentScrollDock region={region} />
+      <script is:inline id="t4f-document-scroll" set:html={documentScrollSource} />
+    </>}
   </body>
 </html>

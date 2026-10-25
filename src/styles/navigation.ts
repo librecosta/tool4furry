@@ -2,15 +2,18 @@ import * as stylex from '@stylexjs/stylex';
 import { tokens as t } from './tokens.stylex';
 
 export const navigationStyles = stylex.create({
+  chrome: { backgroundColor: t.navFloatingBackground, color: t.navText, '--t4f-focus': t.navFocus },
   actions: { display: 'flex', alignItems: 'center', gap: t.space4, flexShrink: 0 },
   control: {
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
     minWidth: 44, minHeight: 44, padding: 8, gap: t.space4,
-    color: t.textPrimary, backgroundColor: { default: 'transparent', ':hover': t.surfaceHover },
+    color: t.navText, backgroundColor: { default: 'transparent', ':hover': t.navHover },
+    outlineColor: { default: t.navFocus, ':focus-visible': t.navFocus },
     borderWidth: 0, borderRadius: t.radiusMd, fontSize: 14, fontWeight: 500,
     textDecoration: 'none', flexShrink: 0,
   },
-  currentLanguage: { display: { default: 'inline', '@media (max-width: 600px)': 'none' }, color: t.textSecondary },
+  currentLanguage: { color: t.navText, fontWeight: 700 },
+  targetLanguage: { color: t.navSecondary, fontWeight: 400 },
   // Display stays with the root appearance visibility rules in global.css.
   appearanceIcon: { width: 20, height: 20, lineHeight: 0, alignItems: 'center', justifyContent: 'center' },
   svg: { display: 'block' },
@@ -19,7 +22,7 @@ export const navigationStyles = stylex.create({
   account: {
     display: { default: 'inline-flex', '@media (max-width: 600px)': 'none' },
     alignItems: 'center', justifyContent: 'center',
-    width: 44, height: 44, flexShrink: 0, color: t.textSecondary,
+    width: 44, height: 44, flexShrink: 0, color: t.navSecondary,
   },
   brand: { fontSize: { default: 18, '@media (max-width: 600px)': 16 } },
   brandFull: { display: { default: 'inline', '@media (max-width: 600px)': 'none' } },
@@ -50,6 +53,7 @@ export const navigationStyles = stylex.create({
   },
   compactTrigger: { minHeight: 44 },
   positioner: {
+    '--t4f-focus': t.focus,
     position: 'absolute', top: '100%', left: 0, right: 0, zIndex: t.layerFloating,
     backgroundColor: t.featuredBackground,
     clipPath: 'inset(0 0 var(--toolbox-hidden) 0)',

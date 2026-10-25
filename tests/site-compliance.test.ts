@@ -42,24 +42,24 @@ describe('static regional compliance configuration', () => {
 
   it('uses only the official ICP query entry and the supplied approved police link/icon', () => {
     expect(getComplianceEntries('cn', records)).toEqual([
-      { label: '测试ICP备00000000号-1', href: icpQueryUrl },
+      { kind: 'icp', label: '测试ICP备00000000号-1', href: icpQueryUrl },
       {
-        label: '测试公网安备00000000000000号',
+        kind: 'public-security', label: '测试公网安备00000000000000号',
         href: 'https://example.invalid/approved-record',
         iconSrc: '/test-only-approved-icon.svg',
       },
-      { label: 'TEST_ONLY_LICENSE' },
+      { kind: 'additional', label: 'TEST_ONLY_LICENSE' },
     ]);
     expect(icpQueryUrl).toBe('https://beian.miit.gov.cn/');
   });
 
   it('does not inherit CN records into Global', () => {
     expect(getComplianceEntries('global', records)).toEqual([
-      { label: 'GLOBAL_ONLY_NOTICE' },
+      { kind: 'additional', label: 'GLOBAL_ONLY_NOTICE' },
     ]);
     // Even an accidental shared CN object must not expose its ICP/police fields.
     expect(getComplianceEntries('global', { cn: {}, global: records.cn })).toEqual([
-      { label: 'TEST_ONLY_LICENSE' },
+      { kind: 'additional', label: 'TEST_ONLY_LICENSE' },
     ]);
   });
 

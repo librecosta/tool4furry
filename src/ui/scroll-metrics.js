@@ -1,10 +1,8 @@
 /** Document coordinates only; callers supply fresh geometry on every measurement. */
-export function getScrollMetrics(
-  scrollTop: number,
-  scrollHeight: number,
-  clientHeight: number,
-) {
-  const finite = (value: number) =>
+/** @param {number} scrollTop @param {number} scrollHeight @param {number} clientHeight */
+export function getScrollMetrics(scrollTop, scrollHeight, clientHeight) {
+  /** @param {number} value */
+  const finite = (value) =>
     Number.isFinite(value) ? Math.max(0, value) : 0;
   const distance = Math.max(0, finite(scrollHeight) - finite(clientHeight));
   const top = Math.min(finite(scrollTop), distance);

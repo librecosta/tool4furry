@@ -5,6 +5,24 @@ import { JSDOM } from 'jsdom';
 
 const appearanceSource = (await readFile('src/styles/appearance-controller.js', 'utf8')).replace(/\r\n?/g, '\n');
 const navigationSource = (await readFile('src/styles/navigation-disclosure.js', 'utf8')).replace(/\r\n?/g, '\n');
+const scrollMetrics = (await readFile('src/ui/scroll-metrics.js', 'utf8')).replace(/\r\n?/g, '\n');
+const scrollSource = (await readFile('src/styles/document-scroll.js', 'utf8')).replace(/\r\n?/g, '\n');
+const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function ', 'function ')}\n${scrollSource}\n})();`;
+function assertDocumentScroll(dom, enabled = !dom.querySelector('[data-workbench="canvas"]')) {
+  const scripts = dom.querySelectorAll('script#t4f-document-scroll');
+  const docks = dom.querySelectorAll('[data-document-dock]');
+  if (!enabled) {
+    assert.equal(scripts.length, 0, 'Canvas never receives the document dock script');
+    assert.equal(docks.length, 0, 'Canvas never receives a document dock');
+    return;
+  }
+  assert.equal(scripts.length, 1, 'One audited document-scroll enhancement');
+  assert.equal(scripts[0].parentElement, dom.body);
+  assert.deepEqual([...scripts[0].attributes].map(attribute => attribute.name), ['id']);
+  assert.equal(scripts[0].textContent.trim(), documentScrollSource.trim());
+  assert.equal(docks.length, 1);
+  assert(docks[0].hidden && docks[0].hasAttribute('inert') && docks[0].getAttribute('aria-hidden') === 'true');
+}
 function assertNavigationScript(dom) {
   const scripts = dom.querySelectorAll('script#t4f-navigation');
   assert.equal(scripts.length, 1, 'Exactly one independent navigation enhancement');
@@ -21,14 +39,16 @@ function assertAppearanceScript(dom) {
   assert(!script.hasAttribute('src') && !script.hasAttribute('type') && !script.hasAttribute('defer') && !script.hasAttribute('async'));
   assert.equal(script.textContent.trim(), appearanceSource.trim(), 'Only the audited theme controller is allowed');
   assert.equal(script.dataset.default, 'dark');
+  assert.deepEqual(JSON.parse(script.dataset.languageOrigins), ['https://tool4furry.cn', 'https://tool4furry.com']);
   assert(script.dataset.dark && script.dataset.light && script.dataset.dark !== script.dataset.light);
   return script;
 }
 function assertStaticNavigation(dom) {
   assertAppearanceScript(dom);
   assertNavigationScript(dom);
+  assertDocumentScroll(dom);
   assert.equal(dom.querySelectorAll('astro-island').length, 0);
-  assert.equal(dom.querySelectorAll('script').length, 2, 'Only the audited inline appearance and navigation scripts are permitted');
+  assert.equal(dom.querySelectorAll('script').length, 3, 'Only the audited inline appearance, navigation and document-scroll scripts are permitted');
   assert.equal(dom.querySelectorAll('link[rel="modulepreload"], link[as="script"]').length, 0);
 }
 function copyWithoutLanguageLink(dom) {
@@ -377,7 +397,7 @@ for (const page of htmlFiles) {
   const footer = footers[0];
   assert.equal(footer.tagName, 'FOOTER');
   assert.equal(footer.closest('main, astro-island'), null, 'Footer must be static and outside the tool');
-  assert.deepEqual([...footer.firstElementChild.children].map(el => el.tagName), ['DIV', 'NAV', 'DIV', 'DIV'], 'Footer retains three content bands followed by the compliance slot');
+  assert.deepEqual([...footer.firstElementChild.children].map(el => el.tagName), ['DIV', 'NAV', 'DIV', 'DIV'], 'Footer retains brand/navigation bands and the compliance slot above final legal content');
   const social = footer.querySelectorAll('[data-footer-social]');
   assert.equal(social.length, 1, 'Only the real GitHub social entry');
   assert.equal(social[0].getAttribute('href'), github);
@@ -393,16 +413,23 @@ for (const page of htmlFiles) {
   const slots = footer.querySelectorAll('[data-footer-compliance-slot]');
   assert.equal(slots.length, 1, 'One stable compliance slot, even without records');
   const slot = slots[0];
-  assert.equal(slot.previousElementSibling, legal, 'Compliance follows the complete legal/copyright row');
-  assert.equal(slot, footer.firstElementChild.lastElementChild, 'Compliance is the bottommost footer content');
+  assert.equal(slot.nextElementSibling, legal, 'Compliance precedes the complete legal/copyright row');
+  assert.equal(legal, footer.firstElementChild.lastElementChild, 'Legal/copyright remains the final footer line');
   assert.equal(legal.querySelector('[data-site-compliance]'), null, 'Compliance is no longer inside the left legal area');
   assert.equal(dom.querySelector('[data-footer-compliance-preview]'), null, 'CN DEV compliance hint must never enter production');
-  assert(!content.includes('备案展示位'), 'Development compliance copy leaked into static HTML');
+  assert(!/备案展示位|备案展示位置/.test(content), 'Development compliance copy leaked into static HTML');
   const records = footer.querySelectorAll('[data-site-compliance]');
   assert(records.length <= 1, 'At most one regional compliance group');
   for (const group of records)
     assert.equal(group.parentElement, slot, 'All approved records, including additional notices, belong to the bottom slot');
   if (records.length === 0) assert.equal(slot.childElementCount, 0, 'Unconfigured production slot stays empty');
+  if (region === 'global')
+    assert.equal(slot.querySelector('[data-compliance-kind="icp"], [data-compliance-kind="public-security"]'), null, 'Global never inherits CN registrations');
+  for (const icp of slot.querySelectorAll('[data-compliance-kind="icp"]')) {
+    assert(icp.querySelector('span')?.textContent.trim(), 'Approved ICP number required');
+    assert.equal(icp.querySelector('a')?.getAttribute('href'), 'https://beian.miit.gov.cn/');
+    assert.equal(icp.querySelector('span').nextElementSibling, icp.querySelector('a'), 'Official query follows the central ICP number');
+  }
   assert.deepEqual([...legal.querySelectorAll('nav a')].map(a => a.getAttribute('href')), ['/privacy/', '/terms/', `${github}/blob/master/LICENSE`]);
   assert(legal.textContent.includes(`© ${new Date().getFullYear()} Tool4Furry · LibreCosta`));
   assert(footer.querySelector(`a[href="${github}/blob/master/LICENSE"]`));
@@ -540,6 +567,7 @@ for (const page of htmlFiles) {
   const stylesheets = [...dom.querySelectorAll('link[rel="stylesheet"]')];
   const appearanceScript = assertAppearanceScript(dom);
   assertNavigationScript(dom);
+  assertDocumentScroll(dom);
   const featuredTrigger = dom.querySelector('[data-tool-disclosure] > summary');
   assert.equal(featuredTrigger?.getAttribute('aria-label'), region === 'cn' ? '精选工具' : 'Featured Tools', `Featured navigation label in ${page}`);
   assert(dom.querySelector('[data-tool-panel] a[href="/tools/"]'), 'Featured navigation retains the real full catalog');
@@ -719,5 +747,5 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
 }
 assert((await stat(root)).isDirectory());
 console.log(
-  `Verified ${region}: ${htmlFiles.length} static pages, audited appearance/navigation scripts only on static pages, SEO/OG/favicon, ${cards.length} real catalog cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
+  `Verified ${region}: ${htmlFiles.length} static pages, audited appearance/navigation/document-scroll scripts only on static pages, SEO/OG/favicon, ${cards.length} real catalog cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
 );

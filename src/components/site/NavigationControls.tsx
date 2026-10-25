@@ -28,8 +28,9 @@ export function NavigationControls({ region, link }: {
         data-language-link href={link.href} hrefLang={link.hreflang}
         aria-label={t.switchLanguage} {...stylex.props(n.control)}
       >
-        <span aria-hidden {...stylex.props(n.currentLanguage)}>{link.current} / </span>
-        <span lang={link.hreflang}>{link.target}</span>
+        <span aria-hidden {...stylex.props(n.currentLanguage)}>{link.current}</span>
+        <span aria-hidden {...stylex.props(n.targetLanguage)}> / </span>
+        <span lang={link.hreflang} {...stylex.props(n.targetLanguage)}>{link.target}</span>
       </a>
       <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" aria-label={t.github} {...stylex.props(n.control)}>
         <GithubLogoIcon size={20} aria-hidden />
@@ -38,7 +39,7 @@ export function NavigationControls({ region, link }: {
         type="button" data-appearance-toggle="react" aria-label={label} title={label}
         aria-pressed={appearance === undefined ? undefined : appearance === 'light'}
         disabled={appearance === undefined}
-        onClick={toggleAppearance} {...stylex.props(n.control)}
+        onClick={event => toggleAppearance(event.currentTarget)} {...stylex.props(n.control)}
       >
         <span data-appearance-icon="light" {...stylex.props(n.appearanceIcon)}><SunIcon size={20} aria-hidden {...stylex.props(n.svg)} /></span>
         <span data-appearance-icon="dark" {...stylex.props(n.appearanceIcon)}><MoonIcon size={20} aria-hidden {...stylex.props(n.svg)} /></span>

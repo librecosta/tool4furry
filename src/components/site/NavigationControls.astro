@@ -10,7 +10,7 @@ const t = messages[region];
 ---
 <div data-navigation-controls {...stylex.attrs(n.actions)}>
   <a data-language-link href={link.href} hreflang={link.hreflang} aria-label={t.switchLanguage} {...stylex.attrs(n.control)}>
-    <span aria-hidden="true" {...stylex.attrs(n.currentLanguage)}>{link.current} / </span><span lang={link.hreflang}>{link.target}</span>
+    <span aria-hidden="true" {...stylex.attrs(n.currentLanguage)}>{link.current}</span><span aria-hidden="true" {...stylex.attrs(n.targetLanguage)}> / </span><span lang={link.hreflang} {...stylex.attrs(n.targetLanguage)}>{link.target}</span>
   </a>
   <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" aria-label={t.github} {...stylex.attrs(n.control)}><GithubLogoIcon size={20} aria-hidden /></a>
   <button type="button" data-appearance-toggle="static" data-light-label={t.switchLight} data-dark-label={t.switchDark} aria-label={t.appearanceControl} disabled {...stylex.attrs(n.control)}>

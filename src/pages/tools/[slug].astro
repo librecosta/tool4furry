@@ -19,7 +19,7 @@ const { tool } = Astro.props;
 const content = getToolPageContent(tool, region, undefined, import.meta.env.DEV);
 const related = getRelatedTools(tool, region, undefined, import.meta.env.DEV);
 ---
-<SiteLayout title={tool.copy[region].title} fullTitle={content.title} description={content.description} workspace noindex={tool.status === 'draft'}>
+<SiteLayout title={tool.copy[region].title} fullTitle={content.title} description={content.description} workspace noindex={tool.status === 'draft'} documentScroll={tool.mode !== 'canvas'}>
   <main id="main-content" data-tool-id={tool.id} data-tool-region={region}>
     <ToolRuntime navigation={pageLanguageLink(Astro.url.pathname)} toolId={tool.id} region={region} client:load><ToolIntro slot="intro" content={content} /></ToolRuntime>
     <ToolGuide content={content} related={related} region={region} />

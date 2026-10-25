@@ -113,7 +113,7 @@ export default function ToolPageFrame({
                 >
                   <Popover.Popup
                     aria-label={t.navigationOptions}
-                    {...stylex.props(menu.popup)}
+                    {...stylex.props(menu.popup, n.chrome)}
                   >
                     <NavigationControls region={region} link={alternate} />
                   </Popover.Popup>
@@ -154,6 +154,8 @@ const s = stylex.create({
     pointerEvents: 'none',
   },
   entry: {
+    '--t4f-focus': tokens.navFocus,
+    color: tokens.navText,
     display: 'flex',
     alignItems: 'center',
     gap: tokens.space4,
@@ -168,7 +170,8 @@ const s = stylex.create({
     borderRadius: tokens.radiusLg,
     pointerEvents: 'auto',
   },
-  brand: { paddingInline: tokens.space8, flexShrink: 0 },
+  brand: { paddingInline: tokens.space8, flexShrink: 0, color: tokens.navText,
+    backgroundColor: { default: 'transparent', ':hover': tokens.navHover } },
   canvasLinks: { display: 'flex', alignItems: 'center', gap: tokens.space4 },
   elevated: { boxShadow: tokens.shadowSoft },
   title: {

@@ -10,6 +10,6 @@ interface Props { mode: LabMode }
 const { mode } = Astro.props;
 const t = messages[region];
 ---
-<SiteLayout title={`${t.lab} / ${t[mode]}`} workspace noindex>
+<SiteLayout title={`${t.lab} / ${t[mode]}`} workspace noindex documentScroll={false}>
   <main id="main-content"><LabRuntime navigation={pageLanguageLink(Astro.url.pathname)} mode={mode} region={region} client:load /></main>
 </SiteLayout>

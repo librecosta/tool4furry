@@ -1,3 +1,5 @@
+> C4-E（Issue #8）：以下 React ScrollDock 合同继续用于 FilesLab。公共页面新增静态 Astro DocumentScrollDock，复用同一 scroll-metrics.js，不增加 React Island；所有 Lab/Canvas 显式排除。仅根文档隐藏滚动条装饰，内部保留细滚动条，原生滚轮/键盘/触摸照常。公共 Dock 不限桌面，Footer 可见或模态打开时隐藏，详见 site-homepage.md 当前合同。
+
 # V0.2-B — File Interactions & ScrollDock
 
 本轮只提供文件交互与文档滚动原语。`/lab/files` 通过既有 `routes.ts`、WorkbenchLab、LabRuntime 和 UiProvider 接入；队列与确认弹窗状态属于 FilesLab。没有修改 WorkbenchShell、Astro 配置、主要依赖或全局 CSS。没有真实工具、文件内容读取、后端、SSR 或部署。
@@ -38,7 +40,7 @@
 
 ## ScrollDock API 与边界
 
-从 `src/ui/ScrollDock.tsx` 导入 `ScrollDock`，唯一必填属性 `getLabel: (percent: number) => string`，返回含动作与整数进度的本地化名称。FilesLab 使用如“向上滚动，当前进度 43%”的文案。`scroll-metrics.ts` 的 `getScrollMetrics(scrollTop, scrollHeight, clientHeight)` 是独立纯函数，返回 distance/top/percent/canShow/stepTarget；处理零高度、负值、越界与非有限输入。
+从 `src/ui/ScrollDock.tsx` 导入 `ScrollDock`，唯一必填属性 `getLabel: (percent: number) => string`，返回含动作与整数进度的本地化名称。FilesLab 使用如“向上滚动，当前进度 43%”的文案。`scroll-metrics.js` 的 `getScrollMetrics(scrollTop, scrollHeight, clientHeight)` 是独立纯函数，返回 distance/top/percent/canShow/stepTarget；处理零高度、负值、越界与非有限输入。
 
 只监听文档 scroll（passive），用 requestAnimationFrame 合并；window resize、媒体条件 change 和 ResizeObserver（body/documentElement）触发重新测量。内部面板 scroll 不触发更新。整数进度及显隐均未变化时不提交 React state；卸载移除全部监听、断开 observer 并取消待执行 frame。
 
