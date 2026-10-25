@@ -9,6 +9,8 @@ import {
 import type { ToolDefinition } from '../src/tools/types';
 import { fixtureTools } from './fixtures/tools';
 import { assertValidRegistry } from '../src/tools/validate-registry';
+import { getAvailableTools } from '../src/tools/registry';
+import { imageConverterDefinition } from '../src/tools/image-converter/definition';
 
 // Test-only metadata; never registered as a real tool or given a loader.
 function fixture(
@@ -36,6 +38,51 @@ describe('static tool discovery', () => {
     expect(getCatalogEntries('cn', [])).toEqual([]);
     expect(getCatalogEntries('global', [])).toEqual([]);
   });
+
+  it.each(['cn', 'global'] as const)(
+    'discovers the real draft Converter in DEV %s even with no featured IDs, but not in production',
+    (region) => {
+      const entries = getCatalogEntries(region, undefined, true);
+      expect(entries.map((entry) => [entry.id, entry.href, entry.title])).toEqual([
+        ['image-converter', '/tools/image-converter/', imageConverterDefinition.copy[region].title],
+      ]);
+      expect(getHomepageEntries(region, undefined, [], true)).toEqual(entries);
+      expect(getCatalogSections(region, undefined, true).flatMap((section) =>
+        section.groups.flatMap((group) => group.entries),
+      )).toEqual(entries);
+      for (const section of getDiscoverySections(region, undefined, true))
+        expect(section.entries).toEqual(entries);
+      expect(getDiscoverySections(region, undefined, true)).toHaveLength(3);
+      expect(getSwitcherTools(getAvailableTools(region, true))).toEqual([imageConverterDefinition]);
+      expect(getCatalogEntries(region)).toEqual([]);
+      expect(getHomepageEntries(region)).toEqual([]);
+      expect(getCatalogSections(region)).toEqual([]);
+      expect(getDiscoverySections(region)).toEqual([]);
+      expect(getSwitcherTools(getAvailableTools(region, false))).toEqual([]);
+      expect(imageConverterDefinition.status).toBe('draft');
+    },
+  );
+
+  it.each(['cn', 'global'] as const)(
+    'keeps regional draft visibility consistent across DEV %s discovery',
+    (region) => {
+      const otherRegion = region === 'cn' ? 'global' : 'cn';
+      const list: ToolDefinition[] = [
+        ...fixtureTools(1),
+        { ...fixtureTools(1)[0], id: 'local-draft', slug: 'local-draft', status: 'draft', regions: [region] },
+        { ...fixtureTools(1)[0], id: 'other-draft', slug: 'other-draft', status: 'draft', regions: [otherRegion] },
+      ];
+      const entries = getCatalogEntries(region, list, true);
+      expect(entries.map((entry) => entry.id)).toEqual(['fixture-1', 'local-draft']);
+      expect(getHomepageEntries(region, list, ['other-draft'], true)).toEqual(entries);
+      expect(getCatalogSections(region, list, true).flatMap((section) =>
+        section.groups.flatMap((group) => group.entries),
+      )).toEqual(entries);
+      for (const section of getDiscoverySections(region, list, true))
+        expect(section.entries).toEqual(entries);
+      expect(getCatalogEntries(region, list).map((entry) => entry.id)).toEqual(['fixture-1']);
+    },
+  );
 
   it.each(['cn', 'global'] as const)(
     'includes only published tools for %s, with localized card data and real route shapes',
@@ -109,6 +156,10 @@ describe('static tool discovery', () => {
       const list = fixtureTools(count);
       const entries = getCatalogEntries('cn', list);
       const sections = getCatalogSections('cn', list);
+      expect(getCatalogEntries('cn', list, true)).toEqual(entries);
+      expect(getHomepageEntries('cn', list, undefined, true)).toEqual(getHomepageEntries('cn', list));
+      expect(getCatalogSections('cn', list, true)).toEqual(sections);
+      expect(getDiscoverySections('cn', list, true)).toEqual(getDiscoverySections('cn', list));
       expect(
         sections.flatMap((section) =>
           section.groups.flatMap((group) => group.entries),

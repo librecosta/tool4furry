@@ -77,4 +77,24 @@ describe('Astro-only content boundary', () => {
       'four',
     ]);
   });
+  it.each(['cn', 'global'] as const)(
+    'includes only available same-group tools in DEV %s recommendations',
+    (region) => {
+      const one = fixtureTool('current', { status: 'draft' });
+      const list = [
+        one,
+        fixtureTool('other-region', { status: 'draft', regions: [region === 'cn' ? 'global' : 'cn'] }),
+        fixtureTool('local-draft', { status: 'draft', regions: [region] }),
+        fixtureTool('published'),
+        fixtureTool('third'),
+        fixtureTool('fourth'),
+      ];
+      expect(getRelatedTools(one, region, list, true).map((tool) => tool.slug)).toEqual([
+        'local-draft', 'published', 'third',
+      ]);
+      expect(getRelatedTools(one, region, list).map((tool) => tool.slug)).toEqual([
+        'published', 'third', 'fourth',
+      ]);
+    },
+  );
 });

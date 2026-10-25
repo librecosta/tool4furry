@@ -20,7 +20,7 @@ pnpm dev
 | 路径 | 内容 |
 | --- | --- |
 | `/`、`/#tools` | 品牌首页与最多 9 项真实精选；无工具时显示准备中的空状态 |
-| `/tools/` | 当前地区全部已发布工具，按任务/身份/场景发现；当前为空 |
+| `/tools/` | 当前地区完整目录：DEV 显示 draft + published，生产仅 published（当前为空）；按任务/身份/场景发现 |
 | `/tools/image-converter/` | 真实图片转换：开发可访问 draft，生产仅在 Registry published 后生成 |
 | `/about/`、`/privacy/`、`/terms/` | 双语静态网站信息页 |
 | `/lab/canvas` | 完整视口画布、浮动 Dock、默认关闭的 Inspector、手机参数 Sheet |
@@ -32,7 +32,7 @@ pnpm dev
 
 **Lab 只在 dev 可访问。** 页面明确标为 Demo；文件页仅持有本地文件引用并展示元信息，不读取内容、生成对象 URL、上传或持久存储。生产无 Lab 页面、入口或 demo 实现；首页仅有受控外观脚本，无 React Island 或 JS preload。
 
-**Converter 当前为 draft**，开发和生产共用 `/tools/image-converter/`，仅运行环境与 Registry 状态决定是否生成页面与加载实现。它在浏览器内读取、解码、编码并管理预览 URL，文件不上传或持久保存。生产排除 draft 的路由、目录入口及专用 JS；发布时只需经授权调整 Registry status，不再另改 loader 开关。操作与验收记录见 [Image Converter 实施记录](docs/image-converter-implementation.md)。
+**Converter 当前为 draft**，开发和生产共用 `/tools/image-converter/`，仅运行环境与 Registry 状态决定是否生成页面与加载实现。首页、完整目录、工具箱菜单及相关推荐沿用同一可见性规则：DEV 包含当前地区 draft + published，生产仅 published。它在浏览器内读取、解码、编码并管理预览 URL，文件不上传或持久保存。生产排除 draft 的路由、目录入口及专用 JS；发布时只需经授权调整 Registry status，不再另改 loader 开关。操作与验收记录见 [Image Converter 实施记录](docs/image-converter-implementation.md)。
 
 ## 检查与构建
 

@@ -10,7 +10,10 @@ import type { ToolDefinition } from '../src/tools/types';
 import { messages } from '../src/i18n/messages';
 import { setViewport } from './setup';
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllEnvs();
+});
 
 describe('product navigation', () => {
   it('lets keyboard users reach the compact canvas controls and return to their trigger', async () => {
@@ -86,8 +89,9 @@ describe('product navigation', () => {
   });
 
   it.each(['cn', 'global'] as const)(
-    'shows an honest empty toolbox in %s with keyboard dismissal',
+    'shows an honest empty production toolbox in %s with keyboard dismissal',
     async (region) => {
+      vi.stubEnv('DEV', false);
       const user = userEvent.setup();
       const t = messages[region];
       const { container } = render(
@@ -138,7 +142,8 @@ describe('product navigation', () => {
     },
   );
 
-  it('only links registry tools published for this region, using flat slugs', async () => {
+  it.each([false, true])('links only available regional tools with DEV=%s, using flat slugs', async (dev) => {
+    vi.stubEnv('DEV', dev);
     const entry = (
       id: string,
       status: ToolDefinition['status'],
@@ -161,10 +166,10 @@ describe('product navigation', () => {
       entry('overseas', 'published', ['global']),
       entry('current', 'published', ['cn']),
     ];
-    const original = registry.getPublishedTools;
-    const published = vi
-      .spyOn(registry, 'getPublishedTools')
-      .mockImplementation((region) => original(region, fixtures));
+    const original = registry.getAvailableTools;
+    const available = vi
+      .spyOn(registry, 'getAvailableTools')
+      .mockImplementation((region, dev) => original(region, dev, fixtures));
     const user = userEvent.setup();
     render(
       <ToolPageFrame
@@ -180,13 +185,26 @@ describe('product navigation', () => {
     const item = await screen.findByRole('menuitem', { name: 'current' });
     expect(item.getAttribute('href')).toBe('/tools/current-slug/');
     expect(item.getAttribute('aria-current')).toBe('page');
-    expect(screen.queryByText('draft')).toBeNull();
+    expect(screen.queryByRole('menuitem', { name: 'draft' })?.getAttribute('href') ?? null)
+      .toBe(dev ? '/tools/draft-slug/' : null);
     expect(screen.queryByText('overseas')).toBeNull();
-    expect(published).toHaveBeenCalledWith('cn');
+    expect(available).toHaveBeenCalledWith('cn', dev);
     expect(registry.tools).toEqual([imageConverterDefinition]); // Fixtures never populate the real registry.
     expect(imageConverterDefinition.status).toBe('draft');
-    expect(original('cn')).toEqual([]);
-    expect(original('global')).toEqual([]);
+    expect(original('cn', false)).toEqual([]);
+    expect(original('global', false)).toEqual([]);
+  });
+
+  it.each(['cn', 'global'] as const)('links the real draft Converter in the DEV %s toolbox', async (region) => {
+    vi.stubEnv('DEV', true);
+    const user = userEvent.setup();
+    render(<ToolPageFrame region={region} mode="form" currentToolId="image-converter" title="Converter">Workspace</ToolPageFrame>);
+    await user.click(screen.getByRole('button', { name: messages[region].tools }));
+    const item = await screen.findByRole('menuitem', { name: imageConverterDefinition.copy[region].title });
+    expect(item.getAttribute('href')).toBe('/tools/image-converter/');
+    expect(item.getAttribute('aria-current')).toBe('page');
+    expect(screen.queryByText(messages[region].empty)).toBeNull();
+    expect(imageConverterDefinition.status).toBe('draft');
   });
 
   it('separates DEV navigation from the toolbox and local canvas actions', async () => {

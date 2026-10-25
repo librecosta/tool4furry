@@ -61,8 +61,9 @@ export function getRelatedTools(
   tool: ToolDefinition,
   region: Region,
   registry = tools,
+  dev = false,
 ) {
-  return getPublishedTools(region, registry)
+  return getAvailableTools(region, dev, registry)
     .filter((entry) => entry.id !== tool.id && entry.group === tool.group)
     .slice(0, 3);
 }

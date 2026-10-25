@@ -17,7 +17,7 @@ export function getStaticPaths() {
 }
 const { tool } = Astro.props;
 const content = getToolPageContent(tool, region, undefined, import.meta.env.DEV);
-const related = getRelatedTools(tool, region);
+const related = getRelatedTools(tool, region, undefined, import.meta.env.DEV);
 ---
 <SiteLayout title={tool.copy[region].title} fullTitle={content.title} description={content.description} workspace noindex={tool.status === 'draft'}>
   <main id="main-content" data-tool-id={tool.id} data-tool-region={region}>

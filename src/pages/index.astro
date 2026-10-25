@@ -8,7 +8,7 @@ import { getHomepageEntries } from '../site/catalog';
 import ToolCards from '../components/site/ToolCards.astro';
 import CatalogEmpty from '../components/site/CatalogEmpty.astro';
 const t = messages[region];
-const tools = getHomepageEntries(region);
+const tools = getHomepageEntries(region, undefined, undefined, import.meta.env.DEV);
 ---
 <SiteLayout title={t.home} fullTitle={t.homeTitle} description={t.homeDescription}>
   <main id="main-content" {...stylex.attrs(s.fluid, s.homeWidth, s.homeMain)}>

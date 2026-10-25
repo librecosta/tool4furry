@@ -5,7 +5,7 @@ import { ToolboxIcon, DotsThreeIcon } from '@phosphor-icons/react';
 import * as stylex from '@stylexjs/stylex';
 import type { Region } from '../config/region';
 import type { WorkspaceMode } from './types';
-import { getPublishedTools } from './registry';
+import { getAvailableTools } from './registry';
 import { getSwitcherTools } from '../site/catalog';
 import { messages } from '../i18n/messages';
 import { controls as c } from '../styles/controls';
@@ -37,8 +37,8 @@ export default function ToolPageFrame({
   navigation?: LanguageLink;
 }) {
   const t = messages[region];
-  const published = getPublishedTools(region);
-  const shortcuts = getSwitcherTools(published, currentToolId);
+  const available = getAvailableTools(region, import.meta.env.DEV);
+  const shortcuts = getSwitcherTools(available, currentToolId);
   const floating = mode === 'canvas' && !intro;
   const alternate = navigation ?? languageLink('/tools/', region);
   return (
@@ -110,7 +110,7 @@ export default function ToolPageFrame({
                       <Menu.GroupLabel {...stylex.props(menu.label)}>
                         {t.tools}
                       </Menu.GroupLabel>
-                      {published.length === 0 && (
+                      {available.length === 0 && (
                         <p {...stylex.props(menu.note)}>{t.empty}</p>
                       )}
                       {shortcuts.map((tool) => (

@@ -1,5 +1,5 @@
 import type { Region } from '../config/region';
-import { getPublishedTools, tools } from '../tools/registry';
+import { getAvailableTools, tools } from '../tools/registry';
 import { domains, groups, audiences, contexts } from './taxonomy';
 import type { ToolDefinition } from '../tools/types';
 
@@ -9,8 +9,8 @@ export const HOME_TOOL_LIMIT = 9;
 export const SWITCHER_TOOL_LIMIT = 6;
 
 // Presentation metadata only. The existing registry remains the publication gate.
-export function getCatalogEntries(region: Region, registry = tools) {
-  return getPublishedTools(region, registry).map((tool) => ({
+export function getCatalogEntries(region: Region, registry = tools, dev = false) {
+  return getAvailableTools(region, dev, registry).map((tool) => ({
     id: tool.id,
     href: `/tools/${tool.slug}/`,
     ...tool.copy[region],
@@ -30,8 +30,9 @@ export function getHomepageEntries(
   region: Region,
   registry = tools,
   featured = featuredToolIds,
+  dev = false,
 ) {
-  const entries = getCatalogEntries(region, registry);
+  const entries = getCatalogEntries(region, registry, dev);
   const byId = new Map(entries.map((entry) => [entry.id, entry]));
   const ordered = [
     ...new Set([...featured, ...entries.map((entry) => entry.id)]),
@@ -41,8 +42,8 @@ export function getHomepageEntries(
     .slice(0, HOME_TOOL_LIMIT);
 }
 
-export function getCatalogSections(region: Region, registry = tools) {
-  const entries = getCatalogEntries(region, registry);
+export function getCatalogSections(region: Region, registry = tools, dev = false) {
+  const entries = getCatalogEntries(region, registry, dev);
   return Object.entries(domains)
     .map(([id, label]) => ({
       id,
@@ -61,8 +62,8 @@ export function getCatalogSections(region: Region, registry = tools) {
     .filter((domain) => domain.groups.length > 0);
 }
 
-export function getDiscoverySections(region: Region, registry = tools) {
-  const entries = getCatalogEntries(region, registry);
+export function getDiscoverySections(region: Region, registry = tools, dev = false) {
+  const entries = getCatalogEntries(region, registry, dev);
   return [
     ...Object.entries(audiences).map(([id, label]) => ({
       id: `audience-${id}`,
@@ -84,11 +85,11 @@ export function getDiscoverySections(region: Region, registry = tools) {
 }
 
 export function getSwitcherTools(
-  published: readonly ToolDefinition[],
+  available: readonly ToolDefinition[],
   currentToolId?: string,
 ) {
-  const current = published.find((tool) => tool.id === currentToolId);
-  const same = published.filter((tool) => tool.group === current?.group);
-  const others = published.filter((tool) => tool.group !== current?.group);
+  const current = available.find((tool) => tool.id === currentToolId);
+  const same = available.filter((tool) => tool.group === current?.group);
+  const others = available.filter((tool) => tool.group !== current?.group);
   return [...same, ...others].slice(0, SWITCHER_TOOL_LIMIT);
 }

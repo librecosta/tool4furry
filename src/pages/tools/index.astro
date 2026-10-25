@@ -8,8 +8,8 @@ import { region } from '../../config/site';
 import { messages } from '../../i18n/messages';
 import { siteStyles as s } from '../../styles/site';
 const t = messages[region];
-const sections = getCatalogSections(region);
-const discovery = getDiscoverySections(region);
+const sections = getCatalogSections(region, undefined, import.meta.env.DEV);
+const discovery = getDiscoverySections(region, undefined, import.meta.env.DEV);
 ---
 <SiteLayout title={t.tools} fullTitle={t.catalogTitle} description={t.catalogDescription}>
   <main id="main-content" {...stylex.attrs(s.fluid, s.main)}>
