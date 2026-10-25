@@ -8,13 +8,16 @@ import FormDemo from './FormDemo';
 import BatchDemo from './BatchDemo';
 import UILab from './UILab';
 import FilesLab from './FilesLab';
+import type { LanguageLink } from '../site/language';
 
 export default function WorkbenchLab({
   mode,
   region,
+  navigation,
 }: {
   mode: LabMode;
   region: Region;
+  navigation?: LanguageLink;
 }) {
   const t = messages[region];
   return (
@@ -23,6 +26,7 @@ export default function WorkbenchLab({
       mode={mode === 'ui' || mode === 'files' ? 'custom' : mode}
       title={`DEMO · ${t[mode]}`}
       debug={<LabMenu mode={mode} t={t} />}
+      navigation={navigation}
     >
       {mode === 'canvas' ? (
         <CanvasDemo t={t} header={null} />

@@ -3,6 +3,33 @@ import { readFile, readdir, stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { JSDOM } from 'jsdom';
 
+const appearanceSource = (await readFile('src/styles/appearance-controller.js', 'utf8')).replace(/\r\n?/g, '\n');
+function assertAppearanceScript(dom) {
+  const scripts = dom.querySelectorAll('script#t4f-appearance');
+  assert.equal(scripts.length, 1, 'Exactly one shared appearance initializer');
+  const script = scripts[0];
+  assert.equal(script.parentElement, dom.head, 'Theme restores synchronously in head');
+  assert(!script.hasAttribute('src') && !script.hasAttribute('type') && !script.hasAttribute('defer') && !script.hasAttribute('async'));
+  assert.equal(script.textContent.trim(), appearanceSource.trim(), 'Only the audited theme controller is allowed');
+  assert.equal(script.dataset.default, 'dark');
+  assert(script.dataset.dark && script.dataset.light && script.dataset.dark !== script.dataset.light);
+  return script;
+}
+function assertStaticNavigation(dom) {
+  assertAppearanceScript(dom);
+  assert.equal(dom.querySelectorAll('astro-island').length, 0);
+  assert.equal(dom.querySelectorAll('script').length, 1, 'Only the inline appearance controller is permitted');
+  assert.equal(dom.querySelectorAll('link[rel="modulepreload"], link[as="script"]').length, 0);
+}
+function copyWithoutLanguageLink(dom) {
+  const body = dom.body.cloneNode(true);
+  for (const link of body.querySelectorAll('[data-language-link]')) {
+    assert.equal(link.textContent.trim(), 'EN / 中');
+    link.remove();
+  }
+  return body.textContent;
+}
+
 const region = process.argv[2];
 assert(['cn', 'global'].includes(region), 'Specify cn or global');
 const root = process.argv[3]
@@ -125,8 +152,8 @@ for (const tag of ['header', 'footer']) {
   else
     assert.equal(
       shell.querySelectorAll('a').length,
-      2,
-      'Header only exposes brand and toolbox',
+      3,
+      'Header only exposes brand, toolbox and language link',
     );
   const brand = shell.querySelector('a[href="/"]');
   assert.equal(brand?.textContent.trim(), 'Tool4Furry');
@@ -186,11 +213,7 @@ for (const image of document.querySelectorAll('img')) {
     'Reserve image geometry',
   );
 }
-assert.equal(
-  document.querySelectorAll('astro-island, script').length,
-  0,
-  'Homepage must remain static',
-);
+assertStaticNavigation(document);
 assert(!home.includes('/lab/'), 'Lab navigation leaked into homepage');
 assert.equal(
   document.querySelectorAll('link[rel="modulepreload"], link[as="script"]')
@@ -200,7 +223,7 @@ assert.equal(
 );
 if (region === 'global')
   assert(
-    !/[\u4e00-\u9fff]/u.test(document.body.textContent),
+    !/[\u4e00-\u9fff]/u.test(copyWithoutLanguageLink(document)),
     'Chinese copy in global homepage',
   );
 const fullHTML = await readFile(resolve(root, 'tools/index.html'), 'utf8');
@@ -214,17 +237,11 @@ assert.equal(
   fullCatalog.querySelector('link[rel="canonical"]')?.getAttribute('href'),
   `${site}tools/`,
 );
-assert.equal(
-  fullCatalog.querySelectorAll(
-    'script, astro-island, link[rel="modulepreload"], link[as="script"]',
-  ).length,
-  0,
-  'Full catalog must remain static',
-);
+assertStaticNavigation(fullCatalog);
 assert(!fullHTML.includes('/lab/'), 'Lab links leaked into full catalog');
 if (region === 'global')
   assert(
-    !/[\u4e00-\u9fff]/u.test(fullCatalog.body.textContent),
+    !/[\u4e00-\u9fff]/u.test(copyWithoutLanguageLink(fullCatalog)),
     'Chinese copy in global catalog',
   );
 const cards = [...catalog.querySelectorAll('ul > li > a[data-tool-card]')];
@@ -475,6 +492,12 @@ for (const page of htmlFiles) {
     );
   }
   const stylesheets = [...dom.querySelectorAll('link[rel="stylesheet"]')];
+  const appearanceScript = assertAppearanceScript(dom);
+  const language = dom.querySelector('[data-language-link]');
+  assert(language, `Missing language entry in ${page}`);
+  const languageURL = new URL(language.getAttribute('href'));
+  assert.equal(languageURL.origin, region === 'cn' ? 'https://tool4furry.com' : 'https://tool4furry.cn');
+  assert.equal(languageURL.search + languageURL.hash, '', 'No query or hash crosses regions');
   assert.equal(
     dom.documentElement.dataset.colorTheme,
     'sea-mist',
@@ -534,6 +557,9 @@ for (const page of htmlFiles) {
     }
   }
   const css = linkedCSS.join('\n');
+  for (const appearance of ['dark', 'light'])
+    for (const className of appearanceScript.dataset[appearance].split(' '))
+      assert(css.includes(`.${className}`), `Missing extracted ${appearance} theme in ${page}`);
   assert(
     /color-scheme:\s*var\(--/.test(css),
     `Appearance must control native color-scheme in ${page}`,
@@ -615,5 +641,5 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
 }
 assert((await stat(root)).isDirectory());
 console.log(
-  `Verified ${region}: ${htmlFiles.length} static pages, zero-script homepage, SEO/OG/favicon, ${cards.length} real catalog cards, extracted StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
+  `Verified ${region}: ${htmlFiles.length} static pages, controlled inline appearance script only on homepage, SEO/OG/favicon, ${cards.length} real catalog cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
 );

@@ -4,7 +4,11 @@ import { region, regionConfig } from '../config/site';
 import { messages } from '../i18n/messages';
 import { siteStyles as s } from '../styles/site';
 import { tokens } from '../styles/tokens.stylex';
-import { resolvePageTheme } from '../styles/theme';
+import { resolvePageTheme, resolveTheme } from '../styles/theme';
+import appearanceSource from '../styles/appearance-controller.js?raw';
+import NavigationControls from '../components/site/NavigationControls.astro';
+import { navigationStyles as n } from '../styles/navigation';
+import { ToolboxIcon } from '@phosphor-icons/react/ssr';
 import '@fontsource-variable/dm-sans/wght.css';
 import '@fontsource-variable/noto-sans-sc/wght.css';
 import '../styles/global.css';
@@ -17,12 +21,15 @@ const canonical = new URL(Astro.url.pathname, regionConfig.site);
 const resolvedTitle = fullTitle ?? `${title} · Tool4Furry`;
 const resolvedDescription = description ?? t.intro;
 const theme = resolvePageTheme(import.meta.env.DEV, import.meta.env.T4F_DEV_APPEARANCE);
+const darkClass = stylex.attrs(resolveTheme({colorTheme:'sea-mist',appearance:'dark'}).style).class;
+const lightClass = stylex.attrs(resolveTheme({colorTheme:'sea-mist',appearance:'light'}).style).class;
 ---
 <!doctype html>
 <html lang={regionConfig.lang} data-color-theme={theme.colorTheme} data-appearance={theme.appearance} {...stylex.attrs(theme.style, s.themeRoot)} style={`--t4f-focus: ${tokens.focus};`}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline id="t4f-appearance" data-dark={darkClass} data-light={lightClass} data-default={theme.appearance} set:html={appearanceSource} />
     <meta name="description" content={resolvedDescription} />
     <title>{resolvedTitle}</title>
     <link rel="icon" type="image/svg+xml" href="/brand/tool4furry-mark.svg" />
@@ -47,8 +54,11 @@ const theme = resolvePageTheme(import.meta.env.DEV, import.meta.env.T4F_DEV_APPE
         <nav {...stylex.attrs(s.fluid, s.nav)} aria-label={t.headerNav}>
           <div {...stylex.attrs(s.navLinks)}>
             <Brand />
-            <a {...stylex.attrs(s.navLink)} href="/tools/">{t.tools}</a>
+            <a {...stylex.attrs(n.control)} href="/tools/" aria-label={t.tools}>
+              <span {...stylex.attrs(n.mobileToolbox)}><ToolboxIcon size={20} aria-hidden /></span><span {...stylex.attrs(n.toolboxLabel)}>{t.tools}</span>
+            </a>
           </div>
+          <NavigationControls />
         </nav>
       </header>}
       <slot />

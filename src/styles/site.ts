@@ -57,7 +57,7 @@ export const siteStyles = stylex.create({
   navLinks: {
     display: 'flex',
     alignItems: 'center',
-    gap: { default: 32, '@media (max-width: 768px)': 16 },
+    gap: { default: 32, '@media (max-width: 768px)': 16, '@media (max-width: 600px)': 8 },
     minWidth: 0,
   },
   navLink: {

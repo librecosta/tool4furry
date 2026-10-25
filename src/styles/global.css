@@ -33,6 +33,11 @@
   html {
     line-height: 1.5;
   }
+  /* Root appearance keeps both static and island icons correct before hydration. */
+  html[data-appearance='light'] [data-appearance-icon='light'],
+  html[data-appearance='dark'] [data-appearance-icon='dark'] {
+    display: none;
+  }
   code,
   pre,
   kbd,

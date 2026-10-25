@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
+import { pageLanguageLink } from '../../config/navigation';
 import LabRuntime from '../../lab/LabRuntime';
 import { getLabPaths, type LabMode } from '../../lab/routes';
 import { region } from '../../config/site';
@@ -10,5 +11,5 @@ const { mode } = Astro.props;
 const t = messages[region];
 ---
 <SiteLayout title={`${t.lab} / ${t[mode]}`} workspace noindex>
-  <main id="main-content"><LabRuntime mode={mode} region={region} client:load /></main>
+  <main id="main-content"><LabRuntime navigation={pageLanguageLink(Astro.url.pathname)} mode={mode} region={region} client:load /></main>
 </SiteLayout>

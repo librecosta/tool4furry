@@ -1,0 +1,20 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { SunIcon, MoonIcon, UserIcon } from '@phosphor-icons/react/ssr';
+import { navigationStyles as n } from '../../styles/navigation';
+import { region } from '../../config/site';
+import { pageLanguageLink } from '../../config/navigation';
+import { messages } from '../../i18n/messages';
+const link = pageLanguageLink(Astro.url.pathname);
+const t = messages[region];
+---
+<div data-navigation-controls {...stylex.attrs(n.actions)}>
+  <a data-language-link href={link.href} hreflang={link.hreflang} aria-label={t.switchLanguage} {...stylex.attrs(n.control)}>
+    <span aria-hidden="true" {...stylex.attrs(n.currentLanguage)}>{link.current} / </span><span lang={link.hreflang}>{link.target}</span>
+  </a>
+  <button type="button" data-appearance-toggle="static" data-light-label={t.switchLight} data-dark-label={t.switchDark} aria-label={t.appearanceControl} disabled {...stylex.attrs(n.control)}>
+    <span data-appearance-icon="light"><SunIcon size={20} aria-hidden /></span>
+    <span data-appearance-icon="dark"><MoonIcon size={20} aria-hidden /></span>
+  </button>
+  <span data-account-slot role="img" aria-label={t.accountReserved} {...stylex.attrs(n.account)}><UserIcon size={20} aria-hidden /></span>
+</div>

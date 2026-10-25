@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import ToolPageFrame from '../src/tools/ToolPageFrame';
@@ -13,6 +13,46 @@ import { setViewport } from './setup';
 afterEach(() => vi.restoreAllMocks());
 
 describe('product navigation', () => {
+  it('lets keyboard users reach the compact canvas controls and return to their trigger', async () => {
+    const user = userEvent.setup();
+    render(<ToolPageFrame region="cn" mode="canvas" title="Canvas">Canvas content</ToolPageFrame>);
+    const trigger = screen.getByRole('button', { name: messages.cn.navigationOptions });
+    await user.click(trigger);
+    const language = await screen.findByRole('link', { name: messages.cn.switchLanguage });
+    await waitFor(() => expect(document.activeElement).toBe(language));
+    expect(language.getAttribute('href')).toBe('https://tool4furry.com/tools/');
+    await user.keyboard('{Escape}');
+    await waitFor(() => expect(document.activeElement).toBe(trigger));
+  });
+
+  it('uses the shared appearance controller without replacing tool content or focusing the account slot', async () => {
+    let appearance: 'light' | 'dark' = 'light';
+    vi.stubGlobal('t4fAppearance', {
+      get: () => appearance,
+      toggle: () => {
+        appearance = appearance === 'light' ? 'dark' : 'light';
+        window.dispatchEvent(new Event('t4f:appearance'));
+      },
+    });
+    const user = userEvent.setup();
+    const { container } = render(
+      <ToolPageFrame region="cn" mode="form" title="Tool">
+        <input aria-label="Retained value" defaultValue="file loaded" />
+      </ToolPageFrame>,
+    );
+    const input = screen.getByRole('textbox') as HTMLInputElement;
+    await user.type(input, ' and ready');
+    await user.click(screen.getByRole('button', { name: messages.cn.switchDark }));
+    expect(appearance).toBe('dark');
+    expect(screen.getByRole('button', { name: messages.cn.switchLight }).getAttribute('aria-pressed')).toBe('false');
+    expect(screen.getByRole('textbox')).toBe(input);
+    expect(input.value).toBe('file loaded and ready');
+    act(() => { appearance = 'light'; window.dispatchEvent(new Event('t4f:appearance')); });
+    expect(screen.getByRole('button', { name: messages.cn.switchDark }).getAttribute('aria-pressed')).toBe('true');
+    expect(container.querySelector('[data-account-slot]')?.matches('button, a, [tabindex]')).toBe(false);
+    expect(screen.getByRole('link', { name: messages.cn.switchLanguage }).getAttribute('href')).toBe('https://tool4furry.com/tools/');
+  });
+
   it('keeps form identity in content and lets the Astro intro own the sole H1', () => {
     const { container, rerender } = render(
       <ToolPageFrame region="cn" mode="form" title="Form identity">

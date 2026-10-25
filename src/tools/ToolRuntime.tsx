@@ -7,6 +7,7 @@ import { getPublishedTools, tools } from './registry';
 import ToolPageFrame from './ToolPageFrame';
 import * as stylex from '@stylexjs/stylex';
 import { tokens } from '../styles/tokens.stylex';
+import type { LanguageLink } from '../site/language';
 class LoadBoundary extends Component<
   { children: ReactNode; fallback: ReactNode },
   { failed: boolean }
@@ -24,11 +25,13 @@ export default function ToolRuntime({
   region,
   intro,
   preview = false,
+  navigation,
 }: {
   toolId: string;
   region: Region;
   intro?: ReactNode;
   preview?: boolean;
+  navigation?: LanguageLink;
 }) {
   const t = messages[region];
   const definition = (
@@ -57,6 +60,7 @@ export default function ToolRuntime({
         title={definition?.copy[region].title ?? t.unavailable}
         currentToolId={definition?.id}
         intro={intro}
+        navigation={navigation}
       >
         <div data-tool-runtime={toolId}>
           <LoadBoundary key={toolId} fallback={fallback}>

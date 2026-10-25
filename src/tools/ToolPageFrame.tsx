@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Menu } from '@base-ui/react/menu';
-import { ToolboxIcon } from '@phosphor-icons/react';
+import { Popover } from '@base-ui/react/popover';
+import { ToolboxIcon, DotsThreeIcon } from '@phosphor-icons/react';
 import * as stylex from '@stylexjs/stylex';
 import type { Region } from '../config/region';
 import type { WorkspaceMode } from './types';
@@ -11,6 +12,9 @@ import { controls as c } from '../styles/controls';
 import { tokens } from '../styles/tokens.stylex';
 import { menuStyles as menu } from '../styles/menu';
 import { siteStyles as site } from '../styles/site';
+import { navigationStyles as n } from '../styles/navigation';
+import { NavigationControls } from '../components/site/NavigationControls';
+import { languageLink, type LanguageLink } from '../site/language';
 
 // Product navigation belongs to page composition, never to a tool's local modes.
 export default function ToolPageFrame({
@@ -21,6 +25,7 @@ export default function ToolPageFrame({
   debug,
   children,
   intro,
+  navigation,
 }: {
   region: Region;
   mode: WorkspaceMode;
@@ -29,11 +34,13 @@ export default function ToolPageFrame({
   debug?: ReactNode;
   children: ReactNode;
   intro?: ReactNode;
+  navigation?: LanguageLink;
 }) {
   const t = messages[region];
   const published = getPublishedTools(region);
   const shortcuts = getSwitcherTools(published, currentToolId);
   const floating = mode === 'canvas' && !intro;
+  const alternate = navigation ?? languageLink('/tools/', region);
   return (
     <div {...stylex.props(s.frame)}>
       <header
@@ -82,10 +89,14 @@ export default function ToolPageFrame({
             <Menu.Root>
               <Menu.Trigger
                 aria-label={t.tools}
-                {...stylex.props(c.button, c.ghost, s.icon)}
+                {...stylex.props(
+                  c.button, c.ghost, s.icon, !floating && n.control,
+                )}
               >
                 <ToolboxIcon size={20} aria-hidden />
-                {!floating && <span>{t.tools}</span>}
+                {!floating && (
+                  <span {...stylex.props(n.toolboxLabel)}>{t.tools}</span>
+                )}
               </Menu.Trigger>
               <Menu.Portal>
                 <Menu.Positioner
@@ -131,7 +142,36 @@ export default function ToolPageFrame({
               {title}
             </h1>
           )}
-          {debug}
+          {!floating && (
+            <div {...stylex.props(n.actions)}>
+              <NavigationControls region={region} link={alternate} />
+              {debug && <div {...stylex.props(n.debug)}>{debug}</div>}
+            </div>
+          )}
+          {floating && debug}
+          {floating && (
+            <Popover.Root>
+              <Popover.Trigger
+                aria-label={t.navigationOptions}
+                {...stylex.props(n.control)}
+              >
+                <DotsThreeIcon size={22} aria-hidden />
+              </Popover.Trigger>
+              <Popover.Portal>
+                <Popover.Positioner
+                  align="end" sideOffset={8} collisionPadding={16}
+                  {...stylex.props(menu.positioner)}
+                >
+                  <Popover.Popup
+                    aria-label={t.navigationOptions}
+                    {...stylex.props(menu.popup)}
+                  >
+                    <NavigationControls region={region} link={alternate} />
+                  </Popover.Popup>
+                </Popover.Positioner>
+              </Popover.Portal>
+            </Popover.Root>
+          )}
         </nav>
       </header>
       {!intro && !floating && (

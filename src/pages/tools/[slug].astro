@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
+import { pageLanguageLink } from '../../config/navigation';
 import ToolRuntime from '../../tools/ToolRuntime';
 import { getPublishedTools } from '../../tools/registry';
 import { region } from '../../config/site';
@@ -20,7 +21,7 @@ const related = getRelatedTools(tool, region);
 ---
 <SiteLayout title={tool.copy[region].title} fullTitle={content.title} description={content.description} workspace>
   <main id="main-content" data-tool-id={tool.id} data-tool-region={region}>
-    <ToolRuntime toolId={tool.id} region={region} client:load><ToolIntro slot="intro" content={content} /></ToolRuntime>
+    <ToolRuntime navigation={pageLanguageLink(Astro.url.pathname)} toolId={tool.id} region={region} client:load><ToolIntro slot="intro" content={content} /></ToolRuntime>
     <ToolGuide content={content} related={related} region={region} />
   </main>
 </SiteLayout>
