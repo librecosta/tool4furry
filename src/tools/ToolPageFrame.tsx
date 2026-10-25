@@ -212,7 +212,7 @@ const s = stylex.create({
     maxWidth: '100%',
     minWidth: 0,
     padding: tokens.space4,
-    backgroundColor: tokens.surface,
+    backgroundColor: tokens.surfaceFloating,
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: tokens.border,

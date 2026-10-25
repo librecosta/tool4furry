@@ -21,8 +21,8 @@ const canonical = new URL(Astro.url.pathname, regionConfig.site);
 const resolvedTitle = fullTitle ?? `${title} · Tool4Furry`;
 const resolvedDescription = description ?? t.intro;
 const theme = resolvePageTheme(import.meta.env.DEV, import.meta.env.T4F_DEV_APPEARANCE);
-const darkClass = stylex.attrs(resolveTheme({colorTheme:'sea-mist',appearance:'dark'}).style).class;
-const lightClass = stylex.attrs(resolveTheme({colorTheme:'sea-mist',appearance:'light'}).style).class;
+const darkClass = stylex.attrs(resolveTheme({colorTheme:'neutral',appearance:'dark'}).style).class;
+const lightClass = stylex.attrs(resolveTheme({colorTheme:'neutral',appearance:'light'}).style).class;
 ---
 <!doctype html>
 <html lang={regionConfig.lang} data-color-theme={theme.colorTheme} data-appearance={theme.appearance} {...stylex.attrs(theme.style, s.themeRoot)} style={`--t4f-focus: ${tokens.focus};`}>

@@ -528,7 +528,7 @@ for (const page of htmlFiles) {
   }
   assert.equal(
     dom.documentElement.dataset.colorTheme,
-    'sea-mist',
+    'neutral',
     `Missing static color theme in ${page}`,
   );
   assert.equal(

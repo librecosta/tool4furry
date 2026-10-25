@@ -1,25 +1,34 @@
 import * as stylex from '@stylexjs/stylex';
-export const seaMistDarkValues = {
-  page: '#1D2225',
-  workspace: '#23292C',
-  surface: '#292F33',
-  surfaceMuted: '#343C40',
-  previewChecker: '#343C40',
-  textPrimary: '#F0F2EF',
-  textSecondary: '#B6C1BF',
-  border: '#495358',
-  controlBorder: '#83938F',
+// GoFurry dev b186325 tokens.less: preserve the mapped gray values and alpha.
+export const neutralDarkValues = {
+  page: '#1D1F22',
+  // Tool4Furry adaptations: workspace/checker and an opaque portal surface
+  // (GoFurry strong surface composited once over page, rounded to sRGB bytes).
+  workspace: '#222427',
+  previewChecker: '#44474C',
+  surfaceFloating: '#393B3E',
+  surface: 'rgba(229,231,235,0.08)',
+  surfaceMuted: 'rgba(229,231,235,0.14)',
+  surfaceHover: 'rgba(229,231,235,0.16)',
+  inputSurface: 'rgba(32,34,38,0.72)',
+  textPrimary: 'rgba(248,250,252,0.94)',
+  textSecondary: 'rgba(203,213,225,0.76)',
+  border: 'rgba(226,232,240,0.18)',
+  borderStrong: 'rgba(226,232,240,0.28)',
+  controlBorder: '#98A1AA',
   brand: '#C97849',
-  action: '#9DB8AF',
-  actionHover: '#B0C8C0',
-  actionPressed: '#8EA99F',
-  actionTint: '#354743',
-  onAction: '#1D2B28',
-  sage: '#879C91',
-  focus: '#B4D0C5',
+  accent: 'rgba(203,213,225,0.82)',
+  action: 'rgba(203,213,225,0.18)',
+  actionHover: 'rgba(203,213,225,0.26)',
+  // Pressed/selected and accessible focus/control edges are tool adaptations.
+  actionPressed: 'rgba(203,213,225,0.12)',
+  actionTint: 'rgba(203,213,225,0.08)',
+  onAction: 'rgba(248,250,252,0.96)',
+  sage: '#A6ADB5',
+  focus: '#CBD5E1',
   danger: '#FF9BA4',
   dangerHover: '#FFB2B9',
-  onDanger: '#1D2B28',
+  onDanger: '#1D1F22',
   positive: '#83D6AE',
   warning: '#E7C47C',
   info: '#ACC7D1',
@@ -27,11 +36,11 @@ export const seaMistDarkValues = {
   supportAmber: '#D6B27A',
   supportLavender: '#B9ABD0',
   supportSlate: '#ACC7D1',
-  overlay: '#10191CB3',
+  overlay: 'rgba(2,6,23,0.64)',
   shadowNone: 'none',
-  shadowSoft: '0 2px 8px #10191C24, inset 0 1px 0 #FFFFFF05',
+  shadowSoft: '0 2px 8px #00000024, inset 0 1px 0 #FFFFFF05',
   shadowFloating:
-    '0 16px 40px #0F171B52, 0 3px 10px #0F171B33, inset 0 1px 0 #FFFFFF08',
+    '0 16px 40px #00000052, 0 3px 10px #00000033, inset 0 1px 0 #FFFFFF08',
   radiusSm: '8px',
   radiusMd: '10px',
   radiusLg: '14px',
@@ -53,24 +62,29 @@ export const seaMistDarkValues = {
   colorScheme: 'dark',
 } as const;
 
-export const seaMistLightValues = {
-  ...seaMistDarkValues,
-  page: '#F5F6F2',
-  workspace: '#EBF0EC',
-  surface: '#FEFFFC',
-  surfaceMuted: '#E6EDE8',
-  previewChecker: '#D5DED7',
-  textPrimary: '#29342F',
-  textSecondary: '#586963',
-  border: '#CDD8D0',
-  controlBorder: '#75867C',
-  action: '#426F62',
-  actionHover: '#345F53',
-  actionPressed: '#2E5047',
-  actionTint: '#DFECE6',
+export const neutralLightValues = {
+  ...neutralDarkValues,
+  page: '#F8F9FA',
+  workspace: '#F2F4F5',
+  surface: '#FFFFFF',
+  surfaceMuted: '#EEF0F2',
+  surfaceHover: '#F0F2F4',
+  surfaceFloating: '#FFFFFF',
+  inputSurface: '#FFFFFF',
+  previewChecker: '#D5D9DE',
+  textPrimary: '#202428',
+  textSecondary: '#58616B',
+  border: '#CDD2D7',
+  borderStrong: '#B3BBC3',
+  controlBorder: '#737C85',
+  accent: '#262C32',
+  action: '#262C32',
+  actionHover: '#39424A',
+  actionPressed: '#1B2025',
+  actionTint: '#E8EBEF',
   onAction: '#FFFFFF',
-  sage: '#607D6D',
-  focus: '#426F62',
+  sage: '#717982',
+  focus: '#53616E',
   danger: '#A63243',
   dangerHover: '#8B2738',
   onDanger: '#FFFFFF',
@@ -81,18 +95,18 @@ export const seaMistLightValues = {
   supportAmber: '#8B5F23',
   supportLavender: '#745F8D',
   supportSlate: '#456B86',
-  overlay: '#29342F66',
-  shadowSoft: '0 2px 8px #29342F0D, inset 0 1px 0 #FFFFFF99',
+  overlay: '#20242866',
+  shadowSoft: '0 2px 8px #2024280D, inset 0 1px 0 #FFFFFF99',
   shadowFloating:
-    '0 16px 40px #29342F24, 0 3px 10px #29342F14, inset 0 1px 0 #FFFFFFB3',
+    '0 16px 40px #20242824, 0 3px 10px #20242814, inset 0 1px 0 #FFFFFFB3',
   colorScheme: 'light',
 } as const;
 
 // Overrides accept semantic strings, rather than only the dark defaults' literals.
-type ThemeValues = { [Key in keyof typeof seaMistDarkValues]: string } & {
+type ThemeValues = { [Key in keyof typeof neutralDarkValues]: string } & {
   colorScheme: 'light' | 'dark';
 };
-export const tokens = stylex.defineVars<ThemeValues>(seaMistDarkValues);
+export const tokens = stylex.defineVars<ThemeValues>(neutralDarkValues);
 // One resolved theme overrides the entire group, never two partial axis themes.
-export const seaMistDarkTheme = stylex.createTheme(tokens, seaMistDarkValues);
-export const seaMistLightTheme = stylex.createTheme(tokens, seaMistLightValues);
+export const neutralDarkTheme = stylex.createTheme(tokens, neutralDarkValues);
+export const neutralLightTheme = stylex.createTheme(tokens, neutralLightValues);

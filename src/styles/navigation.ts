@@ -7,7 +7,7 @@ export const navigationStyles = stylex.create({
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
     minWidth: 44, minHeight: 44, padding: 8, gap: t.space4,
     '@media (max-width: 600px)': { minWidth: 40, minHeight: 44, padding: 6 },
-    color: t.textPrimary, backgroundColor: { default: 'transparent', ':hover': t.surfaceMuted },
+    color: t.textPrimary, backgroundColor: { default: 'transparent', ':hover': t.surfaceHover },
     borderWidth: 0, borderRadius: t.radiusMd, fontSize: 14, fontWeight: 500,
     textDecoration: 'none', flexShrink: 0,
   },

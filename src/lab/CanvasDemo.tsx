@@ -194,7 +194,7 @@ const s = stylex.create({
     borderRadius: 16,
     color: tokens.textPrimary,
   },
-  selected: { outline: `2px solid ${tokens.action}`, outlineOffset: 4 },
+  selected: { outline: `2px solid ${tokens.accent}`, outlineOffset: 4 },
   // Demo content colors are decorative, independent of the primary action.
   symbol: { display: 'flex', color: tokens.sage },
   orange: { color: tokens.brand },

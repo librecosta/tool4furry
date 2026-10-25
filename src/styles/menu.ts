@@ -11,11 +11,11 @@ export const menuStyles = stylex.create({
     overflowY: 'auto',
     overscrollBehavior: 'contain',
     padding: tokens.space8,
-    backgroundColor: tokens.surfaceMuted,
+    backgroundColor: tokens.surfaceFloating,
     color: tokens.textPrimary,
     borderWidth: 1,
     borderStyle: 'solid',
-    borderColor: tokens.border,
+    borderColor: tokens.borderStrong,
     borderRadius: tokens.radiusLg,
     boxShadow: tokens.shadowFloating,
   },
@@ -41,7 +41,7 @@ export const menuStyles = stylex.create({
     textUnderlineOffset: 4,
     backgroundColor: {
       default: 'transparent',
-      ':is([data-highlighted])': tokens.border,
+      ':is([data-highlighted])': tokens.surfaceHover,
       ':is([aria-current="page"])': tokens.actionTint,
     },
     outline: {

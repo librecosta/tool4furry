@@ -250,7 +250,7 @@ const s = stylex.create({
     fontSize: 12,
     color: t.textSecondary,
   },
-  ready: { color: t.action },
+  ready: { color: t.accent },
   metadataRow: {
     gridColumn: { default: '2', '@media (max-width: 600px)': '1 / -1' },
     gridRow: 2,
@@ -278,7 +278,7 @@ const s = stylex.create({
     backgroundColor: t.border,
     borderRadius: 2,
   },
-  bar: { display: 'block', height: '100%', backgroundColor: t.action },
+  bar: { display: 'block', height: '100%', backgroundColor: t.accent },
   indeterminate: {
     width: '35%',
     animationName: {

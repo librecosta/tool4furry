@@ -34,7 +34,7 @@ const styles = stylex.create({
   positioner: { zIndex: tokens.layerTooltip },
   popup: {
     maxWidth: 'min(280px, calc(100vw - 24px))',
-    backgroundColor: tokens.surfaceMuted,
+    backgroundColor: tokens.surfaceFloating,
     color: tokens.textPrimary,
     borderWidth: 1,
     borderStyle: 'solid',

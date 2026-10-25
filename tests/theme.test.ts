@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex';
 import { describe, expect, it } from 'vitest';
-import { tokens, seaMistDarkTheme, seaMistLightTheme, seaMistDarkValues, seaMistLightValues } from '../src/styles/tokens.stylex';
+import { tokens, neutralDarkTheme, neutralLightTheme, neutralDarkValues, neutralLightValues } from '../src/styles/tokens.stylex';
 import {
   defaultTheme,
   resolveTheme,
@@ -12,10 +12,10 @@ describe('static theme selection contract', () => {
   it('defaults to dark and resolves either appearance to one compiled native theme', () => {
     const theme = resolveTheme();
     expect(defaultTheme).toEqual({
-      colorTheme: 'sea-mist',
+      colorTheme: 'neutral',
       appearance: 'dark',
     });
-    expect(theme.style).toBe(seaMistDarkTheme);
+    expect(theme.style).toBe(neutralDarkTheme);
     expect(stylex.props(theme.style).className).toBeTruthy();
     expect(stylex.attrs(theme.style).class).toBe(
       stylex.props(theme.style).className,
@@ -23,34 +23,35 @@ describe('static theme selection contract', () => {
     expect(tokens.page).toMatch(/^var\(--/);
     expect(tokens.colorScheme).toMatch(/^var\(--/);
     expect(resolveTheme({ ...defaultTheme }).style).toBe(theme.style);
-    const light = resolveTheme({ colorTheme: 'sea-mist', appearance: 'light' });
-    expect(light.style).toBe(seaMistLightTheme);
+    const light = resolveTheme({ colorTheme: 'neutral', appearance: 'light' });
+    expect(light.style).toBe(neutralLightTheme);
     expect(stylex.props(light.style).className).toBeTruthy();
     expect(stylex.props(light.style).className).not.toBe(stylex.props(theme.style).className);
   });
   it('resolves complete groups with shared geometry and independent appearance colors', () => {
-    expect(Object.keys(seaMistLightValues).sort()).toEqual(Object.keys(seaMistDarkValues).sort());
-    for (const [key, value] of Object.entries(seaMistDarkValues))
+    expect(Object.keys(neutralLightValues).sort()).toEqual(Object.keys(neutralDarkValues).sort());
+    for (const [key, value] of Object.entries(neutralDarkValues))
       if (/^(space|radius|layer|duration)/.test(key))
-        expect(seaMistLightValues[key as keyof typeof seaMistLightValues]).toBe(value);
-    expect(seaMistLightValues.colorScheme).toBe('light');
-    expect(seaMistDarkValues.colorScheme).toBe('dark');
+        expect(neutralLightValues[key as keyof typeof neutralLightValues]).toBe(value);
+    expect(neutralLightValues.colorScheme).toBe('light');
+    expect(neutralDarkValues.colorScheme).toBe('dark');
     for (const key of ['overlay', 'shadowSoft', 'shadowFloating', 'danger', 'positive', 'warning', 'info'] as const)
-      expect(seaMistLightValues[key]).not.toBe(seaMistDarkValues[key]);
+      expect(neutralLightValues[key]).not.toBe(neutralDarkValues[key]);
   });
   it('limits environment preview to DEV and rejects invalid DEV appearances', () => {
-    expect(resolvePageTheme(true, 'light').style).toBe(seaMistLightTheme);
-    expect(resolvePageTheme(true, 'dark').style).toBe(seaMistDarkTheme);
-    expect(resolvePageTheme(true).style).toBe(seaMistDarkTheme);
-    expect(resolvePageTheme(false, 'light').style).toBe(seaMistDarkTheme);
-    expect(resolvePageTheme(false, 'invalid').style).toBe(seaMistDarkTheme);
+    expect(resolvePageTheme(true, 'light').style).toBe(neutralLightTheme);
+    expect(resolvePageTheme(true, 'dark').style).toBe(neutralDarkTheme);
+    expect(resolvePageTheme(true).style).toBe(neutralDarkTheme);
+    expect(resolvePageTheme(false, 'light').style).toBe(neutralDarkTheme);
+    expect(resolvePageTheme(false, 'invalid').style).toBe(neutralDarkTheme);
     expect(() => resolvePageTheme(true, 'invalid')).toThrow('T4F_DEV_APPEARANCE');
     expect(() => resolvePageTheme(true, '')).toThrow('T4F_DEV_APPEARANCE');
   });
   it('rejects unimplemented combinations rather than inventing a theme fallback', () => {
+    expect(() => resolveTheme({ colorTheme: 'sea-mist', appearance: 'dark' } as unknown as ThemeSelection)).toThrow(RangeError);
     expect(() =>
       resolveTheme({
-        colorTheme: 'sea-mist',
+        colorTheme: 'neutral',
         appearance: 'system',
       } as unknown as ThemeSelection),
     ).toThrow(RangeError);

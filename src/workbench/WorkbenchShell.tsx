@@ -209,7 +209,7 @@ const s = stylex.create({
   viewport: { position: 'absolute', inset: 0, minWidth: 0, minHeight: 0 },
   overlay: { position: 'absolute', inset: 0, pointerEvents: 'none' },
   surface: {
-    backgroundColor: tokens.surface,
+    backgroundColor: tokens.surfaceFloating,
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: tokens.border,
@@ -289,8 +289,8 @@ const s = stylex.create({
   portal: { pointerEvents: 'auto' },
   panel: {
     backgroundColor: {
-      default: tokens.surface,
-      '@media (max-width: 900px)': tokens.surfaceMuted,
+      default: tokens.surfaceFloating,
+      '@media (max-width: 900px)': tokens.surfaceFloating,
     },
     position: { default: 'absolute', '@media (max-width: 900px)': 'fixed' },
     top: {

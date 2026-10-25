@@ -195,7 +195,7 @@ const s = stylex.create({
     paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
     paddingLeft: 'max(12px, env(safe-area-inset-left))',
     paddingRight: 'max(12px, env(safe-area-inset-right))',
-    backgroundColor: t.surface,
+    backgroundColor: t.surfaceFloating,
     color: t.textPrimary,
     boxShadow: t.shadowFloating,
     borderRadius: { default: t.radiusLg, '@media (max-width: 600px)': 0 },

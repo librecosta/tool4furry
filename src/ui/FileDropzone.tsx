@@ -164,7 +164,7 @@ const styles = stylex.create({
   zone: {
     backgroundColor: {
       default: tokens.surface,
-      ':hover': tokens.surfaceMuted,
+      ':hover': tokens.surfaceHover,
       ':disabled': tokens.surface,
     },
     flexDirection: 'column',
@@ -182,7 +182,7 @@ const styles = stylex.create({
       default: tokens.actionTint,
       ':hover': tokens.actionTint,
     },
-    borderColor: tokens.action,
+    borderColor: tokens.accent,
     outlineStyle: 'solid',
     outlineWidth: 2,
     outlineColor: tokens.focus,

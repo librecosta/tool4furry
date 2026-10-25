@@ -108,8 +108,8 @@ const styles = stylex.create({
     padding: 0,
     borderWidth: 0,
     borderRadius: '50%',
-    backgroundColor: { default: tokens.surfaceMuted, ':hover': tokens.border },
-    color: tokens.action,
+    backgroundColor: { default: tokens.surfaceFloating, ':hover': tokens.page },
+    color: tokens.accent,
     boxShadow: tokens.shadowSoft,
   },
   ring: {
@@ -122,7 +122,7 @@ const styles = stylex.create({
   track: { fill: 'none', stroke: tokens.border, strokeWidth: 2 },
   progress: {
     fill: 'none',
-    stroke: tokens.action,
+    stroke: tokens.accent,
     strokeWidth: 2,
     strokeLinecap: 'round',
   },

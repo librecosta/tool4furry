@@ -1,6 +1,6 @@
 # V0.3-A — Visual Foundation & Design Tokens
 
-> 当前默认主题为 Sea Mist + Soft Graphite Dark；V0.5-C2-B 补齐 Sea Mist Light，以下早期阶段数值保留为历史记录。
+> 当前 V0.5-C4-A 仅使用 `neutral` 的 Neutral Light / GoFurry Dark，默认 Dark；下文旧阶段章节均为历史记录。Light 使用冻结的中性灰白基线。Dark 的 page、surface/strong/hover、文字、border/strong、强调文字、操作填充/hover/前景、输入与遮罩原样映射自 [GoFurry dev b186325 的 tokens.less](https://github.com/gofurry/gofurry-nav-site/blob/b186325c59c086351cf2b37d0b5c6530b937813c/apps/cn/web/app/assets/styles/tokens.less)，保留 alpha；`accent` 为文字/选择/进度，`action` 为按钮填充。workspace `#222427`、棋盘 `#44474C`、不透字浮层 `#393B3E`（strong 在 page 上合成）、pressed/selected、可访问控件边界/焦点与反馈色是 Tool4Furry 适配，非 GoFurry 原值；Light 棋盘为 `#F2F4F5` / `#D5D9DE`。仍为单一 VarGroup、一次一个完整原生主题；现有 `t4f.appearance` 的 light/dark 手动切换、绘制前恢复与同步不变。字体、几何和导航不变，普通表面不套用 GoFurry 大阴影。
 
 ## V0.5-C2-B — Light 与辅助色（2026-10-21）
 

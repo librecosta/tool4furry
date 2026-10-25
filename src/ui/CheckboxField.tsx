@@ -73,7 +73,7 @@ const styles = stylex.create({
     borderColor: tokens.controlBorder,
     backgroundColor: {
       default: tokens.surface,
-      ':hover': tokens.surfaceMuted,
+      ':hover': tokens.surfaceHover,
       ':disabled': tokens.surface,
     },
     borderRadius: tokens.radiusSm,
@@ -86,7 +86,7 @@ const styles = stylex.create({
       ':active': tokens.actionPressed,
       ':disabled': tokens.action,
     },
-    borderColor: tokens.action,
+    borderColor: tokens.accent,
     color: tokens.onAction,
   },
   indicator: { display: 'flex' },
