@@ -426,12 +426,17 @@ for (const page of htmlFiles) {
   if (region === 'global')
     assert.equal(slot.querySelector('[data-compliance-kind="icp"], [data-compliance-kind="public-security"]'), null, 'Global never inherits CN registrations');
   for (const icp of slot.querySelectorAll('[data-compliance-kind="icp"]')) {
-    assert(icp.querySelector('span')?.textContent.trim(), 'Approved ICP number required');
+    assert(icp.querySelector('a > span')?.textContent.trim(), 'Approved ICP number itself is linked');
     assert.equal(icp.querySelector('a')?.getAttribute('href'), 'https://beian.miit.gov.cn/');
-    assert.equal(icp.querySelector('span').nextElementSibling, icp.querySelector('a'), 'Official query follows the central ICP number');
+    assert.equal(icp.querySelectorAll('a').length, 1, 'No duplicate ICP query line');
   }
   assert.deepEqual([...legal.querySelectorAll('nav a')].map(a => a.getAttribute('href')), ['/privacy/', '/terms/', `${github}/blob/master/LICENSE`]);
-  assert(legal.textContent.includes(`© ${new Date().getFullYear()} Tool4Furry · LibreCosta`));
+  assert(legal.textContent.replace(/\s+/g, ' ').includes(`© ${new Date().getFullYear()} Tool4Furry · LibreCosta`));
+  const attribution = legal.querySelector('[data-footer-attribution]');
+  assert.equal(attribution?.textContent, 'LibreCosta');
+  assert.equal(attribution?.getAttribute('href'), 'https://librecosta.com');
+  assert.equal(attribution?.getAttribute('target'), '_blank');
+  assert.equal(attribution?.getAttribute('rel'), 'noopener noreferrer');
   assert(footer.querySelector(`a[href="${github}/blob/master/LICENSE"]`));
   for (const kind of Object.keys(informationPages))
     assert(footer.querySelector(`a[href="/${kind}/"]`), `Missing Footer information link: ${kind} in ${page}`);

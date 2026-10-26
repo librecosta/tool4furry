@@ -40,18 +40,15 @@ const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, com
     </nav>
     <div data-footer-compliance-slot {...stylex.attrs(s.footerComplianceSlot)}>
       {compliance.length > 0 && <div data-site-compliance aria-label={region === 'cn' ? '备案与许可信息' : 'Registrations and licenses'} {...stylex.attrs(s.footerCompliance)}>
-        {compliance.map(entry => <div data-compliance-kind={entry.kind} {...stylex.attrs(s.complianceCell, entry.kind === 'icp' && s.complianceIcp, entry.kind === 'public-security' && s.compliancePolice, entry.kind === 'additional' && s.complianceAdditional)}>
-          {entry.kind === 'icp' ? <>
-            <span>{entry.label}</span>
-            <a href={entry.href} {...stylex.attrs(s.complianceLink)} aria-label={`${entry.label} · 工信部备案查询`}>工信部备案查询</a>
-          </> : entry.href ? <a href={entry.href} {...stylex.attrs(s.complianceLink)}>
+        {compliance.map(entry => <div data-compliance-kind={entry.kind} {...stylex.attrs(s.complianceCell, entry.kind === 'public-security' && s.compliancePolice, entry.kind === 'additional' && s.complianceAdditional)}>
+          {entry.href ? <a href={entry.href} {...stylex.attrs(s.complianceLink)}>
             {entry.iconSrc && <img src={entry.iconSrc} width="20" height="20" alt="" aria-hidden="true" {...stylex.attrs(s.complianceIcon)} />}
             <span>{entry.label}</span>
           </a> : <span {...stylex.attrs(s.complianceText)}>{entry.label}</span>}
         </div>)}
       </div>}
       {compliancePreview && <div data-footer-compliance-preview {...stylex.attrs(s.footerCompliance)}>
-        <p {...stylex.attrs(s.complianceCell, s.complianceIcp, s.compliancePreview)}>ICP备案展示位置 · 开发预览</p>
+        <p {...stylex.attrs(s.complianceCell, s.compliancePreview)}>ICP备案展示位置 · 开发预览</p>
         <p {...stylex.attrs(s.complianceCell, s.compliancePolice, s.compliancePreview)}>公安备案展示位置 · 开发预览</p>
       </div>}
     </div>
@@ -63,7 +60,7 @@ const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, com
           <a {...stylex.attrs(s.navLink, s.footerLegalLink)} href={`${github}/blob/master/LICENSE`}>BSD-3-Clause License</a>
         </nav>
       </div>
-      <span {...stylex.attrs(s.footerCopyright)}>© {new Date().getFullYear()} Tool4Furry · LibreCosta</span>
+      <span {...stylex.attrs(s.footerCopyright)}>© {new Date().getFullYear()} Tool4Furry ·&nbsp;<a data-footer-attribution href="https://librecosta.com" target="_blank" rel="noopener noreferrer" {...stylex.attrs(s.complianceLink)}>LibreCosta</a></span>
     </div>
 
   </div>
