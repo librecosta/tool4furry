@@ -447,6 +447,9 @@ for (const page of htmlFiles) {
     assert(new URL(entry.href).protocol === 'https:', 'Compliance queries must use HTTPS');
   }
   if (toolPages.includes(page)) {
+    if (page === 'tools/image-converter/index.html')
+      assert(!/开发保护值|全设备兼容承诺|development (?:resource )?guardrails/i.test(dom.body.textContent),
+        'Converter public copy must describe current limits, not internal guardrails');
     assert.equal(dom.querySelectorAll('[data-site-header]').length, 0, 'Tool page must keep its independent navigation');
     const main = dom.querySelector('main[data-tool-id]');
     const href = '/' + page.replace(/index\.html$/, '');

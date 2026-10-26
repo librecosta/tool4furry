@@ -1,6 +1,7 @@
 import { Zip, ZipPassThrough } from 'fflate';
+import { zipOutputBytes } from '../image/limits';
 
-export const zipBudget = 128 * 1024 ** 2;
+export const zipBudget = zipOutputBytes;
 export const zipChunkSize = 1024 ** 2;
 export class ZipFailure extends Error {
   constructor(readonly code: 'budget' | 'changed' | 'failed') {

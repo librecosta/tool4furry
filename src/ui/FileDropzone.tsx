@@ -19,7 +19,9 @@ export interface FileDropzoneProps extends FileConstraints {
   disabled?: boolean;
   appearance?: 'expanded' | 'compact';
   issueMessages: Record<FileIssueReason, string>;
-  onFilesSelected: (files: File[]) => void;
+  onFilesSelected?: (files: File[]) => void;
+  /** Delegate validation and aggregated feedback to a bounded workspace intake. */
+  onFilesReceived?: (files: File[]) => void;
   onRejected?: (issues: FileIssue[]) => void;
   onSelection?: (selection: FileSelection) => void;
 }
@@ -40,6 +42,7 @@ export function FileDropzone({
   maxSizeBytes,
   issueMessages,
   onFilesSelected,
+  onFilesReceived,
   onRejected,
   onSelection,
 }: FileDropzoneProps) {
@@ -60,6 +63,10 @@ export function FileDropzone({
   useEffect(resetDrag, [disabled]);
   const receive = (files: File[]) => {
     if (disabled || files.length === 0) return;
+    if (onFilesReceived) {
+      onFilesReceived(files);
+      return;
+    }
     const result = validateFiles(files, {
       accept,
       multiple,
@@ -68,7 +75,7 @@ export function FileDropzone({
     });
     setIssues(result.rejected);
     onSelection?.(result);
-    if (result.accepted.length) onFilesSelected(result.accepted);
+    if (result.accepted.length) onFilesSelected?.(result.accepted);
     if (result.rejected.length) onRejected?.(result.rejected);
   };
   return (

@@ -1,7 +1,6 @@
 import { validateFiles } from '../../ui/file-constraints';
-import { imageBudget } from '../image/types';
+import { mobileImageLimits, type ImageLimits } from '../image/limits';
 
-export const intakeBudget = { files: 20, bytes: 100 * 1024 ** 2 } as const;
 export const imageAccept =
   '.png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp';
 export type IntakeReason = 'type' | 'size' | 'count' | 'total';
@@ -14,20 +13,20 @@ export type IntakeSummary = Readonly<{
 export function planIntake(
   files: readonly File[],
   existing: readonly { file: Pick<File, 'size'> }[],
+  limits: ImageLimits = mobileImageLimits,
 ) {
   const checked = validateFiles(files, {
     accept: imageAccept,
     multiple: true,
-    maxSizeBytes: imageBudget.bytes,
+    maxSizeBytes: limits.bytes,
   });
   const rejected = { type: 0, size: 0, count: 0, total: 0 };
   checked.rejected.forEach((issue) => rejected[issue.reason]++);
   let bytes = existing.reduce((total, task) => total + task.file.size, 0);
   const accepted: File[] = [];
   for (const file of checked.accepted) {
-    if (existing.length + accepted.length >= intakeBudget.files)
-      rejected.count++;
-    else if (bytes + file.size > intakeBudget.bytes) rejected.total++;
+    if (existing.length + accepted.length >= limits.files) rejected.count++;
+    else if (bytes + file.size > limits.totalBytes) rejected.total++;
     else {
       accepted.push(file);
       bytes += file.size;

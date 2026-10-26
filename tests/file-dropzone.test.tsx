@@ -41,6 +41,25 @@ function setup(disabled = false) {
   };
 }
 describe('FileDropzone', () => {
+  it('delegates original references to workspace validation without duplicate per-file errors', () => {
+    const receive = vi.fn();
+    const selected = vi.fn();
+    const { container } = render(
+      <FileDropzone
+        label="Workspace"
+        accept=".png"
+        multiple
+        issueMessages={issueMessages}
+        onFilesReceived={receive}
+        onFilesSelected={selected}
+      />,
+    );
+    const files = [imageFile(), new File(['x'], 'unsupported.txt')];
+    fireEvent.change(container.querySelector('input')!, { target: { files } });
+    expect(receive).toHaveBeenCalledWith(files);
+    expect(selected).not.toHaveBeenCalled();
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
   it('opens the native input with button, Enter and Space', async () => {
     const user = userEvent.setup();
     const { input, button } = setup();

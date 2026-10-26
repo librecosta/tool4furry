@@ -8,6 +8,8 @@
 
 从 `src/ui/FileDropzone.tsx` 直接导入 `FileDropzone` / `FileDropzoneProps`，从 `file-constraints.ts` 导入校验函数和类型。组件不需要 Provider；Lab 的 Toast 仍使用现有 UiProvider。
 
+C5-A：有累计额度的工作区可使用 `onFilesReceived(files)` 接收原始 File 引用，由调用方统一检查并汇总反馈；该路径跳过组件的逐文件校验/错误列表，`onFilesSelected` 可省略。普通 Lab 继续使用原有校验回调；`accept` 仍作为原生选择器的格式提示，文件夹与拖放的真实接收规则由工作区 intake 执行。
+
 | 属性 | 契约 |
 | --- | --- |
 | `label: string` | 必填的控件名称，同时用于原生按钮与文件 input 的可访问名称 |

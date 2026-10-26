@@ -48,16 +48,18 @@ describe('image batch core (real task objects, controlled native service boundar
     const pending = deferred<ImageSource>();
     const { session } = await setup({ accept: () => pending.promise });
     const first = session.add(
-      Array.from({ length: 19 }, () => file('same.png')),
+      Array.from({ length: session.limits.files - 1 }, () => file('same.png')),
     );
     const second = session.add([file('same.png'), file('overflow.png')]);
-    expect(first).toHaveLength(19);
+    expect(first).toHaveLength(session.limits.files - 1);
     expect(second).toHaveLength(1);
-    expect(session.snapshot.tasks).toHaveLength(20);
+    expect(session.snapshot.tasks).toHaveLength(session.limits.files);
     expect(session.snapshot.intake?.rejected.count).toBe(1);
     session.remove(first[1]);
     expect(session.add([file('new.png')])).toHaveLength(1);
-    expect(session.snapshot.tasks.at(-1)?.sequence).toBe(21);
+    expect(session.snapshot.tasks.at(-1)?.sequence).toBe(
+      session.limits.files + 1,
+    );
     session.dispose();
     pending.resolve(source(file('same.png')));
     await tick();

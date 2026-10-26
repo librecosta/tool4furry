@@ -58,6 +58,22 @@ beforeEach(() => {
   );
 });
 describe('real workspace interaction contract (codec mocked; not browser evidence)', () => {
+  it('shows desktop limits from the session and keeps them when only the viewport changes', async () => {
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Windows NT');
+    const changeViewport = setViewport(false);
+    const { container } = render(<ImageConverter region="global" />);
+    await waitFor(() =>
+      expect(container.textContent).toContain(
+        'Up to 100 images, 100 MiB total',
+      ),
+    );
+    expect(container.textContent).toContain(
+      '50 MiB, 40 million pixels and 10000px',
+    );
+    act(() => changeViewport(true));
+    expect(container.textContent).toContain('Up to 100 images, 100 MiB total');
+    expect(capabilities).toHaveBeenCalledOnce();
+  });
   it('keeps normal capability initialization out of flow and gives compact unsupported reasons', async () => {
     let finish!: (value: unknown) => void;
     capabilities.mockImplementationOnce(
@@ -464,6 +480,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
         expect.anything(),
         expect.objectContaining({ jpegBackground: '#456789' }),
         expect.anything(),
+        expect.objectContaining({ files: 50, bytes: 20 * 1024 ** 2 }),
       );
       const filename = screen.getByRole('textbox', { name: t.filename });
       expect(
@@ -888,9 +905,9 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
   it('uses the same content and tool route for regional development drafts', () => {
     for (const region of ['cn', 'global'] as const) {
       expect(getAvailableTools(region, false)).toEqual([]);
-      expect(
-        getAvailableTools(region, true).map((tool) => tool.slug),
-      ).toEqual(['image-converter']);
+      expect(getAvailableTools(region, true).map((tool) => tool.slug)).toEqual([
+        'image-converter',
+      ]);
       expect(getPublishedTools(region)).toEqual([]);
       const content = toolPageContents['image-converter'][region]!;
       expect(content.h1).toBeTruthy();

@@ -15,10 +15,10 @@ export const imageConverterContent: ToolContentMap[string] = {
       '在文件行逐项预览和下载当前已验证结果，无需等待其他文件完成。多文件任务结束后可下载成功结果的 ZIP。Quick 同格式保留原始字节；需要重新编码时使用高级模式。',
     ],
     limitations: [
-      '批量静态图片转换，开发保护值为 20 个文件、累计 100 MiB、单文件 20 MiB。不缩放、不裁剪，不支持 APNG、动画 WebP、GIF、HEIC、AVIF、TIFF 或 SVG。',
+      '批量静态图片转换，当前数量、大小和尺寸限制见工具内“支持格式与限制”。不缩放、不裁剪，不支持 APNG、动画 WebP、GIF、HEIC、AVIF、TIFF 或 SVG。',
       'JPEG 使用指定的不透明背景，默认白色。PNG/WebP 支持透明；有损输出不保证像素或文件大小相同。',
       '重新编码可能改变色彩并移除 ICC、EXIF、C2PA 等元数据；不提供专业色彩或元数据保全保证。',
-      '运行时验证 PNG/JPEG/WebP 输出能力；输入可解码不表示同格式一定可编码。开发保护值不是全设备兼容承诺，公开发布仍需设备验收。',
+      '运行时验证 PNG/JPEG/WebP 输出能力；输入可解码不表示同格式一定可编码。大图处理可能较慢，请保留原文件。',
     ],
     faq: [
       {
@@ -57,10 +57,10 @@ export const imageConverterContent: ToolContentMap[string] = {
       'Preview and download each current verified result from its file row without waiting for other files. Once all tasks finish, download successful results as a ZIP. Quick keeps original bytes for the same format; use Advanced to explicitly re-encode.',
     ],
     limitations: [
-      'Static image batches, with development guardrails of 20 files, 100 MiB total and 20 MiB per file. No resizing, cropping, APNG, animated WebP, GIF, HEIC, AVIF, TIFF or SVG.',
+      'Static image batches; see Supported formats and limits in the tool for current count, size and dimension limits. No resizing, cropping, APNG, animated WebP, GIF, HEIC, AVIF, TIFF or SVG.',
       'JPEG uses an opaque background, white by default. PNG/WebP can retain transparency; lossy output is not guaranteed pixel-identical or smaller.',
       'Re-encoding may change colors and remove ICC, EXIF, C2PA or other metadata. Professional color and metadata preservation are not guaranteed.',
-      'PNG/JPEG/WebP export is tested at runtime. Input decoding does not imply encoding support. Development resource guardrails are not universal device limits; public release still requires device acceptance.',
+      'PNG/JPEG/WebP export is tested at runtime. Input decoding does not imply encoding support. Large images may take longer. Keep your original files.',
     ],
     faq: [
       {

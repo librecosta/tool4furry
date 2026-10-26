@@ -2,6 +2,7 @@ import { inspectImage } from './inspect-image';
 import { ImageResources } from './resources';
 import {
   ImageFailure,
+  checkDimensions,
   imageBudget,
   mime,
   formats,
@@ -9,6 +10,7 @@ import {
   type ImageSource,
   type ImageFormat,
 } from './types';
+import type { ImageLimits } from './limits';
 
 export function orientedSize(info: ImageInfo) {
   return info.orientation >= 5
@@ -19,7 +21,9 @@ export async function decodeChecked(
   blob: Blob,
   info: ImageInfo,
   resources: ImageResources,
+  limits: ImageLimits = imageBudget,
 ) {
+  checkDimensions(info.width, info.height, limits);
   let bitmap: ImageBitmap;
   try {
     bitmap = await resources.bitmap(blob);
@@ -36,10 +40,11 @@ export async function decodeChecked(
 export async function acceptImage(
   file: File,
   resources: ImageResources,
+  limits: ImageLimits = imageBudget,
 ): Promise<ImageSource> {
-  const info = await inspectImage(file);
+  const info = await inspectImage(file, limits.bytes, limits);
   const blob = file.slice(0, file.size, mime[info.format]);
-  const bitmap = await decodeChecked(blob, info, resources);
+  const bitmap = await decodeChecked(blob, info, resources, limits);
   resources.close(bitmap);
   return { file, info, blob, ...orientedSize(info) };
 }
@@ -68,12 +73,17 @@ export async function validateOutput(
   width: number,
   height: number,
   resources: ImageResources,
+  limits: ImageLimits = imageBudget,
 ) {
   if (!blob.size || blob.type !== mime[format])
     throw new ImageFailure('output');
   try {
     // Source byte guard is not an output size promise: a JPEG can become a larger PNG.
-    const info = await inspectImage(blob, imageBudget.pixels * 5 + 1024 * 1024);
+    const info = await inspectImage(
+      blob,
+      limits.pixels * 5 + 1024 * 1024,
+      limits,
+    );
     if (
       info.format !== format ||
       info.orientation !== 1 ||
@@ -81,7 +91,7 @@ export async function validateOutput(
       info.height !== height
     )
       throw new ImageFailure('output');
-    const bitmap = await decodeChecked(blob, info, resources);
+    const bitmap = await decodeChecked(blob, info, resources, limits);
     resources.close(bitmap);
   } catch (error) {
     throw new ImageFailure(
@@ -101,6 +111,7 @@ export async function encodeImage(
     jpegBackground: string;
   },
   resources: ImageResources,
+  limits: ImageLimits = imageBudget,
 ) {
   const { format, quality, jpegBackground } = settings;
   if (
@@ -110,7 +121,13 @@ export async function encodeImage(
     throw new ImageFailure('encode');
   if (format === 'jpeg' && !/^#[0-9a-f]{6}$/i.test(jpegBackground))
     throw new ImageFailure('encode');
-  const bitmap = await decodeChecked(source.blob, source.info, resources);
+  checkDimensions(source.width, source.height, limits);
+  const bitmap = await decodeChecked(
+    source.blob,
+    source.info,
+    resources,
+    limits,
+  );
   let canvas: HTMLCanvasElement | undefined;
   try {
     canvas = resources.canvas(source.width, source.height);
@@ -141,6 +158,7 @@ export async function encodeImage(
       source.width,
       source.height,
       resources,
+      limits,
     );
   } finally {
     if (canvas) resources.release(canvas);
@@ -153,6 +171,7 @@ export type Capabilities = Record<
 >;
 export async function detectCapabilities(
   resources: ImageResources,
+  limits: ImageLimits = imageBudget,
 ): Promise<Capabilities> {
   const result = {} as Capabilities;
   for (const format of formats) {
@@ -163,7 +182,7 @@ export async function detectCapabilities(
       context.fillStyle = '#A6532C';
       context.fillRect(0, 0, 1, 2);
       const blob = await toBlob(canvas, mime[format], 0.85);
-      await validateOutput(blob, format, 2, 2, resources);
+      await validateOutput(blob, format, 2, 2, resources, limits);
       result[format] = { supported: true };
     } catch (error) {
       result[format] = {

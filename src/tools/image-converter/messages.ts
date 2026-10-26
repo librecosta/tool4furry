@@ -1,8 +1,13 @@
 import type { Region } from '../../config/region';
 import type { ImageErrorCode } from '../image/types';
+import {
+  mobileImageLimits,
+  zipOutputBytes,
+  type ImageLimits,
+} from '../image/limits';
 const cn = {
   local: '图片只在当前浏览器内处理，不会上传。',
-  fileDetails: '支持范围与限制',
+  fileDetails: '支持格式与限制',
   pick: '选择图片或拖放到这里',
   addImages: '添加图片',
   addFolder: '添加文件夹',
@@ -21,7 +26,7 @@ const cn = {
     empty: '没有可打包的有效结果。',
     success: '成功',
     failedCount: '失败',
-    budget: 'ZIP 超过 128 MiB 开发保护值，请使用单项下载。',
+    budget: `ZIP 超过 ${zipOutputBytes / 1024 ** 2} MiB，请使用单项下载。`,
     changed: '工作区结果或设置已变化，请重新打包。',
     failed: '打包失败，请重试。仍可逐项下载。',
   },
@@ -29,9 +34,9 @@ const cn = {
   intakeSkipped: '已跳过',
   intakeReasons: {
     type: '不支持的类型',
-    size: '单文件超过 20 MiB',
-    count: '超过 20 个文件',
-    total: '累计超过 100 MiB',
+    size: '',
+    count: '',
+    total: '',
   },
   remove: '移除图片',
   file: '添加图片',
@@ -91,30 +96,27 @@ const cn = {
   previewError: '预览加载失败。请重新选择图片或生成结果。',
   limitations:
     '仅静态 PNG/JPEG/WebP。转换不改变分辨率；文件可能变大，重新编码可能改变色彩并丢失元数据。',
-  budget:
-    '开发保护值：最多 20 个文件、累计 100 MiB；单文件 20 MiB、1600 万像素、单边 8192px。并非全设备兼容承诺。',
-  disabledCount: '最多接收 20 个文件。',
-  disabledSize: '文件超过开发保护值 20 MiB。',
+  budget: '',
+  disabledCount: '',
+  disabledSize: '',
   disabledType: '文件类型不支持。',
   errors: {
     empty: '文件为空，请重新选择。',
-    bytes: '文件超过 20 MiB 的开发保护值。',
-    dimensions:
-      '图片尺寸超过开发保护值（单边 8192px / 1600 万像素），不会自动缩小。',
+    bytes: '',
+    dimensions: '',
     unsupported: '仅接受静态 PNG、JPEG、WebP；此文件不属于支持范围。',
     corrupt: '图片结构损坏、截断或不符合支持范围，请换一张完整图片。',
     animated: '不支持 APNG 或动画 WebP；不会把第一帧当作转换结果。',
     decode: '浏览器无法正确解码这张图片或其方向，请换图或换浏览器。',
     encode: '浏览器未能完成编码，请重试或选择另一输出格式。',
     output: '输出的真实格式、尺寸或可解码性不符，已阻止下载。',
-    timeout:
-      '浏览器操作超时。未完成的原生任务仍占用串行通道；请等待其结束后重试，或重新加载页面。',
+    timeout: '处理超时，请稍候再试或重新加载页面。大图片可能需要更长时间。',
     cancelled: '操作已取消。',
   } satisfies Record<ImageErrorCode, string>,
 };
 const global: typeof cn = {
   local: 'Images stay in this browser. Nothing is uploaded.',
-  fileDetails: 'Supported files and limits',
+  fileDetails: 'Supported formats and limits',
   pick: 'Choose images or drop them here',
   addImages: 'Add images',
   addFolder: 'Add folder',
@@ -135,8 +137,7 @@ const global: typeof cn = {
     empty: 'No valid results to package.',
     success: 'Succeeded',
     failedCount: 'Failed',
-    budget:
-      'ZIP exceeds the 128 MiB development guardrail. Download files individually.',
+    budget: `ZIP exceeds ${zipOutputBytes / 1024 ** 2} MiB. Download files individually.`,
     changed: 'Workspace results or settings changed. Please package again.',
     failed: 'Packaging failed. Retry or download files individually.',
   },
@@ -144,9 +145,9 @@ const global: typeof cn = {
   intakeSkipped: 'Skipped',
   intakeReasons: {
     type: 'unsupported type',
-    size: 'over 20 MiB per file',
-    count: 'over 20 files',
-    total: 'over 100 MiB total',
+    size: '',
+    count: '',
+    total: '',
   },
   remove: 'Remove image',
   file: 'Add images',
@@ -208,16 +209,14 @@ const global: typeof cn = {
     'The preview could not load. Choose the image again or generate a new result.',
   limitations:
     'Static PNG/JPEG/WebP only. Resolution is unchanged. Files may grow; re-encoding can change colors and remove metadata.',
-  budget:
-    'Development guardrails: 20 files and 100 MiB total; 20 MiB, 16 million pixels and 8192px per image. These are not universal device limits.',
-  disabledCount: 'Up to 20 files per workspace.',
-  disabledSize: 'The file exceeds the 20 MiB development guardrail.',
+  budget: '',
+  disabledCount: '',
+  disabledSize: '',
   disabledType: 'Unsupported file type.',
   errors: {
     empty: 'The file is empty. Choose another image.',
-    bytes: 'The file exceeds the 20 MiB development guardrail.',
-    dimensions:
-      'The image exceeds the development guardrails (8192px per edge / 16 million pixels). It will not be resized automatically.',
+    bytes: '',
+    dimensions: '',
     unsupported:
       'Only static PNG, JPEG and WebP are accepted. This file is outside the supported scope.',
     corrupt:
@@ -231,8 +230,49 @@ const global: typeof cn = {
     output:
       'Actual output format, dimensions or decoding did not match. Download was blocked.',
     timeout:
-      'The browser operation timed out. Its native task still owns the serial lane. Wait for it to settle and retry, or reload this page.',
+      'Processing timed out. Wait and retry, or reload this page. Large images may take longer.',
     cancelled: 'The operation was cancelled.',
   },
 };
-export const converterMessages: Record<Region, typeof cn> = { cn, global };
+/** All visible bounds come from the same immutable limits used by this workspace. */
+export function getConverterMessages(region: Region, limits: ImageLimits) {
+  const t = region === 'cn' ? cn : global;
+  const zh = region === 'cn';
+  const perFile = limits.bytes / 1024 ** 2;
+  const total = limits.totalBytes / 1024 ** 2;
+  const pixels = zh
+    ? `${limits.pixels / 10_000} 万像素`
+    : `${limits.pixels / 1_000_000} million pixels`;
+  const size = zh
+    ? `单文件超过 ${perFile} MiB`
+    : `over ${perFile} MiB per file`;
+  return {
+    ...t,
+    budget: zh
+      ? `最多 ${limits.files} 张，累计 ${total} MiB；单张 ${perFile} MiB、${pixels}、单边 ${limits.edge}px。大图处理可能较慢，请保留原文件。`
+      : `Up to ${limits.files} images, ${total} MiB total; ${perFile} MiB, ${pixels} and ${limits.edge}px per image. Large images may take longer. Keep your originals.`,
+    disabledCount: zh
+      ? `最多接收 ${limits.files} 张图片。`
+      : `Up to ${limits.files} images per workspace.`,
+    disabledSize: size,
+    intakeReasons: {
+      ...t.intakeReasons,
+      size,
+      count: zh ? `超过 ${limits.files} 张图片` : `over ${limits.files} images`,
+      total: zh ? `累计超过 ${total} MiB` : `over ${total} MiB total`,
+    },
+    errors: {
+      ...t.errors,
+      bytes: zh
+        ? `文件超过 ${perFile} MiB，请选择较小的图片。`
+        : `The file exceeds ${perFile} MiB. Choose a smaller image.`,
+      dimensions: zh
+        ? `图片超过 ${pixels} 或单边 ${limits.edge}px，不会自动缩小。`
+        : `The image exceeds ${pixels} or ${limits.edge}px per edge. It will not be resized automatically.`,
+    },
+  };
+}
+export const converterMessages = {
+  cn: getConverterMessages('cn', mobileImageLimits),
+  global: getConverterMessages('global', mobileImageLimits),
+};

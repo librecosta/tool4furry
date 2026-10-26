@@ -12,12 +12,13 @@ import { FileTaskList } from '../../ui/FileTaskList';
 import { ConfirmDialog } from '../../ui/ConfirmDialog';
 import { ConverterTaskRow } from './ConverterTaskRow';
 import { BatchDownload } from './BatchDownload';
-import { intakeBudget, sortedFolderFiles } from './intake';
+import { imageAccept, sortedFolderFiles } from './intake';
+import { mobileImageLimits, resolveImageLimits } from '../image/limits';
 import { formats, type ImageResult } from '../image/types';
 import { createProcessingState, isCustomSettings } from '../processing-state';
 import { recommendations, sameSettings, type EncodeSettings } from './presets';
 import { ConverterSession, type ConverterView } from './session';
-import { converterMessages } from './messages';
+import { getConverterMessages } from './messages';
 import { converterStyles as s } from './converter.styles';
 
 const bytes = (value: number) => {
@@ -31,8 +32,9 @@ const bytes = (value: number) => {
   return `${(value / divisor).toLocaleString('en-US', { maximumFractionDigits: 1 })} ${unit}`;
 };
 export default function ImageConverter({ region }: ToolProps) {
-  const t = converterMessages[region];
   const [session, setSession] = useState<ConverterSession>();
+  const limits = session?.limits ?? mobileImageLimits;
+  const t = getConverterMessages(region, limits);
   const [view, setView] = useState<ConverterView>(() => {
     const processing = createProcessingState<EncodeSettings, ImageResult>(
       recommendations.webp,
@@ -61,7 +63,14 @@ export default function ImageConverter({ region }: ToolProps) {
       setDebug(
         new URLSearchParams(window.location.search).get('debug') === '1',
       );
-    const current = new ConverterSession(setView);
+    const limits = resolveImageLimits({
+      mobile: (
+        navigator as Navigator & { userAgentData?: { mobile?: boolean } }
+      ).userAgentData?.mobile,
+      userAgent: navigator.userAgent,
+      coarsePointer: window.matchMedia('(pointer: coarse)').matches,
+    });
+    const current = new ConverterSession(setView, undefined, limits);
     setSession(current);
     current.start();
     return () => current.dispose();
@@ -149,12 +158,14 @@ export default function ImageConverter({ region }: ToolProps) {
               label={hasTasks ? t.addImages : t.pick}
               hint={!hasTasks ? `PNG / JPEG / WebP · ${t.local}` : undefined}
               multiple
+              accept={imageAccept}
+              disabled={!session}
               issueMessages={{
                 type: t.disabledType,
                 size: t.disabledSize,
                 count: t.disabledCount,
               }}
-              onFilesSelected={(files) => session?.add(files)}
+              onFilesReceived={(files) => session?.add(files)}
             />
             <input
               ref={(node) => {
@@ -177,7 +188,7 @@ export default function ImageConverter({ region }: ToolProps) {
               }}
             />
             <Button
-              disabled={folderSupported === false}
+              disabled={!session || folderSupported === false}
               aria-describedby={
                 folderSupported === false ? 'converter-folder-hint' : undefined
               }
@@ -191,13 +202,11 @@ export default function ImageConverter({ region }: ToolProps) {
               {t.folderUnavailable}
             </p>
           )}
-          {!hasTasks && (
-            <details {...stylex.props(s.help)}>
-              <summary>{t.fileDetails}</summary>
-              <p {...stylex.props(s.note)}>{t.budget}</p>
-              <p {...stylex.props(s.note)}>{t.limitations}</p>
-            </details>
-          )}
+          <details {...stylex.props(s.help)}>
+            <summary>{t.fileDetails}</summary>
+            <p {...stylex.props(s.note)}>{t.budget}</p>
+            <p {...stylex.props(s.note)}>{t.limitations}</p>
+          </details>
           {rejected.length > 0 && (
             <p role="status" {...stylex.props(s.note)}>
               {t.intakeAccepted} {view.intake!.accepted} · {t.intakeSkipped}{' '}
@@ -212,11 +221,11 @@ export default function ImageConverter({ region }: ToolProps) {
           <div {...stylex.props(s.listActions)}>
             {hasTasks && (
               <span {...stylex.props(s.note)}>
-                {view.tasks.length}/{intakeBudget.files} ·{' '}
+                {view.tasks.length}/{limits.files} ·{' '}
                 {bytes(
                   view.tasks.reduce((total, task) => total + task.file.size, 0),
                 )}
-                /100 MiB
+                /{bytes(limits.totalBytes)}
               </span>
             )}
             <ConfirmDialog

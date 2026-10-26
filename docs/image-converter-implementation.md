@@ -10,6 +10,26 @@
 
 新政策取代旧合同中冲突的强制跨浏览器发布要求；以下 B0–B5 历史实测记录不变，不因政策调整补记任何测试通过。日常修改按 L1 定向验证，完整 CI 优先由 GitHub Actions 执行。
 
+## C5-A — 资源限制与大图定向证据（2026-10-26）
+
+- `src/tools/image/limits.ts` 是当前额度来源。桌面：100 张、单张 50 MiB / 40MP / 单边 10000px、总输入 100 MiB；移动与信号不确定时：50 张、20 MiB / 16MP / 8192px、总输入 60 MiB。ZIP 仍为 128 MiB。100/50 数量采用维护者本轮指示，取代 Issue #9 原候选数量。
+- 每个 Session 固定并冻结一份额度；浏览器 mobile/coarse pointer 等提示只用于保守选择，不代表性能评估，不跟随视口变化。文件选择与文件夹共用 Session intake，结构解析、解码、Canvas、输出复检及中英文提示继续传递同一额度。64 KiB 读取、结构/动画/方向检查、单通道与 45 秒 watchdog 保留；输出字节上限独立于输入上限。
+- 先在仓库外隔离副本探测，再接通产品额度。Windows Chromium 156，Pillow 自有高纹理 RGB、透明 PNG、噪声 JPEG，逐张执行；每个输出均检查实际格式、MIME、尺寸、回解码并加载预览：
+
+| 输入 | 尺寸 | 三格式编码与复检耗时 | 结果 |
+| --- | --- | --- | --- |
+| 24MP 噪声 JPEG / 48.9 MiB | 6000×4000 | 3.3–23.0s | WebP/JPEG/PNG；PNG 78.7 MiB，大于输入限额仍有效 |
+| 36MP 纹理 PNG / 31.7 MiB | 7200×5000 | 3.7–19.8s | 两轮三格式通过 |
+| 40MP 透明 PNG / 43.7 MiB | 10000×4000 | 4.0–28.9s | 两轮三格式通过，PNG 64.7 MiB |
+| 48MP 纹理 PNG / 42.3 MiB | 8000×6000 | 5.4–30.9s | 仅隔离探测通过，产品仍拒绝超过 40MP |
+
+- 隔离探针共 18 个真实输出，42/42 位图关闭、18/18 Canvas 归零、18/18 URL 撤销。计数仅证明代码所有权配对，未测浏览器进程内存峰值、GC 回收时点或 GPU 峰值。
+- 实际工作台另测精确 50 MiB JPEG 接收与转换、+1 字节拒绝、重复追加达到 100 MiB 后的部分接收；48MP 与损坏输入失败不影响有效项下载。40MP 下载的 WebP 已用 Pillow 独立完整解码为 10000×4000 RGBA。两次大图导入/清空后计数配对，`maxActive=1`。
+- 两个 40MP PNG 输出各 67,830,461 字节，ZIP 合计超 128 MiB 时正确拒绝并允许重试/逐项下载；下载 PNG 独立解码为 10000×4000 RGBA，Alpha 范围 0–255。101 张小 PNG 部分接收 100 张并真实 Quick 编码完成，100 个有效下载，桌面行高 64px；390px 无横向溢出，预览关闭焦点返回对应行。
+- 清空最终工作区后：309/309 位图、105/105 Canvas、204/204 URL，原生通道峰值 1。相关 9 个 Vitest 文件共 121 项通过，`pnpm check` 无诊断；CN/Global 生产静态守卫与隔离 CN Converter SSG 通过，正式产物仍排除 draft。
+- 可重复生成单张样本：`python scripts/generate-image-fixtures.py --megapixels 40 --variant alpha --wide --output ../.validation/converter-c5a/samples/alpha-40.png`；可选 24/36/40/48 与 texture/alpha/noise。需要 Pillow，生成器拒绝向仓库内写入大样本；不参与构建/CI。
+- 移动端真实 iOS/Android 未测试，390px 仅验证布局。此次证据来自一台桌面 Chromium，不能承诺所有桌面设备均能完成上限任务；能力探测、失败反馈与较小图片/单项下载回退仍保留。Converter 保持 draft。
+
 ## B0 — 基线及接口增量
 
 - 开始时工作区干净，`dev` 与 `origin/dev` 均为 `d9e99b15819fcb78b414c025f470046624ac84e6`，fetch 后未发现更晚提交；没有覆盖用户未知工作。

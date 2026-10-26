@@ -1,3 +1,4 @@
+import { mobileImageLimits, type ImageLimits } from './limits';
 export const formats = ['webp', 'jpeg', 'png'] as const;
 export type ImageFormat = (typeof formats)[number];
 export const mime = {
@@ -6,12 +7,8 @@ export const mime = {
   webp: 'image/webp',
 } as const;
 export const extension = { png: 'png', jpeg: 'jpg', webp: 'webp' } as const;
-// Development guardrails, NOT validated limits for every device. Publication stays blocked.
-export const imageBudget = {
-  bytes: 20 * 1024 * 1024,
-  pixels: 16_000_000,
-  edge: 8192,
-} as const;
+// Conservative default for isolated callers; Converter passes its fixed workspace limits.
+export const imageBudget = mobileImageLimits;
 export type ImageErrorCode =
   | 'empty'
   | 'bytes'
@@ -56,7 +53,11 @@ export type ImageResult = Readonly<{
   bytes: number;
   suggestedFilename: string;
 }>;
-export function checkDimensions(width: number, height: number) {
+export function checkDimensions(
+  width: number,
+  height: number,
+  limits: ImageLimits = imageBudget,
+) {
   if (
     !Number.isSafeInteger(width) ||
     !Number.isSafeInteger(height) ||
@@ -65,9 +66,9 @@ export function checkDimensions(width: number, height: number) {
   )
     throw new ImageFailure('corrupt');
   if (
-    width > imageBudget.edge ||
-    height > imageBudget.edge ||
-    width * height > imageBudget.pixels
+    width > limits.edge ||
+    height > limits.edge ||
+    width * height > limits.pixels
   )
     throw new ImageFailure('dimensions', `${width}×${height}`);
 }

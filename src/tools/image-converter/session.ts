@@ -22,6 +22,7 @@ import {
   type Capabilities,
 } from '../image/browser-codec';
 import { ImageResources } from '../image/resources';
+import { mobileImageLimits, type ImageLimits } from '../image/limits';
 import {
   failureCode,
   ImageFailure,
@@ -82,6 +83,7 @@ const defaults: ConverterServices = {
   capabilities: detectCapabilities,
 };
 export class ConverterSession {
+  readonly limits: ImageLimits;
   readonly resources = new ImageResources();
   readonly jobs = new SerialJobs();
   private live = true;
@@ -102,7 +104,9 @@ export class ConverterSession {
   constructor(
     private emit: (view: ConverterView) => void,
     private services: ConverterServices = defaults,
+    limits: ImageLimits = mobileImageLimits,
   ) {
+    this.limits = Object.freeze({ ...limits });
     this.view = {
       batch: { id: crypto.randomUUID(), time: batchTime(new Date()) },
       tasks: [],
@@ -159,7 +163,10 @@ export class ConverterSession {
       'capabilities',
       async () => {
         try {
-          const capabilities = await this.services.capabilities(this.resources);
+          const capabilities = await this.services.capabilities(
+            this.resources,
+            this.limits,
+          );
           if (!this.live || token !== this.capabilityRevision) return;
           if (
             !capabilities[this.shared.settings.format].supported &&
@@ -202,7 +209,7 @@ export class ConverterSession {
   // All production intake paths share capacity checks, including pending/failed tasks.
   add(files: readonly File[]) {
     if (!this.live) return [];
-    const intake = planIntake(files, this.view.tasks);
+    const intake = planIntake(files, this.view.tasks, this.limits);
     if (intake.accepted.length && this.newBatch) {
       this.newBatch = false;
       this.sequence = 0;
@@ -237,7 +244,11 @@ export class ConverterSession {
       `accept:${id}`,
       async () => {
         try {
-          const source = await this.services.accept(task.file, this.resources);
+          const source = await this.services.accept(
+            task.file,
+            this.resources,
+            this.limits,
+          );
           if (!current()) return;
           this.update(id, (value) => ({
             ...value,
@@ -282,7 +293,11 @@ export class ConverterSession {
       'candidate',
       async () => {
         try {
-          const source = await this.services.accept(file, this.resources);
+          const source = await this.services.accept(
+            file,
+            this.resources,
+            this.limits,
+          );
           if (!this.live || token !== this.selection) return;
           this.view.tasks.forEach((old) => this.cancelJobs(old.id));
           this.auto.clear();
@@ -503,6 +518,7 @@ export class ConverterSession {
                 source,
                 snapshot.settings,
                 this.resources,
+                this.limits,
               );
           if (!this.current(task.id, snapshot)) return;
           const result: ImageResult = {

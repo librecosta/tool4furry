@@ -4,6 +4,7 @@ import {
   ImageFailure,
   type ImageInfo,
 } from './types';
+import type { ImageLimits } from './limits';
 
 const bad = (): never => {
   throw new ImageFailure('corrupt');
@@ -106,7 +107,7 @@ export function exifOrientation(bytes: Uint8Array): number {
   return found ?? 1;
 }
 
-async function png(r: Reader): Promise<ImageInfo> {
+async function png(r: Reader, limits: ImageLimits): Promise<ImageInfo> {
   let p = 8,
     count = 0,
     width = 0,
@@ -147,7 +148,7 @@ async function png(r: Reader): Promise<ImageInfo> {
         6: [8, 16],
       };
       if (!depths[color]?.includes(a[8]) || a[10] || a[11] || a[12] > 1) bad();
-      checkDimensions(width, height);
+      checkDimensions(width, height, limits);
     } else if (type === 'acTL') {
       if (data || length !== 8 || u32(await r.read(p + 8, 8)) === 0) bad();
       throw new ImageFailure('animated');
@@ -179,7 +180,7 @@ async function png(r: Reader): Promise<ImageInfo> {
   return bad();
 }
 
-async function jpeg(r: Reader): Promise<ImageInfo> {
+async function jpeg(r: Reader, limits: ImageLimits): Promise<ImageInfo> {
   let p = 2,
     width = 0,
     height = 0,
@@ -211,7 +212,7 @@ async function jpeg(r: Reader): Promise<ImageInfo> {
         bad();
       height = u16(a, 1);
       width = u16(a, 3);
-      checkDimensions(width, height);
+      checkDimensions(width, height, limits);
     } else if (
       marker >= 0xc0 &&
       marker <= 0xcf &&
@@ -254,7 +255,7 @@ async function jpeg(r: Reader): Promise<ImageInfo> {
   return bad();
 }
 
-async function webp(r: Reader): Promise<ImageInfo> {
+async function webp(r: Reader, limits: ImageLimits): Promise<ImageInfo> {
   if (u32(await r.read(4, 4), 0, true) + 8 !== r.blob.size) bad();
   let p = 12,
     count = 0,
@@ -282,7 +283,7 @@ async function webp(r: Reader): Promise<ImageInfo> {
       extended = true;
       cw = u24(a, 4) + 1;
       ch = u24(a, 7) + 1;
-      checkDimensions(cw, ch);
+      checkDimensions(cw, ch, limits);
     } else if (type === 'ANIM' || type === 'ANMF') {
       throw new ImageFailure('animated');
     } else if (type === 'ALPH') {
@@ -301,7 +302,7 @@ async function webp(r: Reader): Promise<ImageInfo> {
         width = (bits & 0x3fff) + 1;
         height = ((bits >>> 14) & 0x3fff) + 1;
       }
-      checkDimensions(width, height);
+      checkDimensions(width, height, limits);
       if (extended && (cw !== width || ch !== height)) bad();
     } else if (type === 'EXIF') {
       if (!extended || exif || length > 65536) bad();
@@ -317,6 +318,7 @@ async function webp(r: Reader): Promise<ImageInfo> {
 export async function inspectImage(
   blob: Blob,
   maxBytes: number = imageBudget.bytes,
+  limits: ImageLimits = imageBudget,
 ): Promise<ImageInfo> {
   if (!blob.size) throw new ImageFailure('empty');
   if (blob.size > maxBytes) throw new ImageFailure('bytes');
@@ -326,13 +328,13 @@ export async function inspectImage(
     header.length >= 8 &&
     [137, 80, 78, 71, 13, 10, 26, 10].every((b, i) => header[i] === b)
   )
-    return png(r);
-  if (header[0] === 255 && header[1] === 216) return jpeg(r);
+    return png(r, limits);
+  if (header[0] === 255 && header[1] === 216) return jpeg(r, limits);
   if (
     header.length === 12 &&
     text(header, 0, 4) === 'RIFF' &&
     text(header, 8, 4) === 'WEBP'
   )
-    return webp(r);
+    return webp(r, limits);
   throw new ImageFailure('unsupported');
 }
