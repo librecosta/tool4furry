@@ -215,7 +215,7 @@ const s = stylex.create({
     borderBottomWidth: 1,
     borderBottomStyle: 'solid',
     borderBottomColor: t.border,
-    backgroundColor: { default: 'transparent', ':hover': t.surface },
+    backgroundColor: { default: 'transparent', ':hover': t.surfacePanel },
   },
   heading: {
     gridColumn: 2,

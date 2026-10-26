@@ -60,6 +60,14 @@ describe('static theme selection contract', () => {
     expect(neutralLightValues.navBackground).toBe('#30343A');
     expect(neutralLightValues.page).toBe('#F8F9FA');
   });
+  it('separates persistent Light panels from white controls without changing Dark material or border weight', () => {
+    expect(neutralLightValues.surfacePanel).toBe('#EDEFF2');
+    expect(neutralLightValues.surface).toBe('#FFFFFF');
+    expect(neutralLightValues.inputSurface).toBe('#FFFFFF');
+    expect(neutralLightValues.controlBorderWidth).toBe('1px');
+    expect(neutralDarkValues.surfacePanel).toBe(neutralDarkValues.surface);
+    expect(neutralDarkValues.controlBorderWidth).toBe('2px');
+  });
   it('rejects unimplemented combinations rather than inventing a theme fallback', () => {
     expect(() => resolveTheme({ colorTheme: 'sea-mist', appearance: 'dark' } as unknown as ThemeSelection)).toThrow(RangeError);
     expect(() =>

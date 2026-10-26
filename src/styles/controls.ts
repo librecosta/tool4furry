@@ -10,7 +10,7 @@ export const controls = stylex.create({
     minWidth: 44,
     paddingBlock: tokens.space8,
     paddingInline: tokens.space16,
-    borderWidth: 2,
+    borderWidth: tokens.controlBorderWidth,
     borderStyle: 'solid',
     borderColor: tokens.controlBorder,
     borderRadius: tokens.radiusMd,
@@ -89,7 +89,7 @@ export const controls = stylex.create({
     minHeight: 44,
     paddingBlock: tokens.space8,
     paddingInline: tokens.space12,
-    borderWidth: 2,
+    borderWidth: tokens.controlBorderWidth,
     borderStyle: 'solid',
     borderColor: {
       default: tokens.controlBorder,
@@ -132,7 +132,7 @@ export const controls = stylex.create({
   card: {
     padding: tokens.space24,
     minWidth: 0,
-    backgroundColor: tokens.surface,
+    backgroundColor: tokens.surfacePanel,
     borderRadius: tokens.radiusLg,
   },
 });

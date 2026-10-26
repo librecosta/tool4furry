@@ -180,6 +180,7 @@ const styles = stylex.create({
     padding: tokens.space24,
     borderRadius: tokens.radiusLg,
     borderStyle: 'dashed',
+    borderWidth: 2,
     textAlign: 'center',
     overflowWrap: 'anywhere',
     opacity: { default: 1, ':disabled': 0.55 },

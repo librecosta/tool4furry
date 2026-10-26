@@ -2,6 +2,12 @@
 
 > 当前 V0.5-C4-A 仅使用 `neutral` 的 Neutral Light / GoFurry Dark，默认 Dark；下文旧阶段章节均为历史记录。Light 使用冻结的中性灰白基线。Dark 的 page、surface/strong/hover、文字、border/strong、强调文字、操作填充/hover/前景、输入与遮罩原样映射自 [GoFurry dev b186325 的 tokens.less](https://github.com/gofurry/gofurry-nav-site/blob/b186325c59c086351cf2b37d0b5c6530b937813c/apps/cn/web/app/assets/styles/tokens.less)，保留 alpha；`accent` 为文字/选择/进度，`action` 为按钮填充。workspace `#222427`、棋盘 `#44474C`、不透字浮层 `#393B3E`（strong 在 page 上合成）、pressed/selected、可访问控件边界/焦点与反馈色是 Tool4Furry 适配，非 GoFurry 原值；Light 棋盘为 `#F2F4F5` / `#D5D9DE`。仍为单一 VarGroup、一次一个完整原生主题；现有 `t4f.appearance` 的 light/dark 手动切换、绘制前恢复与同步不变。字体、几何和导航不变，普通表面不套用 GoFurry 大阴影。
 
+## V0.5-C4-F — Light 层次与 Footer 密度（2026-10-26）
+
+Light 保留 page `#F8F9FA` 与 Nav/Footer `#30343A`；常驻卡片/设置面板使用 `surfacePanel #EDEFF2`，workspace/muted 为 `#E9ECEF`，可操作控件保持白色，Hover `#E4E8EC`、Selected `#DDE2E7`。普通 Button/Input/选项通过 `controlBorderWidth` 使用 Light 1px / Dark 2px；Dropzone 保留 2px 虚线，Focus、错误与浮层边界仍独立表达。Dark 的新面板语义与原 surface 完全等值，不改变原材质和透明度。
+
+Footer 使用独立文字链接样式，桌面最小高度 30px、手机 40px，区块间距 16px、上下内边距 24/20px；顶部导航尺寸、合规过滤及 ICP 左/公安右的布局保持不变。文字 4.5:1、必要控件边界/焦点 3:1 的验收阈值不变。
+
 ## V0.5-C2-B — Light 与辅助色（2026-10-21）
 
 `ColorTheme = 'sea-mist'`，`Appearance = 'light' | 'dark'`。两份完整值表经原生 `createTheme` 编译，根节点只应用一个主题；空间、圆角、层级一致。Dark 原有色值保持不变。Light 使用暖雾白背景与石墨文字，反馈色、遮罩及阴影单独定义；危险按钮使用独立 `onDanger`。棋盘、浮层及原生控件从根主题继承，不由组件判断外观。

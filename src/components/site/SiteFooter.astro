@@ -25,17 +25,17 @@ const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, com
     <nav aria-label={t.footerNav} {...stylex.attrs(s.footerLinks)}>
       <div {...stylex.attrs(s.footerGroup)}>
         <p {...stylex.attrs(s.footerGroupHeading)}>{t.footerTools}</p>
-        <a {...stylex.attrs(s.navLink)} href="/#tools">{t.featuredTools}</a>
-        <a {...stylex.attrs(s.navLink)} href="/tools/">{t.browseAll}</a>
+        <a {...stylex.attrs(s.footerLink)} href="/#tools">{t.featuredTools}</a>
+        <a {...stylex.attrs(s.footerLink)} href="/tools/">{t.browseAll}</a>
       </div>
       <div {...stylex.attrs(s.footerGroup)}>
         <p {...stylex.attrs(s.footerGroupHeading)}>{t.footerProject}</p>
-        <a {...stylex.attrs(s.navLink)} href="/about/">{t.about}</a>
-        <a {...stylex.attrs(s.navLink)} href={github} target="_blank" rel="noopener noreferrer">{t.source}</a>
+        <a {...stylex.attrs(s.footerLink)} href="/about/">{t.about}</a>
+        <a {...stylex.attrs(s.footerLink)} href={github} target="_blank" rel="noopener noreferrer">{t.source}</a>
       </div>
       <div {...stylex.attrs(s.footerGroup)}>
         <p {...stylex.attrs(s.footerGroupHeading)}>{t.footerSupport}</p>
-        <a {...stylex.attrs(s.navLink)} href={`${github}/issues`} target="_blank" rel="noopener noreferrer">{t.feedback}</a>
+        <a {...stylex.attrs(s.footerLink)} href={`${github}/issues`} target="_blank" rel="noopener noreferrer">{t.feedback}</a>
       </div>
     </nav>
     <div data-footer-compliance-slot {...stylex.attrs(s.footerComplianceSlot)}>
@@ -55,9 +55,9 @@ const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, com
     <div data-footer-legal {...stylex.attrs(s.footerBottom)}>
       <div {...stylex.attrs(s.footerLegal)}>
         <nav aria-label={t.footerLegal} {...stylex.attrs(s.footerLegalLinks)}>
-          <a {...stylex.attrs(s.navLink, s.footerLegalLink)} href="/privacy/">{t.privacy}</a>
-          <a {...stylex.attrs(s.navLink, s.footerLegalLink)} href="/terms/">{t.terms}</a>
-          <a {...stylex.attrs(s.navLink, s.footerLegalLink)} href={`${github}/blob/master/LICENSE`}>BSD-3-Clause License</a>
+          <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href="/privacy/">{t.privacy}</a>
+          <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href="/terms/">{t.terms}</a>
+          <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href={`${github}/blob/master/LICENSE`}>BSD-3-Clause License</a>
         </nav>
       </div>
       <span {...stylex.attrs(s.footerCopyright)}>© {new Date().getFullYear()} Tool4Furry ·&nbsp;<a data-footer-attribution href="https://librecosta.com" target="_blank" rel="noopener noreferrer" {...stylex.attrs(s.complianceLink)}>LibreCosta</a></span>

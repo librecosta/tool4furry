@@ -39,6 +39,15 @@ it('composites alpha in sRGB before calculating luminance, rather than treating 
   expect(() => parse('not-a-color')).toThrow();
 });
 
+it('gives Light panels, white controls and interaction fills distinct luminance steps', () => {
+  const c = (key: keyof typeof neutralLightValues) => parse(neutralLightValues[key]);
+  // Material separation is not a text/interactive-boundary WCAG threshold.
+  expect(contrast(c('page'), c('surfacePanel'))).toBeGreaterThanOrEqual(1.08);
+  expect(contrast(c('surface'), c('surfacePanel'))).toBeGreaterThanOrEqual(1.1);
+  expect(contrast(c('surface'), c('surfaceHover'))).toBeGreaterThanOrEqual(1.2);
+  expect(contrast(c('surface'), c('actionTint'))).toBeGreaterThanOrEqual(1.25);
+});
+
 describe.each([
   ['dark', neutralDarkValues],
   ['light', neutralLightValues],
@@ -50,7 +59,8 @@ describe.each([
   const hosts = {
     page, workspace,
     surface: over(color('surface'), page),
-    settings: over(color('surface'), workspace),
+    panel: over(color('surfacePanel'), page),
+    settings: over(color('surfacePanel'), workspace),
     muted: over(color('surfaceMuted'), page),
     floating: color('surfaceFloating'),
   };
@@ -59,6 +69,7 @@ describe.each([
     [`${name}/input`, over(color('inputSurface'), background)],
   ] as const);
   backgrounds.push(['card hover', over(color('surfaceHover'), page)]);
+  backgrounds.push(['task hover', over(color('surfacePanel'), page)]);
   backgrounds.push(['dropzone selected', over(color('actionTint'), page)]);
   const modeRail = over(color('inputSurface'), hosts.settings);
   backgrounds.push(['mode rail', modeRail]);
