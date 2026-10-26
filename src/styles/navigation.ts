@@ -13,6 +13,12 @@ export const navigationStyles = stylex.create({
     textDecoration: 'none', flexShrink: 0,
   },
   currentLanguage: { color: t.navText, fontWeight: 700 },
+  // Only the right-hand interactive controls; disclosure/account stay separate.
+  controlMotion: {
+    transitionProperty: 'color, background-color',
+    transitionDuration: { default: '300ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
+    transitionTimingFunction: 'ease-out',
+  },
   targetLanguage: { color: t.navSecondary, fontWeight: 400 },
   // Display stays with the root appearance visibility rules in global.css.
   appearanceIcon: { width: 20, height: 20, lineHeight: 0, alignItems: 'center', justifyContent: 'center' },

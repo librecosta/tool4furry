@@ -347,6 +347,9 @@ export const siteStyles = stylex.create({
     width: 44, height: 44, flexShrink: 0, borderRadius: tokens.radiusMd,
     color: tokens.navText,
     backgroundColor: { default: 'transparent', ':hover': tokens.navHover },
+    transitionProperty: 'color, background-color',
+    transitionDuration: { default: '300ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
+    transitionTimingFunction: 'ease-out',
   },
   footerSocialIcon: { display: 'block' },
   footerLinks: {
@@ -359,6 +362,8 @@ export const siteStyles = stylex.create({
   },
   footerGroup: { display: 'flex', flexDirection: 'column', minWidth: 0, overflowWrap: 'anywhere' },
   footerLink: {
+    '--footer-underline-scale': { default: '0', ':hover': '1', ':focus-visible': '1' },
+    '--footer-underline-origin': { default: 'right', ':hover': 'left', ':focus-visible': 'left' },
     display: 'inline-flex',
     alignItems: 'center',
     minHeight: { default: 30, '@media (max-width: 600px)': 40 },
@@ -367,8 +372,20 @@ export const siteStyles = stylex.create({
     fontWeight: 500,
     lineHeight: 1.5,
     color: { default: tokens.navText, ':hover': tokens.navText, ':active': tokens.navSecondary },
-    textDecoration: { default: 'none', ':hover': 'underline' },
-    textUnderlineOffset: 5,
+    textDecoration: 'none',
+  },
+  footerLinkText: {
+    position: 'relative', display: 'inline-block', minWidth: 0, maxWidth: '100%',
+    // DeepFurry website's nav reveal, scoped to text rather than the click area.
+    '::after': {
+      content: '""', position: 'absolute', left: 0, right: 0, bottom: 0, height: 1,
+      backgroundColor: 'currentColor', pointerEvents: 'none',
+      transform: 'scaleX(var(--footer-underline-scale, 0))',
+      transformOrigin: 'var(--footer-underline-origin, right)',
+      transitionProperty: 'transform',
+      transitionDuration: { default: '220ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
+      transitionTimingFunction: 'ease',
+    },
   },
   footerGroupHeading: { marginBlock: '0 4px', color: tokens.navSecondary, fontSize: 13, fontWeight: 500 },
   footerBottom: {
@@ -405,6 +422,8 @@ export const siteStyles = stylex.create({
   complianceAdditional: { flexBasis: '100%' },
   compliancePreview: { margin: 0 },
   complianceLink: {
+    '--footer-underline-scale': { default: '0', ':hover': '1', ':focus-visible': '1' },
+    '--footer-underline-origin': { default: 'right', ':hover': 'left', ':focus-visible': 'left' },
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'flex-start',
@@ -412,8 +431,7 @@ export const siteStyles = stylex.create({
     minHeight: { default: 30, '@media (max-width: 600px)': 40 },
     maxWidth: '100%',
     color: { default: tokens.navSecondary, ':hover': tokens.navText },
-    textDecoration: { default: 'none', ':hover': 'underline' },
-    textUnderlineOffset: 4,
+    textDecoration: 'none',
   },
   complianceText: { minWidth: 0, maxWidth: '100%' },
   complianceIcon: { flexShrink: 0, objectFit: 'contain' },

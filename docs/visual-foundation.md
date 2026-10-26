@@ -4,9 +4,9 @@
 
 ## V0.5-C4-F — Light 层次与 Footer 密度（2026-10-26）
 
-Light 保留 page `#F8F9FA` 与 Nav/Footer `#30343A`；常驻卡片/设置面板使用 `surfacePanel #EDEFF2`，workspace/muted 为 `#E9ECEF`，可操作控件保持白色，Hover `#E4E8EC`、Selected `#DDE2E7`。普通 Button/Input/选项通过 `controlBorderWidth` 使用 Light 1px / Dark 2px；Dropzone 保留 2px 虚线，Focus、错误与浮层边界仍独立表达。Dark 的新面板语义与原 surface 完全等值，不改变原材质和透明度。
+Light 保留 page `#F8F9FA` 与 Nav/Footer `#30343A`；常驻卡片/设置面板使用 `surfacePanel #EDEFF2`，workspace/muted 为 `#E9ECEF`，可操作控件保持白色，Hover `#E4E8EC`、Selected `#DDE2E7`。普通 Button/Input/选项通过 `controlBorderWidth` 统一使用 Light/Dark 2px（人工验收修正）；Dropzone 保留 2px 虚线，Focus、错误与浮层边界仍独立表达。Dark 的新面板语义与原 surface 完全等值，不改变原材质和透明度。
 
-Footer 使用独立文字链接样式，桌面最小高度 30px、手机 40px，区块间距 16px、上下内边距 24/20px；顶部导航尺寸、合规过滤及 ICP 左/公安右的布局保持不变。文字 4.5:1、必要控件边界/焦点 3:1 的验收阈值不变。
+Footer 使用独立文字链接样式，桌面最小高度 30px、手机 40px，区块间距 16px、上下内边距 24/20px；顶部导航尺寸、合规过滤及 ICP 左/公安右的布局保持不变。文字内层细线采用 220ms scaleX 展开/收回（参考 deepfurry/website 的 desktop-nav）；右侧导航操作及 Footer GitHub 使用 300ms 颜色/背景过渡，Reduced Motion 均为 0ms。文字 4.5:1、必要控件边界/焦点 3:1 的验收阈值不变。
 
 ## V0.5-C2-B — Light 与辅助色（2026-10-21）
 

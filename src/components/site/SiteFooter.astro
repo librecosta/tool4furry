@@ -25,17 +25,17 @@ const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, com
     <nav aria-label={t.footerNav} {...stylex.attrs(s.footerLinks)}>
       <div {...stylex.attrs(s.footerGroup)}>
         <p {...stylex.attrs(s.footerGroupHeading)}>{t.footerTools}</p>
-        <a {...stylex.attrs(s.footerLink)} href="/#tools">{t.featuredTools}</a>
-        <a {...stylex.attrs(s.footerLink)} href="/tools/">{t.browseAll}</a>
+        <a {...stylex.attrs(s.footerLink)} href="/#tools"><span {...stylex.attrs(s.footerLinkText)}>{t.featuredTools}</span></a>
+        <a {...stylex.attrs(s.footerLink)} href="/tools/"><span {...stylex.attrs(s.footerLinkText)}>{t.browseAll}</span></a>
       </div>
       <div {...stylex.attrs(s.footerGroup)}>
         <p {...stylex.attrs(s.footerGroupHeading)}>{t.footerProject}</p>
-        <a {...stylex.attrs(s.footerLink)} href="/about/">{t.about}</a>
-        <a {...stylex.attrs(s.footerLink)} href={github} target="_blank" rel="noopener noreferrer">{t.source}</a>
+        <a {...stylex.attrs(s.footerLink)} href="/about/"><span {...stylex.attrs(s.footerLinkText)}>{t.about}</span></a>
+        <a {...stylex.attrs(s.footerLink)} href={github} target="_blank" rel="noopener noreferrer"><span {...stylex.attrs(s.footerLinkText)}>{t.source}</span></a>
       </div>
       <div {...stylex.attrs(s.footerGroup)}>
         <p {...stylex.attrs(s.footerGroupHeading)}>{t.footerSupport}</p>
-        <a {...stylex.attrs(s.footerLink)} href={`${github}/issues`} target="_blank" rel="noopener noreferrer">{t.feedback}</a>
+        <a {...stylex.attrs(s.footerLink)} href={`${github}/issues`} target="_blank" rel="noopener noreferrer"><span {...stylex.attrs(s.footerLinkText)}>{t.feedback}</span></a>
       </div>
     </nav>
     <div data-footer-compliance-slot {...stylex.attrs(s.footerComplianceSlot)}>
@@ -43,7 +43,7 @@ const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, com
         {compliance.map(entry => <div data-compliance-kind={entry.kind} {...stylex.attrs(s.complianceCell, entry.kind === 'public-security' && s.compliancePolice, entry.kind === 'additional' && s.complianceAdditional)}>
           {entry.href ? <a href={entry.href} {...stylex.attrs(s.complianceLink)}>
             {entry.iconSrc && <img src={entry.iconSrc} width="20" height="20" alt="" aria-hidden="true" {...stylex.attrs(s.complianceIcon)} />}
-            <span>{entry.label}</span>
+            <span {...stylex.attrs(s.footerLinkText)}>{entry.label}</span>
           </a> : <span {...stylex.attrs(s.complianceText)}>{entry.label}</span>}
         </div>)}
       </div>}
@@ -55,12 +55,12 @@ const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, com
     <div data-footer-legal {...stylex.attrs(s.footerBottom)}>
       <div {...stylex.attrs(s.footerLegal)}>
         <nav aria-label={t.footerLegal} {...stylex.attrs(s.footerLegalLinks)}>
-          <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href="/privacy/">{t.privacy}</a>
-          <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href="/terms/">{t.terms}</a>
-          <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href={`${github}/blob/master/LICENSE`}>BSD-3-Clause License</a>
+          <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href="/privacy/"><span {...stylex.attrs(s.footerLinkText)}>{t.privacy}</span></a>
+          <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href="/terms/"><span {...stylex.attrs(s.footerLinkText)}>{t.terms}</span></a>
+          <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href={`${github}/blob/master/LICENSE`}><span {...stylex.attrs(s.footerLinkText)}>BSD-3-Clause License</span></a>
         </nav>
       </div>
-      <span {...stylex.attrs(s.footerCopyright)}>© {new Date().getFullYear()} Tool4Furry ·&nbsp;<a data-footer-attribution href="https://librecosta.com" target="_blank" rel="noopener noreferrer" {...stylex.attrs(s.complianceLink)}>LibreCosta</a></span>
+      <span {...stylex.attrs(s.footerCopyright)}>© {new Date().getFullYear()} Tool4Furry ·&nbsp;<a data-footer-attribution href="https://librecosta.com" target="_blank" rel="noopener noreferrer" {...stylex.attrs(s.complianceLink)}><span {...stylex.attrs(s.footerLinkText)}>LibreCosta</span></a></span>
     </div>
 
   </div>

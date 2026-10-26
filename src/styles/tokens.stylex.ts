@@ -98,7 +98,7 @@ export const neutralLightValues = {
   border: '#CDD2D7',
   borderStrong: '#B3BBC3',
   controlBorder: '#737C85',
-  controlBorderWidth: '1px',
+  controlBorderWidth: '2px',
   accent: '#262C32',
   action: '#262C32',
   actionHover: '#39424A',

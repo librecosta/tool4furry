@@ -64,7 +64,7 @@ describe('static theme selection contract', () => {
     expect(neutralLightValues.surfacePanel).toBe('#EDEFF2');
     expect(neutralLightValues.surface).toBe('#FFFFFF');
     expect(neutralLightValues.inputSurface).toBe('#FFFFFF');
-    expect(neutralLightValues.controlBorderWidth).toBe('1px');
+    expect(neutralLightValues.controlBorderWidth).toBe('2px');
     expect(neutralDarkValues.surfacePanel).toBe(neutralDarkValues.surface);
     expect(neutralDarkValues.controlBorderWidth).toBe('2px');
   });

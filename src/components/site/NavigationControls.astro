@@ -9,11 +9,11 @@ const link = pageLanguageLink(Astro.url.pathname);
 const t = messages[region];
 ---
 <div data-navigation-controls {...stylex.attrs(n.actions)}>
-  <a data-language-link href={link.href} hreflang={link.hreflang} aria-label={t.switchLanguage} {...stylex.attrs(n.control)}>
+  <a data-language-link href={link.href} hreflang={link.hreflang} aria-label={t.switchLanguage} {...stylex.attrs(n.control, n.controlMotion)}>
     <span aria-hidden="true" {...stylex.attrs(n.currentLanguage)}>{link.current}</span><span aria-hidden="true" {...stylex.attrs(n.targetLanguage)}> / </span><span lang={link.hreflang} {...stylex.attrs(n.targetLanguage)}>{link.target}</span>
   </a>
-  <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" aria-label={t.github} {...stylex.attrs(n.control)}><GithubLogoIcon size={20} aria-hidden /></a>
-  <button type="button" data-appearance-toggle="static" data-light-label={t.switchLight} data-dark-label={t.switchDark} aria-label={t.appearanceControl} disabled {...stylex.attrs(n.control)}>
+  <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" aria-label={t.github} {...stylex.attrs(n.control, n.controlMotion)}><GithubLogoIcon size={20} aria-hidden /></a>
+  <button type="button" data-appearance-toggle="static" data-light-label={t.switchLight} data-dark-label={t.switchDark} aria-label={t.appearanceControl} disabled {...stylex.attrs(n.control, n.controlMotion)}>
     <span data-appearance-icon="light" {...stylex.attrs(n.appearanceIcon)}><SunIcon size={20} aria-hidden className={stylex.attrs(n.svg).class} /></span>
     <span data-appearance-icon="dark" {...stylex.attrs(n.appearanceIcon)}><MoonIcon size={20} aria-hidden className={stylex.attrs(n.svg).class} /></span>
   </button>
