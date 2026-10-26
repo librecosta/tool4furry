@@ -15,7 +15,6 @@ const content = informationContent[region][locale][kind];
     <article data-information-page={kind} aria-labelledby="information-title" {...stylex.attrs(s.readable, s.information)}>
       <header {...stylex.attrs(s.informationHeader)}>
         <h1 id="information-title" {...stylex.attrs(s.informationTitle)}>{content.h1}</h1>
-        <p {...stylex.attrs(s.informationSummary)}>{content.intro}</p>
       </header>
       {content.sections.map((section, index) => <section aria-labelledby={`information-section-${index}`} {...stylex.attrs(s.informationSection)}>
         <h2 id={`information-section-${index}`} {...stylex.attrs(s.informationHeading)}>{section.heading}</h2>

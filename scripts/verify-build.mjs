@@ -628,9 +628,15 @@ for (const page of htmlFiles) {
     assert.equal(dom.title, title);
     const article = dom.querySelector(`main#main-content article[data-information-page="${informationKind}"]`);
     assert(article, `Missing static information body in ${page}`);
-    assert(article.querySelector('header > p')?.textContent.trim(), 'Short summary required');
+    assert.deepEqual([...article.querySelector('header').children].map(child => child.tagName), ['H1'], 'Information header contains only its H1, without a subtitle');
     const sections = [...article.querySelectorAll(':scope > section')];
-    assert(sections.length >= 2 && sections.length <= 4, 'Information pages need 2–4 sections');
+    assert.equal(sections.length, informationKind === 'about' ? 3 : 4, 'Preserve the existing information sections');
+    assert(!/Image Converter|开发预览|尚无已发布工具|A toolbox in development|no published tools yet/i.test(article.textContent), 'No version-specific development status in information pages');
+    if (informationKind !== 'about') {
+      const contact = sections.at(-1).querySelector('a[href="mailto:contact@librecosta.com"]');
+      assert.equal(contact?.textContent, locale === 'zh' ? informationKind === 'privacy' ? '隐私问题联系邮箱' : '私密联系邮箱' : informationKind === 'privacy' ? 'Privacy contact email' : 'Private contact email');
+      assert(sections.at(-1).textContent.includes('contact@librecosta.com'));
+    }
     for (const section of sections)
       assert(section.querySelector('h2')?.textContent.trim() && section.querySelector('p')?.textContent.trim());
     assert(!/TODO|Lorem ipsum|待完善|即将补充/i.test(article.textContent), 'No placeholder information copy');

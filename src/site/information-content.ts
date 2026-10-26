@@ -6,7 +6,6 @@ export type InformationContent = {
   title: string;
   description: string;
   h1: string;
-  intro: string;
   sections: readonly {
     heading: string;
     paragraphs: readonly string[];
@@ -22,17 +21,16 @@ const translatedInformation: Record<Locale, Record<InformationKind, InformationC
   zh: {
     about: {
       title: '关于 Tool4Furry',
-      description: '了解由 LibreCosta 开发的 Tool4Furry：面向 Furry 创作者的浏览器工具箱、当前开发状态与开源代码。',
+      description: '了解 Tool4Furry：由 LibreCosta 开发、面向 Furry 创作者的浏览器工具箱，以及项目的维护与开源方式。',
       h1: '关于 Tool4Furry',
-      intro: '为 Furry 创作者，把日常素材处理做得简单、可靠。',
       sections: [
         {
           heading: '从创作中的小事出发',
           paragraphs: ['Tool4Furry 是面向 Furry 创作者的浏览器工具箱，专注日常创作与素材处理。我们希望减少重复操作，让工具的用途、处理范围和结果都清楚可见，把更多时间留给创作本身。'],
         },
         {
-          heading: '正在打磨的工具箱',
-          paragraphs: ['项目由 LibreCosta 开发。目前 Image Converter 仍在开发预览中，正式工具目录尚无已发布工具。请以工具目录的实际内容为准；开发中的功能不代表已经公开提供的服务。'],
+          heading: '工具与维护',
+          paragraphs: ['Tool4Furry 由 LibreCosta 开发并维护。我们会根据实际需求逐步完善工具，具体可用的功能及支持范围，以工具目录和各工具页面为准。'],
           links: [{ label: '查看工具箱', href: '/tools/' }],
         },
         {
@@ -44,15 +42,14 @@ const translatedInformation: Record<Locale, Record<InformationKind, InformationC
     },
     privacy: {
       title: '隐私说明 · Tool4Furry',
-      description: '了解 Tool4Furry 的浏览器本地图片处理、主题偏好存储、网站访问记录与隐私问题反馈渠道。',
+      description: '了解 Tool4Furry 的浏览器本地文件处理、主题偏好存储、网站访问记录与隐私问题反馈渠道。',
       h1: '隐私说明',
-      intro: '工具如何处理文件，与访问网站可能产生哪些记录，是两件不同的事。',
       sections: [
         {
           heading: '工具处理的文件',
           paragraphs: [
-            '当前开发预览中的 Image Converter 在本地浏览器读入、检查、转换和预览静态 PNG、JPEG、WebP。这些处理不会通过 Tool4Furry 应用后端上传原始图片。当前没有账号或云端用户文件库。',
-            '文件与结果由工作区在内存中持有，临时对象 URL 用于缩略图、预览及下载。移除文件或离开页面会释放应用持有的资源；它们不是永久存储或云端备份。刷新或关闭页面不保留工作区任务，请自行下载并保存所需结果。',
+            '对于明确标注为浏览器本地处理的功能，文件在当前浏览器中读取、检查、处理和预览，原始文件不会因此上传至 Tool4Furry 应用后端。不同工具的处理方式与支持范围，以各工具页面说明为准。本站目前没有账号或云端用户文件库。',
+            '在这些本地处理功能中，文件与结果由工作区在内存中持有，临时对象 URL 用于缩略图、预览及下载。移除文件或离开页面会释放应用持有的资源；它们不是永久存储或云端备份。刷新或关闭页面不保留工作区任务，请自行下载并保存所需结果。',
           ],
         },
         {
@@ -61,12 +58,12 @@ const translatedInformation: Record<Locale, Record<InformationKind, InformationC
         },
         {
           heading: '访问网站的记录',
-          paragraphs: ['网页的托管、CDN 或分发服务可能为交付内容、保障安全和排查故障处理 IP 地址、请求时间、浏览器标识等访问记录，具体范围与保存时间取决于实际服务及配置。当前页面代码未集成第三方访问统计脚本；这不代表托管服务没有日志，也不表示本地图片处理会将图片写入访问记录。'],
+          paragraphs: ['网页的托管、CDN 或分发服务可能为交付内容、保障安全和排查故障处理 IP 地址、请求时间、浏览器标识等访问记录，具体范围与保存时间取决于实际服务及配置。当前页面代码未集成第三方访问统计脚本；这不代表托管服务没有日志，也不表示浏览器本地文件处理会将文件写入访问记录。'],
         },
         {
           heading: '第三方链接与联系',
-          paragraphs: ['打开 GitHub 等外部链接后，你将访问第三方网站，其信息处理适用该网站的规则。隐私问题，以及对我们实际持有的个人信息提出访问、更正或删除请求，可先通过 GitHub Issues 联系维护者。公开问题中只描述请求类型，不要附上图片、IP 地址或身份材料；需要私密沟通时，请先索取合适的联系渠道。'],
-          links: [{ label: '联系维护者（GitHub Issues）', href: feedback }],
+          paragraphs: ['打开 GitHub 等外部链接后，你将访问第三方网站，其信息处理适用该网站的规则。有关隐私问题，或希望就我们实际持有的个人信息提出访问、更正或删除请求，请联系 contact@librecosta.com。请勿在公开 GitHub Issues 中提交图片、IP 地址、身份材料或其他敏感信息。'],
+          links: [{ label: '隐私问题联系邮箱', href: 'mailto:contact@librecosta.com' }],
         },
       ],
     },
@@ -74,11 +71,10 @@ const translatedInformation: Record<Locale, Record<InformationKind, InformationC
       title: '使用条款 · Tool4Furry',
       description: 'Tool4Furry 的使用范围、用户素材与代码许可边界、浏览器处理限制及问题反馈方式。',
       h1: '使用条款',
-      intro: '了解工具的使用边界，妥善保留素材与处理结果。',
       sections: [
         {
           heading: '使用范围',
-          paragraphs: ['Tool4Furry 按当前可用状态提供浏览器工具，功能以实际页面及工具说明为准。Image Converter 目前仍是开发预览，正式目录尚无已发布工具。请仅处理你拥有权利或已获授权的文件，合法使用工具，尊重他人的著作权、隐私及其他合法权益。'],
+          paragraphs: ['Tool4Furry 按当前可用状态提供浏览器工具，功能以实际页面及工具说明为准。请仅处理你拥有权利或已获授权的文件，合法使用工具，尊重他人的著作权、隐私及其他合法权益。'],
         },
         {
           heading: '素材权利与代码许可',
@@ -91,8 +87,8 @@ const translatedInformation: Record<Locale, Record<InformationKind, InformationC
         },
         {
           heading: '更新与联系',
-          paragraphs: ['功能和说明会随项目更新而调整，请查看使用时的页面内容。对工具结果或本条款有疑问，可通过 GitHub Issues 联系维护者；不要在公开问题中提交敏感文件或个人信息。'],
-          links: [{ label: '反馈问题（GitHub Issues）', href: feedback }],
+          paragraphs: ['功能和说明会随项目更新而调整，请查看使用时的页面内容。对工具结果或本条款有疑问，可通过 GitHub Issues 联系维护者；涉及敏感文件或个人信息，请通过 contact@librecosta.com 私下联系，不要在公开问题中提交。'],
+          links: [{ label: '反馈问题（GitHub Issues）', href: feedback }, { label: '私密联系邮箱', href: 'mailto:contact@librecosta.com' }],
         },
       ],
     },
@@ -100,17 +96,16 @@ const translatedInformation: Record<Locale, Record<InformationKind, InformationC
   en: {
     about: {
       title: 'About Tool4Furry',
-      description: 'Meet Tool4Furry, a browser toolbox for furry creators by LibreCosta. Learn about its focus, development status and open-source code.',
+      description: 'Learn about Tool4Furry, a browser toolbox for furry creators developed by LibreCosta, and its approach to maintenance and open-source code.',
       h1: 'About Tool4Furry',
-      intro: 'Simple, reliable tools for the everyday work behind your creations.',
       sections: [
         {
           heading: 'Starting with everyday creative tasks',
           paragraphs: ['Tool4Furry is a browser toolbox for furry creators, focused on creative work and asset processing. We aim to reduce repetitive steps and make each tool’s purpose, limits and results clear, leaving more time for creating.'],
         },
         {
-          heading: 'A toolbox in development',
-          paragraphs: ['Tool4Furry is developed by LibreCosta. Image Converter is currently a development preview, and the public catalog has no published tools yet. The catalog shows what is actually available; work in progress does not mean a feature is publicly offered.'],
+          heading: 'Tools and maintenance',
+          paragraphs: ['Tool4Furry is developed and maintained by LibreCosta. We improve the toolbox in response to real needs. Available features and their supported scope are described in the catalog and on each tool page.'],
           links: [{ label: 'Browse the toolbox', href: '/tools/' }],
         },
         {
@@ -122,15 +117,14 @@ const translatedInformation: Record<Locale, Record<InformationKind, InformationC
     },
     privacy: {
       title: 'Privacy · Tool4Furry',
-      description: 'How Tool4Furry handles images in your browser, stores appearance preferences, and distinguishes file processing from website access records.',
+      description: 'How Tool4Furry handles files locally in your browser, stores appearance preferences, and distinguishes file processing from website access records.',
       h1: 'Privacy',
-      intro: 'Processing your files and visiting the website involve different kinds of information.',
       sections: [
         {
           heading: 'Files processed by the tool',
           paragraphs: [
-            'The current Image Converter development preview reads, checks, converts and previews static PNG, JPEG and WebP images locally in your browser. These operations do not upload original images through a Tool4Furry application backend. There are currently no accounts or cloud libraries for user files.',
-            'The workspace holds files and results in memory and uses temporary object URLs for thumbnails, previews and downloads. Removing files or leaving the page releases resources held by the application; these are not permanent storage or cloud backups. Refreshing or closing the page does not retain workspace tasks. Download and save any results you need.',
+            'For features explicitly described as browser-local, selected files are read, checked, processed, and previewed in your browser; these operations do not upload the original files to a Tool4Furry application backend. Processing behavior and supported scope are described on each tool page. The site currently has no accounts or cloud file library.',
+            'For these local features, the workspace holds files and results in memory and uses temporary object URLs for thumbnails, previews and downloads. Removing files or leaving the page releases resources held by the application; these are not permanent storage or cloud backups. Refreshing or closing the page does not retain workspace tasks. Download and save any results you need.',
           ],
         },
         {
@@ -140,12 +134,12 @@ const translatedInformation: Record<Locale, Record<InformationKind, InformationC
         },
         {
           heading: 'Website access records',
-          paragraphs: ['Hosting, CDN or content delivery services may process access records such as IP addresses, request times and browser identifiers to deliver pages, maintain security and investigate faults. Their scope and retention depend on the actual service and configuration. The current page code does not integrate third-party traffic analytics scripts. This does not mean hosting services keep no logs, or that local image processing places your images in access logs.'],
+          paragraphs: ['Hosting, CDN or content delivery services may process access records such as IP addresses, request times and browser identifiers to deliver pages, maintain security and investigate faults. Their scope and retention depend on the actual service and configuration. The current page code does not integrate third-party traffic analytics scripts. This does not mean hosting services keep no logs, or that browser-local file processing places your files in access logs.'],
         },
         {
           heading: 'External links and contact',
-          paragraphs: ['Opening a GitHub or other external link takes you to a third-party website with its own information practices. For privacy questions, or to request access to, correction or deletion of personal information we actually hold, contact the maintainers through GitHub Issues. Describe only the type of request publicly. Do not attach images, IP addresses or identity documents; ask for a suitable private contact channel first if needed.'],
-          links: [{ label: 'Contact the maintainers (GitHub Issues)', href: feedback }],
+          paragraphs: ['Opening GitHub or other external links takes you to third-party sites governed by their own information practices. For privacy questions, or to request access to, correction of, or deletion of personal information we actually hold, contact contact@librecosta.com. Do not post images, IP addresses, identity documents, or other sensitive information in public GitHub Issues.'],
+          links: [{ label: 'Privacy contact email', href: 'mailto:contact@librecosta.com' }],
         },
       ],
     },
@@ -153,11 +147,10 @@ const translatedInformation: Record<Locale, Record<InformationKind, InformationC
       title: 'Terms · Tool4Furry',
       description: 'Scope of use, rights in your assets, the code license, browser processing limits and ways to contact Tool4Furry maintainers.',
       h1: 'Terms',
-      intro: 'Know the limits of the tools, and keep your originals and results safe.',
       sections: [
         {
           heading: 'Scope of use',
-          paragraphs: ['Tool4Furry provides browser tools as currently available, with features described on their actual pages. Image Converter remains a development preview; the public catalog has no published tools yet. Process only files you own or are authorized to use. Use the tools lawfully and respect others’ copyright, privacy and other rights.'],
+          paragraphs: ['Tool4Furry provides browser tools as currently available, with features described on their actual pages. Process only files you own or are authorized to use. Use the tools lawfully and respect others’ copyright, privacy and other rights.'],
         },
         {
           heading: 'Your assets and the code license',
@@ -170,8 +163,8 @@ const translatedInformation: Record<Locale, Record<InformationKind, InformationC
         },
         {
           heading: 'Changes and contact',
-          paragraphs: ['Features and these explanations may change as the project develops. Refer to the page content available when you use it. Questions about results or these terms can be raised with the maintainers through GitHub Issues. Do not post sensitive files or personal information in public issues.'],
-          links: [{ label: 'Report a concern (GitHub Issues)', href: feedback }],
+          paragraphs: ['Features and these explanations may change as the project develops. Refer to the page content available when you use it. Questions about tool results or these terms can be raised through GitHub Issues. For sensitive files or personal information, contact contact@librecosta.com privately rather than posting them in public issues.'],
+          links: [{ label: 'Report a concern (GitHub Issues)', href: feedback }, { label: 'Private contact email', href: 'mailto:contact@librecosta.com' }],
         },
       ],
     },
