@@ -623,6 +623,13 @@ for (const page of htmlFiles) {
   }
   const language = dom.querySelector('[data-language-link]');
   assert(language, `Missing language entry in ${page}`);
+  const controls = language.closest('[data-navigation-controls]');
+  assert(controls.querySelector(`a[href="${github}"]`), 'GitHub remains available in desktop navigation');
+  const account = controls.querySelector('[data-account-slot]');
+  assert.equal(account?.getAttribute('role'), 'img');
+  assert(account.getAttribute('aria-label') && !account.matches('a, button, [tabindex]'), 'Account stays a named, non-interactive placeholder');
+  assert.equal(account.querySelector('svg')?.getAttribute('width'), '20');
+  assert.equal(account.querySelector('svg')?.getAttribute('height'), '20');
   const languageURL = new URL(language.getAttribute('href'), origin);
   assert.equal(languageURL.origin, origin, 'Language navigation stays on the current origin');
   assert.equal(languageURL.pathname, alternatePath(page === '404.html' ? '/tools/' : '/' + page.replace(/index\.html$/, '')));

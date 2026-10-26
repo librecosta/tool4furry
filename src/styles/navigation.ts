@@ -25,8 +25,9 @@ export const navigationStyles = stylex.create({
   svg: { display: 'block' },
   labelFull: { display: { default: 'inline', '@media (max-width: 600px)': 'none' } },
   labelShort: { display: { default: 'none', '@media (max-width: 600px)': 'inline' } },
+  github: { display: { default: 'inline-flex', '@media (max-width: 600px)': 'none' } },
   account: {
-    display: { default: 'inline-flex', '@media (max-width: 600px)': 'none' },
+    display: 'inline-flex',
     alignItems: 'center', justifyContent: 'center',
     width: 44, height: 44, flexShrink: 0, color: t.navSecondary,
   },

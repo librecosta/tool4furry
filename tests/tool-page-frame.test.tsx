@@ -108,7 +108,10 @@ describe('product navigation', () => {
     expect(input.value).toBe('file loaded and ready');
     act(() => { appearance = 'light'; window.dispatchEvent(new Event('t4f:appearance')); });
     expect(screen.getByRole('button', { name: messages.zh.switchDark }).getAttribute('aria-pressed')).toBe('true');
-    expect(container.querySelector('[data-account-slot]')?.matches('button, a, [tabindex]')).toBe(false);
+    const account = screen.getByRole('img', { name: messages.zh.accountReserved });
+    expect(account.matches('button, a, [tabindex]')).toBe(false);
+    expect(account.querySelector('svg')?.getAttribute('width')).toBe('20');
+    expect(account.querySelector('svg')?.getAttribute('height')).toBe('20');
     const controls = container.querySelector('[data-navigation-controls]')!;
     expect([...controls.children].map(element => element.tagName)).toEqual(['A', 'A', 'BUTTON', 'SPAN']);
     expect(controls.children[1].getAttribute('href')).toBe('https://github.com/librecosta/tool4furry');

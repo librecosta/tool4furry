@@ -33,7 +33,7 @@ export function NavigationControls({ locale, link }: {
         <span aria-hidden {...stylex.props(n.targetLanguage)}> / </span>
         <span lang={link.hreflang} {...stylex.props(n.targetLanguage)}>{link.target}</span>
       </a>
-      <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" aria-label={t.github} {...stylex.props(n.control, n.controlMotion)}>
+      <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" aria-label={t.github} {...stylex.props(n.control, n.controlMotion, n.github)}>
         <GithubLogoIcon size={20} aria-hidden />
       </a>
       <button
