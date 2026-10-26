@@ -183,7 +183,14 @@ assert.equal(
   'No empty search UI',
 );
 const github = 'https://github.com/librecosta/tool4furry';
-const mark = '/brand/tool4furry-mark.svg';
+const symbol = '/brand/tool4furry-symbol.svg';
+const horizontal = '/brand/tool4furry-horizontal.svg';
+function assertFavicon(dom) {
+  assert.equal(dom.querySelectorAll('link[rel="icon"]').length, 2);
+  assert.equal(dom.querySelector('link[rel="icon"][type="image/vnd.microsoft.icon"]')?.getAttribute('href'), '/favicon.ico');
+  assert.equal(dom.querySelector('link[rel="icon"][type="image/png"][sizes="96x96"]')?.getAttribute('href'), '/brand/tool4furry-favicon.png');
+  assert.equal(dom.querySelector('link[rel="icon"][type="image/svg+xml"]'), null);
+}
 for (const tag of ['header', 'footer']) {
   const shell = document.querySelector(tag);
   assert(
@@ -202,9 +209,10 @@ for (const tag of ['header', 'footer']) {
   }
   const brand = shell.querySelector(`a[href="${localPath('/')}"]`);
   assert.equal(brand?.getAttribute('aria-label'), 'Tool4Furry');
-  assert.equal(brand.querySelector('span')?.textContent.trim(), 'Tool4Furry');
-  assert.equal(brand.querySelector('img')?.getAttribute('src'), mark);
-  assert.equal(brand.querySelector('img')?.getAttribute('alt'), '');
+  assert.equal(brand.querySelectorAll('[data-brand-symbol][aria-hidden="true"]').length, 1);
+  assert.equal(brand.querySelectorAll('[data-brand-wordmark]').length, 1);
+  assert.equal(brand.querySelector('[data-brand-wordmark]')?.textContent.trim(), 'Tool4Furry');
+  assert.equal(brand.querySelectorAll('img').length, 0, 'The monochrome symbol inherits the brand color through a CSS mask');
 }
 assert(
   document.querySelector(`footer a[href="${github}/blob/master/LICENSE"]`),
@@ -216,13 +224,14 @@ assert(
     ?.textContent.includes('by LibreCosta') === false,
   'Footer brand does not repeat the copyright attribution',
 );
-assert.equal(
-  document
-    .querySelector('link[rel="icon"][type="image/svg+xml"]')
-    ?.getAttribute('href'),
-  mark,
-);
-for (const path of [mark, '/brand/creative-fragments.svg']) {
+assertFavicon(document);
+const ico = await readFile(resolve(root, 'favicon.ico'));
+assert.deepEqual([...ico.subarray(0, 6)], [0, 0, 1, 0, 7, 0], 'Real multi-size ICO');
+const png = await readFile(resolve(root, 'brand/tool4furry-favicon.png'));
+assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a', 'Real PNG favicon');
+assert.equal(png.readUInt32BE(16), 96);
+assert.equal(png.readUInt32BE(20), 96);
+for (const path of [symbol, horizontal, '/brand/creative-fragments.svg']) {
   const svg = await readFile(resolve(root, path.slice(1)), 'utf8');
   const asset = new JSDOM(svg, { contentType: 'image/svg+xml' }).window
     .document;
@@ -241,6 +250,10 @@ for (const path of [mark, '/brand/creative-fragments.svg']) {
     !/\son\w+\s*=|(?:href|url)\s*[(=]/i.test(svg),
     `${path}: external resources or event handlers`,
   );
+  if (path !== '/brand/creative-fragments.svg') {
+    assert.equal(asset.querySelectorAll('text, filter, use, style').length, 0, 'Brand vectors use actual paths, without fonts or effects');
+    assert.equal(svg.replace(/\r\n?/g, '\n'), (await readFile(resolve('public', path.slice(1)), 'utf8')).replace(/\r\n?/g, '\n'), 'Approved brand assets copied without transformation');
+  }
 }
 for (const image of document.querySelectorAll('img')) {
   const src = image.getAttribute('src');
@@ -578,11 +591,7 @@ for (const page of htmlFiles) {
         dom.querySelector(`${tag} a[href="${localPath('/tools/')}"]`),
         `Missing full catalog navigation: ${tag}`,
       );
-  assert.equal(
-    dom.querySelector('link[rel="icon"]')?.getAttribute('href'),
-    mark,
-    `Shared favicon missing: ${page}`,
-  );
+  assertFavicon(dom);
   if (page === '404.html') {
     assertStaticNavigation(dom);
     assert.equal(
@@ -690,7 +699,7 @@ for (const page of htmlFiles) {
       const url = new URL(asset, `https://static.invalid${path}`);
       assert(
         url.origin === 'https://static.invalid' &&
-          url.pathname.startsWith('/_astro/'),
+          (url.pathname.startsWith('/_astro/') || (url.pathname === symbol && !url.search && !url.hash)),
         `Non-local CSS asset: ${asset.slice(0, 100)}`,
       );
       const bytes = await readFile(resolve(root, url.pathname.slice(1)));
@@ -706,6 +715,7 @@ for (const page of htmlFiles) {
     }
   }
   const css = linkedCSS.join('\n');
+  assert(css.includes(symbol), `Missing extracted brand mask in ${page}`);
   for (const appearance of ['dark', 'light'])
     for (const className of appearanceScript.dataset[appearance].split(' '))
       assert(css.includes(`.${className}`), `Missing extracted ${appearance} theme in ${page}`);

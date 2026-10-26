@@ -41,7 +41,8 @@ const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function
     <script is:inline id="t4f-appearance" data-dark={darkClass} data-light={lightClass} data-default={theme.appearance} data-region-origins={regionOrigins} set:html={appearanceSource} />
     <meta name="description" content={resolvedDescription} />
     <title>{resolvedTitle}</title>
-    <link rel="icon" type="image/svg+xml" href="/brand/tool4furry-mark.svg" />
+    <link rel="icon" type="image/vnd.microsoft.icon" sizes="16x16 24x24 32x32 48x48 64x64 128x128 256x256" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/brand/tool4furry-favicon.png" />
     {!noindex && <>
       <link rel="canonical" href={canonical} />
       <link rel="alternate" hreflang={locales[locale].lang} href={canonical} />

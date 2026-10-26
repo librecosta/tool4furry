@@ -8,7 +8,7 @@ interface Props { navigation?: boolean; locale: Locale }
 const { navigation = false, locale } = Astro.props;
 ---
 <a href={localizedPath('/', region, locale)} aria-label="Tool4Furry" {...stylex.attrs(s.brand, navigation && n.brand)}>
-  <img src="/brand/tool4furry-mark.svg" alt="" width="32" height="32" {...stylex.attrs(s.mark)} />
-  <span {...stylex.attrs(navigation && n.brandFull)}>Tool4Furry</span>
+  <span data-brand-symbol aria-hidden="true" {...stylex.attrs(n.symbol, s.mark)}></span>
+  <span data-brand-wordmark {...stylex.attrs(navigation && n.brandFull)}>Tool4Furry</span>
   {navigation && <span aria-hidden="true" {...stylex.attrs(n.brandShort)}>T4F</span>}
 </a>

@@ -76,14 +76,11 @@ export default function ToolPageFrame({
                 floating && s.brand,
               )}
             >
-              <img
-                src="/brand/tool4furry-mark.svg"
-                alt=""
-                width={24}
-                height={24}
-                {...stylex.props(!floating && site.mark)}
+              <span
+                data-brand-symbol aria-hidden="true"
+                {...stylex.props(n.symbol, !floating && site.mark)}
               />
-              <span {...stylex.props(n.brandFull)}>Tool4Furry</span>
+              <span data-brand-wordmark {...stylex.props(n.brandFull)}>Tool4Furry</span>
               <span aria-hidden {...stylex.props(n.brandShort)}>T4F</span>
             </a>
             <ToolboxDisclosure region={region} locale={locale} currentToolId={currentToolId} compact={floating} />
@@ -172,7 +169,7 @@ const s = stylex.create({
     borderRadius: tokens.radiusLg,
     pointerEvents: 'auto',
   },
-  brand: { paddingInline: tokens.space8, flexShrink: 0, color: tokens.navText,
+  brand: { paddingInline: tokens.space8, flexShrink: 0, color: tokens.navText, fontSize: 16, fontWeight: 700, letterSpacing: '-0.035em', gap: tokens.space4,
     backgroundColor: { default: 'transparent', ':hover': tokens.navHover } },
   canvasLinks: { display: 'flex', alignItems: 'center', gap: tokens.space4 },
   elevated: { boxShadow: tokens.shadowSoft },

@@ -21,6 +21,15 @@ afterEach(() => {
 });
 
 describe('product navigation', () => {
+  it.each(['form', 'canvas'] as const)('uses one decorative symbol and one responsive wordmark in %s navigation', mode => {
+    render(<ToolPageFrame region="cn" locale="zh" mode={mode} title="Tool">Workspace</ToolPageFrame>);
+    const brand = screen.getByRole('link', { name: `Tool4Furry · ${messages.zh.home}` });
+    expect(brand.querySelectorAll('[data-brand-symbol][aria-hidden="true"]')).toHaveLength(1);
+    expect(brand.querySelectorAll('[data-brand-wordmark]')).toHaveLength(1);
+    expect(brand.querySelector('[data-brand-wordmark]')?.textContent).toBe('Tool4Furry');
+    expect(brand.querySelector('img')).toBeNull();
+  });
+
   it.each([['cn', 'en'], ['global', 'zh']] as const)('renders %s navigation in independent locale %s', (region, locale) => {
     const { container } = render(<ToolPageFrame region={region} locale={locale} mode="form" title="Tool">Workspace</ToolPageFrame>);
     expect(screen.getByRole('navigation', { name: messages[locale].headerNav })).toBeTruthy();

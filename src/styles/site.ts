@@ -42,14 +42,14 @@ export const siteStyles = stylex.create({
   brand: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: tokens.space8,
+    gap: tokens.space4,
     minHeight: 44,
     flexShrink: 0,
     color: tokens.navText,
     fontSize: { default: 22, '@media (max-width: 600px)': 18 },
     fontWeight: 700,
     textDecoration: 'none',
-    letterSpacing: '-0.04em',
+    letterSpacing: '-0.035em',
   },
   mark: {
     width: { default: 32, '@media (max-width: 600px)': 28 },

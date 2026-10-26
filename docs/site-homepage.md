@@ -41,7 +41,7 @@
 
 - **Site 是发现入口，Workbench 是操作入口**：首页负责品牌表达与找到工具，不复制 V0.3-B 的工作台布局。
 - **Tool-first**：工具是首页的主角；Hero 要建立识别感，但不应占用几屏导致找不到目录。
-- **品牌风格**：V0.3-A 的暖白、浅砂、深墨、暖橙和鼠尾草；DM Sans Variable + Noto Sans SC Variable；**几何标识占位 + `Tool4Furry` Wordmark**。
+- **品牌风格**：V0.3-A 的暖白、浅砂、深墨、暖橙和鼠尾草；DM Sans Variable + Noto Sans SC Variable；**经审定双兽首 Mark + `Tool4Furry` Wordmark**。
 - **Hero**：非对称双栏，左侧主标题与说明，右侧纸张/画板/配色/曲线组成的静态“创作碎片”；手机端压缩视觉装饰。
 - **Catalog**：Editorial Grid，卡片简短清晰；发布状态与地区由唯一 Registry 决定。**当前正式工具为 0，必须诚实展示空状态。**
 - **渐进工具发现**：工具少时直接列出全部；后续有实际工具再启用分类浏览，高级搜索及独立 `/tools` 总目录后置。
@@ -109,15 +109,11 @@
 
 ### 2.1 标识结构与资源
 
-采用 **单一几何占位 Mark + 品牌文字 `Tool4Furry`**。占位 Mark 必须抽象、简洁，适用于 Favicon、Header、Footer、工作台；可以使用几何星形/简化创作符号，**不将临时占位认定为正式 Logo**。
+使用经维护者审核的双兽首 `public/brand/tool4furry-symbol.svg`，两条 Master path、双眼和透明负形保持不变。Header/Footer/工作台通过同一 CSS mask 与 `currentColor` 呈现，旁边只保留一份 DM Sans 700 实时文字；手机导航继续使用 T4F 缩写。
 
-建议建立 `public/brand/tool4furry-mark.svg`：
-
-- 纯静态 SVG，明确 `viewBox`，色彩使用已冻结暖橙 `#C97849`、暖白等；不含脚本、动画、外部图片、远程字体。
-- 需要在 28–32px 下有辨识度；保持合理的文件大小；以后替换同一路径即可变更正式 Mark。
-- Header/Footer/工作台引用**同一资源路径**；与可见 Wordmark 并用时，图像使用适当空 alt / 装饰语义，品牌链接整体有明确可访问名称。
-- 如果添加 `<link rel="icon" type="image/svg+xml">`，只链接真实生成的静态占位资源；不要伪造 PNG/Apple icon。
-- 不要新建品牌图形管理器、SVG 图标注册表或为此改动 UI Primitives。
+- `tool4furry-horizontal.svg` 为 A 平衡版正式组合，DM Sans 700 字标已转为真实路径，无 text/字体依赖。
+- Favicon 使用根路径 `/favicon.ico`（16–256px 多尺寸）及 `/brand/tool4furry-favicon.png`（96px），中性深灰底配浅白 Master 图形，不使用 SVG Favicon。
+- 不新增品牌色、图形管理器或全局脚本；Hero 装饰素材不变。字形来源、许可与转曲参数见 [视觉基础](visual-foundation.md)。
 
 **工作台一致性**：仅在 `ToolPageFrame.tsx` 的已有产品入口附近消费这一 Mark，不移动原 Menu、修改导航行为或干扰 Canvas 浮层空间。ToolPageFrame 是产品级导航的现有所有者，不要复制首页 Header 进去。
 
@@ -318,10 +314,10 @@ Footer 两层结构：
 
 ### I1 — Brand Asset & Header
 
-1. 新增单份可替换的 `public/brand/tool4furry-mark.svg`；替换 `SiteLayout.astro` 中的临时 `↗` 作为品牌主图形，保留可见 Wordmark。
+1. 品牌资源已由 Issue #13 的审核 Master `public/brand/tool4furry-symbol.svg` 与 A 版横向转曲 Logo 接替，保留单份可见 Wordmark。
 2. Header Desktop/Mobile：Logo+Wordmark 左，Tools→`/#tools` 与 GitHub 右；不加“首页”重复入口、汉堡、吸顶、通知。
-3. 最小改造 `ToolPageFrame.tsx` 的品牌入口使用**同一占位 Mark**；保持 Base UI Menu、现有标题/焦点/工具切换及 B 阶段行为。
-4. 如果加入 Favicon，链接必须指向实际打包存在的 SVG；验证 404/工作台的资源路径。
+3. 最小改造 `ToolPageFrame.tsx` 的品牌入口使用**同一审核 Master Mark**；保持 Base UI Menu、现有标题/焦点/工具切换及 B 阶段行为。
+4. Favicon 链接指向实际打包的 ICO / PNG；验证 404/工作台的资源路径。
 5. 样式归属尽量在 `site.ts`；不得引入新的全局 CSS 主题。
 
 **Gate I1**：Header 链接可用、品牌同源、移动不挤压、B 期工作台回归。
@@ -460,7 +456,8 @@ pnpm build:global
 
 | 路径 | 预期改动 |
 |---|---|
-| `public/brand/tool4furry-mark.svg` | 新增可替换的几何占位 Mark |
+| `public/brand/tool4furry-symbol.svg` / `tool4furry-horizontal.svg` | 经审定 Master / A 平衡版转曲组合 |
+| `public/favicon.ico` / `public/brand/tool4furry-favicon.png` | 多尺寸 ICO / 96px PNG Favicon |
 | `public/brand/creative-fragments.svg` *或* `src/components/site/HeroArtwork.astro` | 静态抽象 Hero 视觉，择一即可 |
 | `src/pages/index.astro` | Hero、真实 CTA、#tools、目录与空状态 |
 | `src/layouts/SiteLayout.astro` | Header、Footer、完整 SEO title 能力、OG 文本、可选 Favicon |
@@ -504,7 +501,7 @@ C1 的轻量品牌、C2 的创作碎片 Hero、C3 的简洁目录与诚实空状
 
 ### I1–I4 — 已实现的边界
 
-- `public/brand/tool4furry-mark.svg` 是可替换的抽象几何占位标识。Header/Footer 通过 `Brand.astro` 组合 Wordmark；ToolPageFrame 只增加同路径 24px 装饰图片，Menu/焦点/布局代码不变。SVG 同时用作 favicon。
+- Issue #13 已用经审定双兽首 Master 替换旧占位图形。Header/Footer 的 `Brand.astro` 与 ToolPageFrame 共享 CSS mask，实时字标为 DM Sans 700，正式 A 组合另存为转曲 SVG；Favicon 使用真实 ICO/PNG。Menu/焦点/布局逻辑不变。
 - `creative-fragments.svg` 是本地手写静态矢量装饰，不是工具预览；无外部引用、脚本、动画或 React。Hero 双栏比例约 55/45；760px 及以下采用单列，装饰高度 150px。冻结中英文 H1 分别使用主文字与深暖橙 action。
 - Header 不吸顶，始终提供 `/#tools` 与真实 GitHub；手机 GitHub 只显示有名称的图标。Footer 包含 GoFurry 关系、相同工具箱目标、GitHub、真实 BSD-3-Clause 许可链接及“前端开源 · 浏览器本地处理优先”。
 - `src/site/catalog.ts` 只调用原有 `getPublishedTools(region, registry)` 并投影当前语言标题、描述、路由和类别标签。没有第二套发布配置或客户端状态。已知类别提供五组标签；未知类别（含对象原型属性名）安全省略，不渲染空类别。
@@ -564,7 +561,7 @@ CI 配置保持原样：dev/main push/PR 仅 frozen install、check、test、bui
 
 ### 剩余人工审查与边界
 
-没有发现阻塞本轮交付的问题。请维护者审查占位 Mark 与创作碎片是否符合品牌方向、中英 H1 换行、手机 Hero 到目录的距离、空态和 Footer 密度；正式工具发布前还需以真实标题/描述检查非空卡片视觉与工具加载契约。
+没有发现阻塞本轮交付的问题。请维护者审查正式 Mark 的实际显示与创作碎片、中英 H1 换行、手机 Hero 到目录的距离、空态和 Footer 密度；正式工具发布前还需以真实标题/描述检查非空卡片视觉与工具加载契约。
 
 未进行 iOS Safari / Android Chrome 真机、实际触摸、软键盘/动态地址栏/安全区、系统缩放、屏幕阅读器及系统 reduced-motion 开关测试；没有提供 Lighthouse、LCP 或 CLS 跑分结论。首页自身无动效和 JavaScript，仍须结合真实设备复核阅读体验。没有实现正式工具、暗黑模式、搜索/收藏、账户、后端或部署。LICENSE 保持原 SHA256 `6D71EFDA0046FEF9B229E7080766E88155D8FFF2FB192C5555D1FED70A0C0871`。未发布假工具、未合并 main、未部署。
 

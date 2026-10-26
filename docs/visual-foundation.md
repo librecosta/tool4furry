@@ -134,3 +134,11 @@ V0.3-B 在当前 Token 上打磨 Workbench 顶部、两侧、中央、底栏及�
 - 本地 `pnpm check`：103 文件，0 errors / warnings / hints。定向 Vitest：visual-contrast、ui、workbench、converter-ui、file-dropzone、scroll-dock、tool-page-frame 共 7 文件、47 项通过；对比度测试扩展至 Workspace / Elevated，未放松阈值。
 - 内置 Chromium 实看首页、工具目录、Converter 开发页、`/lab/ui`、`/lab/canvas`，覆盖桌面 1440px、390px 与 900px，Canvas 另查 901px；未发现横向溢出。检查了透明 PNG 原图/输出、格式选中、JPEG 字段错误、过期结果/禁用下载、危险确认框、嵌套 Select、Slider 方向键与 Escape 焦点返回。跨宽度参数值保留且输入 DOM 仅一份；控制台未见 error/warn。首页实际渲染的辅助正文/Page 对比度为 8.55:1。以上为该阶段记录；当前 Converter 开发入口已按 Issue #3 统一为 `/tools/image-converter/`。
 - 本地未重复完整图像矩阵、全量测试或双地区构建；由 push 后现有 CI 验证。仍需维护者按实际显示器复核低亮度层次与透明图细节，以及手机真机软键盘/触摸体验。Image Converter 保持 draft，未改发布守卫、路由、SEO 或业务逻辑。
+
+## 正式品牌资产（Issue #13）
+
+`public/brand/tool4furry-symbol.svg` 原样来自维护者审核的 Master，双兽首、两眼与透明负形不可重画。页面使用 CSS mask/currentColor，Header/Footer 两种主题均继承 navText；不增加品牌色或重复字标。实际图形盒为普通页面 32/28px、Canvas 24px，原方形 viewBox 的可见高度约为盒高的 88.3%。
+
+A 横向组合保留原路径并通过 g transform 排布：可见 Mark 高 52、实际图形到字形间隔 13、字标字号 40、tracking -0.035em，按真实字形边界居中于 72 高画布。字标从现有 `@fontsource-variable/dm-sans@5.3.0/files/dm-sans-latin-wght-normal.woff2`（DM Sans 9pt，SHA-256 `9fea608a947e67020c33cad9a6fe3d60c54119dfb8cff87768a8117a15ed7543`）实例化 wght=700，经 HarfBuzz kern/ligature 排字、FontTools 转真实 glyph path；无 text/外部字体引用，不另发字体包。沿用 `public/licenses/dm-sans-OFL.txt` 的 SIL OFL 1.1 许可与归属。
+
+Favicon 为 `/favicon.ico`（16/24/32/48/64/128/256）和 `/brand/tool4furry-favicon.png`（96×96），使用 `#30343A` 底与 `#F8FAFC` 原图形；仅按可见边界放大居中留白，不改变动物路径。检验尺寸图留仓库外。ICO/PNG 的支持格式参考 [Google Search favicon 文档](https://developers.google.com/search/docs/appearance/favicon-in-search)；实际搜索展示仍由搜索引擎决定。
