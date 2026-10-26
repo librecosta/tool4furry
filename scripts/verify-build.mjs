@@ -416,13 +416,17 @@ for (const page of htmlFiles) {
   const groups = footer.querySelector(':scope > div > nav').children;
   assert.deepEqual([...groups].map(el => el.querySelector('p').textContent.trim()), locale === 'zh' ? ['工具', '项目', '支持'] : ['Tools', 'Project', 'Support']);
   assert.deepEqual([...groups].map(el => [...el.querySelectorAll('a')].map(a => a.getAttribute('href'))), [
-    [localPath('/#tools'), localPath('/tools/')], [localPath('/about/'), github, footer.querySelector('[data-region-link]')?.getAttribute('href')], [`${github}/issues`],
+    [localPath('/#tools'), localPath('/tools/')], [localPath('/about/'), github, footer.querySelector('[data-region-link]')?.getAttribute('href')], [`${github}/issues`, 'mailto:contact@librecosta.com'],
   ]);
   const regionURL = new URL(footer.querySelector('[data-region-link]')?.getAttribute('href'));
   assert.equal(regionURL.origin, region === 'cn' ? 'https://tool4furry.com' : 'https://tool4furry.cn');
   const regionalBase = locale === (region === 'cn' ? 'en' : 'zh') ? '' : `/${locale}`;
   assert(regionURL.pathname.startsWith(regionalBase + '/'), 'Region link preserves locale');
   assert.equal(regionURL.search + regionURL.hash, '', 'Static regional link is clean');
+  const report = footer.querySelector('a[href="mailto:contact@librecosta.com"]');
+  assert.equal(report?.textContent.trim(), locale === 'zh' ? '安全漏洞报告' : 'Report a vulnerability');
+  assert.equal(footer.querySelectorAll('a[href="mailto:contact@librecosta.com"]').length, 1);
+  assert.equal(footer.querySelector('a[href*="sitemap"], a[href$="robots.txt"], a[href$="llms.txt"], a[href$="security.txt"]'), null, 'No technical discovery links in Footer');
   const legal = footer.querySelector('[data-footer-legal]');
   const slots = footer.querySelectorAll('[data-footer-compliance-slot]');
   assert.equal(slots.length, 1, 'One stable compliance slot, even without records');
@@ -784,3 +788,54 @@ console.log(
 );
 
 }
+
+// Discovery is verified against the actual indexable HTML, not another manifest.
+const siteOrigin = region === 'cn' ? 'https://tool4furry.cn' : 'https://tool4furry.com';
+const indexed = new Map();
+for (const page of allHTMLFiles) {
+  const dom = new JSDOM(await readFile(resolve(root, page), 'utf8')).window.document;
+  if (dom.querySelector('meta[name="robots"]')?.content.includes('noindex')) continue;
+  indexed.set(dom.querySelector('link[rel="canonical"]').href, [...dom.querySelectorAll('link[rel="alternate"][hreflang]')]
+    .map(link => `${link.hreflang} ${link.href}`).sort());
+}
+for (const path of ['robots.txt', 'sitemap-index.xml', 'sitemap-0.xml', '.well-known/security.txt', 'llms.txt'])
+  assert(files.includes(path) && (await stat(resolve(root, path))).size > 0, `Missing static discovery file: ${path}`);
+const robots = await readFile(resolve(root, 'robots.txt'), 'utf8');
+assert.equal(robots, `User-agent: *\nAllow: /\n\nSitemap: ${siteOrigin}/sitemap-index.xml\n`);
+const index = new JSDOM(await readFile(resolve(root, 'sitemap-index.xml'), 'utf8'), { contentType: 'application/xml' }).window.document;
+assert.equal(index.documentElement.localName, 'sitemapindex');
+assert.equal(index.documentElement.namespaceURI, 'http://www.sitemaps.org/schemas/sitemap/0.9');
+assert.deepEqual([...index.querySelectorAll('sitemap > loc')].map(node => node.textContent), [`${siteOrigin}/sitemap-0.xml`]);
+const sitemap = new JSDOM(await readFile(resolve(root, 'sitemap-0.xml'), 'utf8'), { contentType: 'application/xml' }).window.document;
+assert.equal(sitemap.documentElement.localName, 'urlset');
+assert.equal(sitemap.documentElement.namespaceURI, 'http://www.sitemaps.org/schemas/sitemap/0.9');
+const urls = [...sitemap.querySelectorAll('url')];
+assert.equal(urls.length, indexed.size, 'Sitemap has no duplicates or omitted public pages');
+assert.deepEqual(new Set(urls.map(node => node.querySelector('loc').textContent)), new Set(indexed.keys()));
+assert.equal(sitemap.querySelector('lastmod'), null, 'No fabricated modification timestamps');
+assert.equal(index.querySelector('lastmod'), null);
+for (const entry of urls) {
+  const url = entry.querySelector('loc').textContent;
+  assert.equal(new URL(url).origin, siteOrigin);
+  assert.equal(entry.querySelectorAll('loc').length, 1);
+  const alternates = [...entry.getElementsByTagNameNS('http://www.w3.org/1999/xhtml', 'link')];
+  assert(alternates.every(link => link.getAttribute('rel') === 'alternate'));
+  assert.deepEqual(alternates.map(link => `${link.getAttribute('hreflang')} ${link.getAttribute('href')}`).sort(), indexed.get(url), 'Sitemap alternates equal the rendered page alternates');
+}
+const security = new TextDecoder('utf-8', { fatal: true }).decode(await readFile(resolve(root, '.well-known/security.txt')));
+assert(security.endsWith('\n') && !security.includes('\r'), 'UTF-8 security.txt has complete LF-delimited lines');
+const fields = security.trimEnd().split('\n').map(line => line.split(/: (.*)/s).slice(0, 2));
+assert.deepEqual(fields.map(([name]) => name), ['Contact', 'Expires', 'Preferred-Languages', 'Canonical'], 'Only the real security contact fields, without duplicates');
+const securityFields = Object.fromEntries(fields);
+assert.equal(securityFields.Contact, 'mailto:contact@librecosta.com');
+assert.equal(securityFields['Preferred-Languages'], 'zh, en');
+assert.equal(securityFields.Canonical, `${siteOrigin}/.well-known/security.txt`);
+assert(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(securityFields.Expires), 'RFC 3339 UTC expiry');
+const remaining = Date.parse(securityFields.Expires) - Date.now();
+assert(remaining > 0 && remaining <= 181 * 86400000, 'Security contact must be refreshed before its approximately 180-day expiry');
+const llms = await readFile(resolve(root, 'llms.txt'), 'utf8');
+assert(llms.startsWith('# Tool4Furry\n') && llms.includes('## 简体中文') && llms.includes('## English'));
+const contentLinks = [...llms.matchAll(/\]\((https:\/\/[^)]+)\)/g)].map(match => match[1]);
+assert.equal(contentLinks.length, indexed.size, 'No duplicate or missing content index links');
+assert.deepEqual(new Set(contentLinks), new Set(indexed.keys()), 'llms.txt only links real regional indexable pages');
+console.log(`Verified ${region} discovery: ${indexed.size} local HTML URLs, reciprocal hreflang, robots/Sitemap, RFC 9116 expiry/contact and llms.txt.`);

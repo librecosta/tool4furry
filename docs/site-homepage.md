@@ -569,3 +569,9 @@ CI 配置保持原样：dev/main push/PR 仅 frozen install、check、test、bui
 ## Region / Locale separation (#11)
 
 Region controls domain, compliance and Registry availability; Locale controls copy, HTML language and URL prefix. CN serves zh at `/` and en at `/en/`; Global serves en at `/` and zh at `/zh/`. Each page has a self canonical and two same-region reciprocal hreflang links. Astro templates live once under `[...locale]`, and React roots receive both axes. Language links never relay across origins. Explicit Footer region links preserve Locale, use published-only target availability and may relay appearance through the existing allowlist. Regional dev services remain on 54321/54322, with no additional server or client i18n runtime.
+
+## Static discovery and security contact (#12)
+
+Each regional build emits `/robots.txt`, `/sitemap-index.xml`, `/sitemap-0.xml`, `/.well-known/security.txt` and `/llms.txt` through Astro static endpoints. `src/site/discovery.ts` derives both local-language variants from the real static routes and published regional Registry. The build guard compares the XML/Markdown index with actual canonical HTML; no draft, Lab, fixture or invented lastmod is indexed. `llms.txt` is an optional content index convention, not a ranking or crawler guarantee.
+
+Footer Support links privately to `contact@librecosta.com`, confirmed by the maintainer; public Issues remain for ordinary feedback. The single [RFC 9116](https://www.rfc-editor.org/rfc/rfc9116) template uses each deployment’s Canonical, UTF-8 text and a build-relative 180-day UTC Expires. Rebuild/redeploy before expiry even if content is unchanged. Before any future deployment, verify the actual CDN preserves `.well-known/security.txt`, serves it as `text/plain; charset=utf-8` over HTTPS with 200, and returns real 404 for missing/draft/Lab paths. Local preview evidence does not certify an undeployed CDN. No policy, encryption or bounty is claimed.

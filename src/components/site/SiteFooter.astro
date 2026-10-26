@@ -39,6 +39,7 @@ const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, com
       <div {...stylex.attrs(s.footerGroup)}>
         <p {...stylex.attrs(s.footerGroupHeading)}>{t.footerSupport}</p>
         <a {...stylex.attrs(s.footerLink)} href={`${github}/issues`} target="_blank" rel="noopener noreferrer"><span {...stylex.attrs(s.footerLinkText)}>{t.feedback}</span></a>
+        <a {...stylex.attrs(s.footerLink)} href="mailto:contact@librecosta.com"><span {...stylex.attrs(s.footerLinkText)}>{t.reportVulnerability}</span></a>
       </div>
     </nav>
     <div data-footer-compliance-slot {...stylex.attrs(s.footerComplianceSlot)}>
