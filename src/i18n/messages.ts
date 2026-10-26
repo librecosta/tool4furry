@@ -1,12 +1,14 @@
-import type { Region } from '../config/region';
+import type { Locale } from './locale';
 
-const cn = {
+const zh = {
   notifications: '通知',
   dismissToast: '关闭通知',
   toastSuccess: '成功',
   toastInfo: '提示',
   toastWarning: '注意',
   toastError: '错误',
+  internationalSite: '国际站',
+  chinaSite: '中国站',
   home: '首页',
   source: '源代码',
   github: 'Tool4Furry GitHub 仓库（新标签页）',
@@ -61,14 +63,16 @@ const cn = {
   loading: '正在加载工作区…',
   unavailable: '工作区暂时不可用，请稍后重试。',
 };
-export type Messages = { [K in keyof typeof cn]: string };
-const global: Messages = {
+export type Messages = { [K in keyof typeof zh]: string };
+const en: Messages = {
   notifications: 'Notifications',
   dismissToast: 'Dismiss notification',
   toastSuccess: 'Success',
   toastInfo: 'Info',
   toastWarning: 'Warning',
   toastError: 'Error',
+  internationalSite: 'International site',
+  chinaSite: 'China site',
   home: 'Home',
   source: 'Source code',
   github: 'Tool4Furry GitHub repository (new tab)',
@@ -125,4 +129,4 @@ const global: Messages = {
   loading: 'Loading workspace…',
   unavailable: 'The workspace is unavailable. Please try again.',
 };
-export const messages: Record<Region, Messages> = { cn, global };
+export const messages: Record<Locale, Messages> = { zh: zh, en: en };

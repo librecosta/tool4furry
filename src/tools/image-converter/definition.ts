@@ -11,12 +11,12 @@ export const imageConverterDefinition: ToolDefinition = {
   status: 'draft',
   regions: ['cn', 'global'],
   copy: {
-    cn: {
+    zh: {
       title: '图片格式转换',
       description:
         '在浏览器本地转换静态 PNG、JPEG、WebP，保持分辨率，按实际编码能力输出。',
     },
-    global: {
+    en: {
       title: 'Image Converter',
       description:
         'Convert static PNG, JPEG and WebP locally, keeping resolution and using verified browser export support.',

@@ -1,3 +1,4 @@
+import { defaultLocale } from '../src/i18n/locale';
 import type { ReactElement } from 'react';
 import { UiProvider } from '../src/ui/UiProvider';
 import { messages } from '../src/i18n/messages';
@@ -19,7 +20,7 @@ import { getAvailableTools, getPublishedTools } from '../src/tools/registry';
 import { toolPageContents } from '../src/site/tool-content';
 import { ConverterSession } from '../src/tools/image-converter/session';
 const render = (ui: ReactElement) =>
-  renderUi(<UiProvider labels={messages.global}>{ui}</UiProvider>);
+  renderUi(<UiProvider labels={messages.en}>{ui}</UiProvider>);
 const { encode, capabilities } = vi.hoisted(() => ({
   capabilities: vi.fn(),
   encode: vi.fn(
@@ -61,7 +62,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
   it('shows desktop limits from the session and keeps them when only the viewport changes', async () => {
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Windows NT');
     const changeViewport = setViewport(false);
-    const { container } = render(<ImageConverter region="global" />);
+    const { container } = render(<ImageConverter region="global" locale="en" />);
     await waitFor(() =>
       expect(container.textContent).toContain(
         'Up to 100 images, 100 MiB total',
@@ -82,7 +83,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
           finish = resolve;
         }),
     );
-    const { container } = render(<ImageConverter region="global" />);
+    const { container } = render(<ImageConverter region="global" locale="en" />);
     const panel = container.querySelector('[data-converter-part="settings"]')!;
     const structure = panel.innerHTML.replace(/class="[^"]*"/g, '');
     expect(
@@ -124,7 +125,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
           png: { supported: false },
           jpeg: { supported: false },
         });
-      render(<ImageConverter region="global" />);
+      render(<ImageConverter region="global" locale="en" />);
       expect(await screen.findByRole('alert')).toBeTruthy();
       await userEvent.click(
         screen.getByRole('button', { name: 'Check export support again' }),
@@ -145,7 +146,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
           finish = resolve;
         }),
     );
-    const { container } = render(<ImageConverter region="global" />);
+    const { container } = render(<ImageConverter region="global" locale="en" />);
     const settings = screen.getByRole('region', {
       name: 'Conversion settings',
     });
@@ -230,7 +231,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
   });
   it('keeps one settings tree, mobile DOM order, filename-independent ready output and releases URLs', async () => {
     const user = userEvent.setup(),
-      { container, unmount } = render(<ImageConverter region="global" />);
+      { container, unmount } = render(<ImageConverter region="global" locale="en" />);
     await waitFor(() =>
       expect(
         screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
@@ -283,7 +284,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
   });
   it('appends invalid and valid tasks without disturbing an existing download; removing a row restores the add entry', async () => {
     const user = userEvent.setup();
-    const { container } = render(<ImageConverter region="cn" />);
+    const { container } = render(<ImageConverter region="cn" locale="zh" />);
     await waitFor(() =>
       expect(
         screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
@@ -296,7 +297,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     fireEvent.change(input, {
       target: { files: [new File(['bad'], 'broken.png')] },
     });
-    await screen.findByText(converterMessages.cn.errors.corrupt);
+    await screen.findByText(converterMessages.zh.errors.corrupt);
     expect(within(row).getByRole('link', { name: '下载结果' })).toBe(old);
     const huge = new File(['x'], 'huge.png');
     Object.defineProperty(huge, 'size', { value: 21 * 1024 * 1024 });
@@ -314,7 +315,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     });
     await waitFor(() =>
       expect(within(appended).getByRole('status').textContent).toBe(
-        converterMessages.cn.taskStatus.queued,
+        converterMessages.zh.taskStatus.queued,
       ),
     );
     expect(within(row).getByRole('link', { name: '下载结果' })).toBe(old);
@@ -330,7 +331,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
   });
   it('keeps invalid quality drafts out of the session and synchronizes valid edits with the slider', async () => {
     const user = userEvent.setup();
-    const { container } = render(<ImageConverter region="global" />);
+    const { container } = render(<ImageConverter region="global" locale="en" />);
     await waitFor(() =>
       expect(
         screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
@@ -432,8 +433,8 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     'synchronizes JPEG hex and the native picker in %s while retaining invalid text and filename behavior',
     async (region) => {
       const user = userEvent.setup();
-      const t = converterMessages[region];
-      const { container } = render(<ImageConverter region={region} />);
+      const t = converterMessages[defaultLocale(region)];
+      const { container } = render(<ImageConverter region={region} locale={defaultLocale(region)} />);
       await waitFor(() =>
         expect(
           screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
@@ -513,7 +514,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
   );
   it('keeps a stale result out of the dialog and download; preview errors also block download', async () => {
     const user = userEvent.setup();
-    const { container, unmount } = render(<ImageConverter region="global" />);
+    const { container, unmount } = render(<ImageConverter region="global" locale="en" />);
     await waitFor(() =>
       expect(
         screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
@@ -546,7 +547,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     fireEvent.error(await screen.findByRole('img', { name: 'Output' }));
     expect(
       within(screen.getByRole('dialog')).getByRole('alert').textContent,
-    ).toBe(converterMessages.global.viewer.error);
+    ).toBe(converterMessages.en.viewer.error);
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('link', { name: 'Download result' })).toBeNull();
     await user.click(screen.getByRole('button', { name: 'Image preview' }));
@@ -561,7 +562,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
   });
   it('recovers via a row retry and ignores a conversion completed after removal', async () => {
     const user = userEvent.setup();
-    const { container } = render(<ImageConverter region="global" />);
+    const { container } = render(<ImageConverter region="global" locale="en" />);
     await waitFor(() =>
       expect(
         screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
@@ -571,7 +572,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     fireEvent.change(container.querySelector('input[type=file]')!, {
       target: { files: [new File(['png'], 'art.png')] },
     });
-    await screen.findByText(converterMessages.global.errors.encode);
+    await screen.findByText(converterMessages.en.errors.encode);
     const row = screen.getByRole('listitem', { name: 'art.png' });
     expect(within(row).getByRole('status').textContent).toBe('Failed');
     let finish!: (blob: Blob) => void;
@@ -596,7 +597,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
   });
   it('keeps Quick same-format bytes and shares the download URL in its on-demand preview', async () => {
     const user = userEvent.setup();
-    const { container, unmount } = render(<ImageConverter region="global" />);
+    const { container, unmount } = render(<ImageConverter region="global" locale="en" />);
     await waitFor(() =>
       expect(
         screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
@@ -628,7 +629,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
   });
   it('imports a recursive folder in path order, skips unsupported files and permits repeated names', async () => {
     const user = userEvent.setup();
-    const { container } = render(<ImageConverter region="global" />);
+    const { container } = render(<ImageConverter region="global" locale="en" />);
     await waitFor(() =>
       expect(
         screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
@@ -703,7 +704,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
   });
   it('leaves other downloads enabled during append/processing/removal and rejects late removed output', async () => {
     const user = userEvent.setup();
-    const { container, unmount } = render(<ImageConverter region="global" />);
+    const { container, unmount } = render(<ImageConverter region="global" locale="en" />);
     await waitFor(() =>
       expect(
         screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
@@ -747,7 +748,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
   it('retries only the failed row while another completed download remains valid', async () => {
     const user = userEvent.setup();
     encode.mockRejectedValueOnce(new ImageFailure('encode'));
-    const { container } = render(<ImageConverter region="global" />);
+    const { container } = render(<ImageConverter region="global" locale="en" />);
     await waitFor(() =>
       expect(
         screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
@@ -773,7 +774,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     const user = userEvent.setup();
     const added = vi.spyOn(ConverterSession.prototype, 'add');
     try {
-      const { container, unmount } = render(<ImageConverter region="global" />);
+      const { container, unmount } = render(<ImageConverter region="global" locale="en" />);
       await waitFor(() =>
         expect(
           screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
@@ -825,7 +826,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
   });
   it('confirms clearing, releases every row URL and starts the next intake with a new batch and sequence 0001', async () => {
     const user = userEvent.setup();
-    const { container } = render(<ImageConverter region="global" />);
+    const { container } = render(<ImageConverter region="global" locale="en" />);
     await waitFor(() =>
       expect(
         screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
@@ -869,7 +870,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     const original = window.location.href;
     try {
       window.history.replaceState({}, '', '/tools/image-converter/');
-      const normal = render(<ImageConverter region="global" />);
+      const normal = render(<ImageConverter region="global" locale="en" />);
       await waitFor(() =>
         expect(
           screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
@@ -880,7 +881,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
       ).toBeNull();
       normal.unmount();
       window.history.replaceState({}, '', '?debug=1');
-      const debug = render(<ImageConverter region="global" />);
+      const debug = render(<ImageConverter region="global" locale="en" />);
       await waitFor(() =>
         expect(
           debug.container.querySelector('[data-converter-diagnostics]'),
@@ -888,7 +889,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
       );
       debug.unmount();
       vi.stubEnv('DEV', false);
-      const production = render(<ImageConverter region="global" />);
+      const production = render(<ImageConverter region="global" locale="en" />);
       await waitFor(() =>
         expect(
           screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
@@ -909,7 +910,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
         'image-converter',
       ]);
       expect(getPublishedTools(region)).toEqual([]);
-      const content = toolPageContents['image-converter'][region]!;
+      const content = toolPageContents['image-converter'][defaultLocale(region)]!;
       expect(content.h1).toBeTruthy();
       expect(content.steps?.length).toBe(4);
       expect(content.faq?.length).toBe(4);

@@ -1,0 +1,28 @@
+---
+import { localePaths } from '../../../i18n/locale';
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import { pageLanguageLink } from '../../../config/navigation';
+import ToolRuntime from '../../../tools/ToolRuntime';
+import { getAvailableTools } from '../../../tools/registry';
+import { region } from '../../../config/site';
+import { tools } from '../../../tools/registry';
+import { toolLoaders } from '../../../tools/loaders';
+import { assertValidRegistry } from '../../../tools/validate-registry';
+import { assertPublishedContent, getToolPageContent, getRelatedTools } from '../../../site/tool-content';
+import ToolIntro from '../../../components/site/ToolIntro.astro';
+import ToolGuide from '../../../components/site/ToolGuide.astro';
+export function getStaticPaths() {
+  assertValidRegistry(tools, toolLoaders);
+  assertPublishedContent();
+  return localePaths(region).flatMap(route => getAvailableTools(region, import.meta.env.DEV).map(tool => ({ params: { ...route.params, slug: tool.slug }, props: { ...route.props, tool } })));
+}
+const { tool, locale } = Astro.props;
+const content = getToolPageContent(tool, region, undefined, import.meta.env.DEV, locale);
+const related = getRelatedTools(tool, region, undefined, import.meta.env.DEV);
+---
+<SiteLayout locale={locale} title={tool.copy[locale].title} fullTitle={content.title} description={content.description} workspace noindex={tool.status === 'draft'} documentScroll={tool.mode !== 'canvas'}>
+  <main id="main-content" data-tool-id={tool.id} data-tool-region={region} data-tool-locale={locale}>
+    <ToolRuntime navigation={pageLanguageLink(Astro.url.pathname)} toolId={tool.id} region={region} locale={locale} client:load><ToolIntro slot="intro" content={content} /></ToolRuntime>
+    <ToolGuide content={content} related={related} region={region} locale={locale} />
+  </main>
+</SiteLayout>

@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 const source = readFileSync('src/styles/appearance-controller.js', 'utf8');
 const html = `<html class="dark-theme root-style unrelated" data-appearance="dark"><head>
-<script id="t4f-appearance" data-dark="dark-theme" data-light="light-theme" data-default="dark" data-language-origins='["https://tool4furry.cn","https://tool4furry.com","http://127.0.0.1:54321","http://127.0.0.1:54322"]'>${source}</script>
+<script id="t4f-appearance" data-dark="dark-theme" data-light="light-theme" data-default="dark" data-region-origins='["https://tool4furry.cn","https://tool4furry.com","http://127.0.0.1:54321","http://127.0.0.1:54322"]'>${source}</script>
 </head><body><button disabled data-appearance-toggle="static" data-light-label="Light" data-dark-label="Dark"></button></body></html>`;
 
 function page(preference, blocked = false, scripts = true, options = {}) {
@@ -103,13 +103,21 @@ describe('one-shot cross-origin appearance relay', () => {
     runInNewContext(source, { document: w.document, window: w, Element: w.Element, Event: w.Event,
       localStorage: w.localStorage, history: w.history, URL, location: { origin: w.location.origin, hash: '', assign } });
     const link = w.document.createElement('a');
-    link.dataset.languageLink = '';
+    link.dataset.regionLink = '';
     link.href = 'https://tool4furry.com/tools/';
     w.document.body.append(link);
     link.dispatchEvent(new w.MouseEvent('click', { bubbles: true, cancelable: true }));
     expect(assign).toHaveBeenCalledWith('https://tool4furry.com/tools/#t4f-theme=light');
     expect(link.href).toBe('https://tool4furry.com/tools/');
     assign.mockClear();
+    delete link.dataset.regionLink;
+    link.dataset.languageLink = '';
+    link.href = '/en/tools/';
+    const local = new w.MouseEvent('click', { bubbles: true, cancelable: true });
+    link.dispatchEvent(local);
+    expect(assign).not.toHaveBeenCalled();
+    expect(local.defaultPrevented).toBe(false);
+    link.dataset.regionLink = '';
     link.href = 'https://unknown.test/tools/';
     const activation = new w.MouseEvent('click', { bubbles: true, cancelable: true });
     link.dispatchEvent(activation);

@@ -10,7 +10,7 @@
   };
   const fallback = script.dataset.default === 'light' ? 'light' : 'dark';
   const key = 't4f.appearance';
-  const origins = JSON.parse(script.dataset.languageOrigins || '[]');
+  const origins = JSON.parse(script.dataset.regionOrigins || '[]');
   const valid = value => value === 'light' || value === 'dark';
   const get = () => root.dataset.appearance === 'light' ? 'light' : 'dark';
   const sync = () => {
@@ -36,7 +36,7 @@
     const stored = localStorage.getItem(key);
     if (valid(stored)) initial = stored;
   } catch {}
-  // Explicit language navigation relays once; arbitrary hashes stay untouched.
+  // Explicit region navigation relays once; arbitrary hashes stay untouched.
   const relay = /^#t4f-theme=(light|dark)$/.exec(location.hash);
   if (relay && origins.includes(location.origin)) {
     initial = relay[1];
@@ -104,7 +104,7 @@
     if (!(event.target instanceof Element) || event.defaultPrevented) return;
     const button = event.target.closest('[data-appearance-toggle="static"]');
     if (button) window.t4fAppearance.toggle(button);
-    const link = event.target.closest('a[data-language-link]');
+    const link = event.target.closest('a[data-region-link]');
     if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || link.target === '_blank') return;
     const target = new URL(link.href);
     if (!origins.includes(location.origin) || !origins.includes(target.origin) || target.username || target.password || target.hash) return;

@@ -1,3 +1,4 @@
+import { type Locale } from '../../i18n/locale';
 import { useSyncExternalStore } from 'react';
 import { SunIcon, MoonIcon, UserIcon, GithubLogoIcon } from '@phosphor-icons/react';
 import * as stylex from '@stylexjs/stylex';
@@ -11,11 +12,11 @@ import { navigationStyles as n } from '../../styles/navigation';
 
 const serverAppearance = () => undefined;
 
-export function NavigationControls({ region, link }: {
-  region: Region;
+export function NavigationControls({ locale, link }: {
+  region: Region; locale: Locale;
   link: LanguageLink;
 }) {
-  const t = messages[region];
+  const t = messages[locale];
   const appearance = useSyncExternalStore(
     subscribeAppearance, currentAppearance, serverAppearance,
   );

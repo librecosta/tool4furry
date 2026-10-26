@@ -74,7 +74,7 @@ describe('controlled FileTaskList (presentation fixtures, no media jobs)', () =>
       ],
     }));
     render(
-      <UiProvider labels={messages.global}>
+      <UiProvider labels={messages.en}>
         <FileTaskList label="Files" items={items} />
       </UiProvider>,
     );
@@ -122,7 +122,7 @@ describe('controlled FileTaskList (presentation fixtures, no media jobs)', () =>
       ],
     };
     const fixture = (value: FileTaskItem) => (
-      <UiProvider labels={messages.global}>
+      <UiProvider labels={messages.en}>
         <FileTaskList label="Files" items={[value]} />
       </UiProvider>
     );

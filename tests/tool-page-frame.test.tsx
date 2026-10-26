@@ -1,3 +1,4 @@
+import { defaultLocale, localizedPath } from '../src/i18n/locale';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -20,21 +21,27 @@ afterEach(() => {
 });
 
 describe('product navigation', () => {
+  it.each([['cn', 'en'], ['global', 'zh']] as const)('renders %s navigation in independent locale %s', (region, locale) => {
+    const { container } = render(<ToolPageFrame region={region} locale={locale} mode="form" title="Tool">Workspace</ToolPageFrame>);
+    expect(screen.getByRole('navigation', { name: messages[locale].headerNav })).toBeTruthy();
+    expect(screen.getByRole('link', { name: `Tool4Furry · ${messages[locale].home}` }).getAttribute('href')).toBe(localizedPath('/', region, locale));
+    expect(container.querySelector('[data-language-link]')?.getAttribute('href')).toBe('/tools/');
+  });
   it('uses the shared featured order and homepage cap, without moving the current tool first', async () => {
     vi.stubEnv('DEV', true);
     const entries = fixtureTools(12);
     vi.spyOn(registry, 'getAvailableTools').mockReturnValue(entries);
     const user = userEvent.setup();
-    const { container } = render(<ToolPageFrame region="cn" mode="form" title="Current" currentToolId="fixture-12">Workspace</ToolPageFrame>);
-    await user.click(screen.getByLabelText(messages.cn.featuredTools, { selector: 'summary' }));
+    const { container } = render(<ToolPageFrame region="cn" locale="zh" mode="form" title="Current" currentToolId="fixture-12">Workspace</ToolPageFrame>);
+    await user.click(screen.getByLabelText(messages.zh.featuredTools, { selector: 'summary' }));
     expect([...container.querySelectorAll('[data-tool-panel] a:not([href="/tools/"])')].map(link => link.getAttribute('href')))
       .toEqual(entries.slice(0, 9).map(tool => `/tools/${tool.slug}/`));
     expect(container.querySelector('[data-tool-panel] [aria-current]')).toBeNull();
-    expect(screen.getByRole('link', { name: messages.cn.browseAll }).getAttribute('href')).toBe('/tools/');
+    expect(screen.getByRole('link', { name: messages.zh.browseAll }).getAttribute('href')).toBe('/tools/');
   });
   it.each([false, true])('preserves disclosure enhancement before hydration (closing=%s)', async closing => {
     const host = document.createElement('div');
-    host.innerHTML = renderToString(<ToolboxDisclosure region="cn" />);
+    host.innerHTML = renderToString(<ToolboxDisclosure region="cn" locale="zh" />);
     document.body.append(host);
     const details = host.querySelector('details')!;
     details.open = true;
@@ -46,7 +53,7 @@ describe('product navigation', () => {
     const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
     let root: Root | undefined;
     try {
-      await act(async () => { root = hydrateRoot(host, <ToolboxDisclosure region="cn" />); });
+      await act(async () => { root = hydrateRoot(host, <ToolboxDisclosure region="cn" locale="zh" />); });
       expect(host.querySelector('details')!.open).toBe(true);
       expect(positioner.hasAttribute('inert')).toBe(closing);
       expect(details.querySelector('summary')!.getAttribute('aria-expanded')).toBe(String(!closing));
@@ -58,12 +65,12 @@ describe('product navigation', () => {
   });
   it('lets keyboard users reach the compact canvas controls and return to their trigger', async () => {
     const user = userEvent.setup();
-    render(<ToolPageFrame region="cn" mode="canvas" title="Canvas">Canvas content</ToolPageFrame>);
-    const trigger = screen.getByRole('button', { name: messages.cn.navigationOptions });
+    render(<ToolPageFrame region="cn" locale="zh" mode="canvas" title="Canvas">Canvas content</ToolPageFrame>);
+    const trigger = screen.getByRole('button', { name: messages.zh.navigationOptions });
     await user.click(trigger);
-    const language = await screen.findByRole('link', { name: messages.cn.switchLanguage });
+    const language = await screen.findByRole('link', { name: messages.zh.switchLanguage });
     await waitFor(() => expect(document.activeElement).toBe(language));
-    expect(language.getAttribute('href')).toBe('https://tool4furry.com/tools/');
+    expect(language.getAttribute('href')).toBe('/en/tools/');
     await user.keyboard('{Escape}');
     await waitFor(() => expect(document.activeElement).toBe(trigger));
   });
@@ -79,30 +86,30 @@ describe('product navigation', () => {
     });
     const user = userEvent.setup();
     const { container } = render(
-      <ToolPageFrame region="cn" mode="form" title="Tool">
+      <ToolPageFrame region="cn" locale="zh" mode="form" title="Tool">
         <input aria-label="Retained value" defaultValue="file loaded" />
       </ToolPageFrame>,
     );
     const input = screen.getByRole('textbox') as HTMLInputElement;
     await user.type(input, ' and ready');
-    await user.click(screen.getByRole('button', { name: messages.cn.switchDark }));
+    await user.click(screen.getByRole('button', { name: messages.zh.switchDark }));
     expect(appearance).toBe('dark');
-    expect(screen.getByRole('button', { name: messages.cn.switchLight }).getAttribute('aria-pressed')).toBe('false');
+    expect(screen.getByRole('button', { name: messages.zh.switchLight }).getAttribute('aria-pressed')).toBe('false');
     expect(screen.getByRole('textbox')).toBe(input);
     expect(input.value).toBe('file loaded and ready');
     act(() => { appearance = 'light'; window.dispatchEvent(new Event('t4f:appearance')); });
-    expect(screen.getByRole('button', { name: messages.cn.switchDark }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('button', { name: messages.zh.switchDark }).getAttribute('aria-pressed')).toBe('true');
     expect(container.querySelector('[data-account-slot]')?.matches('button, a, [tabindex]')).toBe(false);
     const controls = container.querySelector('[data-navigation-controls]')!;
     expect([...controls.children].map(element => element.tagName)).toEqual(['A', 'A', 'BUTTON', 'SPAN']);
     expect(controls.children[1].getAttribute('href')).toBe('https://github.com/librecosta/tool4furry');
     expect(controls.children[1].getAttribute('rel')).toBe('noopener noreferrer');
-    expect(screen.getByRole('link', { name: messages.cn.switchLanguage }).getAttribute('href')).toBe('https://tool4furry.com/tools/');
+    expect(screen.getByRole('link', { name: messages.zh.switchLanguage }).getAttribute('href')).toBe('/en/tools/');
   });
 
   it('keeps form identity in content and lets the Astro intro own the sole H1', () => {
     const { container, rerender } = render(
-      <ToolPageFrame region="cn" mode="form" title="Form identity">
+      <ToolPageFrame region="cn" locale="zh" mode="form" title="Form identity">
         Workspace
       </ToolPageFrame>,
     );
@@ -112,12 +119,12 @@ describe('product navigation', () => {
       'Form identity',
     );
     expect(
-      screen.getByRole('navigation', { name: messages.cn.headerNav }),
+      screen.getByRole('navigation', { name: messages.zh.headerNav }),
     ).toBeTruthy();
-    expect(container.querySelector('summary')!.getAttribute('aria-label')).toBe(messages.cn.featuredTools);
+    expect(container.querySelector('summary')!.getAttribute('aria-label')).toBe(messages.zh.featuredTools);
     rerender(
       <ToolPageFrame
-        region="cn"
+        region="cn" locale="zh"
         mode="form"
         title="Form identity"
         intro={<h1>Static intro</h1>}
@@ -135,9 +142,9 @@ describe('product navigation', () => {
     async (region) => {
       vi.stubEnv('DEV', false);
       const user = userEvent.setup();
-      const t = messages[region];
+      const t = messages[defaultLocale(region)];
       const { container } = render(
-        <ToolPageFrame region={region} mode="canvas" title="Current identity">
+        <ToolPageFrame region={region} locale={defaultLocale(region)} mode="canvas" title="Current identity">
           Workspace
         </ToolPageFrame>,
       );
@@ -194,8 +201,8 @@ describe('product navigation', () => {
       group: 'image-processing',
       mode: 'form',
       copy: {
-        cn: { title: id, description: '' },
-        global: { title: id, description: '' },
+        zh: { title: id, description: '' },
+        en: { title: id, description: '' },
       },
     });
     const fixtures = [
@@ -210,7 +217,7 @@ describe('product navigation', () => {
     const user = userEvent.setup();
     render(
       <ToolPageFrame
-        region="cn"
+        region="cn" locale="zh"
         mode="form"
         currentToolId="current"
         title="current"
@@ -218,7 +225,7 @@ describe('product navigation', () => {
         Workspace
       </ToolPageFrame>,
     );
-    await user.click(screen.getByLabelText(messages.cn.featuredTools, { selector: 'summary' }));
+    await user.click(screen.getByLabelText(messages.zh.featuredTools, { selector: 'summary' }));
     const item = await screen.findByRole('link', { name: 'current' });
     expect(item.getAttribute('href')).toBe('/tools/current-slug/');
     expect(item.getAttribute('aria-current')).toBe('page');
@@ -236,12 +243,12 @@ describe('product navigation', () => {
   it.each(['cn', 'global'] as const)('links the real draft Converter in the DEV %s toolbox', async (region) => {
     vi.stubEnv('DEV', true);
     const user = userEvent.setup();
-    render(<ToolPageFrame region={region} mode="form" currentToolId="image-converter" title="Converter">Workspace</ToolPageFrame>);
-    await user.click(screen.getByLabelText(messages[region].featuredTools, { selector: 'summary' }));
-    const item = await screen.findByRole('link', { name: name => name.startsWith(imageConverterDefinition.copy[region].title) });
+    render(<ToolPageFrame region={region} locale={defaultLocale(region)} mode="form" currentToolId="image-converter" title="Converter">Workspace</ToolPageFrame>);
+    await user.click(screen.getByLabelText(messages[defaultLocale(region)].featuredTools, { selector: 'summary' }));
+    const item = await screen.findByRole('link', { name: name => name.startsWith(imageConverterDefinition.copy[defaultLocale(region)].title) });
     expect(item.getAttribute('href')).toBe('/tools/image-converter/');
     expect(item.getAttribute('aria-current')).toBe('page');
-    expect(screen.queryByText(messages[region].empty)).toBeNull();
+    expect(screen.queryByText(messages[defaultLocale(region)].empty)).toBeNull();
     expect(imageConverterDefinition.status).toBe('draft');
   });
 
@@ -249,8 +256,8 @@ describe('product navigation', () => {
     setViewport();
     const user = userEvent.setup();
     const { container } = render(
-      <UiProvider labels={messages.cn}>
-        <WorkbenchLab region="cn" mode="canvas" />
+      <UiProvider labels={messages.zh}>
+        <WorkbenchLab region="cn" locale="zh" mode="canvas" />
       </UiProvider>,
     );
     expect(container.querySelectorAll('[data-tool-page-entry]')).toHaveLength(

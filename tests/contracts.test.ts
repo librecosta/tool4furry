@@ -19,8 +19,8 @@ const fixture = (
   status,
   regions,
   copy: {
-    cn: { title: '测试', description: '测试' },
-    global: { title: 'Test', description: 'Test' },
+    zh: { title: '测试', description: '测试' },
+    en: { title: 'Test', description: 'Test' },
   },
 });
 describe('published route boundary', () => {
@@ -64,11 +64,11 @@ describe('region configuration', () => {
   it('defaults to Chinese without environment configuration', () => {
     expect(parseRegion(undefined)).toBe('cn');
     expect(regions.cn).toEqual({
-      lang: 'zh-CN',
+      defaultLocale: 'zh',
       site: 'https://tool4furry.cn',
     });
     expect(regions.global).toEqual({
-      lang: 'en',
+      defaultLocale: 'en',
       site: 'https://tool4furry.com',
     });
   });

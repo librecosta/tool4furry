@@ -19,7 +19,7 @@ export function ConverterTaskRow({
 }: {
   task: ConverterTask;
   session: ConverterSession;
-  t: (typeof converterMessages)['cn'];
+  t: (typeof converterMessages)['zh'];
   previewOpen: boolean;
   onPreviewChange: (open: boolean) => void;
   blocked?: string;

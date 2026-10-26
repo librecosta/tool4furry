@@ -1,15 +1,16 @@
 ---
+import { localizedPath, type Locale } from '../../i18n/locale';
 import * as stylex from '@stylexjs/stylex';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { region } from '../../config/site';
 import { informationContent, type InformationKind } from '../../site/information-content';
 import { siteStyles as s } from '../../styles/site';
 
-interface Props { kind: InformationKind }
-const { kind } = Astro.props;
-const content = informationContent[region][kind];
+interface Props { kind: InformationKind; locale: Locale }
+const { kind, locale } = Astro.props;
+const content = informationContent[region][locale][kind];
 ---
-<SiteLayout title={content.h1} fullTitle={content.title} description={content.description}>
+<SiteLayout locale={locale} title={content.h1} fullTitle={content.title} description={content.description}>
   <main id="main-content" {...stylex.attrs(s.fluid, s.main)}>
     <article data-information-page={kind} aria-labelledby="information-title" {...stylex.attrs(s.readable, s.information)}>
       <header {...stylex.attrs(s.informationHeader)}>
@@ -20,7 +21,7 @@ const content = informationContent[region][kind];
         <h2 id={`information-section-${index}`} {...stylex.attrs(s.informationHeading)}>{section.heading}</h2>
         {section.paragraphs.map(paragraph => <p {...stylex.attrs(s.informationText)}>{paragraph}</p>)}
         {section.links && <div {...stylex.attrs(s.informationLinks)}>
-          {section.links.map(link => <a href={link.href} {...stylex.attrs(s.link)}>{link.label}</a>)}
+          {section.links.map(link => <a href={localizedPath(link.href, region, locale)} {...stylex.attrs(s.link)}>{link.label}</a>)}
         </div>}
       </section>)}
     </article>

@@ -9,7 +9,7 @@ import { messages } from '../src/i18n/messages';
 function Fixture() {
   const [open, setOpen] = useState(false);
   return (
-    <UiProvider labels={messages.global}>
+    <UiProvider labels={messages.en}>
       <button id="open-preview" onClick={() => setOpen(true)}>
         Open
       </button>

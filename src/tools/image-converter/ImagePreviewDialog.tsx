@@ -13,7 +13,7 @@ interface PreviewProps {
   sourceUrl?: string;
   output?: ImageResult;
   outputUrl?: string;
-  t: (typeof converterMessages)['cn'];
+  t: (typeof converterMessages)['zh'];
   onError: (blob: Blob) => void;
   onLoad: (blob: Blob) => void;
   finalFocus: () => HTMLElement | null;

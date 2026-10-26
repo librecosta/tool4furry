@@ -1,3 +1,4 @@
+import { type Locale } from '../i18n/locale';
 import { Component, lazy, Suspense, useMemo, type ReactNode } from 'react';
 import type { Region } from '../config/region';
 import { messages } from '../i18n/messages';
@@ -23,15 +24,16 @@ class LoadBoundary extends Component<
 export default function ToolRuntime({
   toolId,
   region,
+  locale,
   intro,
   navigation,
 }: {
   toolId: string;
-  region: Region;
+  region: Region; locale: Locale;
   intro?: ReactNode;
   navigation?: LanguageLink;
 }) {
-  const t = messages[region];
+  const t = messages[locale];
   const definition = getAvailableTools(region, import.meta.env.DEV)
     .find((tool) => tool.id === toolId);
   const Tool = useMemo(() => {
@@ -50,9 +52,9 @@ export default function ToolRuntime({
   return (
     <UiProvider labels={t}>
       <ToolPageFrame
-        region={region}
+        region={region} locale={locale}
         mode={definition?.mode ?? 'custom'}
-        title={definition?.copy[region].title ?? t.unavailable}
+        title={definition?.copy[locale].title ?? t.unavailable}
         currentToolId={definition?.id}
         intro={intro}
         navigation={navigation}
@@ -66,7 +68,7 @@ export default function ToolRuntime({
                 </p>
               }
             >
-              {definition && Tool ? <Tool region={region} /> : fallback}
+              {definition && Tool ? <Tool region={region} locale={locale} /> : fallback}
             </Suspense>
           </LoadBoundary>
         </div>

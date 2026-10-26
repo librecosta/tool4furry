@@ -1,11 +1,12 @@
 ---
+import { type Locale } from '../../i18n/locale';
 import * as stylex from '@stylexjs/stylex';
 import { siteStyles as s } from '../../styles/site';
 import { tokens } from '../../styles/tokens.stylex';
 import type { Region } from '../../config/region';
 import { messages } from '../../i18n/messages';
-interface Props { region: Region }
-const t = messages[Astro.props.region];
+interface Props { region: Region; locale: Locale }
+const t = messages[Astro.props.locale];
 ---
 <div data-catalog-empty {...stylex.attrs(s.empty)}>
   <svg {...stylex.attrs(s.emptyArt)} width="80" height="80" viewBox="0 0 80 80" fill="none" aria-hidden="true">

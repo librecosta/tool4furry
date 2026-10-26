@@ -39,7 +39,7 @@ function assertAppearanceScript(dom) {
   assert(!script.hasAttribute('src') && !script.hasAttribute('type') && !script.hasAttribute('defer') && !script.hasAttribute('async'));
   assert.equal(script.textContent.trim(), appearanceSource.trim(), 'Only the audited theme controller is allowed');
   assert.equal(script.dataset.default, 'dark');
-  assert.deepEqual(JSON.parse(script.dataset.languageOrigins), ['https://tool4furry.cn', 'https://tool4furry.com']);
+  assert.deepEqual(JSON.parse(script.dataset.regionOrigins), ['https://tool4furry.cn', 'https://tool4furry.com']);
   assert(script.dataset.dark && script.dataset.light && script.dataset.dark !== script.dataset.light);
   return script;
 }
@@ -75,7 +75,7 @@ if (fixtureMode)
 const files = (await readdir(root, { recursive: true })).map((file) =>
   file.replaceAll('\\', '/'),
 );
-const htmlFiles = files.filter((file) => file.endsWith('.html'));
+const allHTMLFiles = files.filter((file) => file.endsWith('.html'));
 if (!fixtureMode)
   assert(
     !files.some((file) =>
@@ -99,29 +99,38 @@ assert(
   ),
   'Lab entry assets leaked into production',
 );
-assert(htmlFiles.includes('404.html'), 'Missing static 404');
+assert(allHTMLFiles.includes('404.html'), 'Missing static 404');
+const origin = region === 'cn' ? 'https://tool4furry.cn' : 'https://tool4furry.com';
+const secondary = region === 'cn' ? 'en' : 'zh';
+assert(!allHTMLFiles.some(page => page.startsWith((region === 'cn' ? 'zh' : 'en') + '/')), 'Default locale must not have redundant prefixed routes');
+for (const locale of ['zh', 'en']) {
+const prefix = locale === (region === 'cn' ? 'zh' : 'en') ? '' : `${locale}/`;
+const htmlFiles = allHTMLFiles.filter(page => prefix ? page.startsWith(prefix) : !/^(zh|en)\//.test(page)).map(page => prefix ? page.slice(prefix.length) : page);
+const localPath = path => '/' + prefix + path.slice(1);
+const alternatePath = path => prefix ? path : '/' + secondary + path;
+const readHTML = page => readFile(resolve(root, prefix + page), 'utf8');
+
 const informationPages = {
-  about: region === 'cn' ? ['关于 Tool4Furry', '关于 Tool4Furry'] : ['About Tool4Furry', 'About Tool4Furry'],
-  privacy: region === 'cn' ? ['隐私说明', '隐私说明 · Tool4Furry'] : ['Privacy', 'Privacy · Tool4Furry'],
-  terms: region === 'cn' ? ['使用条款', '使用条款 · Tool4Furry'] : ['Terms', 'Terms · Tool4Furry'],
+  about: locale === 'zh' ? ['关于 Tool4Furry', '关于 Tool4Furry'] : ['About Tool4Furry', 'About Tool4Furry'],
+  privacy: locale === 'zh' ? ['隐私说明', '隐私说明 · Tool4Furry'] : ['Privacy', 'Privacy · Tool4Furry'],
+  terms: locale === 'zh' ? ['使用条款', '使用条款 · Tool4Furry'] : ['Terms', 'Terms · Tool4Furry'],
 };
 for (const kind of Object.keys(informationPages))
   assert(htmlFiles.includes(`${kind}/index.html`), `Missing static information page: ${kind}`);
-const home = await readFile(resolve(root, 'index.html'), 'utf8');
+const home = await readHTML('index.html');
 const document = new JSDOM(home).window.document;
-const site =
-  region === 'cn' ? 'https://tool4furry.cn/' : 'https://tool4furry.com/';
-assert.equal(document.documentElement.lang, region === 'cn' ? 'zh-CN' : 'en');
+const site = origin + '/' + prefix;
+assert.equal(document.documentElement.lang, locale === 'zh' ? 'zh-CN' : 'en');
 assert.equal(
   document.querySelector('link[rel="canonical"]')?.getAttribute('href'),
   site,
 );
 const expectedTitle =
-  region === 'cn'
+  locale === 'zh'
     ? 'Tool4Furry — Furry 创作者的浏览器工具箱'
     : 'Tool4Furry — Browser Tools for Furry Creators';
 const expectedDescription =
-  region === 'cn'
+  locale === 'zh'
     ? 'Tool4Furry 正在为 Furry 创作者打造轻巧的浏览器工具箱，涵盖创作、素材处理与日常效率。首批工具开发中。'
     : 'Tool4Furry is building browser-based tools for furry creators, focused on creative tasks, assets and everyday productivity. Tools are on the way.';
 assert.equal(
@@ -152,14 +161,14 @@ assert.equal(
 assert.equal(document.querySelectorAll('h1').length, 1);
 assert.equal(
   document.querySelector('h1')?.textContent.trim().replace(/\s+/g, ' '),
-  region === 'cn'
+  locale === 'zh'
     ? '灵感尽情发挥。繁琐留给工具。'
     : 'More room for imagination. Less time on the tedious bits.',
 );
 assert(document.querySelector('main#main-content'), 'Missing skip-link target');
 assert.equal(
   document.querySelector('a[href="#main-content"]')?.textContent.trim(),
-  region === 'cn' ? '跳到主要内容' : 'Skip to content',
+  locale === 'zh' ? '跳到主要内容' : 'Skip to content',
 );
 const catalog = document.querySelector(
   'section#tools[aria-labelledby="tools-heading"]',
@@ -178,7 +187,7 @@ const mark = '/brand/tool4furry-mark.svg';
 for (const tag of ['header', 'footer']) {
   const shell = document.querySelector(tag);
   assert(
-    shell?.querySelector('a[href="/tools/"]'),
+    shell?.querySelector(`a[href="${localPath('/tools/')}"]`),
     `${tag}: missing cross-page toolbox link`,
   );
   if (tag === 'footer')
@@ -191,7 +200,7 @@ for (const tag of ['header', 'footer']) {
     assert(shell.querySelector('details[data-tool-disclosure] > summary'), 'Native no-JS toolbox required');
     assert.equal(shell.querySelectorAll('[role="menu"], [role="menuitem"]').length, 0, 'Toolbox contains ordinary navigation links');
   }
-  const brand = shell.querySelector('a[href="/"]');
+  const brand = shell.querySelector(`a[href="${localPath('/')}"]`);
   assert.equal(brand?.getAttribute('aria-label'), 'Tool4Furry');
   assert.equal(brand.querySelector('span')?.textContent.trim(), 'Tool4Furry');
   assert.equal(brand.querySelector('img')?.getAttribute('src'), mark);
@@ -259,16 +268,16 @@ assert.equal(
   0,
   'Homepage must not preload JavaScript',
 );
-if (region === 'global')
+if (locale === 'en')
   assert(
     !/[\u4e00-\u9fff]/u.test(copyWithoutLanguageLink(document)),
     'Chinese copy in global homepage',
   );
-const fullHTML = await readFile(resolve(root, 'tools/index.html'), 'utf8');
+const fullHTML = await readHTML('tools/index.html');
 const fullCatalog = new JSDOM(fullHTML).window.document;
 assert.equal(
   fullCatalog.title,
-  region === 'cn' ? '工具箱 — Tool4Furry' : 'Toolbox — Tool4Furry',
+  locale === 'zh' ? '工具箱 — Tool4Furry' : 'Toolbox — Tool4Furry',
 );
 assert.equal(fullCatalog.querySelectorAll('h1').length, 1);
 assert.equal(
@@ -277,7 +286,7 @@ assert.equal(
 );
 assertStaticNavigation(fullCatalog);
 assert(!fullHTML.includes('/lab/'), 'Lab links leaked into full catalog');
-if (region === 'global')
+if (locale === 'en')
   assert(
     !/[\u4e00-\u9fff]/u.test(copyWithoutLanguageLink(fullCatalog)),
     'Chinese copy in global catalog',
@@ -313,7 +322,7 @@ for (const [dom, list] of [
   if (!allCards.length) {
     assert(
       dom.body.textContent.includes(
-        region === 'cn' ? '工具正在准备中' : 'Tools are on the way',
+        locale === 'zh' ? '工具正在准备中' : 'Tools are on the way',
       ),
       'Wrong empty state copy',
     );
@@ -328,11 +337,11 @@ for (const [dom, list] of [
   for (const card of list) {
     const href = card.getAttribute('href');
     assert(
-      /^\/tools\/[a-z0-9-]+\/$/.test(href),
+      /^\/tools\/[a-z0-9-]+\/$/.test(href.slice(prefix.length)),
       `Invalid real tool route: ${href}`,
     );
     assert(
-      htmlFiles.includes(`${href.slice(1)}index.html`),
+      allHTMLFiles.includes(`${href.slice(1)}index.html`),
       `Catalog link has no generated page: ${href}`,
     );
     assert(
@@ -367,20 +376,20 @@ for (const card of cards) {
 }
 for (const page of toolPages)
   assert(
-    toolLinks.has('/' + page.replace(/index\.html$/, '')),
+    toolLinks.has(localPath('/' + page.replace(/index\.html$/, ''))),
     `Unlisted tool page: ${page}`,
   );
-for (const link of fullCatalog.querySelectorAll('a[href^="/tools/"]')) {
+for (const link of fullCatalog.querySelectorAll(`a[href^="${localPath('/tools/')}"]`)) {
   const href = link.getAttribute('href');
   assert(
-    href === '/tools/' || toolLinks.has(href),
+    href === localPath('/tools/') || toolLinks.has(href),
     `Invalid discovery link: ${href}`,
   );
 }
 const fontAssets = new Set();
 const inlineFonts = new Set();
 for (const page of htmlFiles) {
-  const content = await readFile(resolve(root, page), 'utf8');
+  const content = await readHTML(page);
   if (!fixtureMode)
     assert(
       !/STATIC_GUIDE_ONLY_|data-fixture-counter/.test(content),
@@ -405,10 +414,15 @@ for (const page of htmlFiles) {
   assert.equal(social[0].getAttribute('target'), '_blank');
   assert(social[0].getAttribute('aria-label'));
   const groups = footer.querySelector(':scope > div > nav').children;
-  assert.deepEqual([...groups].map(el => el.querySelector('p').textContent.trim()), region === 'cn' ? ['工具', '项目', '支持'] : ['Tools', 'Project', 'Support']);
+  assert.deepEqual([...groups].map(el => el.querySelector('p').textContent.trim()), locale === 'zh' ? ['工具', '项目', '支持'] : ['Tools', 'Project', 'Support']);
   assert.deepEqual([...groups].map(el => [...el.querySelectorAll('a')].map(a => a.getAttribute('href'))), [
-    ['/#tools', '/tools/'], ['/about/', github], [`${github}/issues`],
+    [localPath('/#tools'), localPath('/tools/')], [localPath('/about/'), github, footer.querySelector('[data-region-link]')?.getAttribute('href')], [`${github}/issues`],
   ]);
+  const regionURL = new URL(footer.querySelector('[data-region-link]')?.getAttribute('href'));
+  assert.equal(regionURL.origin, region === 'cn' ? 'https://tool4furry.com' : 'https://tool4furry.cn');
+  const regionalBase = locale === (region === 'cn' ? 'en' : 'zh') ? '' : `/${locale}`;
+  assert(regionURL.pathname.startsWith(regionalBase + '/'), 'Region link preserves locale');
+  assert.equal(regionURL.search + regionURL.hash, '', 'Static regional link is clean');
   const legal = footer.querySelector('[data-footer-legal]');
   const slots = footer.querySelectorAll('[data-footer-compliance-slot]');
   assert.equal(slots.length, 1, 'One stable compliance slot, even without records');
@@ -430,7 +444,7 @@ for (const page of htmlFiles) {
     assert.equal(icp.querySelector('a')?.getAttribute('href'), 'https://beian.miit.gov.cn/');
     assert.equal(icp.querySelectorAll('a').length, 1, 'No duplicate ICP query line');
   }
-  assert.deepEqual([...legal.querySelectorAll('nav a')].map(a => a.getAttribute('href')), ['/privacy/', '/terms/', `${github}/blob/master/LICENSE`]);
+  assert.deepEqual([...legal.querySelectorAll('nav a')].map(a => a.getAttribute('href')), [localPath('/privacy/'), localPath('/terms/'), `${github}/blob/master/LICENSE`]);
   assert(legal.textContent.replace(/\s+/g, ' ').includes(`© ${new Date().getFullYear()} Tool4Furry · LibreCosta`));
   const attribution = legal.querySelector('[data-footer-attribution]');
   assert.equal(attribution?.textContent, 'LibreCosta');
@@ -439,7 +453,7 @@ for (const page of htmlFiles) {
   assert.equal(attribution?.getAttribute('rel'), 'noopener noreferrer');
   assert(footer.querySelector(`a[href="${github}/blob/master/LICENSE"]`));
   for (const kind of Object.keys(informationPages))
-    assert(footer.querySelector(`a[href="/${kind}/"]`), `Missing Footer information link: ${kind} in ${page}`);
+    assert(footer.querySelector(`a[href="${localPath(`/${kind}/`)}"]`), `Missing Footer information link: ${kind} in ${page}`);
   assert(!/TEST_ONLY_|测试ICP备|测试公网安备|待备案/.test(footer.textContent), 'Test/placeholder compliance leaked');
   for (const entry of footer.querySelectorAll('[data-site-compliance] a')) {
     assert.equal(entry.closest('[data-footer-compliance-slot]'), slot, 'Approved records stay in the bottom compliance slot');
@@ -452,7 +466,7 @@ for (const page of htmlFiles) {
         'Converter public copy must describe current limits, not internal guardrails');
     assert.equal(dom.querySelectorAll('[data-site-header]').length, 0, 'Tool page must keep its independent navigation');
     const main = dom.querySelector('main[data-tool-id]');
-    const href = '/' + page.replace(/index\.html$/, '');
+    const href = localPath('/' + page.replace(/index\.html$/, ''));
     const card = allCards.find((entry) => entry.getAttribute('href') === href);
     assert.equal(
       main?.getAttribute('data-tool-id'),
@@ -505,7 +519,7 @@ for (const page of htmlFiles) {
       'Single brand in tool title',
     );
     assert.equal(
-      dom.querySelectorAll('meta[name="robots"], link[hreflang]').length,
+      dom.querySelectorAll('meta[name="robots"]').length,
       0,
       'No unpublished/noindex/alternate tool routes',
     );
@@ -516,9 +530,19 @@ for (const page of htmlFiles) {
         'Related links must be distinct regional published tools',
       );
   }
-  assert.equal(dom.documentElement.lang, region === 'cn' ? 'zh-CN' : 'en');
+  assert.equal(dom.documentElement.lang, locale === 'zh' ? 'zh-CN' : 'en');
   if (page !== '404.html') {
     const canonical = site + page.replace(/index\.html$/, '');
+    const alternates = [...dom.querySelectorAll('link[rel="alternate"][hreflang]')];
+    assert.equal(alternates.length, 2, 'One alternate per supported locale');
+    assert.deepEqual(new Set(alternates.map(link => link.hreflang)), new Set(['zh-CN', 'en']));
+    for (const link of alternates) {
+      const url = new URL(link.href);
+      assert.equal(url.origin, origin, 'Alternates never cross deployment regions');
+      assert(allHTMLFiles.includes(url.pathname.slice(1) + 'index.html'), 'Alternate page exists');
+      const expected = link.hreflang === (locale === 'zh' ? 'zh-CN' : 'en') ? canonical : origin + alternatePath('/' + page.replace(/index\.html$/, ''));
+      assert.equal(link.href, expected, 'Alternate preserves page and locale');
+    }
     assert.equal(
       dom.querySelector('link[rel="canonical"]')?.getAttribute('href'),
       canonical,
@@ -547,7 +571,7 @@ for (const page of htmlFiles) {
   if (page === 'tools/index.html')
     for (const tag of ['header', 'footer'])
       assert(
-        dom.querySelector(`${tag} a[href="/tools/"]`),
+        dom.querySelector(`${tag} a[href="${localPath('/tools/')}"]`),
         `Missing full catalog navigation: ${tag}`,
       );
   assert.equal(
@@ -568,7 +592,7 @@ for (const page of htmlFiles) {
       'Preserve the default title API',
     );
     assert(
-      dom.querySelector('header a[href="/tools/"]'),
+      dom.querySelector(`header a[href="${localPath('/tools/')}"]`),
       '404 toolbox navigation must reach the full catalog',
     );
   }
@@ -577,17 +601,18 @@ for (const page of htmlFiles) {
   assertNavigationScript(dom);
   assertDocumentScroll(dom);
   const featuredTrigger = dom.querySelector('[data-tool-disclosure] > summary');
-  assert.equal(featuredTrigger?.getAttribute('aria-label'), region === 'cn' ? '精选工具' : 'Featured Tools', `Featured navigation label in ${page}`);
-  assert(dom.querySelector('[data-tool-panel] a[href="/tools/"]'), 'Featured navigation retains the real full catalog');
+  assert.equal(featuredTrigger?.getAttribute('aria-label'), locale === 'zh' ? '精选工具' : 'Featured Tools', `Featured navigation label in ${page}`);
+  assert(dom.querySelector(`[data-tool-panel] a[href="${localPath('/tools/')}"]`), 'Featured navigation retains the real full catalog');
   for (const link of dom.querySelectorAll('[data-tool-panel] a')) {
     const href = link.getAttribute('href');
-    assert(href?.startsWith('/tools/'), `Unexpected toolbox navigation in ${page}`);
-    assert(htmlFiles.includes(`${href.slice(1)}index.html`), `Toolbox links to unavailable tool: ${href}`);
+    assert(href?.startsWith(localPath('/tools/')), `Unexpected toolbox navigation in ${page}`);
+    assert(allHTMLFiles.includes(`${href.slice(1)}index.html`), `Toolbox links to unavailable tool: ${href}`);
   }
   const language = dom.querySelector('[data-language-link]');
   assert(language, `Missing language entry in ${page}`);
-  const languageURL = new URL(language.getAttribute('href'));
-  assert.equal(languageURL.origin, region === 'cn' ? 'https://tool4furry.com' : 'https://tool4furry.cn');
+  const languageURL = new URL(language.getAttribute('href'), origin);
+  assert.equal(languageURL.origin, origin, 'Language navigation stays on the current origin');
+  assert.equal(languageURL.pathname, alternatePath(page === '404.html' ? '/tools/' : '/' + page.replace(/index\.html$/, '')));
   assert.equal(languageURL.search + languageURL.hash, '', 'No query or hash crosses regions');
   const informationKind = Object.keys(informationPages).find(kind => page === `${kind}/index.html`);
   if (informationKind) {
@@ -605,11 +630,11 @@ for (const page of htmlFiles) {
     for (const section of sections)
       assert(section.querySelector('h2')?.textContent.trim() && section.querySelector('p')?.textContent.trim());
     assert(!/TODO|Lorem ipsum|待完善|即将补充/i.test(article.textContent), 'No placeholder information copy');
-    assert.equal(languageURL.pathname, `/${informationKind}/`, 'Information language link preserves path');
-    if (region === 'global') assert(!/[\u4e00-\u9fff]/u.test(copyWithoutLanguageLink(dom)), 'Chinese copy in Global information page');
+    assert.equal(languageURL.pathname, alternatePath(`/${informationKind}/`), 'Information language link preserves path');
+    if (locale === 'en') assert(!/[\u4e00-\u9fff]/u.test(copyWithoutLanguageLink(dom)), 'Chinese copy in Global information page');
     for (const link of article.querySelectorAll('a[href^="/"]')) {
       const target = link.getAttribute('href').slice(1) + 'index.html';
-      assert(htmlFiles.includes(target), `Broken local information link: ${target}`);
+      assert(allHTMLFiles.includes(target), `Broken local information link: ${target}`);
     }
   }
   assert.equal(
@@ -755,5 +780,7 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
 }
 assert((await stat(root)).isDirectory());
 console.log(
-  `Verified ${region}: ${htmlFiles.length} static pages, audited appearance/navigation/document-scroll scripts only on static pages, SEO/OG/favicon, ${cards.length} real catalog cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
+  `Verified ${region}/${locale}: ${htmlFiles.length} static pages, audited appearance/navigation/document-scroll scripts only on static pages, SEO/OG/favicon, ${cards.length} real catalog cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
 );
+
+}

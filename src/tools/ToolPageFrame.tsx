@@ -1,3 +1,4 @@
+import { localizedPath, type Locale } from '../i18n/locale';
 import type { ReactNode } from 'react';
 import { Popover } from '@base-ui/react/popover';
 import { DotsThreeIcon } from '@phosphor-icons/react';
@@ -17,6 +18,7 @@ import { languageLink, type LanguageLink } from '../site/language';
 // Product navigation belongs to page composition, never to a tool's local modes.
 export default function ToolPageFrame({
   region,
+  locale,
   mode,
   title,
   currentToolId,
@@ -25,7 +27,7 @@ export default function ToolPageFrame({
   intro,
   navigation,
 }: {
-  region: Region;
+  region: Region; locale: Locale;
   mode: WorkspaceMode;
   title: string;
   currentToolId?: string;
@@ -34,9 +36,9 @@ export default function ToolPageFrame({
   intro?: ReactNode;
   navigation?: LanguageLink;
 }) {
-  const t = messages[region];
+  const t = messages[locale];
   const floating = mode === 'canvas' && !intro;
-  const alternate = navigation ?? languageLink('/tools/', region);
+  const alternate = navigation ?? languageLink(localizedPath('/tools/', region, locale), region);
   return (
     <div {...stylex.props(s.frame)}>
       <header
@@ -64,7 +66,7 @@ export default function ToolPageFrame({
             )}
           >
             <a
-              href="/"
+              href={localizedPath('/', region, locale)}
               aria-label={`Tool4Furry · ${t.home}`}
               {...stylex.props(
                 !floating && site.brand,
@@ -84,7 +86,7 @@ export default function ToolPageFrame({
               <span {...stylex.props(n.brandFull)}>Tool4Furry</span>
               <span aria-hidden {...stylex.props(n.brandShort)}>T4F</span>
             </a>
-            <ToolboxDisclosure region={region} currentToolId={currentToolId} compact={floating} />
+            <ToolboxDisclosure region={region} locale={locale} currentToolId={currentToolId} compact={floating} />
           </div>
           {floating && (
             <h1 title={title} {...stylex.props(s.title)}>
@@ -93,7 +95,7 @@ export default function ToolPageFrame({
           )}
           {!floating && (
             <div {...stylex.props(n.actions)}>
-              <NavigationControls region={region} link={alternate} />
+              <NavigationControls region={region} locale={locale} link={alternate} />
               {debug && <div {...stylex.props(n.debug)}>{debug}</div>}
             </div>
           )}
@@ -115,7 +117,7 @@ export default function ToolPageFrame({
                     aria-label={t.navigationOptions}
                     {...stylex.props(menu.popup, n.chrome)}
                   >
-                    <NavigationControls region={region} link={alternate} />
+                    <NavigationControls region={region} locale={locale} link={alternate} />
                   </Popover.Popup>
                 </Popover.Positioner>
               </Popover.Portal>

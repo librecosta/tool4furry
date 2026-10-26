@@ -54,7 +54,7 @@ async function setup() {
         session={session}
         view={view}
         blocked={false}
-        t={converterMessages.global}
+        t={converterMessages.en}
       />
     );
   }

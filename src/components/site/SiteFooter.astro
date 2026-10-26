@@ -1,15 +1,17 @@
 ---
+import { localizedPath, type Locale } from '../../i18n/locale';
 import * as stylex from '@stylexjs/stylex';
 import { GithubLogoIcon } from '@phosphor-icons/react/ssr';
 import type { Region } from '../../config/region';
 import { getComplianceEntries, showCompliancePreview } from '../../config/compliance';
+import { regionLink } from '../../site/language';
 import { messages } from '../../i18n/messages';
 import { siteStyles as s } from '../../styles/site';
 import Brand from './Brand.astro';
 
-interface Props { region: Region }
-const { region } = Astro.props;
-const t = messages[region];
+interface Props { region: Region; locale: Locale }
+const { region, locale } = Astro.props;
+const t = messages[locale];
 const github = 'https://github.com/librecosta/tool4furry';
 const compliance = getComplianceEntries(region);
 const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, compliance);
@@ -17,7 +19,7 @@ const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, com
 <footer data-site-footer {...stylex.attrs(s.fullBleed, s.fluid, s.footerRoot)}>
   <div {...stylex.attrs(s.homeWidth)}>
     <div data-footer-brand {...stylex.attrs(s.footerTop)}>
-      <Brand />
+      <Brand locale={locale} />
       <a data-footer-social href={github} target="_blank" rel="noopener noreferrer" aria-label={t.github} {...stylex.attrs(s.footerSocial)}>
         <GithubLogoIcon size={24} aria-hidden className={stylex.attrs(s.footerSocialIcon).class} />
       </a>
@@ -25,13 +27,14 @@ const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, com
     <nav aria-label={t.footerNav} {...stylex.attrs(s.footerLinks)}>
       <div {...stylex.attrs(s.footerGroup)}>
         <p {...stylex.attrs(s.footerGroupHeading)}>{t.footerTools}</p>
-        <a {...stylex.attrs(s.footerLink)} href="/#tools"><span {...stylex.attrs(s.footerLinkText)}>{t.featuredTools}</span></a>
-        <a {...stylex.attrs(s.footerLink)} href="/tools/"><span {...stylex.attrs(s.footerLinkText)}>{t.browseAll}</span></a>
+        <a {...stylex.attrs(s.footerLink)} href={localizedPath('/#tools', region, locale)}><span {...stylex.attrs(s.footerLinkText)}>{t.featuredTools}</span></a>
+        <a {...stylex.attrs(s.footerLink)} href={localizedPath('/tools/', region, locale)}><span {...stylex.attrs(s.footerLinkText)}>{t.browseAll}</span></a>
       </div>
       <div {...stylex.attrs(s.footerGroup)}>
         <p {...stylex.attrs(s.footerGroupHeading)}>{t.footerProject}</p>
-        <a {...stylex.attrs(s.footerLink)} href="/about/"><span {...stylex.attrs(s.footerLinkText)}>{t.about}</span></a>
+        <a {...stylex.attrs(s.footerLink)} href={localizedPath('/about/', region, locale)}><span {...stylex.attrs(s.footerLinkText)}>{t.about}</span></a>
         <a {...stylex.attrs(s.footerLink)} href={github} target="_blank" rel="noopener noreferrer"><span {...stylex.attrs(s.footerLinkText)}>{t.source}</span></a>
+        <a data-region-link href={regionLink(Astro.url.pathname, region, undefined, import.meta.env.DEV)} {...stylex.attrs(s.footerLink)}><span {...stylex.attrs(s.footerLinkText)}>{region === 'cn' ? t.internationalSite : t.chinaSite}</span></a>
       </div>
       <div {...stylex.attrs(s.footerGroup)}>
         <p {...stylex.attrs(s.footerGroupHeading)}>{t.footerSupport}</p>
@@ -39,7 +42,7 @@ const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, com
       </div>
     </nav>
     <div data-footer-compliance-slot {...stylex.attrs(s.footerComplianceSlot)}>
-      {compliance.length > 0 && <div data-site-compliance aria-label={region === 'cn' ? '备案与许可信息' : 'Registrations and licenses'} {...stylex.attrs(s.footerCompliance)}>
+      {compliance.length > 0 && <div data-site-compliance aria-label={locale === 'zh' ? '备案与许可信息' : 'Registrations and licenses'} {...stylex.attrs(s.footerCompliance)}>
         {compliance.map(entry => <div data-compliance-kind={entry.kind} {...stylex.attrs(s.complianceCell, entry.kind === 'public-security' && s.compliancePolice, entry.kind === 'additional' && s.complianceAdditional)}>
           {entry.href ? <a href={entry.href} {...stylex.attrs(s.complianceLink)}>
             {entry.iconSrc && <img src={entry.iconSrc} width="20" height="20" alt="" aria-hidden="true" {...stylex.attrs(s.complianceIcon)} />}
@@ -48,15 +51,15 @@ const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, com
         </div>)}
       </div>}
       {compliancePreview && <div data-footer-compliance-preview {...stylex.attrs(s.footerCompliance)}>
-        <p {...stylex.attrs(s.complianceCell, s.compliancePreview)}>ICP备案展示位置 · 开发预览</p>
-        <p {...stylex.attrs(s.complianceCell, s.compliancePolice, s.compliancePreview)}>公安备案展示位置 · 开发预览</p>
+        <p {...stylex.attrs(s.complianceCell, s.compliancePreview)}>{locale === 'zh' ? 'ICP备案展示位置 · 开发预览' : 'ICP registration location · Development preview'}</p>
+        <p {...stylex.attrs(s.complianceCell, s.compliancePolice, s.compliancePreview)}>{locale === 'zh' ? '公安备案展示位置 · 开发预览' : 'Public security registration location · Development preview'}</p>
       </div>}
     </div>
     <div data-footer-legal {...stylex.attrs(s.footerBottom)}>
       <div {...stylex.attrs(s.footerLegal)}>
         <nav aria-label={t.footerLegal} {...stylex.attrs(s.footerLegalLinks)}>
-          <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href="/privacy/"><span {...stylex.attrs(s.footerLinkText)}>{t.privacy}</span></a>
-          <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href="/terms/"><span {...stylex.attrs(s.footerLinkText)}>{t.terms}</span></a>
+          <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href={localizedPath('/privacy/', region, locale)}><span {...stylex.attrs(s.footerLinkText)}>{t.privacy}</span></a>
+          <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href={localizedPath('/terms/', region, locale)}><span {...stylex.attrs(s.footerLinkText)}>{t.terms}</span></a>
           <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href={`${github}/blob/master/LICENSE`}><span {...stylex.attrs(s.footerLinkText)}>BSD-3-Clause License</span></a>
         </nav>
       </div>

@@ -7,7 +7,7 @@ import FormDemo from '../src/lab/FormDemo';
 import BatchDemo from '../src/lab/BatchDemo';
 import { messages } from '../src/lab/messages';
 import { setViewport } from './setup';
-const t = messages.cn;
+const t = messages.zh;
 
 beforeEach(() => {
   setViewport();

@@ -1,21 +1,24 @@
 ---
+import { localePaths } from '../../../i18n/locale';
 import * as stylex from '@stylexjs/stylex';
-import SiteLayout from '../../layouts/SiteLayout.astro';
-import ToolCards from '../../components/site/ToolCards.astro';
-import CatalogEmpty from '../../components/site/CatalogEmpty.astro';
-import { getCatalogSections, getDiscoverySections } from '../../site/catalog';
-import { region } from '../../config/site';
-import { messages } from '../../i18n/messages';
-import { siteStyles as s } from '../../styles/site';
-const t = messages[region];
-const sections = getCatalogSections(region, undefined, import.meta.env.DEV);
-const discovery = getDiscoverySections(region, undefined, import.meta.env.DEV);
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import ToolCards from '../../../components/site/ToolCards.astro';
+import CatalogEmpty from '../../../components/site/CatalogEmpty.astro';
+import { getCatalogSections, getDiscoverySections } from '../../../site/catalog';
+import { region } from '../../../config/site';
+import { messages } from '../../../i18n/messages';
+import { siteStyles as s } from '../../../styles/site';
+export function getStaticPaths() { return localePaths(region); }
+const { locale } = Astro.props;
+const t = messages[locale];
+const sections = getCatalogSections(region, undefined, import.meta.env.DEV, locale);
+const discovery = getDiscoverySections(region, undefined, import.meta.env.DEV, locale);
 ---
-<SiteLayout title={t.tools} fullTitle={t.catalogTitle} description={t.catalogDescription}>
+<SiteLayout locale={locale} title={t.tools} fullTitle={t.catalogTitle} description={t.catalogDescription}>
   <main id="main-content" {...stylex.attrs(s.fluid, s.main)}>
     <h1 {...stylex.attrs(s.catalogTitle)}>{t.tools}</h1>
     <p {...stylex.attrs(s.intro)}>{t.catalogIntro}</p>
-    {sections.length === 0 ? <section aria-label={t.tools} {...stylex.attrs(s.catalogSection)}><CatalogEmpty region={region} /></section> : <>
+    {sections.length === 0 ? <section aria-label={t.tools} {...stylex.attrs(s.catalogSection)}><CatalogEmpty region={region} locale={locale} /></section> : <>
       <nav aria-label={t.categories} {...stylex.attrs(s.catalogNav)}>
         {sections.map(section => <a href={`#domain-${section.id}`} {...stylex.attrs(s.link)}>{section.label}</a>)}
         {discovery.length > 0 && <a href="#discovery" {...stylex.attrs(s.link)}>{t.discover}</a>}

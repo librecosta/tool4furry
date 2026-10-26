@@ -1,3 +1,4 @@
+import { type Locale } from '../i18n/locale';
 import type { Region } from '../config/region';
 import type { LabMode } from './routes';
 import { messages } from './messages';
@@ -13,16 +14,17 @@ import type { LanguageLink } from '../site/language';
 export default function WorkbenchLab({
   mode,
   region,
+  locale,
   navigation,
 }: {
   mode: LabMode;
-  region: Region;
+  region: Region; locale: Locale;
   navigation?: LanguageLink;
 }) {
-  const t = messages[region];
+  const t = messages[locale];
   return (
     <ToolPageFrame
-      region={region}
+      region={region} locale={locale}
       mode={mode === 'ui' || mode === 'files' ? 'custom' : mode}
       title={`DEMO · ${t[mode]}`}
       debug={<LabMenu mode={mode} t={t} />}

@@ -42,7 +42,7 @@ if (process.argv[2] === '--child') {
       socket.once('data', async data => {
         if (data.toString() === 'stop') {
           await stop();
-          socket.end('Stopped CN and EN development servers.\n');
+          socket.end('Stopped CN and Global development servers.\n');
         } else socket.end();
       });
     });
@@ -68,6 +68,6 @@ if (process.argv[2] === '--child') {
     for (const child of children) child.once('exit', code => { if (!stopping) void stop(code || 1); });
     process.once('SIGINT', () => void stop());
     process.once('SIGTERM', () => void stop());
-    console.log(`CN: ${devOrigins.cn}\nEN: ${devOrigins.global}\nCtrl+C or pnpm dev stop stops both.`);
+    console.log(`CN: ${devOrigins.cn}\nGlobal: ${devOrigins.global}\nCtrl+C or pnpm dev stop stops both.`);
   }
 }

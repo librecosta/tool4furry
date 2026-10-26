@@ -1,3 +1,4 @@
+import type { Locale } from '../i18n/locale';
 import type { Region } from '../config/region';
 import type {
   DomainId,
@@ -16,6 +17,6 @@ export type ToolDefinition = {
   mode: WorkspaceMode;
   status: 'draft' | 'published';
   regions: readonly Region[];
-  copy: Record<Region, { title: string; description: string }>;
+  copy: Record<Locale, { title: string; description: string }>;
 };
-export type ToolProps = { region: Region };
+export type ToolProps = { region: Region; locale: Locale };

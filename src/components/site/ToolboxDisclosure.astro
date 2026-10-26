@@ -1,12 +1,15 @@
 ---
+import { localizedPath, type Locale } from '../../i18n/locale';
 import * as stylex from '@stylexjs/stylex';
 import { ToolboxIcon, CaretDownIcon } from '@phosphor-icons/react/ssr';
 import { region } from '../../config/site';
 import { messages } from '../../i18n/messages';
 import { getHomepageEntries } from '../../site/catalog';
 import { navigationStyles as n } from '../../styles/navigation';
-const t = messages[region];
-const entries = getHomepageEntries(region, undefined, undefined, import.meta.env.DEV);
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = messages[locale];
+const entries = getHomepageEntries(region, undefined, undefined, import.meta.env.DEV, locale);
 ---
 <details data-tool-disclosure {...stylex.attrs(n.disclosure)}>
   <summary aria-label={t.featuredTools} {...stylex.attrs(n.control, n.trigger)}>
@@ -17,7 +20,7 @@ const entries = getHomepageEntries(region, undefined, undefined, import.meta.env
   <div data-tool-positioner {...stylex.attrs(n.positioner)}>
     <div data-tool-panel {...stylex.attrs(n.panel)}>
       <div {...stylex.attrs(n.panelHeader)}>
-        <span>{t.featuredTools}</span><a href="/tools/" {...stylex.attrs(n.browse)}>{t.browseAll}</a>
+        <span>{t.featuredTools}</span><a href={localizedPath('/tools/', region, locale)} {...stylex.attrs(n.browse)}>{t.browseAll}</a>
       </div>
       <div {...stylex.attrs(n.tools)}>
         {entries.length === 0 && <p {...stylex.attrs(n.empty)}>{t.empty}</p>}

@@ -565,3 +565,7 @@ CI 配置保持原样：dev/main push/PR 仅 frozen install、check、test、bui
 没有发现阻塞本轮交付的问题。请维护者审查占位 Mark 与创作碎片是否符合品牌方向、中英 H1 换行、手机 Hero 到目录的距离、空态和 Footer 密度；正式工具发布前还需以真实标题/描述检查非空卡片视觉与工具加载契约。
 
 未进行 iOS Safari / Android Chrome 真机、实际触摸、软键盘/动态地址栏/安全区、系统缩放、屏幕阅读器及系统 reduced-motion 开关测试；没有提供 Lighthouse、LCP 或 CLS 跑分结论。首页自身无动效和 JavaScript，仍须结合真实设备复核阅读体验。没有实现正式工具、暗黑模式、搜索/收藏、账户、后端或部署。LICENSE 保持原 SHA256 `6D71EFDA0046FEF9B229E7080766E88155D8FFF2FB192C5555D1FED70A0C0871`。未发布假工具、未合并 main、未部署。
+
+## Region / Locale separation (#11)
+
+Region controls domain, compliance and Registry availability; Locale controls copy, HTML language and URL prefix. CN serves zh at `/` and en at `/en/`; Global serves en at `/` and zh at `/zh/`. Each page has a self canonical and two same-region reciprocal hreflang links. Astro templates live once under `[...locale]`, and React roots receive both axes. Language links never relay across origins. Explicit Footer region links preserve Locale, use published-only target availability and may relay appearance through the existing allowlist. Regional dev services remain on 54321/54322, with no additional server or client i18n runtime.

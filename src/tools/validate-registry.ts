@@ -1,4 +1,5 @@
 import { domains, groups, audiences, contexts } from '../site/taxonomy';
+import { locales } from '../i18n/locale';
 import { regions } from '../config/region';
 import type { ToolDefinition } from './types';
 
@@ -53,10 +54,10 @@ export function registryIssues(
         typeof loaders[tool.id] !== 'function'
       )
         issues.push(`${tool.id}: missing loader`);
-      for (const region of tool.regions) {
-        const copy = tool.copy[region];
+      for (const locale of Object.keys(locales) as (keyof typeof locales)[]) {
+        const copy = tool.copy[locale];
         if (!copy?.title?.trim() || !copy?.description?.trim())
-          issues.push(`${tool.id}: missing ${region} copy`);
+          issues.push(`${tool.id}: missing ${locale} copy`);
       }
     }
   }

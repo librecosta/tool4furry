@@ -1,4 +1,4 @@
-import type { Region } from '../config/region';
+import type { Locale } from '../i18n/locale';
 
 // Astro/build only; keep editorial and legal copy out of React navigation bundles.
 export type InformationKind = 'about' | 'privacy' | 'terms';
@@ -18,8 +18,8 @@ const repository = 'https://github.com/librecosta/tool4furry';
 const feedback = `${repository}/issues`;
 const license = `${repository}/blob/master/LICENSE`;
 
-export const informationContent: Record<Region, Record<InformationKind, InformationContent>> = {
-  cn: {
+const translatedInformation: Record<Locale, Record<InformationKind, InformationContent>> = {
+  zh: {
     about: {
       title: '关于 Tool4Furry',
       description: '了解由 LibreCosta 开发的 Tool4Furry：面向 Furry 创作者的浏览器工具箱、当前开发状态与开源代码。',
@@ -97,7 +97,7 @@ export const informationContent: Record<Region, Record<InformationKind, Informat
       ],
     },
   },
-  global: {
+  en: {
     about: {
       title: 'About Tool4Furry',
       description: 'Meet Tool4Furry, a browser toolbox for furry creators by LibreCosta. Learn about its focus, development status and open-source code.',
@@ -177,3 +177,6 @@ export const informationContent: Record<Region, Record<InformationKind, Informat
     },
   },
 };
+
+// Shared today; regional policy differences belong here, not in language selection.
+export const informationContent = { cn: translatedInformation, global: translatedInformation };

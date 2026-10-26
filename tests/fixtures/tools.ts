@@ -16,8 +16,8 @@ export function fixtureTool(
     status: 'published',
     regions: ['cn', 'global'],
     copy: {
-      cn: { title: `${id} 中文`, description: '仅用于测试的说明' },
-      global: { title: `${id} English`, description: 'Test-only description' },
+      zh: { title: `${id} 中文`, description: '仅用于测试的说明' },
+      en: { title: `${id} English`, description: 'Test-only description' },
     },
     ...overrides,
   };

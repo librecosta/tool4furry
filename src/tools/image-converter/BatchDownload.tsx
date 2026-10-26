@@ -15,7 +15,7 @@ export function BatchDownload({
   session: ConverterSession;
   view: ConverterView;
   blocked: boolean;
-  t: (typeof converterMessages)['cn'];
+  t: (typeof converterMessages)['zh'];
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<'budget' | 'changed' | 'failed'>();

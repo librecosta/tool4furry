@@ -1,3 +1,4 @@
+import { localizedPath, type Locale } from '../../i18n/locale';
 import * as stylex from '@stylexjs/stylex';
 import { ToolboxIcon, CaretDownIcon } from '@phosphor-icons/react';
 import type { Region } from '../../config/region';
@@ -5,11 +6,11 @@ import { messages } from '../../i18n/messages';
 import { getHomepageEntries } from '../../site/catalog';
 import { navigationStyles as n } from '../../styles/navigation';
 
-export function ToolboxDisclosure({ region, currentToolId, compact = false }: {
-  region: Region; currentToolId?: string; compact?: boolean;
+export function ToolboxDisclosure({ region, locale, currentToolId, compact = false }: {
+  region: Region; locale: Locale; currentToolId?: string; compact?: boolean;
 }) {
-  const t = messages[region];
-  const entries = getHomepageEntries(region, undefined, undefined, import.meta.env.DEV);
+  const t = messages[locale];
+  const entries = getHomepageEntries(region, undefined, undefined, import.meta.env.DEV, locale);
   return (
     // The native open attribute may already change before island hydration.
     // React leaves it uncontrolled; preserve that early user interaction.
@@ -25,7 +26,7 @@ export function ToolboxDisclosure({ region, currentToolId, compact = false }: {
       <div data-tool-positioner suppressHydrationWarning {...stylex.props(n.positioner, compact && n.compactPositioner)}>
         <div data-tool-panel {...stylex.props(n.panel, compact && n.compactPanel)}>
           <div {...stylex.props(n.panelHeader, compact && n.compactPanelHeader)}>
-            <span>{t.featuredTools}</span><a href="/tools/" {...stylex.props(n.browse)}>{t.browseAll}</a>
+            <span>{t.featuredTools}</span><a href={localizedPath('/tools/', region, locale)} {...stylex.props(n.browse)}>{t.browseAll}</a>
           </div>
           <div {...stylex.props(n.tools)}>
             {entries.length === 0 && <p {...stylex.props(n.empty)}>{t.empty}</p>}

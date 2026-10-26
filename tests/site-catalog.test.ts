@@ -1,3 +1,4 @@
+import { defaultLocale } from '../src/i18n/locale';
 import { describe, expect, it } from 'vitest';
 import {
   getCatalogEntries,
@@ -24,8 +25,8 @@ function fixture(
     status: 'published',
     regions: ['cn', 'global'],
     copy: {
-      cn: { title: `${id} 中文`, description: '中文说明' },
-      global: { title: `${id} English`, description: 'English description' },
+      zh: { title: `${id} 中文`, description: '中文说明' },
+      en: { title: `${id} English`, description: 'English description' },
     },
     ...overrides,
   };
@@ -42,7 +43,7 @@ describe('static tool discovery', () => {
     (region) => {
       const entries = getCatalogEntries(region, undefined, true);
       expect(entries.map((entry) => [entry.id, entry.href, entry.title])).toEqual([
-        ['image-converter', '/tools/image-converter/', imageConverterDefinition.copy[region].title],
+        ['image-converter', '/tools/image-converter/', imageConverterDefinition.copy[defaultLocale(region)].title],
       ]);
       expect(getHomepageEntries(region, undefined, [], true)).toEqual(entries);
       expect(getCatalogSections(region, undefined, true).flatMap((section) =>

@@ -128,3 +128,7 @@ public/brand/     可替换单一 Mark、静态 Creative Fragments SVG
 停止 dev 后可额外运行 `node scripts/verify-tool-fixture.mjs cn` 和 `node scripts/verify-tool-fixture.mjs global`：它们只在测试构建期间替换内存模块，输出到仓库外 `../.validation/platform-v04a/<region>/`，复用生产守卫验证非空页面及长文不进客户端 JS；不修改生产 Registry。**这些测试产物不可部署。**
 
 原生图片探测的复现方式、固定样本与限制见 [能力记录](docs/image-processing-capabilities.md)。A 没有安装 WASM 或图片库，没有修改 FileDropzone/ScrollDock；已测 Chromium 结果不能作为 Firefox/WebKit 或真机兼容性声明，相关验证按 L3 推进，不自动阻断 Beta。
+
+### Region and locale
+
+`pnpm dev` still starts only CN (`http://127.0.0.1:54321`) and Global (`http://127.0.0.1:54322`). Each serves both languages: CN uses `/` (中文) and `/en/`; Global uses `/` (English) and `/zh/`. The same prefixes apply to `tools/`, `about/`, `privacy/`, `terms/` and available tool slugs. Navigation language links remain on the current origin. Footer region links select the other deployment while keeping the language, with unavailable tools falling back to its localized catalog. Production still builds only `dist/cn` and `dist/global`; Lab and drafts remain DEV-only.

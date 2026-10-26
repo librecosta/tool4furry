@@ -1,4 +1,5 @@
 ---
+import { defaultLocale } from '../../i18n/locale';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { pageLanguageLink } from '../../config/navigation';
 import LabRuntime from '../../lab/LabRuntime';
@@ -8,8 +9,9 @@ import { messages } from '../../lab/messages';
 export function getStaticPaths() { return getLabPaths(import.meta.env.DEV); }
 interface Props { mode: LabMode }
 const { mode } = Astro.props;
-const t = messages[region];
+const locale = defaultLocale(region);
+const t = messages[locale];
 ---
-<SiteLayout title={`${t.lab} / ${t[mode]}`} workspace noindex documentScroll={false}>
-  <main id="main-content"><LabRuntime navigation={pageLanguageLink(Astro.url.pathname)} mode={mode} region={region} client:load /></main>
+<SiteLayout locale={locale} title={`${t.lab} / ${t[mode]}`} workspace noindex documentScroll={false}>
+  <main id="main-content"><LabRuntime navigation={pageLanguageLink(Astro.url.pathname)} mode={mode} region={region} locale={locale} client:load /></main>
 </SiteLayout>

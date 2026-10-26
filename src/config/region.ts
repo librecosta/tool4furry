@@ -5,7 +5,7 @@ export function parseRegion(value: string | undefined): Region {
   throw new Error(`Unsupported SITE_REGION: ${value}`);
 }
 export const regions = {
-  cn: { lang: 'zh-CN', site: 'https://tool4furry.cn' },
-  global: { lang: 'en', site: 'https://tool4furry.com' },
+  cn: { defaultLocale: 'zh', site: 'https://tool4furry.cn' },
+  global: { defaultLocale: 'en', site: 'https://tool4furry.com' },
 } as const;
 export { devOrigins } from './dev-origins.mjs';

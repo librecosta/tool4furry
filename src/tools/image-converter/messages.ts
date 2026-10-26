@@ -1,11 +1,11 @@
-import type { Region } from '../../config/region';
+import type { Locale } from '../../i18n/locale';
 import type { ImageErrorCode } from '../image/types';
 import {
   mobileImageLimits,
   zipOutputBytes,
   type ImageLimits,
 } from '../image/limits';
-const cn = {
+const zhMessages = {
   local: '图片只在当前浏览器内处理，不会上传。',
   fileDetails: '支持格式与限制',
   pick: '选择图片或拖放到这里',
@@ -114,7 +114,7 @@ const cn = {
     cancelled: '操作已取消。',
   } satisfies Record<ImageErrorCode, string>,
 };
-const global: typeof cn = {
+const en: typeof zhMessages = {
   local: 'Images stay in this browser. Nothing is uploaded.',
   fileDetails: 'Supported formats and limits',
   pick: 'Choose images or drop them here',
@@ -235,9 +235,9 @@ const global: typeof cn = {
   },
 };
 /** All visible bounds come from the same immutable limits used by this workspace. */
-export function getConverterMessages(region: Region, limits: ImageLimits) {
-  const t = region === 'cn' ? cn : global;
-  const zh = region === 'cn';
+export function getConverterMessages(locale: Locale, limits: ImageLimits) {
+  const t = locale === 'zh' ? zhMessages : en;
+  const zh = locale === 'zh';
   const perFile = limits.bytes / 1024 ** 2;
   const total = limits.totalBytes / 1024 ** 2;
   const pixels = zh
@@ -273,6 +273,6 @@ export function getConverterMessages(region: Region, limits: ImageLimits) {
   };
 }
 export const converterMessages = {
-  cn: getConverterMessages('cn', mobileImageLimits),
-  global: getConverterMessages('global', mobileImageLimits),
+  zh: getConverterMessages('zh', mobileImageLimits),
+  en: getConverterMessages('en', mobileImageLimits),
 };

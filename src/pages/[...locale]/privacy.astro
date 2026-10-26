@@ -1,0 +1,8 @@
+---
+import { localePaths } from '../../i18n/locale';
+import InformationPage from '../../components/site/InformationPage.astro';
+import { region } from '../../config/site';
+export function getStaticPaths() { return localePaths(region); }
+const { locale } = Astro.props;
+---
+<InformationPage locale={locale} kind="privacy" />

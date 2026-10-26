@@ -162,7 +162,7 @@ describe('one image limit contract', () => {
       session.dispose();
     },
   );
-  it.each(['cn', 'global'] as const)(
+  it.each(['zh', 'en'] as const)(
     'renders true profile bounds without internal language (%s)',
     (region) => {
       for (const limits of [desktop, mobile]) {

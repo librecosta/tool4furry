@@ -14,7 +14,7 @@ const content = {
   intro: 'Test intro',
 };
 const map: ToolContentMap = {
-  one: { cn: content, global: { ...content, h1: 'English heading' } },
+  one: { zh: content, en: { ...content, h1: 'English heading' } },
 };
 describe('Astro-only content boundary', () => {
   it('requires localized content only for published region routes', () => {
@@ -31,16 +31,16 @@ describe('Astro-only content boundary', () => {
     expect(() => getToolPageContent({ ...one, regions: ['cn'] }, 'global', map, true)).toThrow('Unpublished');
     expect(() =>
       assertPublishedContent([{ ...one, regions: ['cn'] }], {
-        one: { cn: content },
+        one: { zh: content },
       }),
-    ).not.toThrow();
+    ).toThrow('en');
   });
   it.each(['title', 'description', 'h1', 'intro'])(
     'blocks missing %s before publication',
     (key) => {
       expect(() =>
         getToolPageContent(fixtureTool('one'), 'cn', {
-          one: { cn: { ...content, [key]: '' } },
+          one: { zh: { ...content, [key]: '' } },
         }),
       ).toThrow('Missing tool content');
     },
@@ -53,12 +53,12 @@ describe('Astro-only content boundary', () => {
     ])
       expect(() =>
         getToolPageContent(fixtureTool('one'), 'cn', {
-          one: { cn: { ...content, ...bad } },
+          one: { zh: { ...content, ...bad } },
         }),
       ).toThrow();
     expect(() =>
-      assertPublishedContent([fixtureTool('one')], { one: { cn: content } }),
-    ).toThrow('global');
+      assertPublishedContent([fixtureTool('one')], { one: { zh: content } }),
+    ).toThrow('en');
   });
   it('keeps related tools published, regional, bounded and distinct from the current tool', () => {
     const one = fixtureTool('one');

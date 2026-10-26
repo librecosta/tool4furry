@@ -12,7 +12,7 @@ import { converterMessages } from '../src/tools/image-converter/messages';
 import { UiProvider } from '../src/ui/UiProvider';
 import { messages } from '../src/i18n/messages';
 
-const labels = converterMessages.global.viewer;
+const labels = converterMessages.en.viewer;
 let viewport = { width: 800, height: 600 };
 let resize: () => void;
 const disconnect = vi.fn();
@@ -51,7 +51,7 @@ beforeEach(() => {
 afterEach(() => vi.restoreAllMocks());
 function viewer(src = 'blob:original') {
   return (
-    <UiProvider labels={messages.global}>
+    <UiProvider labels={messages.en}>
       <ImagePreviewViewport
         src={src}
         width={1600}

@@ -1,3 +1,4 @@
+import { defaultLocale, localizedPath, type Locale } from '../i18n/locale';
 import type { Region } from '../config/region';
 import { getAvailableTools, tools } from '../tools/registry';
 import { domains, groups, audiences, contexts } from './taxonomy';
@@ -7,17 +8,17 @@ export const featuredToolIds: readonly string[] = [];
 export const HOME_TOOL_LIMIT = 9;
 
 // Presentation metadata only. The existing registry remains the publication gate.
-export function getCatalogEntries(region: Region, registry = tools, dev = false) {
+export function getCatalogEntries(region: Region, registry = tools, dev = false, locale: Locale = defaultLocale(region)) {
   return getAvailableTools(region, dev, registry).map((tool) => ({
     id: tool.id,
-    href: `/tools/${tool.slug}/`,
-    ...tool.copy[region],
+    href: localizedPath(`/tools/${tool.slug}/`, region, locale),
+    ...tool.copy[locale],
     category: Object.hasOwn(domains, tool.category)
-      ? domains[tool.category][region]
+      ? domains[tool.category][locale]
       : undefined,
     categoryId: tool.category,
     groupId: tool.group,
-    group: groups[tool.group]?.[region],
+    group: groups[tool.group]?.[locale],
     audiences: tool.audiences ?? [],
     contexts: tool.contexts ?? [],
   }));
@@ -29,8 +30,9 @@ export function getHomepageEntries(
   registry = tools,
   featured = featuredToolIds,
   dev = false,
+  locale: Locale = defaultLocale(region),
 ) {
-  const entries = getCatalogEntries(region, registry, dev);
+  const entries = getCatalogEntries(region, registry, dev, locale);
   const byId = new Map(entries.map((entry) => [entry.id, entry]));
   const ordered = [
     ...new Set([...featured, ...entries.map((entry) => entry.id)]),
@@ -40,17 +42,17 @@ export function getHomepageEntries(
     .slice(0, HOME_TOOL_LIMIT);
 }
 
-export function getCatalogSections(region: Region, registry = tools, dev = false) {
-  const entries = getCatalogEntries(region, registry, dev);
+export function getCatalogSections(region: Region, registry = tools, dev = false, locale: Locale = defaultLocale(region)) {
+  const entries = getCatalogEntries(region, registry, dev, locale);
   return Object.entries(domains)
     .map(([id, label]) => ({
       id,
-      label: label[region],
+      label: label[locale],
       groups: Object.entries(groups)
         .filter(([, group]) => group.category === id)
         .map(([groupId, group]) => ({
           id: groupId,
-          label: group[region],
+          label: group[locale],
           entries: entries.filter(
             (entry) => entry.groupId === groupId && entry.categoryId === id,
           ),
@@ -60,21 +62,21 @@ export function getCatalogSections(region: Region, registry = tools, dev = false
     .filter((domain) => domain.groups.length > 0);
 }
 
-export function getDiscoverySections(region: Region, registry = tools, dev = false) {
-  const entries = getCatalogEntries(region, registry, dev);
+export function getDiscoverySections(region: Region, registry = tools, dev = false, locale: Locale = defaultLocale(region)) {
+  const entries = getCatalogEntries(region, registry, dev, locale);
   return [
     ...Object.entries(audiences).map(([id, label]) => ({
       id: `audience-${id}`,
-      label: label[region],
-      reason: label.reason[region],
+      label: label[locale],
+      reason: label.reason[locale],
       entries: entries.filter((entry) =>
         entry.audiences.some((value) => value === id),
       ),
     })),
     ...Object.entries(contexts).map(([id, label]) => ({
       id: `context-${id}`,
-      label: label[region],
-      reason: label.reason[region],
+      label: label[locale],
+      reason: label.reason[locale],
       entries: entries.filter((entry) =>
         entry.contexts.some((value) => value === id),
       ),

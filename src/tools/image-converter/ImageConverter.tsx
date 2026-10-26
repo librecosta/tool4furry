@@ -31,10 +31,10 @@ const bytes = (value: number) => {
   const divisor = unit === 'MiB' ? 1024 ** 2 : unit === 'KiB' ? 1024 : 1;
   return `${(value / divisor).toLocaleString('en-US', { maximumFractionDigits: 1 })} ${unit}`;
 };
-export default function ImageConverter({ region }: ToolProps) {
+export default function ImageConverter({ locale }: ToolProps) {
   const [session, setSession] = useState<ConverterSession>();
   const limits = session?.limits ?? mobileImageLimits;
-  const t = getConverterMessages(region, limits);
+  const t = getConverterMessages(locale, limits);
   const [view, setView] = useState<ConverterView>(() => {
     const processing = createProcessingState<EncodeSettings, ImageResult>(
       recommendations.webp,

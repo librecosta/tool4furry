@@ -1,3 +1,4 @@
+import { defaultLocale, locales, type Locale } from '../i18n/locale';
 import type { Region } from '../config/region';
 import type { ToolDefinition } from '../tools/types';
 import { getAvailableTools, getPublishedTools, tools } from '../tools/registry';
@@ -15,7 +16,7 @@ export type ToolPageContent = {
   faq?: readonly { question: string; answer: string }[];
 };
 export type ToolContentMap = Readonly<
-  Record<string, Partial<Record<Region, ToolPageContent>>>
+  Record<string, Partial<Record<Locale, ToolPageContent>>>
 >;
 export const toolPageContents: ToolContentMap = {
   'image-converter': imageConverterContent,
@@ -26,11 +27,12 @@ export function getToolPageContent(
   region: Region,
   contents = toolPageContents,
   dev = false,
+  locale: Locale = defaultLocale(region),
 ) {
   if (!getAvailableTools(region, dev, [tool]).length)
-    throw new Error(`Unpublished tool content: ${tool.id}/${region}`);
+    throw new Error(`Unpublished tool content: ${tool.id}/${region}/${locale}`);
   const content = Object.hasOwn(contents, tool.id)
-    ? contents[tool.id]?.[region]
+    ? contents[tool.id]?.[locale]
     : undefined;
   if (
     !content ||
@@ -38,15 +40,15 @@ export function getToolPageContent(
       (key) => !content[key as keyof ToolPageContent]?.toString().trim(),
     )
   )
-    throw new Error(`Missing tool content: ${tool.id}/${region}`);
+    throw new Error(`Missing tool content: ${tool.id}/${region}/${locale}`);
   if ((content.title.match(/Tool4Furry/g) ?? []).length !== 1)
-    throw new Error(`Tool title needs one brand: ${tool.id}/${region}`);
+    throw new Error(`Tool title needs one brand: ${tool.id}/${region}/${locale}`);
   for (const values of [content.features, content.steps, content.limitations]) {
     if (values?.some((value) => !value.trim()))
-      throw new Error(`Empty tool guide item: ${tool.id}/${region}`);
+      throw new Error(`Empty tool guide item: ${tool.id}/${region}/${locale}`);
   }
   if (content.faq?.some((item) => !item.question.trim() || !item.answer.trim()))
-    throw new Error(`Empty FAQ: ${tool.id}/${region}`);
+    throw new Error(`Empty FAQ: ${tool.id}/${region}/${locale}`);
   return content;
 }
 export function assertPublishedContent(
@@ -55,7 +57,8 @@ export function assertPublishedContent(
 ) {
   for (const region of ['cn', 'global'] as const)
     for (const tool of getPublishedTools(region, registry))
-      getToolPageContent(tool, region, contents);
+      for (const locale of Object.keys(locales) as Locale[])
+        getToolPageContent(tool, region, contents, false, locale);
 }
 export function getRelatedTools(
   tool: ToolDefinition,

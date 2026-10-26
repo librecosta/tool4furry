@@ -208,9 +208,9 @@ describe('FileDropzone', () => {
 it('keeps the FilesLab queue with its caller and supports repeat, remove and confirmed clear', async () => {
   setViewport();
   const user = userEvent.setup();
-  const t = labMessages.cn;
+  const t = labMessages.zh;
   const { container } = render(
-    <UiProvider labels={messages.cn}>
+    <UiProvider labels={messages.zh}>
       <FilesLab t={t} header={null} />
     </UiProvider>,
   );

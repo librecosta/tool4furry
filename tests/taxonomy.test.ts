@@ -23,8 +23,8 @@ describe('publication metadata gate', () => {
     expect(groups).toEqual({
       'image-processing': {
         category: 'images',
-        cn: '图片处理',
-        global: 'Image Processing',
+        zh: '图片处理',
+        en: 'Image Processing',
       },
     });
     expect(() => assertValidRegistry(tools, toolLoaders)).not.toThrow();
@@ -88,12 +88,12 @@ describe('publication metadata gate', () => {
       registryIssues(
         [
           fixtureTool('one', {
-            copy: { ...tool.copy, cn: { title: '', description: '' } },
+            copy: { ...tool.copy, zh: { title: '', description: '' } },
           }),
         ],
         fixtureLoaders([tool]),
       ),
-    ).toContain('one: missing cn copy');
+    ).toContain('one: missing zh copy');
     expect(
       registryIssues([fixtureTool('draft', { status: 'draft' })], {}),
     ).toEqual([]);

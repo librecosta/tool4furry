@@ -17,7 +17,7 @@ import { messages as labMessages } from '../src/lab/messages';
 import { setViewport } from './setup';
 
 beforeEach(() => setViewport());
-const labels = messages.global;
+const labels = messages.en;
 
 describe('UI primitives', () => {
   it('keeps button semantics and prevents disabled/loading activation', async () => {
@@ -262,9 +262,9 @@ describe('UI primitives', () => {
   });
   it('exposes observable validation and confirmation in the gallery', async () => {
     const user = userEvent.setup();
-    const t = labMessages.cn;
+    const t = labMessages.zh;
     render(
-      <UiProvider labels={messages.cn}>
+      <UiProvider labels={messages.zh}>
         <UILab t={t} header={null} />
       </UiProvider>,
     );

@@ -1,7 +1,7 @@
 import type { ToolContentMap } from './tool-content';
 // Astro-only editorial content. Never imported by the React implementation.
 export const imageConverterContent: ToolContentMap[string] = {
-  cn: {
+  zh: {
     title: '在线图片格式转换器 - PNG、JPG、WebP 转换 | Tool4Furry',
     h1: '在线图片格式转换器',
     description:
@@ -43,7 +43,7 @@ export const imageConverterContent: ToolContentMap[string] = {
       },
     ],
   },
-  global: {
+  en: {
     title: 'Online Image Converter - PNG, JPG & WebP | Tool4Furry',
     h1: 'Online Image Converter',
     description:

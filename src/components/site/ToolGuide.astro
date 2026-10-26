@@ -1,17 +1,18 @@
 ---
+import { localizedPath, type Locale } from '../../i18n/locale';
 import * as stylex from '@stylexjs/stylex';
 import { siteStyles as s } from '../../styles/site';
 import type { ToolPageContent } from '../../site/tool-content';
 import type { ToolDefinition } from '../../tools/types';
 import type { Region } from '../../config/region';
 import { messages } from '../../i18n/messages';
-interface Props { content: ToolPageContent; related: readonly ToolDefinition[]; region: Region }
-const { content, related, region } = Astro.props;
-const t = messages[region];
+interface Props { content: ToolPageContent; related: readonly ToolDefinition[]; region: Region; locale: Locale }
+const { content, related, region, locale } = Astro.props;
+const t = messages[locale];
 ---
 <div data-tool-guide {...stylex.attrs(s.fluid, s.readable, s.toolGuide)}>
   {content.steps && content.steps.length > 0 && <section aria-labelledby="tool-steps"><h2 id="tool-steps" {...stylex.attrs(s.sectionHeading)}>{t.toolSteps}</h2><ol>{content.steps.map(step => <li>{step}</li>)}</ol></section>}
   {content.limitations && content.limitations.length > 0 && <section aria-labelledby="tool-limitations"><h2 id="tool-limitations" {...stylex.attrs(s.sectionHeading)}>{t.toolLimitations}</h2><ul>{content.limitations.map(item => <li>{item}</li>)}</ul></section>}
   {content.faq && content.faq.length > 0 && <section aria-labelledby="tool-faq"><h2 id="tool-faq" {...stylex.attrs(s.sectionHeading)}>{t.toolFaq}</h2>{content.faq.map(item => <details {...stylex.attrs(s.faqItem)}><summary {...stylex.attrs(s.faqQuestion)}><span>{item.question}</span><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" {...stylex.attrs(s.faqChevron)}><path d="m6 9 6 6 6-6" /></svg></summary><p {...stylex.attrs(s.faqAnswer)}>{item.answer}</p></details>)}</section>}
-  {related.length > 0 && <section data-related-tools aria-labelledby="related-tools"><h2 id="related-tools" {...stylex.attrs(s.sectionHeading)}>{t.relatedTools}</h2><ul>{related.map(tool => <li><a href={`/tools/${tool.slug}/`} {...stylex.attrs(s.link)}>{tool.copy[region].title}</a></li>)}</ul></section>}
+  {related.length > 0 && <section data-related-tools aria-labelledby="related-tools"><h2 id="related-tools" {...stylex.attrs(s.sectionHeading)}>{t.relatedTools}</h2><ul>{related.map(tool => <li><a href={localizedPath(`/tools/${tool.slug}/`, region, locale)} {...stylex.attrs(s.link)}>{tool.copy[locale].title}</a></li>)}</ul></section>}
 </div>

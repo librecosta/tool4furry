@@ -1,6 +1,6 @@
-import type { Region } from '../config/region';
+import type { Locale } from '../i18n/locale';
 
-const cn = {
+const zh = {
   files: '文件与滚动',
   filesIntro:
     '开发演示：文件仅保留在浏览器内。本页只展示名称、大小和类型，不读取文件内容、不生成预览、不上传或保存文件。',
@@ -132,8 +132,8 @@ const cn = {
   batchSetting: '示例输出格式',
   completed: '模拟完成数',
 };
-export type LabMessages = { [K in keyof typeof cn]: string };
-const global: LabMessages = {
+export type LabMessages = { [K in keyof typeof zh]: string };
+const en: LabMessages = {
   files: 'Files and scroll',
   filesIntro:
     'Development demo: files stay in your browser. This page shows names, sizes and types only. It does not read contents, create previews, upload or persist files.',
@@ -270,4 +270,4 @@ const global: LabMessages = {
   batchSetting: 'Demo output format',
   completed: 'Simulated completions',
 };
-export const messages: Record<Region, LabMessages> = { cn, global };
+export const messages: Record<Locale, LabMessages> = { zh: zh, en: en };
