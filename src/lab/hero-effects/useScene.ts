@@ -3,7 +3,7 @@ import { createSceneLoop, type FrameMetrics } from './scene-runtime';
 import { qualities, type Quality } from './geometry';
 
 export type SceneStatus = 'running' | 'paused' | 'reduced' | 'hidden' | 'offscreen' | 'unavailable';
-export type MeshLayout = { mainLines: number; crossLines: number; samples: number; meshBytes: number };
+export type MeshLayout = { mainLines: number; farLines: number; crossLines: number; samples: number; meshBytes: number };
 export type SceneStats = FrameMetrics & MeshLayout & { status: SceneStatus; width: number; height: number; pixelWidth: number; pixelHeight: number; dpr: number; screenDpr: number; maxFps: number };
 export type Renderer = { layout: () => MeshLayout; resize: (width: number, height: number, dpr: number) => void; draw: (dt: number, elapsed: number) => void; active: (running: boolean) => void; dispose: () => void };
 export type SceneFactory = (canvas: HTMLCanvasElement, quality: Quality, overlay: boolean) => Renderer;
@@ -22,10 +22,10 @@ export function useScene(canvasRef: RefObject<HTMLCanvasElement | null>, create:
     let width = 1, height = 1, dpr = 1, screenDpr = 1;
     let densityQuery: MediaQueryList | undefined;
     const media = matchMedia('(prefers-reduced-motion: reduce)');
-    const maxFps = () => props.quality === 'low' || width <= 760 ? 30 : 60;
+    const maxFps = () => qualities[props.quality].fps;
     const status = (): SceneStatus => failed ? 'unavailable' : media.matches ? 'reduced' : paused.current ? 'paused' : document.hidden ? 'hidden' : !visible ? 'offscreen' : 'running';
     const emit = () => {
-      if (!disposed) report.current({ ...loop.metrics(), ...(renderer?.layout() ?? { mainLines: 0, crossLines: 0, samples: 0, meshBytes: 0 }), status: status(), width, height, pixelWidth: canvas.width, pixelHeight: canvas.height, dpr, screenDpr, maxFps: maxFps() });
+      if (!disposed) report.current({ ...loop.metrics(), ...(renderer?.layout() ?? { mainLines: 0, farLines: 0, crossLines: 0, samples: 0, meshBytes: 0 }), status: status(), width, height, pixelWidth: canvas.width, pixelHeight: canvas.height, dpr, screenDpr, maxFps: maxFps() });
     };
     const loop = createSceneLoop((dt, elapsed) => {
       try { renderer?.draw(dt, elapsed); }

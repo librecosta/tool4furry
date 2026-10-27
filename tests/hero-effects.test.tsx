@@ -1,36 +1,92 @@
 import { act, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useRef } from 'react';
-import { meshBudget, projectSurface, qualities, spacingFade, surface } from '../src/lab/hero-effects/geometry';
+import { gradientNoise, layers, meshBudget, projectSurface, qualities, spacingFade, surface } from '../src/lab/hero-effects/geometry';
 import { createSceneLoop, summarize } from '../src/lab/hero-effects/scene-runtime';
 import { useScene, type Renderer, type SceneStats } from '../src/lab/hero-effects/useScene';
 import { createWavesRenderer } from '../src/lab/hero-effects/waves-renderer';
 
-describe('continuous surface and screen-space density', () => {
-  it('has finite, continuous geometry and non-uniform ridge/valley lighting', () => {
-    for (const time of [0, 17, 500]) for (let v = 0; v <= 1; v += 0.1) for (let u = 0; u <= 1; u += 0.01) {
-      const a = projectSurface(u, v, time, 1440, 547, false);
-      const b = projectSurface(u + 0.001, v, time, 1440, 547, false);
-      expect(Object.values(a).every(Number.isFinite)).toBe(true);
-      expect(Math.hypot(a.x - b.x, a.y - b.y)).toBeLessThan(3);
-      expect(Math.abs(surface(u, v, time + 0.016).height - surface(u, v, time).height)).toBeLessThan(0.001);
+describe('HSN-1 horizontal spectral surface', () => {
+  it('reproduces seeded gradient noise and has continuous analytic derivatives at cell edges', () => {
+    expect(gradientNoise(0.37, -1.24)).toEqual(gradientNoise(0.37, -1.24));
+    expect(gradientNoise(0.37, -1.24, 7).value).not.toEqual(gradientNoise(0.37, -1.24).value);
+    const h = 0.00001;
+    for (const x of [-2, -0.001, 0, 0.37, 1, 2.8]) for (const y of [-1, 0, 0.23, 1]) {
+      const n = gradientNoise(x, y), left = gradientNoise(x - h, y), right = gradientNoise(x + h, y);
+      expect(Object.values(n).every(Number.isFinite)).toBe(true);
+      expect(n.du).toBeCloseTo((right.value - left.value) / (2 * h), 5);
+      expect(n.dv).toBeCloseTo((gradientNoise(x, y + h).value - gradientNoise(x, y - h).value) / (2 * h), 5);
+      expect(n.duu).toBeCloseTo((right.du - left.du) / (2 * h), 3);
+      expect(Math.abs(right.value - left.value)).toBeLessThan(0.001);
     }
-    const ridge = projectSurface(0.74, 0.54, 0, 1440, 547, false);
-    expect(ridge.shade).toBeGreaterThan(projectSurface(0.43, 0.54, 0, 1440, 547, false).shade * 2);
-    expect(ridge.shade).toBeGreaterThan(projectSurface(0.74, 0.02, 0, 1440, 547, false).shade * 2);
-    expect(projectSurface(0.2, 0.5, 0, 1440, 547, true).shade).toBeLessThan(0.05);
   });
-  it('bounds sample/line budgets at DPR 1/2 and suppresses compressed perpendicular spacing', () => {
-    for (const quality of ['low', 'medium', 'high'] as const) for (const width of [390, 960, 1440]) for (const dpr of [1, 2, 2.5]) {
-      const b = meshBudget(width, 547, dpr, quality);
-      expect(b.rows).toBeLessThanOrEqual(qualities[quality].lines);
-      expect(b.columns).toBeLessThanOrEqual(qualities[quality].samples);
-      expect((b.rows + 1) * (b.columns + 1)).toBeLessThanOrEqual(65 * 321);
-      expect(b.cross).toBeLessThan(b.rows);
+  it('uses the frozen low-frequency spectral amplitudes and dispersion with slow continuous time', () => {
+    const u = 0.57, v = 0.42, time = 17;
+    let expected = 0;
+    for (const [f, a, beta, phi] of [[0.65, 0.035, 0.85, 3.15], [1.35, 0.012, -1.2, 0.9], [2.4, 0.004, 1.4, 2.4]]) {
+      const k = 2 * Math.PI * f;
+      expected += a * Math.cos(k * u + beta * v - 0.045 * Math.sqrt(k * Math.tanh(0.5 * k)) * time + phi);
     }
-    expect(spacingFade(100, 0, 0, 1, 1)).toBe(0);
+    expected += 0.008 / 1.47 * (gradientNoise(1.2 * u - 0.005 * time, 0.35 * v).value
+      + 0.35 * gradientNoise(2.4 * u - 0.008 * time, 0.7 * v).value + 0.12 * gradientNoise(4.8 * u - 0.01 * time, 1.4 * v).value);
+    expect(surface(u, v, time).height).toBeCloseTo(expected, 12);
+    const h = 0.0001, s = surface(u, v, time);
+    expect(s.du).toBeCloseTo((surface(u + h, v, time).height - surface(u - h, v, time).height) / (2 * h), 5);
+    expect(s.dv).toBeCloseTo((surface(u, v + h, time).height - surface(u, v - h, time).height) / (2 * h), 5);
+    expect(s.duu).toBeCloseTo((surface(u + h, v, time).du - surface(u - h, v, time).du) / (2 * h), 5);
+  });
+  it('has exact horizontal projection, unfolded rows, low slopes and bounded phone relief', () => {
+    for (const width of [390, 960, 1440]) for (const layer of ['far', 'main'] as const) for (const time of [0, 17, 500]) {
+      const height = width === 390 ? 680 : 547;
+      for (let v = 0; v < 1; v += 0.1) for (let u = 0; u <= 1; u += 0.02) {
+        const a = projectSurface(u, v, time, width, height, false, undefined, layer);
+        const b = projectSurface(u + 0.001, v, time, width, height, false, undefined, layer);
+        const next = projectSurface(u, v + 0.01, time, width, height, false, undefined, layer);
+        expect(Object.values(a).every(Number.isFinite)).toBe(true);
+        expect(a.x).toBe(width * u);
+        expect(next.y).toBeGreaterThan(a.y);
+        expect(Math.abs((b.y - a.y) / (b.x - a.x))).toBeLessThan(0.25);
+        expect(Math.abs(a.y - height * (layers[layer].base + layers[layer].span * v))).toBeLessThanOrEqual(Math.min(height, width * 0.5) * 0.06);
+        expect(Math.abs(surface(u, v, time + 1 / 24).height - surface(u, v, time).height)).toBeLessThan(0.0005);
+      }
+    }
+  });
+  it('lights localized curvature ridges and keeps valleys, far hatching and text safety darker', () => {
+    const shades: number[] = [], crests: number[] = [];
+    for (let u = 0.4; u <= 1; u += 0.01) {
+      shades.push(projectSurface(u, 0.8, 0, 1440, 547, false).shade);
+      crests.push(surface(u, 0.8, 0).crest);
+    }
+    expect(Math.max(...shades)).toBeGreaterThan(Math.min(...shades) * 3);
+    expect(crests.filter(v => v > 0.5).length).toBeLessThan(crests.length / 3);
+    for (let u = 0; u <= 1; u += 0.02) for (const t of [0, 20, 500]) {
+      const farEdge = projectSurface(u, 1, t, 1440, 547, false, undefined, 'far');
+      const mainEdge = projectSurface(u, 0, t, 1440, 547, false);
+      expect(mainEdge.y - farEdge.y).toBeGreaterThan(3);
+    }
+    const original = projectSurface(0.7, 0.5, 0, 1440, 547, false);
+    const moved = projectSurface(0.7, 0.5, 0, 1440, 547, false, { x: 0.7, y: original.y / 547, strength: 1 });
+    expect(moved.x).toBe(original.x);
+    expect(original.y - moved.y).toBeCloseTo(547 * 0.004);
+    expect(projectSurface(0.1, 0.5, 0, 1440, 547, false, { x: 0.7, y: original.y / 547, strength: 1 }).y)
+      .toBeCloseTo(projectSurface(0.1, 0.5, 0, 1440, 547, false).y, 5);
+    const main = projectSurface(0.7, 0.8, 0, 1440, 547, false);
+    expect(projectSurface(0.7, 0.8, 0, 1440, 547, false, undefined, 'far').shade).toBeLessThan(main.shade * 0.3);
+    expect(projectSurface(0.2, 0.5, 0, 1440, 547, true).shade).toBeLessThan(0.02);
+  });
+  it('bounds both layers and quality budgets and suppresses compressed device-pixel spacing', () => {
+    for (const quality of ['low', 'medium', 'high'] as const) for (const width of [390, 960, 1440]) for (const dpr of [1, 1.25, 2]) {
+      const b = meshBudget(width, 547, dpr, quality);
+      expect(b.rows + 1).toBeLessThanOrEqual(qualities[quality].lines);
+      expect(b.farRows).toBeLessThan(b.rows / 2);
+      expect(b.columns).toBeLessThanOrEqual(qualities[quality].samples);
+      expect((b.rows + b.farRows + 2) * (b.columns + 1)).toBeLessThanOrEqual(62 * 321);
+      expect(b.cross).toBeLessThanOrEqual(18);
+    }
+    expect(spacingFade(100, 0, 0, 1.5, 1)).toBe(0);
     expect(spacingFade(100, 0, 0, 1, 2)).toBeGreaterThan(0);
     expect(spacingFade(100, 0, 0, 4, 1)).toBe(1);
+    expect(spacingFade(100, 0, 0, 2.8, 1, 1)).toBeLessThan(spacingFade(100, 0, 0, 2.8, 1, 0));
     expect(spacingFade(100, 0, 50, 0, 2)).toBe(0);
     expect(spacingFade(100, 100, 1, 1, 2)).toBe(0);
   });
@@ -51,7 +107,7 @@ describe('honest timing and bounded redraws', () => {
     expect(summarize([], [], [], 0, 0).fps).toBeNull();
     expect(summarize([10, 10, 10, 50], [1, 5], [40, 40], 5, 3)).toMatchObject({ mean: 20, p95: 50, fps: 50, drawFps: 25, drawMean: 3, drawP95: 5 });
   });
-  it.each([30, 60])('limits 240 Hz callbacks to %i redraws with real elapsed animation time', limit => {
+  it.each([12, 24])('limits 240 Hz callbacks to %i redraws with real elapsed animation time', limit => {
     const r = clockHarness(limit); r.loop.setRunning(true);
     for (let i = 0; i <= 480; i++) r.step(i * 1000 / 240);
     expect(r.loop.metrics().frames).toBe(481);
@@ -62,12 +118,12 @@ describe('honest timing and bounded redraws', () => {
     r.loop.dispose(); expect(r.queued.size).toBe(0);
   });
   it('owns one RAF, excludes paused time and rejects late callbacks after disposal', () => {
-    const r = clockHarness(60);
+    const r = clockHarness(24);
     r.loop.setRunning(true); r.loop.setRunning(true); expect(r.queued.size).toBe(1);
-    r.step(0); r.step(17); r.loop.setRunning(false); expect(r.queued.size).toBe(0);
+    r.step(0); r.step(42); r.loop.setRunning(false); expect(r.queued.size).toBe(0);
     r.loop.setRunning(true); r.step(60000);
     expect(r.loop.metrics().samples).toBe(0);
-    const late = [...r.queued.values()][0]; r.loop.dispose(); late(60017);
+    const late = [...r.queued.values()][0]; r.loop.dispose(); late(60042);
     expect(r.draw).toHaveBeenCalledTimes(3); expect(r.queued.size).toBe(0);
   });
 });
@@ -90,7 +146,7 @@ describe('Canvas scene lifecycle', () => {
     const made: Renderer[] = [], stats = vi.fn<(stats: SceneStats) => void>();
     const create = vi.fn(() => {
       if (fail) throw Error('No Canvas');
-      const renderer = { layout: () => ({ mainLines: 40, crossLines: 12, samples: 100, meshBytes: 0 }), draw: vi.fn(), resize: vi.fn(), active: vi.fn(), dispose: vi.fn() };
+      const renderer = { layout: () => ({ mainLines: 40, farLines: 12, crossLines: 12, samples: 100, meshBytes: 0 }), draw: vi.fn(), resize: vi.fn(), active: vi.fn(), dispose: vi.fn() };
       made.push(renderer); return renderer;
     });
     function Harness({ pause }: { pause: boolean }) {
@@ -104,6 +160,7 @@ describe('Canvas scene lifecycle', () => {
   it('pauses without rebuilding and releases observers, density listener, RAF and pixels', () => {
     const r = setup(), canvas = r.container.querySelector('canvas')!;
     expect(queued.size).toBe(1);
+    expect(r.stats.mock.lastCall?.[0].maxFps).toBe(24);
     r.rerenderPause(true); expect(queued.size).toBe(0);
     expect(r.create).toHaveBeenCalledTimes(1);
     r.rerenderPause(false); expect(queued.size).toBe(1);
@@ -165,9 +222,9 @@ it('both mesh directions share projected vertices and disposal releases Canvas d
   const remove = vi.spyOn(canvas, 'removeEventListener');
   const renderer = createWavesRenderer(canvas, 'medium', false);
   renderer.resize(1440, 547, 1); renderer.draw(0, 0);
-  const { mainLines, crossLines, samples } = renderer.layout();
+  const { mainLines, farLines, crossLines, samples } = renderer.layout();
   expect(crossLines).toBeLessThan(mainLines);
-  expect(renderer.layout().meshBytes).toBe(mainLines * samples * 12);
+  expect(renderer.layout().meshBytes).toBe((mainLines + farLines) * samples * 12);
   const key = (x: number, y: number) => `${x},${y}`;
   const main = new Set<string>(), cross = new Set<string>();
   for (const [x, y, x2, y2] of segments) {

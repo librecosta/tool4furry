@@ -1,10 +1,10 @@
 import { clamp, meshBudget, projectSurface, spacingFade, type Quality } from './geometry';
 import type { Renderer } from './useScene';
 
-const SHADES = 24;
+const SHADES = 32;
 const colors = Array.from({ length: SHADES }, (_, i) => {
   const t = i / (SHADES - 1);
-  return `rgba(${Math.round(38 + t * 96)},${Math.round(76 + t * 113)},${Math.round(112 + t * 119)},${0.10 + t * 0.64})`;
+  return `rgba(${Math.round(44 + t * 125)},${Math.round(79 + t * 129)},${Math.round(110 + t * 122)},${0.14 + t * 0.75})`;
 });
 export function createWavesRenderer(canvas: HTMLCanvasElement, quality: Quality, overlay: boolean): Renderer {
   const ctx = canvas.getContext('2d', { alpha: false });
@@ -25,51 +25,66 @@ export function createWavesRenderer(canvas: HTMLCanvasElement, quality: Quality,
   canvas.addEventListener('pointerleave', leave); canvas.addEventListener('pointercancel', leave);
   const index = (row: number, column: number) => (row * (budget.columns + 1) + column) * 3;
   return {
-    layout: () => ({ mainLines: budget.rows + 1, crossLines: crossColumns.length, samples: budget.columns + 1, meshBytes: mesh.byteLength }),
+    layout: () => ({ mainLines: budget.rows + 1, farLines: budget.farRows + 1, crossLines: crossColumns.length, samples: budget.columns + 1, meshBytes: mesh.byteLength }),
     resize(w, h, scale) {
       width = w; height = h; dpr = scale;
       canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       budget = meshBudget(w, h, scale, quality);
-      mesh = new Float32Array((budget.rows + 1) * (budget.columns + 1) * 3);
+      mesh = new Float32Array((budget.rows + budget.farRows + 2) * (budget.columns + 1) * 3);
       crossColumns = Array.from({ length: budget.cross }, (_, i) => Math.round((i + 0.5) / budget.cross * budget.columns));
     },
     active(next) { enabled = next; if (!next) pointer.target = 0; },
     draw(dt, time) {
       if (disposed) return;
-      pointer.strength += (pointer.target - pointer.strength) * (1 - Math.exp(-dt * 7));
-      const { rows, columns } = budget;
-      for (let row = 0; row <= rows; row++) for (let column = 0; column <= columns; column++) {
-        const p = projectSurface(column / columns, row / rows, time, width, height, overlay, pointer);
-        const k = index(row, column);
-        mesh[k] = p.x; mesh[k + 1] = p.y; mesh[k + 2] = p.shade;
+      pointer.strength += (pointer.target - pointer.strength) * (1 - Math.exp(-dt * 3));
+      const { rows, farRows, columns } = budget, farStart = rows + 1;
+      for (const layer of ['main', 'far'] as const) {
+        const count = layer === 'main' ? rows : farRows, start = layer === 'main' ? 0 : farStart;
+        for (let row = 0; row <= count; row++) for (let column = 0; column <= columns; column++) {
+          const p = projectSurface(column / columns, row / count, time, width, height, overlay, pointer, layer);
+          const k = index(start + row, column);
+          mesh[k] = p.x; mesh[k + 1] = p.y; mesh[k + 2] = p.shade;
+        }
       }
       ctx.fillStyle = '#060B12'; ctx.fillRect(0, 0, width, height);
-      // Finite shade buckets batch geometric segments, without gradients/blur.
-      // Both line families read the same mesh vertices, including intersections.
-      const paths = Array.from({ length: SHADES }, () => new Path2D());
+      // Separate weights for far hatching, cross-lines and main silver ridges.
+      // All intersections use the very same projected vertices, without blur.
+      const paths = Array.from({ length: 3 }, () => Array.from({ length: SHADES }, () => new Path2D()));
+      const used = paths.map(() => new Set<number>());
       let previousShade = -1, previousEnd = -1;
-      const add = (a: number, b: number, neighbour: number, family: number) => {
-        const fade = spacingFade(mesh[b] - mesh[a], mesh[b + 1] - mesh[a + 1], mesh[neighbour] - mesh[a], mesh[neighbour + 1] - mesh[a + 1], dpr, mesh[a + 2]);
-        const intensity = (mesh[a + 2] + mesh[b + 2]) * 0.5 * fade * family;
+      const add = (a: number, b: number, neighbours: number[], family: number) => {
+        let fade = 1;
+        for (const n of neighbours) fade = Math.min(fade, spacingFade(mesh[b] - mesh[a], mesh[b + 1] - mesh[a + 1], mesh[n] - mesh[a], mesh[n + 1] - mesh[a + 1], dpr, mesh[a + 2]));
+        const intensity = (mesh[a + 2] + mesh[b + 2]) * 0.5 * fade * (family === 1 ? 0.32 : 1);
         const shade = Math.min(SHADES - 1, Math.floor(intensity * SHADES));
         if (shade < 1) { previousShade = -1; return; }
-        // Keep adjacent equal-shade segments as a continuous subpath. Thousands
-        // of separate two-point strokes cost more and expose antialias seams.
-        if (shade !== previousShade || a !== previousEnd) paths[shade].moveTo(mesh[a], mesh[a + 1]);
-        paths[shade].lineTo(mesh[b], mesh[b + 1]);
+        if (shade !== previousShade || a !== previousEnd) paths[family][shade].moveTo(mesh[a], mesh[a + 1]);
+        paths[family][shade].lineTo(mesh[b], mesh[b + 1]); used[family].add(shade);
         previousShade = shade; previousEnd = b;
       };
-      for (let row = 0; row <= rows; row++) for (let column = 0; column < columns; column++) {
-        add(index(row, column), index(row, column + 1), index(row === rows ? row - 1 : row + 1, column), 1);
+      for (const family of [0, 2]) {
+        const count = family === 2 ? rows : farRows, start = family === 2 ? 0 : farStart;
+        for (let row = 0; row <= count; row++) for (let column = 0; column < columns; column++) {
+          const neighbours = [index(family === 2 ? farStart + farRows : 0, column)];
+          if (row > 0) neighbours.push(index(start + row - 1, column));
+          if (row < count) neighbours.push(index(start + row + 1, column));
+          add(index(start + row, column), index(start + row, column + 1), neighbours, family);
+        }
+        previousShade = -1;
       }
-      // Cross-line spacing uses the next cross-line, not the dense sample grid.
+      // Check both actual adjacent cross-lines, not the dense sampling columns.
       for (let c = 0; c < crossColumns.length; c++) for (let row = 0; row < rows; row++) {
-        const column = crossColumns[c], neighbour = crossColumns[c === crossColumns.length - 1 ? c - 1 : c + 1];
-        add(index(row, column), index(row + 1, column), index(row, neighbour), 0.42);
+        const column = crossColumns[c], neighbours: number[] = [];
+        if (c > 0) neighbours.push(index(row, crossColumns[c - 1]));
+        if (c + 1 < crossColumns.length) neighbours.push(index(row, crossColumns[c + 1]));
+        add(index(row, column), index(row + 1, column), neighbours, 1);
       }
-      ctx.lineWidth = Math.max(0.6, 1 / dpr); ctx.lineCap = 'butt'; ctx.lineJoin = 'round';
-      for (let i = 1; i < paths.length; i++) { ctx.strokeStyle = colors[i]; ctx.stroke(paths[i]); }
+      ctx.lineCap = 'butt'; ctx.lineJoin = 'round';
+      for (let family = 0; family < paths.length; family++) for (const shade of used[family]) {
+        ctx.lineWidth = family === 0 ? 0.8 : family === 1 ? 0.75 : 0.9 + 0.45 * Math.pow(shade / (SHADES - 1), 2);
+        ctx.strokeStyle = colors[shade]; ctx.stroke(paths[family][shade]);
+      }
     },
     dispose() {
       if (disposed) return; disposed = true; enabled = false;

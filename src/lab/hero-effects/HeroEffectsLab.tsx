@@ -10,18 +10,18 @@ import { heroLabStyles as s } from './styles';
 
 const copy = {
   zh: {
-    description: 'DEV ONLY · Flow Field Waves。统一曲面的连续流线与稀疏横切线，按投影线距抑制密集细节。移动指针轻扰曲面；触屏保留页面滚动。',
+    description: 'DEV ONLY · Flow Field Waves。HSN-1 水平谱波曲面、低亮远景排线与稀疏横切线，按投影线距抑制密集细节。移动指针轻扰曲面；触屏保留页面滚动。',
     quality: '质量', low: '低', medium: '中', high: '高', overlay: '叠加首页文案', visual: '仅视觉', pause: '暂停', resume: '恢复', reset: '重置',
-    status: '状态', size: 'CSS / 画布像素', density: '屏幕 / 渲染 DPR', count: '主线 / 横切线 / 每线采样', fps: 'RAF 回调 / 实际重绘 FPS', limit: '重绘上限', mean: 'RAF 平均 / P95 间隔', draw: 'JS draw 平均 / P95', frames: 'RAF / 重绘累计', memory: '曲面数组 / 单像素缓冲估算',
-    explanation: '最近最多 180 个样本，每秒更新。RAF 回调与实际重绘分开统计；桌面最多约 60 次重绘/秒，小屏或低档约 30 次。JS draw 是同步 Canvas 调用耗时，不是 GPU 时间。像素估算按 RGBA 单缓冲计算，不代表浏览器总内存。暂停/后台/离屏停绘；Reduced Motion 默认静态，恢复按钮不会覆盖系统偏好。',
+    status: '状态', size: 'CSS / 画布像素', density: '屏幕 / 渲染 DPR', count: '主线 / 远景 / 横切线 / 每线采样', fps: 'RAF 回调 / 实际重绘 FPS', limit: '重绘上限', mean: 'RAF 平均 / P95 间隔', draw: 'JS draw 平均 / P95', frames: 'RAF / 重绘累计', memory: '曲面数组 / 单像素缓冲估算',
+    explanation: '最近最多 180 个样本，每秒更新。RAF 回调与实际重绘分开统计；低档最多 12 次重绘/秒，中/高档最多 24 次。JS draw 是同步 Canvas 调用耗时，不是 GPU 时间。像素估算按 RGBA 单缓冲计算，不代表浏览器总内存。暂停/后台/离屏停绘；Reduced Motion 默认静态，恢复按钮不会覆盖系统偏好。',
     fallback: 'Canvas 2D 暂不可用，当前为静态背景。可重置重试。',
     states: { running: '运行中', paused: '已暂停', reduced: '减少动态效果 · 静态', hidden: '后台暂停', offscreen: '离屏暂停', unavailable: '渲染不可用' } satisfies Record<SceneStatus, string>,
   },
   en: {
-    description: 'DEV ONLY · Flow Field Waves. Continuous streamlines and sparse cross-lines share one surface; projected spacing suppresses crowded detail. Move the pointer for a gentle local response; touch keeps page scrolling.',
+    description: 'DEV ONLY · Flow Field Waves. HSN-1 horizontal spectral surfaces, dim far hatching and sparse cross-lines; projected spacing suppresses crowded detail. Move the pointer for a gentle local response; touch keeps page scrolling.',
     quality: 'Quality', low: 'Low', medium: 'Medium', high: 'High', overlay: 'Overlay homepage copy', visual: 'Visual only', pause: 'Pause', resume: 'Resume', reset: 'Reset',
-    status: 'Status', size: 'CSS / canvas pixels', density: 'Screen / rendering DPR', count: 'Main / cross-lines / samples per line', fps: 'RAF callbacks / actual redraw FPS', limit: 'Redraw limit', mean: 'RAF mean / P95 interval', draw: 'Mean / P95 JS draw', frames: 'Total RAF / redraws', memory: 'Surface array / single pixel buffer estimate',
-    explanation: 'Up to 180 samples, updated once per second. RAF callbacks and actual redraws are measured separately; up to about 60 redraws/s on desktop, 30 on small screens or Low. JS draw measures synchronous Canvas calls, not GPU time. The pixel estimate is one RGBA buffer, not total browser memory. Pause, hidden tabs and offscreen scenes stop drawing. Reduced Motion is static; Resume does not override the system preference.',
+    status: 'Status', size: 'CSS / canvas pixels', density: 'Screen / rendering DPR', count: 'Main / far / cross-lines / samples per line', fps: 'RAF callbacks / actual redraw FPS', limit: 'Redraw limit', mean: 'RAF mean / P95 interval', draw: 'Mean / P95 JS draw', frames: 'Total RAF / redraws', memory: 'Surface array / single pixel buffer estimate',
+    explanation: 'Up to 180 samples, updated once per second. RAF callbacks and actual redraws are measured separately; up to 12 redraws/s on Low, 24 on Medium/High. JS draw measures synchronous Canvas calls, not GPU time. The pixel estimate is one RGBA buffer, not total browser memory. Pause, hidden tabs and offscreen scenes stop drawing. Reduced Motion is static; Resume does not override the system preference.',
     fallback: 'Canvas 2D is unavailable. Showing a static background; Reset can retry.',
     states: { running: 'Running', paused: 'Paused', reduced: 'Reduced motion · static', hidden: 'Hidden · paused', offscreen: 'Offscreen · paused', unavailable: 'Renderer unavailable' } satisfies Record<SceneStatus, string>,
   },
@@ -37,7 +37,7 @@ export default function HeroEffectsLab({ locale }: { locale: Locale }) {
     [c.status, stats ? c.states[stats.status] : '—'],
     [c.size, stats ? `${Math.round(stats.width)}×${Math.round(stats.height)} / ${stats.pixelWidth}×${stats.pixelHeight}` : '—'],
     [c.density, `${number(stats?.screenDpr, 2)} / ${number(stats?.dpr, 2)}`],
-    [c.count, stats ? `${stats.mainLines} / ${stats.crossLines} / ${stats.samples}` : '—'],
+    [c.count, stats ? `${stats.mainLines} / ${stats.farLines} / ${stats.crossLines} / ${stats.samples}` : '—'],
     [c.fps, `${number(stats?.fps)} / ${number(stats?.drawFps)}`],
     [c.limit, `${stats?.maxFps ?? '—'} / s`],
     [c.mean, `${number(stats?.mean)} / ${number(stats?.p95)} ms`],
