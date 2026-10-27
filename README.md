@@ -56,7 +56,7 @@ pnpm build:global
 | `pnpm preview` | 预览 CN 静态产物 |
 | `pnpm preview:global` | 预览 global 静态产物 |
 
-两套产物互不覆盖，每次构建都会检查语言、title/description/文本 OG、canonical、ICO/PNG favicon、真实工具目录与路由对应关系、首页外观及工具箱导航脚本精确白名单/零 Island/JS preload、自托管字体及授权、StyleX CSS 提取和 Lab 隔离。构建脚本用 cross-env，兼容 PowerShell。Astro/Vite 缓存按地区隔离；同一地区不要将 check/build 与 dev 混跑。
+两套产物互不覆盖，每次构建都会检查语言、title/description/OG/Twitter Card、正式 1200×630 PNG 封面、canonical、ICO/PNG favicon、真实工具目录与路由对应关系、首页外观及工具箱导航脚本精确白名单/零 Island/JS preload、自托管字体及授权、StyleX CSS 提取和 Lab 隔离。构建脚本用 cross-env，兼容 PowerShell。Astro/Vite 缓存按地区隔离；同一地区不要将 check/build 与 dev 混跑。
 
 每个输出目录都可独立作为普通 HTTP Server 的根目录，不需要 Astro 服务端。例如已安装 Python 时：
 
@@ -115,7 +115,7 @@ public/brand/     可替换单一 Mark、静态 Creative Fragments SVG
 
 人工重点复核 `/lab/canvas` 在 901/900px 切换、390px 竖屏及 812×375 横屏：打开参数前后画布不缩小，名称/大小/颜色/计数保留，Select → Sheet 两次 Escape 依次关闭且返回焦点。Form/Batch 手机依次阅读输入/执行/结果或队列/设置。内置 Chromium 验收属于视口模拟；真实 iOS/Android 的软键盘、触摸、安全区与辅助技术仍需人工检查。
 
-首页历史合同与验收见 [Site Homepage](docs/site-homepage.md)。V0.4-A 将 Header/Footer/404 的「工具箱」入口更新为 `/tools/` 完整目录，保留首页 `#tools` 兼容锚点；导航仍无吸顶或汉堡菜单。首页不加载 React 或动画运行时，品牌采用已审核双兽首 SVG Master，Favicon 提供 ICO/PNG，Hero 美术未改。当前没有探索主 CTA、搜索框或假工具卡。真实 `published` 工具按地区进入完整目录，首页精选最多 9 项；未知/错误分类在发布构建阶段拒绝。SEO 仅提供文本 OG，没有分享图。
+首页历史合同与验收见 [Site Homepage](docs/site-homepage.md)。V0.4-A 将 Header/Footer/404 的「工具箱」入口更新为 `/tools/` 完整目录，保留首页 `#tools` 兼容锚点；导航仍无吸顶或汉堡菜单。首页不加载 React 或动画运行时，品牌采用已审核双兽首 SVG Master，Favicon 提供 ICO/PNG，Hero 美术未改。当前没有探索主 CTA、搜索框或假工具卡。真实 `published` 工具按地区进入完整目录，首页精选最多 9 项；未知/错误分类在发布构建阶段拒绝。可索引页面共用正式 `public/brand/tool4furry-og.png`，图片 URL 使用本地区正式 HTTPS 域名；OG Locale 按内容语言解析，并提供 X/Twitter 大图卡片。404、Lab 和 draft 的 noindex 页面不输出社交 Meta。
 
 人工审查首页及 `/tools/` 时重点看中英文、320px 导航、Tab 焦点、Footer 和真实空态；404 的「工具箱」应进入 `/tools/`，旧 `/#tools` 仍可用。真实移动设备与屏幕阅读器验收仍待维护者完成。
 

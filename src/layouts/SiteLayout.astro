@@ -26,6 +26,10 @@ const t = messages[locale];
 const canonical = new URL(Astro.url.pathname, regionConfig.site);
 const resolvedTitle = fullTitle ?? `${title} · Tool4Furry`;
 const resolvedDescription = description ?? t.intro;
+const socialImage = new URL('/brand/tool4furry-og.png', regionConfig.site).href;
+const socialImageAlt = locale === 'zh'
+  ? 'Tool4Furry 双兽首图形标与字标，深灰色背景'
+  : 'Tool4Furry dual-animal symbol and wordmark on a dark graphite background';
 const theme = resolvePageTheme(import.meta.env.DEV, import.meta.env.T4F_DEV_APPEARANCE);
 const darkClass = stylex.attrs(resolveTheme({colorTheme:'neutral',appearance:'dark'}).style).class;
 const lightClass = stylex.attrs(resolveTheme({colorTheme:'neutral',appearance:'light'}).style).class;
@@ -52,6 +56,16 @@ const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function
       <meta property="og:url" content={canonical} />
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content="Tool4Furry" />
+      <meta property="og:image" content={socialImage} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:type" content="image/png" />
+      <meta property="og:image:alt" content={socialImageAlt} />
+      <meta property="og:locale" content={locale === 'zh' ? 'zh_CN' : 'en_US'} />
+      <meta property="og:locale:alternate" content={locale === 'zh' ? 'en_US' : 'zh_CN'} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:image" content={socialImage} />
+      <meta name="twitter:image:alt" content={socialImageAlt} />
     </>}
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     {import.meta.env.DEV && <>

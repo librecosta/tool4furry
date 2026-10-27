@@ -101,6 +101,15 @@ assert(
 );
 assert(allHTMLFiles.includes('404.html'), 'Missing static 404');
 const origin = region === 'cn' ? 'https://tool4furry.cn' : 'https://tool4furry.com';
+const socialImagePath = '/brand/tool4furry-og.png';
+const socialImageURL = origin + socialImagePath;
+const socialImage = await readFile(resolve(root, socialImagePath.slice(1)));
+assert.equal(socialImage.subarray(0, 8).toString('hex'), '89504e470d0a1a0a', 'Social cover must be a real PNG');
+assert.equal(socialImage.toString('ascii', 12, 16), 'IHDR');
+assert.equal(socialImage.readUInt32BE(16), 1200);
+assert.equal(socialImage.readUInt32BE(20), 630);
+assert(socialImage.length > 33, 'Social cover must include image data');
+assert.deepEqual(socialImage, await readFile(resolve('public', socialImagePath.slice(1))), 'Static social cover is copied without modification');
 const secondary = region === 'cn' ? 'en' : 'zh';
 assert(!allHTMLFiles.some(page => page.startsWith((region === 'cn' ? 'zh' : 'en') + '/')), 'Default locale must not have redundant prefixed routes');
 for (const locale of ['zh', 'en']) {
@@ -153,11 +162,6 @@ for (const [property, expected] of Object.entries({
   assert.equal(tags.length, 1, `Exactly one ${property}`);
   assert.equal(tags[0].content, expected);
 }
-assert.equal(
-  document.querySelectorAll('meta[property="og:image"]').length,
-  0,
-  'No invented share image',
-);
 assert.equal(document.querySelectorAll('h1').length, 1);
 assert.equal(
   document.querySelector('h1')?.textContent.trim().replace(/\s+/g, ' '),
@@ -231,7 +235,7 @@ const png = await readFile(resolve(root, 'brand/tool4furry-favicon.png'));
 assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a', 'Real PNG favicon');
 assert.equal(png.readUInt32BE(16), 96);
 assert.equal(png.readUInt32BE(20), 96);
-for (const path of [symbol, horizontal, '/brand/creative-fragments.svg']) {
+for (const path of [symbol, horizontal, '/brand/tool4furry-og-master.svg', '/brand/creative-fragments.svg']) {
   const svg = await readFile(resolve(root, path.slice(1)), 'utf8');
   const asset = new JSDOM(svg, { contentType: 'image/svg+xml' }).window
     .document;
@@ -568,22 +572,39 @@ for (const page of htmlFiles) {
       dom.querySelector('meta[name="description"]')?.content.trim(),
       `Missing description: ${page}`,
     );
-    assert.equal(
-      dom.querySelector('meta[property="og:title"]')?.content,
-      dom.title,
-    );
-    assert.equal(
-      dom.querySelector('meta[property="og:description"]')?.content,
-      dom.querySelector('meta[name="description"]')?.content,
-    );
-    assert.equal(
-      dom.querySelector('meta[property="og:url"]')?.content,
-      canonical,
-    );
-    assert.equal(
-      dom.querySelector('meta[property="og:type"]')?.content,
-      'website',
-    );
+    const imageAlt = locale === 'zh'
+      ? 'Tool4Furry 双兽首图形标与字标，深灰色背景'
+      : 'Tool4Furry dual-animal symbol and wordmark on a dark graphite background';
+    for (const [attribute, values] of Object.entries({
+      property: {
+        'og:title': dom.title,
+        'og:description': dom.querySelector('meta[name="description"]').content,
+        'og:url': canonical,
+        'og:type': 'website',
+        'og:site_name': 'Tool4Furry',
+        'og:image': socialImageURL,
+        'og:image:width': '1200',
+        'og:image:height': '630',
+        'og:image:type': 'image/png',
+        'og:image:alt': imageAlt,
+        'og:locale': locale === 'zh' ? 'zh_CN' : 'en_US',
+        'og:locale:alternate': locale === 'zh' ? 'en_US' : 'zh_CN',
+      },
+      name: {
+        'twitter:card': 'summary_large_image',
+        'twitter:image': socialImageURL,
+        'twitter:image:alt': imageAlt,
+      },
+    })) {
+      for (const [key, expected] of Object.entries(values)) {
+        const tags = dom.querySelectorAll(`meta[${attribute}="${key}"]`);
+        assert.equal(tags.length, 1, `Exactly one ${key} in ${page}`);
+        assert.equal(tags[0].content, expected, `Correct regional/localized ${key} in ${page}`);
+      }
+    }
+    assert.equal(dom.querySelectorAll('meta[name="twitter:site"], meta[name="twitter:creator"]').length, 0, 'No invented social account');
+  } else {
+    assert.equal(dom.querySelectorAll('meta[property^="og:"], meta[name^="twitter:"]').length, 0, 'No social metadata on noindex pages');
   }
   if (page === 'tools/index.html')
     for (const tag of ['header', 'footer'])

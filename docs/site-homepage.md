@@ -1,3 +1,5 @@
+> Issue #15（2026-10-27）：可索引页面共用维护者确认的 `public/brand/tool4furry-og.png`（1200×630，原附件不修改），对应 SVG 仅保留为源稿。OG/Twitter 图片均使用当前 Region 的正式 HTTPS 域名；`og:locale` / alternate 根据 Locale 输出 zh_CN / en_US，图片 Alt 双语。404、Lab、draft 的 noindex 页面仍无社交 Meta。此条取代下方历史“仅文本 OG、没有分享图”状态；生产抓取和社交缓存须部署后再核验。
+
 > Issue #2 最终编辑验收（2026-10-26）：About / Privacy / Terms 的标题下不再显示副标题，取代下方历史短摘要要求。仅按维护者冻结文案清理版本状态及 About/Privacy 摘要；隐私与私密联系使用已确认的 contact@librecosta.com，Terms 保留普通 GitHub 反馈。Footer 最终行 margin-top 为 0，其余结构和动效不变。
 
 > Issue #8 最后补充验收：备案行保留在 Legal/Copyright 上方，桌面 ICP 左/公安右，窄屏统一左对齐折行；编号本身直链现有核准查询入口，不另占查询行。CN DEV 双位置提示、生产空配置零高度、Global 隔离及 additional 保留。仅将版权中的 LibreCosta 链接到 https://librecosta.com；其他导航/主题/滚动球不变。正式上线前仍按实际备案/许可类型核实展示要求。以下历史中央布局记录不覆盖本条。
@@ -276,7 +278,7 @@ Footer 两层结构：
 
 - 在现有 `SiteLayout.astro` 中由一处统一导出页面 Title/Description/Canonical 与 `og:title`、`og:description`、`og:url`、`og:type`（`website`）及适当的 `og:site_name`。
 - `og:url` 必须使用对应地区当前页面的绝对 URL，首页同 canonical；不得把 `.cn` 的 URL 出到 `.com`，也不能将两个地区互相 canonical。
-- 不新增虚构 `og:image` URL：没有真实品牌分享图时直接省略；以后制作正式图片再单独接入。
+- 默认 `og:image` 使用已确认的 `/brand/tool4furry-og.png`，补齐实际尺寸、PNG 类型与双语 Alt；源稿 SVG 不作为分享图片引用。X/Twitter 使用同图的 summary_large_image 卡片，不编造社交账户。
 - 保持 404 与开发 Lab 的 `noindex`，不要把 404 当作有效的 SEO 页面；可以对 noindex 页面省略 OG 页面推广元信息。
 - 目前不引入 JSON-LD（它通常使用 `script[type="application/ld+json"]`，与现有零 script 守卫有冲突），不放宽现有静态守卫来迎合 SEO。
 - 暂不添加 Sitemap、Google Analytics、埋点、强行生成的 robots 页面与 `hreflang`。后续确定对应地区工具页面存在且上线规则明确后再考虑。
