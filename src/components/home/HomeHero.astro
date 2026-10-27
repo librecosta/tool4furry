@@ -1,0 +1,26 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import type { Locale } from '../../i18n/locale';
+import { localizedPath } from '../../i18n/locale';
+import type { Region } from '../../config/region';
+import { messages } from '../../i18n/messages';
+import { homepageMedia } from '../../site/homepage-showcase';
+import { homeStyles as h } from '../../styles/homepage';
+import HomeMedia from './HomeMedia.astro';
+interface Props { region: Region; locale: Locale; hasTools: boolean }
+const { region, locale, hasTools } = Astro.props;
+const t = messages[locale];
+---
+<section data-home-section="hero" aria-labelledby="hero-heading" {...stylex.attrs(h.hero)}>
+  <div data-hero-media {...stylex.attrs(h.heroScene)}>
+    <HomeMedia media={homepageMedia.hero} kind="heroMedia" locale={locale} decorative />
+  </div>
+  <div {...stylex.attrs(h.inner)}>
+    <div {...stylex.attrs(h.heroContent)}>
+      <h1 id="hero-heading" {...stylex.attrs(h.heroTitle)}>{t.heroLead}{locale === 'en' ? ' ' : ''}<span {...stylex.attrs(h.heroLine)}>{t.heroAccent}</span></h1>
+      <p {...stylex.attrs(h.heroIntro)}>{t.intro}</p>
+      <a href={hasTools ? '#tools' : localizedPath('/tools/', region, locale)} data-home-cta {...stylex.attrs(h.heroCta)}>{t.explore}</a>
+      {!hasTools && <p {...stylex.attrs(h.heroStatus)}>{t.heroStatus}</p>}
+    </div>
+  </div>
+</section>

@@ -1,3 +1,17 @@
+# V0.5-C6 — 当前首页合同（Issue #17，2026-10-27）
+
+此节取代下方历史两区首页、创作碎片 Hero 及素材必须先齐备的要求；导航、主题、Footer、SEO 与三段精确脚本合同不变。
+
+- `src/pages/[...locale]/index.astro` 只编排五区：全宽独立深色 Hero、横向精选胶片、六职业分区、工作流故事、品牌与工程理念。各区为 `src/components/home` 下的静态 Astro 组件，样式集中在 `src/styles/homepage.ts`；无新增脚本、Island、依赖或轮播运行时。
+- Hero 保留原 H1/Intro，CTA 在有可用工具时到 `#tools`，否则到真实目录；正文稳定不随指针移动。当前只有深色舱体 CSS 结构，不生成狼形、星点、假截图或替代图片。
+- `src/site/homepage-showcase.ts` 是本地媒体与职业编排入口。待审核素材到位后，在 `homepageMedia.hero` 填入 `/brand/tool4furry-standing-wolf-hero.png` 的路径、真实尺寸和双语 alt 即可；工具封面、角色代表图及两处故事图也在同一配置维护。媒体组件只输出确实存在的本地 public 文件，预留比例、焦点及 AVIF/WebP source，缺图使用中性几何画幅，绝不输出 404 图片。Hero 优先加载，其他图延迟加载。
+- 精选沿用 `getHomepageEntries` / `featuredToolIds` 与 9 项上限；原生横向滚动、scroll-snap、可聚焦滚动区和真实工具链接支持键盘浏览，无装饰性箭头或自动播放。
+- 六角色固定为画家、作曲家、开发者、动画师、运营、财务，仅是展示视角，不新增分类或路由。各角色 ID 编排先与当前地区 Registry 可用条目取交集、去重，再限 6 项；桌面 2×3 分区、每区 3×2 位，窄屏单列。当前没有发布工具，生产为真实空状态；不得伪造 36 个产品。
+- DEV 胶片补足 6 位、角色各补足 6 位，演示槽明确标注且没有 href，真实 Converter 明确为草稿预览。生产不含演示标记、演示文案、draft 信息或链接；Image Converter 仍为 draft。工作流和工程理念不承诺未上线服务、虚假性能或所有工具离线。
+- 验证按 L1：相关投影测试、check、两地区真实构建守卫；浏览器定向覆盖双语言/外观、320/390/960/1440px、原生胶片滚动和唯一 H1。正式素材及文案仍待维护者后续视觉验收与替换，不需要新的实施框架。
+
+---
+
 > Issue #15（2026-10-27）：可索引页面共用维护者确认的 `public/brand/tool4furry-og.png`（1200×630，原附件不修改），对应 SVG 仅保留为源稿。OG/Twitter 图片均使用当前 Region 的正式 HTTPS 域名；`og:locale` / alternate 根据 Locale 输出 zh_CN / en_US，图片 Alt 双语。404、Lab、draft 的 noindex 页面仍无社交 Meta。此条取代下方历史“仅文本 OG、没有分享图”状态；生产抓取和社交缓存须部署后再核验。
 
 > Issue #2 最终编辑验收（2026-10-26）：About / Privacy / Terms 的标题下不再显示副标题，取代下方历史短摘要要求。仅按维护者冻结文案清理版本状态及 About/Privacy 摘要；隐私与私密联系使用已确认的 contact@librecosta.com，Terms 保留普通 GitHub 反馈。Footer 最终行 margin-top 为 0，其余结构和动效不变。

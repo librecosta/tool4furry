@@ -1,36 +1,27 @@
 ---
-import { localePaths, localizedPath } from '../../i18n/locale';
+import { localePaths } from '../../i18n/locale';
 import * as stylex from '@stylexjs/stylex';
 import SiteLayout from '../../layouts/SiteLayout.astro';
-import { siteStyles as s } from '../../styles/site';
+import { homeStyles as h } from '../../styles/homepage';
 import { region } from '../../config/site';
 import { messages } from '../../i18n/messages';
 import { getHomepageEntries } from '../../site/catalog';
-import ToolCards from '../../components/site/ToolCards.astro';
-import CatalogEmpty from '../../components/site/CatalogEmpty.astro';
+import HomeHero from '../../components/home/HomeHero.astro';
+import FeaturedFilm from '../../components/home/FeaturedFilm.astro';
+import RoleShowcases from '../../components/home/RoleShowcases.astro';
+import WorkflowStory from '../../components/home/WorkflowStory.astro';
+import PrinciplesStory from '../../components/home/PrinciplesStory.astro';
 export function getStaticPaths() { return localePaths(region); }
 const { locale } = Astro.props;
 const t = messages[locale];
 const tools = getHomepageEntries(region, undefined, undefined, import.meta.env.DEV, locale);
 ---
 <SiteLayout locale={locale} title={t.home} fullTitle={t.homeTitle} description={t.homeDescription}>
-  <main id="main-content" {...stylex.attrs(s.fluid, s.homeWidth, s.homeMain)}>
-    <section aria-labelledby="hero-heading" {...stylex.attrs(s.hero)}>
-      <div>
-        <p {...stylex.attrs(s.eyebrow)}>{t.eyebrow}</p>
-        <h1 id="hero-heading" {...stylex.attrs(s.heroTitle)}>
-          {t.heroLead}{locale === 'en' ? ' ' : ''}<span {...stylex.attrs(s.heroAccent)}>{t.heroAccent}</span>
-        </h1>
-        <p {...stylex.attrs(s.heroIntro)}>{t.intro}</p>
-        {tools.length > 0 ? <a href="#tools" {...stylex.attrs(s.explore)}>{t.explore}<span aria-hidden="true">↗</span></a>
-          : <p {...stylex.attrs(s.heroStatus)}><span aria-hidden="true" {...stylex.attrs(s.statusDot)}></span>{t.heroStatus}</p>}
-      </div>
-      <img src="/brand/creative-fragments.svg" alt="" width="480" height="380" fetchpriority="low" {...stylex.attrs(s.artwork)} />
-    </section>
-    <section id="tools" aria-labelledby="tools-heading" {...stylex.attrs(s.section)}>
-      <h2 id="tools-heading" {...stylex.attrs(s.sectionHeading)}>{t.explore}</h2>
-      {tools.length === 0 ? <CatalogEmpty region={region} locale={locale} /> : <ToolCards entries={tools} />}
-      <a href={localizedPath('/tools/', region, locale)} {...stylex.attrs(s.link, s.development)}>{t.browseAll}<span aria-hidden="true">↗</span></a>
-    </section>
+  <main id="main-content" {...stylex.attrs(h.main)}>
+    <HomeHero region={region} locale={locale} hasTools={tools.length > 0} />
+    <FeaturedFilm region={region} locale={locale} entries={tools} />
+    <RoleShowcases region={region} locale={locale} />
+    <WorkflowStory locale={locale} converter={tools.find(tool => tool.id === 'image-converter')} />
+    <PrinciplesStory region={region} locale={locale} />
   </main>
 </SiteLayout>

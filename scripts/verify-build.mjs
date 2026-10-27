@@ -308,11 +308,33 @@ if (locale === 'en')
     !/[\u4e00-\u9fff]/u.test(copyWithoutLanguageLink(fullCatalog)),
     'Chinese copy in global catalog',
   );
-const cards = [...catalog.querySelectorAll('ul > li > a[data-tool-card]')];
+const cards = [...catalog.querySelectorAll('[data-home-tool]')];
+assert.deepEqual([...document.querySelectorAll('[data-home-section]')].map(section => section.dataset.homeSection),
+  ['hero', 'featured', 'roles', 'workflow', 'principles'], 'The complete five-section homepage is statically rendered');
+assert.deepEqual([...document.querySelectorAll('[data-home-role]')].map(role => role.dataset.homeRole),
+  ['painter', 'composer', 'developer', 'animator', 'operations', 'finance']);
+assert.equal(document.querySelectorAll('[data-home-demo], [data-home-dev-preview]').length, 0, 'No development demonstration slots in production');
+assert(!/开发演示|封面占位|工具展示位|Development demo|Cover placeholder|Tool display slot/.test(document.body.textContent), 'No demo copy in production');
+assert.equal(document.querySelectorAll('main img[src*="tool4furry-og"], main img[src*="creative-fragments"]').length, 0, 'Do not substitute OG or the old illustration for the selected Hero');
+for (const image of document.querySelectorAll('main img')) {
+  const src = image.getAttribute('src');
+  assert(src?.startsWith('/') && files.includes(src.slice(1)), `Homepage media must exist: ${src}`);
+  assert(Number(image.getAttribute('width')) > 0 && Number(image.getAttribute('height')) > 0, 'Reserve media geometry');
+}
+for (const source of document.querySelectorAll('main picture source')) {
+  for (const candidate of source.getAttribute('srcset').split(',')) {
+    const src = candidate.trim().split(/\s+/)[0];
+    assert(src.startsWith('/') && files.includes(src.slice(1)), `Responsive homepage media must exist: ${src}`);
+  }
+}
 const allCards = [
   ...fullCatalog.querySelectorAll('ul > li > a[data-tool-card]'),
 ];
 const toolLinks = new Set(allCards.map((card) => card.getAttribute('href')));
+for (const link of document.querySelectorAll(`main a[href^="${localPath('/tools/')}"]`)) {
+  const href = link.getAttribute('href');
+  assert(href === localPath('/tools/') || toolLinks.has(href), `Homepage links only to the regional published catalog: ${href}`);
+}
 const toolPages = htmlFiles.filter((file) =>
   /^tools\/[^/]+\/index\.html$/.test(file),
 );
@@ -379,8 +401,9 @@ for (const [dom, list] of [
 assert.equal(
   document.querySelectorAll('a[href="#tools"]').length,
   allCards.length ? 1 : 0,
-  'Only published tools enable the hero CTA',
+  'With no published tools the Hero links to the real catalog instead',
 );
+assert.equal(document.querySelector('[data-home-cta]')?.getAttribute('href'), allCards.length ? '#tools' : localPath('/tools/'));
 for (const card of cards) {
   const full = allCards.find(
     (entry) => entry.dataset.toolCard === card.dataset.toolCard,
@@ -396,6 +419,15 @@ for (const page of toolPages)
     toolLinks.has(localPath('/' + page.replace(/index\.html$/, ''))),
     `Unlisted tool page: ${page}`,
   );
+for (const role of document.querySelectorAll('[data-home-role]')) {
+  const links = [...role.querySelectorAll('[data-home-role-tool]')];
+  assert(links.length <= 6, 'At most six real tools per role');
+  assert.equal(new Set(links.map(link => link.dataset.homeRoleTool)).size, links.length);
+  for (const link of links) {
+    const entry = allCards.find(card => card.dataset.toolCard === link.dataset.homeRoleTool);
+    assert(entry && entry.getAttribute('href') === link.getAttribute('href'), 'Role tools must exist in the published regional catalog');
+  }
+}
 for (const link of fullCatalog.querySelectorAll(`a[href^="${localPath('/tools/')}"]`)) {
   const href = link.getAttribute('href');
   assert(
