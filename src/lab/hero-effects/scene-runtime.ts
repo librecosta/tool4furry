@@ -1,46 +1,52 @@
-export type FrameMetrics = { frames: number; samples: number; mean: number | null; p95: number | null; fps: number | null; drawMean: number | null };
-export function summarize(intervals: readonly number[], draws: readonly number[], frames: number): FrameMetrics {
-  const mean = intervals.length ? intervals.reduce((a, b) => a + b, 0) / intervals.length : null;
-  const sorted = [...intervals].sort((a, b) => a - b);
-  return { frames, samples: intervals.length, mean, p95: sorted.length ? sorted[Math.ceil(sorted.length * 0.95) - 1] : null, fps: mean ? 1000 / mean : null, drawMean: draws.length ? draws.reduce((a, b) => a + b, 0) / draws.length : null };
+export type FrameMetrics = { frames: number; draws: number; samples: number; mean: number | null; p95: number | null; fps: number | null; drawFps: number | null; drawMean: number | null; drawP95: number | null };
+function average(values: readonly number[]) { return values.length ? values.reduce((a, b) => a + b, 0) / values.length : null; }
+function percentile(values: readonly number[]) { return values.length ? [...values].sort((a, b) => a - b)[Math.ceil(values.length * 0.95) - 1] : null; }
+export function summarize(intervals: readonly number[], durations: readonly number[], drawIntervals: readonly number[], frames: number, draws: number): FrameMetrics {
+  const mean = average(intervals), drawInterval = average(drawIntervals);
+  return { frames, draws, samples: intervals.length, mean, p95: percentile(intervals), fps: mean ? 1000 / mean : null, drawFps: drawInterval ? 1000 / drawInterval : null, drawMean: average(durations), drawP95: percentile(durations) };
 }
-
-// Local Lab clock: one cancellable RAF, raw frame intervals and bounded samples.
-// drawMean measures JS submission/drawing duration, never GPU duration.
-export function createSceneLoop(draw: (dt: number, elapsed: number) => void, report: (metrics: FrameMetrics) => void, scheduler = {
+const scheduler = {
   request: (fn: FrameRequestCallback) => requestAnimationFrame(fn),
   cancel: (id: number) => cancelAnimationFrame(id),
   now: () => performance.now(),
-}) {
+};
+// One RAF owner. Real elapsed time drives the surface, redraws are capped.
+// Paused time is excluded; RAF callbacks and actual drawing are measured apart.
+export function createSceneLoop(draw: (dt: number, elapsed: number) => void, report: (metrics: FrameMetrics) => void, options: { maxFps: () => number; scheduler?: typeof scheduler }) {
+  const clock = options.scheduler ?? scheduler;
   let raf: number | null = null, running = false, disposed = false;
-  let last: number | null = null, elapsed = 0, frames = 0, reported = 0;
-  const intervals: number[] = [], draws: number[] = [];
-  const metrics = () => summarize(intervals, draws, frames);
+  let last: number | null = null, lastDraw: number | null = null, due = 0, elapsed = 0, frames = 0, draws = 0, reported = 0;
+  const intervals: number[] = [], durations: number[] = [], drawIntervals: number[] = [];
+  const append = (values: number[], value: number) => { values.push(value); if (values.length > 180) values.shift(); };
+  const metrics = () => summarize(intervals, durations, drawIntervals, frames, draws);
   const tick = (timestamp: number) => {
     raf = null;
     if (!running || disposed) return;
     const delta = last === null ? 0 : Math.max(0, timestamp - last);
-    if (last !== null) { intervals.push(delta); if (intervals.length > 180) intervals.shift(); }
-    last = timestamp;
-    const dt = Math.min(delta / 1000, 0.05);
-    elapsed += dt;
-    const before = scheduler.now();
-    draw(dt, elapsed);
-    draws.push(scheduler.now() - before);
-    if (draws.length > 180) draws.shift();
-    frames++;
+    if (last !== null) append(intervals, delta);
+    last = timestamp; elapsed += delta / 1000; frames++;
+    const period = 1000 / options.maxFps();
+    if (lastDraw === null || timestamp + 0.2 >= due) {
+      const initial = lastDraw === null;
+      const dt = lastDraw === null ? 0 : Math.min((timestamp - lastDraw) / 1000, 0.1);
+      if (lastDraw !== null) append(drawIntervals, timestamp - lastDraw);
+      lastDraw = timestamp;
+      const before = clock.now(); draw(dt, elapsed); append(durations, clock.now() - before); draws++;
+      due = initial ? timestamp + period : due + period;
+      if (due < timestamp - 0.2) due = timestamp + period;
+    }
     if (timestamp - reported >= 1000) { reported = timestamp; report(metrics()); }
-    if (running && !disposed) raf = scheduler.request(tick);
+    if (running && !disposed) raf = clock.request(tick);
   };
   return {
     metrics,
     still: () => { if (!disposed) draw(0, elapsed); },
     setRunning(next: boolean) {
       if (disposed || next === running) return;
-      running = next; last = null;
-      if (next) { intervals.length = 0; draws.length = 0; raf = scheduler.request(tick); }
-      else if (raf !== null) { scheduler.cancel(raf); raf = null; }
+      running = next; last = lastDraw = null; due = 0;
+      if (next) { intervals.length = durations.length = drawIntervals.length = 0; raf = clock.request(tick); }
+      else if (raf !== null) { clock.cancel(raf); raf = null; }
     },
-    dispose() { running = false; disposed = true; if (raf !== null) scheduler.cancel(raf); raf = null; intervals.length = 0; draws.length = 0; },
+    dispose() { running = false; disposed = true; if (raf !== null) clock.cancel(raf); raf = null; intervals.length = durations.length = drawIntervals.length = 0; },
   };
 }
