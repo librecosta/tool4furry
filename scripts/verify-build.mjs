@@ -93,7 +93,7 @@ assert(
 );
 assert(
   !files.some((file) =>
-    /LabRuntime|WorkbenchLab|LabMenu|CanvasDemo|FormDemo|BatchDemo|UILab|FilesLab/.test(
+    /LabRuntime|WorkbenchLab|LabMenu|CanvasDemo|FormDemo|BatchDemo|UILab|FilesLab|HeroEffectsLab|ParticleOrb|FlowFieldWaves|orb-renderer|waves-renderer|scene-runtime/.test(
       file,
     ),
   ),
@@ -848,7 +848,7 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
       `Test implementation leaked: ${file}`,
     );
   assert(
-    !/data-ui-lab|data-files-lab|simulateText|advanceTasks|canvasAction|DEV ONLY/.test(
+    !/data-ui-lab|data-files-lab|data-hero-stage|u_reveal|simulateText|advanceTasks|canvasAction|DEV ONLY/.test(
       js,
     ),
     `Demo implementation leaked: ${file}`,

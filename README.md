@@ -28,9 +28,12 @@ pnpm dev
 | `/lab/batch` | 增删示例任务、推进模拟状态、清空 |
 | `/lab/ui` | 基础控件、受控值、校验、Tooltip、确认弹窗和四类 Toast |
 | `/lab/files` | 本地文件选择/拖放、元信息、部分接受与拒绝原因、长页面滚动进度球 |
+| `/lab/hero-effects/` | 原创 WebGL 粒子球 / Canvas 2D 流线；质量、文案叠加、暂停/恢复、重置与真实 RAF 观察 |
 | `/404` | 404 页面预览 |
 
 **Lab 只在 dev 可访问。** 页面明确标为 Demo；文件页仅持有本地文件引用并展示元信息，不读取内容、生成对象 URL、上传或持久存储。生产无 Lab 页面、入口或 demo 实现；首页仅有受控外观脚本，无 React Island 或 JS preload。
+
+Hero 实验在两个开发端口均可访问。使用现有 Hero 文案叠加检查构图；拖动粒子球后松手回弹，指针轻扰连续流线。低/中/高分别为 6k/14k/26k 粒子、40/64/90 曲线，DPR 上限 1/1.5/2。只挂载当前场景；暂停、离屏、后台停止帧循环，Reduced Motion 静态显示。WebGL 不可用时保留 Master 标识与重试提示。观察值是最多 180 个 RAF 间隔和同步 JS draw 耗时，非 GPU 计时或帧率保证；像素估算也不是完整显存。Motion 14.6.0 仅用于现有交互与球体弹簧，未使用付费源码、图像纹理或 Three.js。实验不接入正式首页。
 
 **Converter 当前为 draft**，开发和生产共用 `/tools/image-converter/`，仅运行环境与 Registry 状态决定是否生成页面与加载实现。首页、完整目录、工具箱菜单及相关推荐沿用同一可见性规则：DEV 包含当前地区 draft + published，生产仅 published。它在浏览器内读取、解码、编码并管理预览 URL，文件不上传或持久保存。生产排除 draft 的路由、目录入口及专用 JS；发布时只需经授权调整 Registry status，不再另改 loader 开关。操作与验收记录见 [Image Converter 实施记录](docs/image-converter-implementation.md)。
 

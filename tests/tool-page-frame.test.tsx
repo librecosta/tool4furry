@@ -294,6 +294,7 @@ describe('product navigation', () => {
       '/lab/batch',
       '/lab/ui',
       '/lab/files',
+      '/lab/hero-effects',
     ]);
     expect(
       screen

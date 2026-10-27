@@ -1,6 +1,7 @@
 import type { Locale } from '../i18n/locale';
 
 const zh = {
+  'hero-effects': 'Hero 视觉实验',
   files: '文件与滚动',
   filesIntro:
     '开发演示：文件仅保留在浏览器内。本页只展示名称、大小和类型，不读取文件内容、不生成预览、不上传或保存文件。',
@@ -134,6 +135,7 @@ const zh = {
 };
 export type LabMessages = { [K in keyof typeof zh]: string };
 const en: LabMessages = {
+  'hero-effects': 'Hero effects',
   files: 'Files and scroll',
   filesIntro:
     'Development demo: files stay in your browser. This page shows names, sizes and types only. It does not read contents, create previews, upload or persist files.',

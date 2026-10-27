@@ -49,13 +49,14 @@ describe('published route boundary', () => {
     expect(getAvailableTools('global', true, registry).map(tool => tool.slug)).toEqual(['published']);
     expect(getAvailableTools('cn', false, registry)).toEqual(getPublishedTools('cn', registry));
   });
-  it('registers all five lab URLs in dev only', () => {
+  it('registers all lab URLs in dev only', () => {
     expect(getLabPaths(true).map((path) => path.params.mode)).toEqual([
       'canvas',
       'form',
       'batch',
       'ui',
       'files',
+      'hero-effects',
     ]);
     expect(getLabPaths(false)).toEqual([]);
   });

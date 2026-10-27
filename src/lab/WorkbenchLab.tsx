@@ -9,6 +9,7 @@ import FormDemo from './FormDemo';
 import BatchDemo from './BatchDemo';
 import UILab from './UILab';
 import FilesLab from './FilesLab';
+import HeroEffectsLab from './hero-effects/HeroEffectsLab';
 import type { LanguageLink } from '../site/language';
 
 export default function WorkbenchLab({
@@ -25,7 +26,7 @@ export default function WorkbenchLab({
   return (
     <ToolPageFrame
       region={region} locale={locale}
-      mode={mode === 'ui' || mode === 'files' ? 'custom' : mode}
+      mode={mode === 'ui' || mode === 'files' || mode === 'hero-effects' ? 'custom' : mode}
       title={`DEMO · ${t[mode]}`}
       debug={<LabMenu mode={mode} t={t} />}
       navigation={navigation}
@@ -38,8 +39,10 @@ export default function WorkbenchLab({
         <BatchDemo t={t} header={null} />
       ) : mode === 'ui' ? (
         <UILab t={t} header={null} />
-      ) : (
+      ) : mode === 'files' ? (
         <FilesLab t={t} header={null} />
+      ) : (
+        <HeroEffectsLab locale={locale} />
       )}
     </ToolPageFrame>
   );

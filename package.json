@@ -27,7 +27,7 @@
     "@stylexjs/stylex": "0.19.1",
     "astro": "7.3.8",
     "fflate": "0.8.3",
-    "motion": "14.0.0",
+    "motion": "14.6.0",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
