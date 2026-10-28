@@ -58,12 +58,18 @@ describe('homepage editorial role projection', () => {
     expect(imageConverterDefinition.status).toBe('draft');
   });
 
-  it('deduplicates editorial IDs, ignores unknown/unavailable IDs, and caps each role at six', () => {
-    const list = fixtureTools(9);
+  it('deduplicates editorial IDs, ignores unknown/unavailable IDs, and caps each role at twelve', () => {
+    const list = fixtureTools(15);
     const ids = ['unknown', list[3].id, list[3].id, ...list.map(tool => tool.id)];
     const roles = [{ ...roleShowcases[0], toolIds: ids }];
     const entries = getRoleShowcases('cn', 'en', false, list, roles)[0].entries;
-    expect(entries.map(entry => entry.id)).toEqual([list[3].id, list[0].id, list[1].id, list[2].id, list[4].id, list[5].id]);
+    expect(entries.map(entry => entry.id)).toEqual(['fixture-4', 'fixture-1', 'fixture-2', 'fixture-3', 'fixture-5', 'fixture-6', 'fixture-7', 'fixture-8', 'fixture-9', 'fixture-10', 'fixture-11', 'fixture-12']);
+  });
+
+  it.each([0, 1, 12])('renders only %i manually selected tools without filling slots or assigning matching categories', count => {
+    const list = fixtureTools(13);
+    const roles = [{ ...roleShowcases[0], toolIds: list.slice(0, count).map(tool => tool.id) }];
+    expect(getRoleShowcases('cn', 'zh', true, list, roles)[0].entries.map(entry => entry.id)).toEqual(roles[0].toolIds);
   });
 
   it('defines six bilingual roles and matching bilingual workflow structure without making tools', () => {

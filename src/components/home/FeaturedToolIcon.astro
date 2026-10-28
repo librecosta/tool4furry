@@ -2,9 +2,9 @@
 import * as stylex from '@stylexjs/stylex';
 import { ImageIcon, CropIcon, ArrowsInIcon, EyedropperIcon, SquaresFourIcon } from '@phosphor-icons/react/ssr';
 import { homeStyles as h } from '../../styles/homepage';
-interface Props { id: string }
-const { id } = Astro.props;
+interface Props { id: string; size?: number }
+const { id, size = 40 } = Astro.props;
 const icons = { 'image-converter': ImageIcon, 'image-crop': CropIcon, 'image-compress': ArrowsInIcon, 'color-picker': EyedropperIcon };
 const Icon = Object.hasOwn(icons, id) ? icons[id as keyof typeof icons] : SquaresFourIcon;
 ---
-<Icon size={40} weight="regular" color="currentColor" aria-hidden="true" focusable="false" className={stylex.attrs(h.featuredIcon).class} />
+<Icon size={size} weight="regular" color="currentColor" aria-hidden="true" focusable="false" className={stylex.attrs(h.featuredIcon).class} />

@@ -501,9 +501,12 @@ for (const page of toolPages)
   );
 for (const role of document.querySelectorAll('[data-home-role]')) {
   const links = [...role.querySelectorAll('[data-home-role-tool]')];
-  assert(links.length <= 6, 'At most six real tools per role');
+  assert(links.length <= 12, 'At most twelve real tools per role');
+  assert.equal(role.querySelectorAll('[data-home-media="thumbnail"], [data-home-demo]').length, 0, 'Role lists contain no covers or filler tools');
   assert.equal(new Set(links.map(link => link.dataset.homeRoleTool)).size, links.length);
   for (const link of links) {
+    assert.equal(link.querySelector('svg')?.getAttribute('width'), '20', 'Compact role tool icon');
+    assert.equal(link.getAttribute('title'), link.textContent.trim(), 'Full tool name is available when truncated');
     const entry = allCards.find(card => card.dataset.toolCard === link.dataset.homeRoleTool);
     assert(entry && entry.getAttribute('href') === link.getAttribute('href'), 'Role tools must exist in the published regional catalog');
   }

@@ -48,7 +48,7 @@ export function getRoleShowcases(region: Region, locale: Locale, dev = false, re
   const entries = new Map(getCatalogEntries(region, registry, dev, locale).map(entry => [entry.id, entry]));
   return roles.map(role => ({
     ...role,
-    entries: [...new Set(role.toolIds)].flatMap(id => entries.has(id) ? [entries.get(id)!] : []).slice(0, 6),
+    entries: [...new Set(role.toolIds)].flatMap(id => entries.has(id) ? [entries.get(id)!] : []).slice(0, 12),
   }));
 }
 
@@ -70,7 +70,6 @@ export function getFeaturedShowcase(entries: readonly CatalogEntry[], locale: Lo
 
 const zh = {
   demo: '开发演示 · 非工具',
-  toolSlot: '工具展示位',
   draft: '草稿预览',
   roleEmpty: '这个分区的工具正在准备中。',
   more: '查看更多',
@@ -86,7 +85,6 @@ const zh = {
 };
 const en: { [K in keyof typeof zh]: typeof zh[K] } = {
   demo: 'Development demo · not a tool',
-  toolSlot: 'Tool display slot',
   draft: 'Draft preview',
   roleEmpty: 'Tools for this section are on the way.',
   more: 'View more',

@@ -5,11 +5,11 @@ import { resolve } from 'node:path';
 import type { Locale } from '../../i18n/locale';
 import { localizedPath } from '../../i18n/locale';
 import type { Region } from '../../config/region';
-import { homepageCopy, homepageMedia, getRoleShowcases } from '../../site/homepage-showcase';
-import { tools as registry } from '../../tools/registry';
+import { homepageCopy, getRoleShowcases } from '../../site/homepage-showcase';
 import { homeStyles as h } from '../../styles/homepage';
 import HomeMedia from './HomeMedia.astro';
 import RoleIcon from './RoleIcon.astro';
+import FeaturedToolIcon from './FeaturedToolIcon.astro';
 interface Props { region: Region; locale: Locale }
 const { region, locale } = Astro.props;
 const roles = getRoleShowcases(region, locale, import.meta.env.DEV).map(role => ({
@@ -23,27 +23,22 @@ const c = homepageCopy[locale];
 <div data-home-section="roles" {...stylex.attrs(h.inner, h.rolesSection)}>
     <div {...stylex.attrs(h.roles)}>{roles.map(role => <article data-home-role={role.id} aria-labelledby={`role-${role.id}`} {...stylex.attrs(h.role)}>
       <div {...stylex.attrs(h.roleHead)}>
-        <div {...stylex.attrs(h.roleIdentity)}>
-          <RoleIcon id={role.id} media={role.icon} />
-          <div><h3 id={`role-${role.id}`} {...stylex.attrs(h.roleTitle)}>{role.label[locale]}</h3><p {...stylex.attrs(h.roleDescription)}>{role.description[locale]}</p></div>
+        <div>
+          <div {...stylex.attrs(h.roleIdentity)}><RoleIcon id={role.id} media={role.icon} /><h3 id={`role-${role.id}`} {...stylex.attrs(h.roleTitle)}>{role.label[locale]}</h3></div>
+          <p {...stylex.attrs(h.roleDescription)}>{role.description[locale]}</p>
         </div>
         <a href={localizedPath('/tools/', region, locale)} aria-label={`${role.label[locale]} — ${c.more}`} {...stylex.attrs(h.link, h.roleMore)}><span {...stylex.attrs(h.linkText)}>{c.more}</span></a>
       </div>
       <div {...stylex.attrs(h.roleBody, role.showArtwork && h.roleWithArtwork)}>
         {role.showArtwork && <div data-role-artwork {...stylex.attrs(h.roleVisual)}><HomeMedia media={role.media} kind="portrait" locale={locale} decorative /></div>}
-        {role.entries.length > 0 || import.meta.env.DEV ? <ul {...stylex.attrs(h.roleTools)}>
+        {role.entries.length > 0 ? <div {...stylex.attrs(h.roleToolArea)}><ul {...stylex.attrs(h.roleTools)}>
           {role.entries.map(tool => <li>
-            <a href={tool.href} data-home-role-tool={tool.id} {...stylex.attrs(h.roleTool)}>
-              <HomeMedia media={homepageMedia.tools[tool.id]} kind="thumbnail" locale={locale} decorative />
-              <h4 {...stylex.attrs(h.roleToolTitle)}>{tool.title}</h4>
-              {registry.find(item => item.id === tool.id)?.status === 'draft' && <span {...stylex.attrs(h.hint)}>{c.draft}</span>}
+            <a href={tool.href} title={tool.title} data-home-role-tool={tool.id} {...stylex.attrs(h.roleTool)}>
+              <FeaturedToolIcon id={tool.id} size={20} />
+              <span {...stylex.attrs(h.roleToolTitle)}>{tool.title}</span>
             </a>
           </li>)}
-          {import.meta.env.DEV && Array.from({length: 6 - role.entries.length}, () => <li data-home-demo>
-            <HomeMedia kind="thumbnail" locale={locale} />
-            <p {...stylex.attrs(h.roleToolTitle)}>{c.toolSlot}</p><span {...stylex.attrs(h.hint)}>{c.demo}</span>
-          </li>)}
-        </ul> : <p {...stylex.attrs(h.roleEmpty)}>{c.roleEmpty}</p>}
+        </ul></div> : <p {...stylex.attrs(h.roleEmpty)}>{c.roleEmpty}</p>}
       </div>
     </article>)}</div>
 </div>
