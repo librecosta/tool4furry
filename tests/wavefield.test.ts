@@ -18,6 +18,8 @@ describe('homepage Wavefield projection and constrained scenes', () => {
     for (const dpr of [1, 1.5, 2]) expect(gpuViewport(390, 650, dpr, 8192).pixelWidth).toBe(Math.round(390 * Math.min(dpr, 1.5)));
     expect(gpuViewport(20000, 10000, 2, 8192).pixelWidth).toBeLessThanOrEqual(8192);
   });
+  // 200 full scene selections (audit + deterministic replay), not a per-page
+  // performance assertion. Bound the audit separately for shared CI runners.
   it('keeps finite, varied desktop/mobile compositions across 100 reproducible seeds', () => {
     const scenes = Array.from({ length: 100 }, (_, n) => createScene(n * 2654435761 >>> 0));
     expect(scoreScene(DEFAULT_SETTINGS).valid).toBe(true);
@@ -40,7 +42,7 @@ describe('homepage Wavefield projection and constrained scenes', () => {
       maxFoldRatio: Math.max(...scenes.map(s => s.metrics.foldRatio)),
       maxQuietRatio: Math.max(...scenes.map(s => s.metrics.quietRatio)),
     });
-  });
+  }, 15_000);
   it('rejects malformed/flat/wall compositions and uses secure per-document seeds', () => {
     expect(scoreScene({ ...DEFAULT_SETTINGS, hills: DEFAULT_SETTINGS.hills.map(h => ({ ...h, amplitude: 0 })) }).valid).toBe(false);
     expect(scoreScene({ ...DEFAULT_SETTINGS, hills: DEFAULT_SETTINGS.hills.map(h => ({ ...h, x: NaN })) }).valid).toBe(false);
