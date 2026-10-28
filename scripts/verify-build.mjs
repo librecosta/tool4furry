@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 
 const appearanceSource = (await readFile('src/styles/appearance-controller.js', 'utf8')).replace(/\r\n?/g, '\n');
 const navigationSource = (await readFile('src/styles/navigation-disclosure.js', 'utf8')).replace(/\r\n?/g, '\n');
+const pillarsSource = (await readFile('src/styles/pillars-reveal.js', 'utf8')).replace(/\r\n?/g, '\n');
 const scrollMetrics = (await readFile('src/ui/scroll-metrics.js', 'utf8')).replace(/\r\n?/g, '\n');
 const scrollSource = (await readFile('src/styles/document-scroll.js', 'utf8')).replace(/\r\n?/g, '\n');
 const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function ', 'function ')}\n${scrollSource}\n})();`;
@@ -57,9 +58,13 @@ function assertStaticNavigation(dom, homepage = false) {
   assert.equal(dom.querySelectorAll('astro-island').length, 0);
   const scripts = [...dom.querySelectorAll('script')];
   assert.deepEqual(scripts.filter(script => !script.hasAttribute('src')).map(script => script.id),
-    ['t4f-appearance', 't4f-navigation', 't4f-document-scroll'], 'Audited inline scripts retain their content and order');
-  assert.equal(scripts.length, homepage ? 4 : 3, 'Only the homepage may add its one audited Wavefield module');
+    homepage ? ['t4f-appearance', 't4f-home-pillars', 't4f-navigation', 't4f-document-scroll'] : ['t4f-appearance', 't4f-navigation', 't4f-document-scroll'], 'Audited inline scripts retain their content and order');
+  assert.equal(scripts.length, homepage ? 5 : 3, 'Only the homepage adds Wavefield and the audited one-shot pillars observer');
   if (homepage) {
+    const pillars = dom.querySelector('script#t4f-home-pillars');
+    assert.deepEqual([...pillars.attributes].map(attribute => attribute.name), ['id']);
+    assert.equal(pillars.textContent.trim(), pillarsSource.trim());
+    assert(pillars.previousElementSibling.matches('[data-home-pillars]'));
     const external = scripts.filter(script => script.hasAttribute('src'));
     assert.equal(external.length, 1);
     assert.deepEqual([...external[0].attributes].map(a => a.name).sort(), ['src', 'type']);
@@ -209,6 +214,19 @@ for (const [property, expected] of Object.entries({
   assert.equal(tags[0].content, expected);
 }
 assert.equal(document.querySelectorAll('h1').length, 1);
+const pillars = document.querySelector('[data-home-section="workflow"] [data-home-pillars]');
+assert(pillars, 'Three static pillars precede the unchanged workflow story');
+assert.equal(pillars.nextElementSibling?.id, 't4f-home-pillars');
+assert.deepEqual([...pillars.querySelectorAll('[data-pillar]')].map(item => item.dataset.pillar), ['experience', 'safety', 'privacy']);
+assert.deepEqual([...pillars.querySelectorAll('h3')].map(item => item.textContent), locale === 'zh' ? ['体验优先', '安全优先', '隐私优先'] : ['Experience first', 'Safety first', 'Privacy first']);
+assert.equal(pillars.querySelectorAll('[data-pillar-separator]').length, 2);
+assert.equal(pillars.querySelectorAll('[data-pillar-artwork] svg').length, 3);
+assert.equal(pillars.querySelectorAll('[data-pillar-reveal], [data-pillars-enhanced]').length, 0, 'Static HTML is fully visible without enhancement');
+assert(!pillars.hasAttribute('data-pillars-enhanced'), 'The static root is not pre-armed');
+const pillarLinks = [...pillars.querySelectorAll('a')];
+assert.deepEqual(pillarLinks.map(link => link.getAttribute('href')), [localPath('/tools/'), localPath('/about/'), 'https://github.com/librecosta/tool4furry/issues', 'mailto:contact@librecosta.com', localPath('/privacy/'), localPath('/terms/')]);
+assert.equal(pillarLinks[2].target, '_blank');
+assert.equal(pillarLinks[2].rel, 'noopener noreferrer');
 assert.equal(
   document.querySelector('h1')?.textContent.trim().replace(/\s+/g, ' '),
   locale === 'zh'
@@ -943,7 +961,7 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
 }
 assert((await stat(root)).isDirectory());
 console.log(
-  `Verified ${region}/${locale}: ${htmlFiles.length} static pages, three audited inline scripts + homepage-only lazy Wavefield entry, SEO/OG/favicon, ${cards.length} real catalog cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
+  `Verified ${region}/${locale}: ${htmlFiles.length} static pages, three audited inline scripts + homepage-only Wavefield/pillars enhancements, SEO/OG/favicon, ${cards.length} real catalog cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
 );
 
 }

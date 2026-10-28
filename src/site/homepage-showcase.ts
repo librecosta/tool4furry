@@ -99,3 +99,17 @@ const en: { [K in keyof typeof zh]: typeof zh[K] } = {
   principlesNote: 'Light pages, clear boundaries and tools refined over time.',
 };
 export const homepageCopy = { zh, en };
+
+type HomepagePillar = { id: string; title: string; description: string; links: readonly { label: string; href: string }[] };
+export const homepagePillars: Record<Locale, readonly HomepagePillar[]> = {
+  zh: [
+    { id: 'experience', title: '体验优先', description: '让操作清晰，让反馈及时。', links: [{ label: '浏览工具箱', href: '/tools/' }, { label: '关于项目', href: '/about/' }] },
+    { id: 'safety', title: '安全优先', description: '认真校验每一项输入，谨慎处理每一项结果。', links: [{ label: '问题反馈', href: 'https://github.com/librecosta/tool4furry/issues' }, { label: '安全漏洞报告', href: 'mailto:contact@librecosta.com' }] },
+    { id: 'privacy', title: '隐私优先', description: '最小化必要数据，优先在浏览器本地处理。', links: [{ label: '隐私说明', href: '/privacy/' }, { label: '使用条款', href: '/terms/' }] },
+  ],
+  en: [
+    { id: 'experience', title: 'Experience first', description: 'Clear controls. Timely feedback.', links: [{ label: 'Browse toolbox', href: '/tools/' }, { label: 'About the project', href: '/about/' }] },
+    { id: 'safety', title: 'Safety first', description: 'Validate every input. Handle every result with care.', links: [{ label: 'Report an issue', href: 'https://github.com/librecosta/tool4furry/issues' }, { label: 'Report a vulnerability', href: 'mailto:contact@librecosta.com' }] },
+    { id: 'privacy', title: 'Privacy first', description: 'Keep necessary data to a minimum. Prioritize processing in your browser.', links: [{ label: 'Privacy', href: '/privacy/' }, { label: 'Terms', href: '/terms/' }] },
+  ],
+};

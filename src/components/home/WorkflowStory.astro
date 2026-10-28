@@ -5,11 +5,14 @@ import type { CatalogEntry } from '../../site/catalog';
 import { homepageCopy, homepageMedia } from '../../site/homepage-showcase';
 import { homeStyles as h } from '../../styles/homepage';
 import HomeMedia from './HomeMedia.astro';
-interface Props { locale: Locale; converter?: CatalogEntry }
-const { locale, converter } = Astro.props;
+import ThreePillars from './ThreePillars.astro';
+import type { Region } from '../../config/region';
+interface Props { region: Region; locale: Locale; converter?: CatalogEntry }
+const { region, locale, converter } = Astro.props;
 const c = homepageCopy[locale];
 ---
 <section data-home-section="workflow" aria-labelledby="workflow-heading" {...stylex.attrs(h.inner, h.section)}>
+  <ThreePillars region={region} locale={locale} />
   <div {...stylex.attrs(h.storyLayout)}>
     <HomeMedia media={homepageMedia.workflow} kind="story" locale={locale} />
     <div {...stylex.attrs(h.storyText)}>
