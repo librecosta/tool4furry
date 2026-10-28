@@ -17,6 +17,6 @@ export type ToolDefinition = {
   mode: WorkspaceMode;
   status: 'draft' | 'published';
   regions: readonly Region[];
-  copy: Record<Locale, { title: string; description: string }>;
+  copy: Record<Locale, { title: string; description: string; summary?: string }>;
 };
 export type ToolProps = { region: Region; locale: Locale };

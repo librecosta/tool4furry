@@ -1,6 +1,6 @@
 import type { Region } from '../config/region';
 import type { Locale } from '../i18n/locale';
-import { getCatalogEntries } from './catalog';
+import { getCatalogEntries, type CatalogEntry } from './catalog';
 import { tools } from '../tools/registry';
 
 type Localized = Record<Locale, string>;
@@ -50,12 +50,24 @@ export function getRoleShowcases(region: Region, locale: Locale, dev = false, re
   }));
 }
 
+// A presentation cap only: navigation retains getHomepageEntries' nine-item limit.
+export function getFeaturedShowcase(entries: readonly CatalogEntry[], locale: Locale, dev = false) {
+  const real = entries.slice(0, 4).map(entry => ({
+    ...entry, description: entry.summary ?? entry.description, demo: false as const,
+  }));
+  if (!dev) return real;
+  const examples = [
+    { id: 'image-crop', title: { zh: '图片裁剪', en: 'Image Crop' } },
+    { id: 'image-compress', title: { zh: '图片压缩', en: 'Image Compression' } },
+    { id: 'color-picker', title: { zh: '颜色提取', en: 'Color Picker' } },
+  ];
+  return [...real, ...examples.filter(example => !entries.some(entry => entry.id === example.id)).map(example => ({
+    id: example.id, title: example.title[locale], description: homepageCopy[locale].demo, demo: true as const,
+  }))].slice(0, 4);
+}
+
 const zh = {
-  featuredIntro: '从创作中的一个小任务开始。',
-  filmLabel: '精选工具胶片，可横向滚动',
-  filmHint: '横向浏览',
   demo: '开发演示 · 非工具',
-  coverSlot: '封面占位',
   toolSlot: '工具展示位',
   draft: '草稿预览',
   rolesTitle: '按创作角色探索',
@@ -73,11 +85,7 @@ const zh = {
   principlesNote: '轻量的页面，清楚的边界，逐步打磨的工具。',
 };
 const en: { [K in keyof typeof zh]: typeof zh[K] } = {
-  featuredIntro: 'Start with one small task in your creative day.',
-  filmLabel: 'Featured tools filmstrip, scroll horizontally',
-  filmHint: 'Browse horizontally',
   demo: 'Development demo · not a tool',
-  coverSlot: 'Cover placeholder',
   toolSlot: 'Tool display slot',
   draft: 'Draft preview',
   rolesTitle: 'Explore by creative role',

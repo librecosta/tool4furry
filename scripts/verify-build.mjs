@@ -393,7 +393,14 @@ for (const link of document.querySelectorAll(`main a[href^="${localPath('/tools/
 const toolPages = htmlFiles.filter((file) =>
   /^tools\/[^/]+\/index\.html$/.test(file),
 );
-assert(cards.length <= 9, 'Homepage must curate at most nine tools');
+assert(cards.length <= 4, 'Homepage featured grid must curate at most four tools');
+assert.equal(catalog.querySelectorAll('[data-home-film], img, picture').length, 0, 'Featured grid has no filmstrip or cover images');
+assert.equal(catalog.querySelectorAll('[tabindex]').length, 0, 'No obsolete focusable filmstrip');
+for (const card of cards) {
+  const icon = card.querySelector('svg');
+  assert.equal(icon?.getAttribute('viewBox'), '0 0 48 48', 'Shared featured icon canvas');
+  assert.equal(icon?.getAttribute('aria-hidden'), 'true', 'Decorative icon does not repeat the tool name');
+}
 assert.equal(allCards.length, toolLinks.size, 'Duplicate full catalog URLs');
 assert.equal(
   allCards.length,

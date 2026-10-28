@@ -1,0 +1,39 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import type { Locale } from '../../i18n/locale';
+import { localizedPath } from '../../i18n/locale';
+import type { Region } from '../../config/region';
+import type { CatalogEntry } from '../../site/catalog';
+import { messages } from '../../i18n/messages';
+import { tools as registry } from '../../tools/registry';
+import { homepageCopy, getFeaturedShowcase } from '../../site/homepage-showcase';
+import { homeStyles as h } from '../../styles/homepage';
+import FeaturedToolIcon from './FeaturedToolIcon.astro';
+interface Props { region: Region; locale: Locale; entries: readonly CatalogEntry[] }
+const { region, locale, entries } = Astro.props;
+const t = messages[locale];
+const c = homepageCopy[locale];
+const cards = getFeaturedShowcase(entries, locale, import.meta.env.DEV);
+---
+<section id="tools" data-home-section="featured" aria-labelledby="tools-heading" {...stylex.attrs(h.inner, h.section)}>
+  <div {...stylex.attrs(h.sectionHead)}>
+    <h2 id="tools-heading" {...stylex.attrs(h.heading)}>{t.featuredTools}</h2>
+    <a href={localizedPath('/tools/', region, locale)} {...stylex.attrs(h.link)}>{t.browseAll}</a>
+  </div>
+  {cards.length > 0 ? <ul data-home-featured {...stylex.attrs(h.featuredGrid)}>
+    {cards.map(card => {
+      const Tag = card.demo ? 'div' : 'a';
+      return <li {...stylex.attrs(h.featuredItem)}>
+        <Tag href={card.demo ? undefined : card.href} data-home-demo={card.demo || undefined} data-home-tool={card.demo ? undefined : card.id} data-tool-card={card.demo ? undefined : card.id} {...stylex.attrs(h.featuredCard, !card.demo && h.featuredInteractive)}>
+          <span {...stylex.attrs(h.featuredIconPlate)}><FeaturedToolIcon id={card.id} /></span>
+          <div {...stylex.attrs(h.featuredText)}>
+            <h3 {...stylex.attrs(h.featuredTitle)}>{card.title}{!card.demo && import.meta.env.DEV && registry.find(tool => tool.id === card.id)?.status === 'draft' && <span {...stylex.attrs(h.featuredStatus)}>{c.draft}</span>}</h3>
+            <p {...stylex.attrs(h.featuredDescription)}>{card.description}</p>
+          </div>
+        </Tag>
+      </li>;
+    })}
+  </ul> : <div data-catalog-empty {...stylex.attrs(h.empty)}>
+    <h3 {...stylex.attrs(h.featuredTitle)}>{t.empty}</h3><p {...stylex.attrs(h.intro)}>{t.emptyDetail}</p>
+  </div>}
+</section>

@@ -7,7 +7,7 @@ import { region } from '../../config/site';
 import { messages } from '../../i18n/messages';
 import { getHomepageEntries } from '../../site/catalog';
 import HomeHero from '../../components/home/HomeHero.astro';
-import FeaturedFilm from '../../components/home/FeaturedFilm.astro';
+import FeaturedTools from '../../components/home/FeaturedTools.astro';
 import RoleShowcases from '../../components/home/RoleShowcases.astro';
 import WorkflowStory from '../../components/home/WorkflowStory.astro';
 import PrinciplesStory from '../../components/home/PrinciplesStory.astro';
@@ -19,7 +19,7 @@ const tools = getHomepageEntries(region, undefined, undefined, import.meta.env.D
 <SiteLayout locale={locale} title={t.home} fullTitle={t.homeTitle} description={t.homeDescription}>
   <main id="main-content" {...stylex.attrs(h.main)}>
     <HomeHero region={region} locale={locale} hasTools={tools.length > 0} />
-    <FeaturedFilm region={region} locale={locale} entries={tools} />
+    <FeaturedTools region={region} locale={locale} entries={tools} />
     <RoleShowcases region={region} locale={locale} />
     <WorkflowStory locale={locale} converter={tools.find(tool => tool.id === 'image-converter')} />
     <PrinciplesStory region={region} locale={locale} />

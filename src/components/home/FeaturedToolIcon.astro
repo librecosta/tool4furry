@@ -1,0 +1,27 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { homeStyles as h } from '../../styles/homepage';
+interface Props { id: string }
+const { id } = Astro.props;
+---
+<!-- One 48px canvas, 2px rounded strokes, a 34px safe area and a small clay accent. -->
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" {...stylex.attrs(h.featuredIcon)}>
+  {id === 'image-converter' ? <>
+    <rect x="7" y="8" width="27" height="32" rx="4" />
+    <circle cx="15" cy="17" r="2" />
+    <path d="m11 31 7-8 6 6 5-5" />
+    <path d="M29 24h12m-4-4 4 4-4 4M41 34H29m4-4-4 4 4 4" {...stylex.attrs(h.featuredIconAccent)} />
+  </> : id === 'image-crop' ? <>
+    <path d="M15 7v24a2 2 0 0 0 2 2h24M7 15h24a2 2 0 0 1 2 2v24" />
+    <path d="M34 7v6M7 34h6" {...stylex.attrs(h.featuredIconAccent)} />
+  </> : id === 'image-compress' ? <>
+    <path d="M8 17v-5a4 4 0 0 1 4-4h5m14 0h5a4 4 0 0 1 4 4v5M8 31v5a4 4 0 0 0 4 4h5m14 0h5a4 4 0 0 0 4-4v-5M7 24h10l-4-4m4 4-4 4m28-4H31l4-4m-4 4 4 4" />
+    <path d="M24 17v14m-3-3 3 3 3-3m-6-8 3-3 3 3" {...stylex.attrs(h.featuredIconAccent)} />
+  </> : id === 'color-picker' ? <>
+    <path d="m24 13 5-5a5 5 0 0 1 7 7l-5 5m-7-7 7 7m-7-7L10 27v7h7l14-14M9 39l4-4" />
+    <path d="M37 28s-4 5-4 8a4 4 0 0 0 8 0c0-3-4-8-4-8Z" {...stylex.attrs(h.featuredIconAccent)} />
+  </> : <>
+    <rect x="8" y="8" width="13" height="13" rx="3" /><rect x="27" y="27" width="13" height="13" rx="3" /><rect x="8" y="27" width="13" height="13" rx="3" />
+    <rect x="27" y="8" width="13" height="13" rx="3" {...stylex.attrs(h.featuredIconAccent)} />
+  </>}
+</svg>
