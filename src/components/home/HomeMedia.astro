@@ -8,7 +8,7 @@ import { homeStyles as h } from '../../styles/homepage';
 interface Props {
   media?: HomeMedia;
   locale: Locale;
-  kind?: 'cover' | 'thumbnail' | 'portrait' | 'story' | 'wide' | 'heroMedia';
+  kind?: 'cover' | 'thumbnail' | 'portrait' | 'story' | 'wide';
   decorative?: boolean;
 }
 const { media, locale, kind = 'cover', decorative = false } = Astro.props;
@@ -22,11 +22,8 @@ const sources = (['avif', 'webp'] as const).map(format => ({
 <div data-home-media={kind} {...stylex.attrs(h.media, h[kind])}>
   {media && present(media.src) ? <picture {...stylex.attrs(h.picture)}>
     {sources.map(source => <source type={source.type} srcset={source.srcset} sizes={media.sizes ?? '100vw'} />)}
-    <img src={media.src} alt={decorative ? '' : media.alt[locale]} width={media.width} height={media.height} loading={kind === 'heroMedia' ? 'eager' : 'lazy'} fetchpriority={kind === 'heroMedia' ? 'high' : 'auto'} decoding="async" style={{objectPosition: media.focus ?? 'center'}} {...stylex.attrs(h.image)} />
-  </picture> : kind === 'heroMedia' ? <>
-    <div aria-hidden="true" {...stylex.attrs(h.heroWindow)}><span {...stylex.attrs(h.heroPillar)}></span></div>
-    <div aria-hidden="true" {...stylex.attrs(h.heroSill)}></div>
-  </> : <div aria-hidden="true" {...stylex.attrs(h.geometry, kind === 'thumbnail' && h.smallGeometry, kind === 'story' && h.storyGeometry, kind === 'wide' && h.brandGeometry)}>
+    <img src={media.src} alt={decorative ? '' : media.alt[locale]} width={media.width} height={media.height} loading="lazy" decoding="async" style={{objectPosition: media.focus ?? 'center'}} {...stylex.attrs(h.image)} />
+  </picture> : <div aria-hidden="true" {...stylex.attrs(h.geometry, kind === 'thumbnail' && h.smallGeometry, kind === 'story' && h.storyGeometry, kind === 'wide' && h.brandGeometry)}>
     <span {...stylex.attrs(h.plane)}></span><span {...stylex.attrs(h.plane, h.planeOffset)}></span>
   </div>}
 </div>

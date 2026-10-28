@@ -1,0 +1,88 @@
+import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
+import { mountWavefield } from '../src/visuals/wavefield/runtime';
+import { GpuRenderer } from '../src/visuals/wavefield/gpu-renderer';
+
+vi.mock('../src/visuals/wavefield/gpu-renderer', () => ({ GpuRenderer: { create: vi.fn() } }));
+
+describe('Wavefield document lifecycle (mock device, real scheduler)', () => {
+  let root: HTMLElement, cleanup: () => void, intersect: IntersectionObserverCallback, resize: ResizeObserverCallback;
+  let media: EventTarget & { matches: boolean }, connection: EventTarget & { saveData: boolean };
+  let resource: { resize: ReturnType<typeof vi.fn>; draw: ReturnType<typeof vi.fn<() => number>>; firstFrame: ReturnType<typeof vi.fn>; dispose: ReturnType<typeof vi.fn>; adapter: string; instanceCount: number };
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'performance'] });
+    vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => setTimeout(() => cb(performance.now()), 1));
+    vi.stubGlobal('cancelAnimationFrame', clearTimeout);
+    vi.spyOn(document, 'hidden', 'get').mockReturnValue(false);
+    media = Object.assign(new EventTarget(), { matches: false });
+    connection = Object.assign(new EventTarget(), { saveData: false });
+    vi.stubGlobal('matchMedia', (query: string) => query.includes('reduced-motion') ? media : new EventTarget());
+    vi.stubGlobal('ResizeObserver', class { constructor(cb: ResizeObserverCallback) { resize = cb; } observe() {} disconnect() {} });
+    vi.stubGlobal('IntersectionObserver', class { constructor(cb: IntersectionObserverCallback) { intersect = cb; } observe() {} disconnect() {} });
+    Object.defineProperty(navigator, 'connection', { configurable: true, value: connection });
+    document.body.innerHTML = '<div data-wavefield="static"><canvas></canvas></div>';
+    root = document.body.firstElementChild as HTMLElement;
+    Object.defineProperty(root, 'clientWidth', { configurable: true, value: 1440 });
+    root.getBoundingClientRect = () => ({ width: 1440, height: 576 }) as DOMRect;
+    resource = { resize: vi.fn(), draw: vi.fn(() => .4), firstFrame: vi.fn(), dispose: vi.fn(), adapter: 'mock', instanceCount: 43008 };
+    resource.firstFrame.mockImplementation(async () => { resource.draw(); return { cost: .4, submittedAt: performance.now() }; });
+    vi.mocked(GpuRenderer.create).mockResolvedValue(resource as unknown as GpuRenderer);
+  });
+  afterEach(() => { cleanup?.(); document.body.innerHTML = ''; delete (navigator as unknown as { connection?: unknown }).connection; vi.unstubAllGlobals(); vi.useRealTimers(); });
+  const visible = (value: boolean) => intersect([{ isIntersecting: value } as IntersectionObserverEntry], {} as IntersectionObserver);
+  const pump = () => vi.advanceTimersByTimeAsync(150);
+  it('never reveals before a validated first frame; stops offscreen and preserves scene/time', async () => {
+    let resolve!: (value: { cost: number; submittedAt: number }) => void;
+    resource.firstFrame.mockImplementation(() => new Promise(r => { resolve = r; }));
+    cleanup = mountWavefield(root); visible(true); await pump();
+    expect(root.dataset.wavefield).toBe('static');
+    resolve({ cost: .4, submittedAt: performance.now() }); await pump();
+    expect(root.dataset.wavefield).toBe('ready');
+    const seed = root.dataset.waveSeed, time = Number(root.dataset.waveTime), submits = resource.draw.mock.calls.length;
+    visible(false); await vi.advanceTimersByTimeAsync(60000);
+    expect(resource.draw).toHaveBeenCalledTimes(submits);
+    visible(true); await pump();
+    expect(root.dataset.waveSeed).toBe(seed);
+    expect(Number(root.dataset.waveTime) - time).toBeLessThan(.2);
+    resize([], {} as ResizeObserver); await pump(); expect(root.dataset.waveSeed).toBe(seed);
+    vi.spyOn(document, 'hidden', 'get').mockReturnValue(true);
+    document.dispatchEvent(new Event('visibilitychange'));
+    const beforeHidden = resource.draw.mock.calls.length, pausedTime = root.dataset.waveTime;
+    await vi.advanceTimersByTimeAsync(60000);
+    expect(resource.draw).toHaveBeenCalledTimes(beforeHidden);
+    expect(root.dataset.waveTime).toBe(pausedTime);
+    vi.spyOn(document, 'hidden', 'get').mockReturnValue(false);
+    document.dispatchEvent(new Event('visibilitychange')); await pump();
+    expect(Number(root.dataset.waveTime) - Number(pausedTime)).toBeLessThan(.2);
+  });
+  it('honors reduced motion/save-data on entry and changes; restores static without retries on failure', async () => {
+    media.matches = true; cleanup = mountWavefield(root); visible(true); await pump();
+    expect(GpuRenderer.create).not.toHaveBeenCalled();
+    media.matches = false; connection.saveData = true; media.dispatchEvent(new Event('change')); await pump();
+    expect(GpuRenderer.create).not.toHaveBeenCalled();
+    connection.saveData = false; connection.dispatchEvent(new Event('change')); await pump();
+    expect(root.dataset.wavefield).toBe('ready');
+    media.matches = true; media.dispatchEvent(new Event('change'));
+    const count = resource.draw.mock.calls.length; await pump();
+    expect(root.dataset.wavefield).toBe('static'); expect(resource.draw).toHaveBeenCalledTimes(count);
+    const failure = vi.mocked(GpuRenderer.create).mock.calls[0][1];
+    failure(new Error('device lost')); media.matches = false; media.dispatchEvent(new Event('change')); await pump();
+    expect(root.dataset.wavefield).toBe('static'); expect(resource.dispose).toHaveBeenCalledOnce();
+    expect(GpuRenderer.create).toHaveBeenCalledOnce();
+  });
+  it('cancels a late device on DOM removal and rebuilds only resources after bfcache', async () => {
+    cleanup = mountWavefield(root); visible(true); await pump();
+    const seed = root.dataset.waveSeed;
+    window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })); await pump();
+    expect(resource.dispose).toHaveBeenCalledOnce();
+    window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true })); await pump();
+    expect(GpuRenderer.create).toHaveBeenCalledTimes(2); expect(root.dataset.waveSeed).toBe(seed);
+    cleanup();
+    let resolve!: (value: GpuRenderer) => void;
+    vi.mocked(GpuRenderer.create).mockImplementation(() => new Promise(r => { resolve = r; }));
+    cleanup = mountWavefield(root); visible(true); root.remove(); await pump();
+    const before = resource.dispose.mock.calls.length;
+    resolve(resource as unknown as GpuRenderer); await pump();
+    expect(resource.dispose).toHaveBeenCalledTimes(before + 1);
+    expect(root.dataset.wavefield).toBe('static');
+  });
+});

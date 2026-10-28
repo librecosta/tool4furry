@@ -1,3 +1,18 @@
+# Issue #21 — Wavefield Hero（2026-10-28）
+
+此节只取代历史 Hero 狼图/舱体 CSS 占位和首页零增强脚本的约定；五区结构、H1/简介/CTA、Registry、双地区双语、SEO、主题、导航与 Footer 不变。
+
+- 核心固定来自 [Wavefield v1.0.0 / 3e5ad2f](https://github.com/librecosta/wavefield/tree/3e5ad2f9ce5717cfb787e9e2c1c1fda79918cbd0)，非 dev。仅移植 terrain/shaders/renderer 与必要 clock/session，无 React Demo、Motion 运行时或 WebGL。WGSL 的 Gaussian 软线、景深、掠射高光、192×112 / 43,008 两族网格及预乘 Alpha 保留；来源、BSD 与参考设计说明见 `src/visuals/wavefield/NOTICE.md`，静态产物附 `public/visuals/wavefield/NOTICE.txt`。独立随机参数不等于已消除参考设计的授权核验事项。
+- 正式附件 `public/visuals/wavefield/wavefield.avif` 原样使用：1440×576、16,651 bytes、sRGB、无透明，SHA-256 `27593852d0a627510e4fe304f63ffdec91707bf26692f5cb567f9d8bd09a72e7`。静态 HTML 已含装饰图片，加载/无 JS/失败都可见；没有新的狼图需求。其他媒体槽不变。
+- 视觉坐标为 1440×576，`s=max(.78,W/1440)`，横向中心、纵向底部对齐。AVIF 与 GPU uniforms 共用比例/锚点；320/390px 固定最小尺度裁切局部，GPU backing 仅实际可见尺寸×最高 1.5 DPR。Hero 在 Light/Dark 都独立深色，文字渐隐层不拦截操作。
+- 唯一新增首页 module 是 `entry.ts`，近视口、非 Reduced Motion/Save-Data 且支持 WebGPU 时才 dynamic import 核心。首帧提交与 validation 成功后 280ms 淡入；失败/设备丢失立即恢复图片并释放。无反复重试或可见技术 UI。非首页仍只有三段原样审计 inline scripts，禁止 JS preload/Island，保留 Lab/draft 隔离。
+- 每 Document 使用 crypto 32-bit seed + Mulberry32，在独立四横向带内至多评估 8 个候选；轻量 CPU 评分覆盖手机起伏、峰间分离、幅宽差异、暗谷、投影高度、坡度/局部折叠与左侧安全区。候选不合格使用独立安全预设，不采用文章固定参数作为生产模板。resize/主题/离屏/bfcache 不重抽。
+- 实际提交上限桌面 24、小屏 12/s，计时不累计隐藏/离屏时间，timer 合批 RAF。可见度、偏好、尺寸与 DPR 监听随生命周期清理，异步迟到设备只销毁不复活。CPU encode+submit 指标不是 GPU 执行耗时。
+- DEV 复现：`/?waveSeed=12345&waveTime=8&waveStill=1`；`waveReference=1` 仅对比原版，`waveStatic=1` 跳过增强，`waveFail=adapter|shader|timeout`、`waveLoss=1` 验收故障，`waveDpr=1.5|2` 仅检查 backing 上限（不代表真实屏幕 DPR）。QA 参数/诊断不进入生产；无新调参 UI。
+- 验收先固定原版场景/时间的视觉与响应式，再随机构图、生命周期和实际 CN/Global 产物。实体手机、其他 GPU/浏览器及真实 DPR 的覆盖须如实报告，不以模拟视口代替实机。
+
+---
+
 # V0.5-C6 — 当前首页合同（Issue #17，2026-10-27）
 
 此节取代下方历史两区首页、创作碎片 Hero 及素材必须先齐备的要求；导航、主题、Footer、SEO 与三段精确脚本合同不变。

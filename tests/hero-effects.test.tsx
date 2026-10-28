@@ -218,7 +218,8 @@ it('both mesh directions share projected vertices and disposal releases Canvas d
   vi.stubGlobal('Path2D', Path);
   const ctx = { setTransform: vi.fn(), fillRect: vi.fn(), stroke: vi.fn() };
   const canvas = document.createElement('canvas');
-  vi.spyOn(canvas, 'getContext').mockReturnValue(ctx as unknown as CanvasRenderingContext2D);
+  // WebGPU adds a getContext overload; this fixture still owns only a 2D context.
+  vi.spyOn(canvas, 'getContext').mockImplementation((() => ctx) as unknown as typeof canvas.getContext);
   const remove = vi.spyOn(canvas, 'removeEventListener');
   const renderer = createWavesRenderer(canvas, 'medium', false);
   renderer.resize(1440, 547, 1); renderer.draw(0, 0);

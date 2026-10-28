@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { JSDOM } from 'jsdom';
+import { createHash } from 'node:crypto';
 
 const appearanceSource = (await readFile('src/styles/appearance-controller.js', 'utf8')).replace(/\r\n?/g, '\n');
 const navigationSource = (await readFile('src/styles/navigation-disclosure.js', 'utf8')).replace(/\r\n?/g, '\n');
@@ -43,12 +44,22 @@ function assertAppearanceScript(dom) {
   assert(script.dataset.dark && script.dataset.light && script.dataset.dark !== script.dataset.light);
   return script;
 }
-function assertStaticNavigation(dom) {
+function assertStaticNavigation(dom, homepage = false) {
   assertAppearanceScript(dom);
   assertNavigationScript(dom);
   assertDocumentScroll(dom);
   assert.equal(dom.querySelectorAll('astro-island').length, 0);
-  assert.equal(dom.querySelectorAll('script').length, 3, 'Only the audited inline appearance, navigation and document-scroll scripts are permitted');
+  const scripts = [...dom.querySelectorAll('script')];
+  assert.deepEqual(scripts.filter(script => !script.hasAttribute('src')).map(script => script.id),
+    ['t4f-appearance', 't4f-navigation', 't4f-document-scroll'], 'Audited inline scripts retain their content and order');
+  assert.equal(scripts.length, homepage ? 4 : 3, 'Only the homepage may add its one audited Wavefield module');
+  if (homepage) {
+    const external = scripts.filter(script => script.hasAttribute('src'));
+    assert.equal(external.length, 1);
+    assert.deepEqual([...external[0].attributes].map(a => a.name).sort(), ['src', 'type']);
+    assert.equal(external[0].type, 'module');
+    assert.equal(external[0].getAttribute('src'), waveEntry, 'Only the identified homepage enhancement entry');
+  }
   assert.equal(dom.querySelectorAll('link[rel="modulepreload"], link[as="script"]').length, 0);
 }
 function copyWithoutLanguageLink(dom) {
@@ -75,6 +86,35 @@ if (fixtureMode)
 const files = (await readdir(root, { recursive: true })).map((file) =>
   file.replaceAll('\\', '/'),
 );
+// Identify the owned Astro entry and inspect its actual emitted dependency;
+// never allow arbitrary external scripts or an eager WebGPU dependency.
+const waveEntries = [];
+for (const file of files.filter(file => /^_astro\/HomeHero\.astro_astro_type_script_index_0_lang\.[\w-]+\.js$/.test(file))) {
+  const code = await readFile(resolve(root, file), 'utf8');
+  waveEntries.push({ file, code });
+}
+assert.equal(waveEntries.length, 1, 'One traceable Wavefield startup entry');
+assert(/^_astro\/HomeHero\.astro_astro_type_script_index_0_lang\.[\w-]+\.js$/.test(waveEntries[0].file));
+const waveEntry = '/' + waveEntries[0].file, waveCode = waveEntries[0].code;
+assert(waveCode.length < 6000 && waveCode.includes('[data-wavefield]') && waveCode.includes('import(') && waveCode.includes('IntersectionObserver'));
+assert(!/GPUBufferUsage|createShaderModule|@vertex|sampleNodes/.test(waveCode), 'No eager GPU/shader core in the startup chunk');
+assert(!/waveSeed|waveStatic|waveFail|waveDpr|waveReference/.test(waveCode), 'DEV QA is stripped from production startup');
+const runtimeImport = waveCode.match(/import\((['"\x60])\.\/(runtime\.[\w-]+\.js)\1\)/);
+assert(runtimeImport && files.includes('_astro/' + runtimeImport[2]), 'GPU runtime is a real separate dynamic chunk');
+const waveRuntime = await readFile(resolve(root, '_astro', runtimeImport[2]), 'utf8');
+assert(waveRuntime.includes('createShaderModule') && waveRuntime.includes('sampleNodes') && waveRuntime.includes('premultiplied'));
+assert(!/waveReference|waveSeed|waveFail|waveDpr|3592\.922|react-particle-orb/.test(waveRuntime), 'No article reference/DEV controls in production GPU core');
+const wavePoster = await readFile(resolve(root, 'visuals/wavefield/wavefield.avif'));
+assert.deepEqual(wavePoster, await readFile('public/visuals/wavefield/wavefield.avif'), 'Approved poster bytes are unchanged');
+assert.equal(wavePoster.length, 16651);
+assert.equal(createHash('sha256').update(wavePoster).digest('hex'), '27593852d0a627510e4fe304f63ffdec91707bf26692f5cb567f9d8bd09a72e7');
+assert.equal(wavePoster.toString('ascii', 4, 8), 'ftyp');
+assert(wavePoster.subarray(8, 32).toString('ascii').includes('avif'), 'Real AVIF poster');
+const ispe = wavePoster.indexOf('ispe');
+assert(ispe > 0);
+assert.equal(wavePoster.readUInt32BE(ispe + 8), 1440);
+assert.equal(wavePoster.readUInt32BE(ispe + 12), 576);
+assert(files.includes('visuals/wavefield/NOTICE.txt'), 'Redistributed core retains its license and reference notices');
 const allHTMLFiles = files.filter((file) => file.endsWith('.html'));
 if (!fixtureMode)
   assert(
@@ -264,8 +304,8 @@ for (const image of document.querySelectorAll('img')) {
   assert(
     image.closest('[data-site-compliance]')
       ? src?.startsWith('/') && !src.startsWith('//')
-      : src?.startsWith('/brand/'),
-    'Homepage images must be local brand assets or approved local compliance icons',
+      : src?.startsWith('/brand/') || (src === '/visuals/wavefield/wavefield.avif' && image.closest('[data-wavefield]')),
+    'Homepage images must be local brand/compliance assets or the exact approved Wavefield poster',
   );
   assert.equal(
     image.getAttribute('alt'),
@@ -277,7 +317,14 @@ for (const image of document.querySelectorAll('img')) {
     'Reserve image geometry',
   );
 }
-assertStaticNavigation(document);
+assertStaticNavigation(document, true);
+const waveRoot = document.querySelector('[data-home-section="hero"] [data-wavefield="static"]');
+assert(waveRoot, 'Hero enhancement starts as complete static content');
+const poster = waveRoot.querySelector('img'), waveCanvas = waveRoot.querySelector('canvas');
+assert.equal(poster?.getAttribute('src'), '/visuals/wavefield/wavefield.avif');
+assert.equal(poster.getAttribute('width'), '1440'); assert.equal(poster.getAttribute('height'), '576');
+assert.equal(poster.getAttribute('aria-hidden'), 'true'); assert.equal(waveCanvas?.getAttribute('aria-hidden'), 'true');
+assert.equal(waveRoot.querySelectorAll('img, canvas').length, 2, 'One decorative poster and one visible-size enhancement canvas');
 assert(!home.includes('/lab/'), 'Lab navigation leaked into homepage');
 assert.equal(
   document.querySelectorAll('link[rel="modulepreload"], link[as="script"]')
@@ -860,7 +907,7 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
 }
 assert((await stat(root)).isDirectory());
 console.log(
-  `Verified ${region}/${locale}: ${htmlFiles.length} static pages, audited appearance/navigation/document-scroll scripts only on static pages, SEO/OG/favicon, ${cards.length} real catalog cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
+  `Verified ${region}/${locale}: ${htmlFiles.length} static pages, three audited inline scripts + homepage-only lazy Wavefield entry, SEO/OG/favicon, ${cards.length} real catalog cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
 );
 
 }

@@ -26,12 +26,10 @@ export type RoleShowcase = {
 // Local editorial slots only, never a publication list. Set a path after the
 // approved file is delivered; absent files render geometry, never broken images.
 export const homepageMedia: {
-  hero?: HomeMedia;
   workflow?: HomeMedia;
   principles?: HomeMedia;
   tools: Readonly<Record<string, HomeMedia>>;
 } = {
-  // hero: { src: '/brand/tool4furry-standing-wolf-hero.png', ... }
   tools: {},
 };
 
