@@ -9,7 +9,7 @@ interface Props { locale: Locale; converter?: CatalogEntry }
 const { locale, converter } = Astro.props;
 const c = homepageCopy[locale];
 ---
-<section data-home-section="workflow" aria-labelledby="workflow-heading" {...stylex.attrs(h.inner, h.section)}>
+<section data-home-section="workflow" aria-labelledby="workflow-heading" {...stylex.attrs(h.inner, h.section, h.contentLayer)}>
   <div {...stylex.attrs(h.storyLayout)}>
     <HomeMedia media={homepageMedia.workflow} kind="story" locale={locale} />
     <div {...stylex.attrs(h.storyText)}>

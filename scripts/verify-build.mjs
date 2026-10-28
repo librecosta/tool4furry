@@ -369,6 +369,18 @@ assert.deepEqual([...document.querySelectorAll('[data-home-section]')].map(secti
 assert.deepEqual([...document.querySelectorAll('[data-home-role]')].map(role => role.dataset.homeRole),
   ['painter', 'composer', 'developer', 'animator', 'operations', 'finance']);
 assert.equal(document.querySelectorAll('[data-home-demo], [data-home-dev-preview]').length, 0, 'No development demonstration slots in production');
+const dotField = document.querySelector('[data-home-dots]');
+assert.equal(document.querySelectorAll('[data-home-dots]').length, 1, 'One homepage-only CSS dot field');
+assert.equal(dotField.getAttribute('aria-hidden'), 'true');
+assert.equal(dotField.parentElement, catalog.parentElement, 'Dots belong after Hero, alongside the featured content');
+assert.deepEqual([...dotField.children].map(side => side.dataset.homeDotSide), ['left', 'right']);
+assert.equal(dotField.querySelectorAll('img, svg, canvas').length, 0, 'Dot pattern is CSS only');
+for (const decor of document.querySelectorAll('[data-home-decor]')) {
+  assert.equal(decor.closest('[data-home-section]'), catalog, 'Artwork belongs only to the featured section');
+  assert.equal(decor.querySelectorAll('img').length, 1, 'Production artwork requires a supplied asset');
+  assert.equal(decor.querySelector('img').getAttribute('alt'), '');
+  assert.equal(decor.querySelector('img').getAttribute('loading'), 'lazy');
+}
 assert(!/开发演示|封面占位|工具展示位|Development demo|Cover placeholder|Tool display slot/.test(document.body.textContent), 'No demo copy in production');
 assert.equal(document.querySelectorAll('main img[src*="tool4furry-og"], main img[src*="creative-fragments"]').length, 0, 'Do not substitute OG or the old illustration for the selected Hero');
 for (const image of document.querySelectorAll('main img')) {
@@ -394,11 +406,12 @@ const toolPages = htmlFiles.filter((file) =>
   /^tools\/[^/]+\/index\.html$/.test(file),
 );
 assert(cards.length <= 4, 'Homepage featured grid must curate at most four tools');
-assert.equal(catalog.querySelectorAll('[data-home-film], img, picture').length, 0, 'Featured grid has no filmstrip or cover images');
+assert.equal(catalog.querySelectorAll('[data-home-film], [data-home-featured] img, [data-home-featured] picture').length, 0, 'Featured grid has no filmstrip or cover images');
 assert.equal(catalog.querySelectorAll('[tabindex]').length, 0, 'No obsolete focusable filmstrip');
 for (const card of cards) {
   const icon = card.querySelector('svg');
-  assert.equal(icon?.getAttribute('viewBox'), '0 0 48 48', 'Shared featured icon canvas');
+  assert.equal(icon?.getAttribute('viewBox'), '0 0 256 256', 'Static Phosphor icon canvas');
+  assert.equal(icon?.getAttribute('width'), '40', 'Compact featured icon size');
   assert.equal(icon?.getAttribute('aria-hidden'), 'true', 'Decorative icon does not repeat the tool name');
 }
 assert.equal(allCards.length, toolLinks.size, 'Duplicate full catalog URLs');

@@ -19,9 +19,15 @@ const tools = getHomepageEntries(region, undefined, undefined, import.meta.env.D
 <SiteLayout locale={locale} title={t.home} fullTitle={t.homeTitle} description={t.homeDescription}>
   <main id="main-content" {...stylex.attrs(h.main)}>
     <HomeHero region={region} locale={locale} hasTools={tools.length > 0} />
-    <FeaturedTools region={region} locale={locale} entries={tools} />
-    <RoleShowcases region={region} locale={locale} />
-    <WorkflowStory locale={locale} converter={tools.find(tool => tool.id === 'image-converter')} />
-    <PrinciplesStory region={region} locale={locale} />
+    <div {...stylex.attrs(h.contentBackground)}>
+      <div data-home-dots aria-hidden="true" {...stylex.attrs(h.dotsFade)}>
+        <span data-home-dot-side="left" {...stylex.attrs(h.dotsSide, h.dotsLeft)}></span>
+        <span data-home-dot-side="right" {...stylex.attrs(h.dotsSide, h.dotsRight)}></span>
+      </div>
+      <FeaturedTools region={region} locale={locale} entries={tools} />
+      <RoleShowcases region={region} locale={locale} />
+      <WorkflowStory locale={locale} converter={tools.find(tool => tool.id === 'image-converter')} />
+      <PrinciplesStory region={region} locale={locale} />
+    </div>
   </main>
 </SiteLayout>

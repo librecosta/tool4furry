@@ -11,7 +11,7 @@ const { region, locale } = Astro.props;
 const t = messages[locale];
 const c = homepageCopy[locale];
 ---
-<section data-home-section="principles" aria-labelledby="principles-heading" {...stylex.attrs(h.inner, h.principles)}>
+<section data-home-section="principles" aria-labelledby="principles-heading" {...stylex.attrs(h.inner, h.principles, h.contentLayer)}>
   <div {...stylex.attrs(h.editorial)}>
     <h2 id="principles-heading" {...stylex.attrs(h.heading)}>{c.principlesTitle}</h2>
     <div><p {...stylex.attrs(h.intro)}>{c.principlesIntro}</p><p {...stylex.attrs(h.intro)}>{c.principlesDetail}</p>

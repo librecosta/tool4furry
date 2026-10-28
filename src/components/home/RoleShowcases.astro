@@ -13,7 +13,7 @@ const roles = getRoleShowcases(region, locale, import.meta.env.DEV);
 const c = homepageCopy[locale];
 ---
 <section data-home-section="roles" aria-labelledby="roles-heading" {...stylex.attrs(h.rolesBackground)}>
-  <div {...stylex.attrs(h.inner, h.section)}>
+  <div {...stylex.attrs(h.inner, h.section, h.contentLayer, h.rolesSection)}>
     <div {...stylex.attrs(h.sectionHead)}><div><h2 id="roles-heading" {...stylex.attrs(h.heading)}>{c.rolesTitle}</h2><p {...stylex.attrs(h.intro)}>{c.rolesIntro}</p></div></div>
     <div {...stylex.attrs(h.roles)}>{roles.map(role => <article data-home-role={role.id} aria-labelledby={`role-${role.id}`} {...stylex.attrs(h.role)}>
       <div {...stylex.attrs(h.roleHead)}>

@@ -1,12 +1,14 @@
 ---
 import * as stylex from '@stylexjs/stylex';
+import { statSync } from 'node:fs';
+import { resolve } from 'node:path';
 import type { Locale } from '../../i18n/locale';
 import { localizedPath } from '../../i18n/locale';
 import type { Region } from '../../config/region';
 import type { CatalogEntry } from '../../site/catalog';
 import { messages } from '../../i18n/messages';
 import { tools as registry } from '../../tools/registry';
-import { homepageCopy, getFeaturedShowcase } from '../../site/homepage-showcase';
+import { homepageCopy, homepageMedia, getFeaturedShowcase } from '../../site/homepage-showcase';
 import { homeStyles as h } from '../../styles/homepage';
 import FeaturedToolIcon from './FeaturedToolIcon.astro';
 interface Props { region: Region; locale: Locale; entries: readonly CatalogEntry[] }
@@ -14,9 +16,17 @@ const { region, locale, entries } = Astro.props;
 const t = messages[locale];
 const c = homepageCopy[locale];
 const cards = getFeaturedShowcase(entries, locale, import.meta.env.DEV);
+const decor = homepageMedia.featuredDecor;
+const presentDecor = decor && /^\/(?!\/)(?!.*\.\.)[^?#]+$/.test(decor.src)
+  && Number.isInteger(decor.width) && decor.width > 0 && Number.isInteger(decor.height) && decor.height > 0
+  && statSync(resolve('public', decor.src.slice(1)), { throwIfNoEntry: false })?.isFile();
 ---
-<section id="tools" data-home-section="featured" aria-labelledby="tools-heading" {...stylex.attrs(h.inner, h.section)}>
-  <div {...stylex.attrs(h.sectionHead)}>
+<section id="tools" data-home-section="featured" aria-labelledby="tools-heading" {...stylex.attrs(h.inner, h.section, h.contentLayer, h.featuredSection)}>
+  {(presentDecor || import.meta.env.DEV) && <div data-home-decor data-home-demo={!presentDecor || undefined} aria-hidden="true" {...stylex.attrs(h.featuredDecor)}>
+    {presentDecor && decor ? <img src={decor.src} width={decor.width} height={decor.height} alt="" loading="lazy" decoding="async" {...stylex.attrs(h.featuredDecorImage)} />
+      : <div {...stylex.attrs(h.featuredDecorPlaceholder)}>{locale === 'zh' ? '素材预留' : 'Artwork slot'}</div>}
+  </div>}
+  <div {...stylex.attrs(h.sectionHead, h.featuredHead)}>
     <h2 id="tools-heading" {...stylex.attrs(h.heading)}>{t.featuredTools}</h2>
     <a href={localizedPath('/tools/', region, locale)} {...stylex.attrs(h.link)}>{t.browseAll}</a>
   </div>

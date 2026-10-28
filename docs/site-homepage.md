@@ -1,8 +1,12 @@
 # Issue #23 — Icon-first 精选工具（2026-10-28）
 
-仅取代下方历史胶片精选区：首页第二区域沿用 `getHomepageEntries` 的地区、发布和精选顺序，再独立限四项；导航的九项上限不变。≥1200px 四列、640–1199px 两列、<640px 无整行背景的 Icon 左置列表。使用静态 48px/2px 圆角线条 SVG，以主题中性前景和少量暖陶辅助色表达功能，不使用封面、序号或横向滚动。短摘要由工具自身的可选 `copy.summary` 提供，详情/SEO 描述不变。
+仅取代下方历史胶片精选区：首页第二区域沿用 `getHomepageEntries` 的地区、发布和精选顺序，再独立限四项；导航的九项上限不变。≥1200px 四列、640–1199px 两列、<640px 无整行背景的 Icon 左置列表。图标采用已有 Phosphor 的 Regular 单色线性图标，40px SVG 静态输出，未知 ID 回退通用图标；不使用自绘路径、封面、序号或横向滚动。短摘要由工具自身的可选 `copy.summary` 提供，详情/SEO 描述不变。
 
 DEV 可补三个带明确“非工具”说明且无链接的裁剪/压缩/取色设计示例；不进入 Registry。生产只显示真实已发布条目，零条目保留原空状态。无新增 JS、依赖或入场动画，Hover 为 260ms 背景变化；Hero、职业区、故事区、导航、Footer 和工具业务均不变。
+
+最后视觉补充（[评论 6469265435](https://github.com/librecosta/tool4furry/issues/23#issuecomment-6469265435)）：精选区上下 32/36px、标题下 20px（手机 18px）、桌面卡片最小高度 152px / 内边距 16px，职业区外侧上下 40px；不改共享 section 或职业内部结构。Hero 后的专属背景层沿用 [GoFurry #149 最终源码](https://github.com/gofurry/gofurry-nav-site/blob/b186325c59c086351cf2b37d0b5c6530b937813c/apps/cn/web/app/components/common/PublicPageBackground.vue) 的纯 CSS 微点阵：30px 间距、1.1px 半径、外侧 15% 后向内渐隐、顶部 18% 后向下渐隐、最大高度 720px。两侧范围额外限制在实际空白边缘；小于 1200px 隐藏，正文与卡片保持干净。点阵在角色底色之上、内容之下，不使用图片、SVG 或脚本。
+
+`homepageMedia.featuredDecor` 是可选的本地原创素材槽，仅当文件存在且尺寸有效时输出装饰性、延迟加载的图片。1880px 起在内容左侧外缘显示 128px，不挤压四槽；更窄时隐藏。当前未配置素材，生产不输出该节点或图片请求；DEV 仅显示中性 3:4“素材预留 / Artwork slot”，待维护者提供正式原创文件后替换。
 
 ---
 
