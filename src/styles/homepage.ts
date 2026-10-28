@@ -1,6 +1,11 @@
 import * as stylex from '@stylexjs/stylex';
 import { tokens } from './tokens.stylex';
 
+const heroReveal = stylex.keyframes({
+  from: { opacity: 'var(--hero-reveal-opacity, 0)', transform: 'translateY(var(--hero-reveal-offset, 12px))' },
+  to: { opacity: 1, transform: 'translateY(0)' },
+});
+
 export const homeStyles = stylex.create({
   main: { flex: 1, minWidth: 0 },
   inner: { maxWidth: 1600, marginInline: 'auto', width: '100%', paddingInline: 'clamp(16px, 3vw, 48px)' },
@@ -9,13 +14,21 @@ export const homeStyles = stylex.create({
   heading: { margin: 0, fontSize: { default: 30, '@media (max-width: 760px)': 24 }, fontWeight: 650, lineHeight: 1.35, letterSpacing: '-0.025em', textWrap: 'balance' },
   intro: { marginBlock: '10px 0', maxWidth: 620, color: tokens.textSecondary, fontSize: 15, lineHeight: 1.8 },
   link: { display: 'inline-flex', alignItems: 'center', gap: 8, minHeight: 44, color: tokens.accent, textUnderlineOffset: 5, fontSize: 14 },
-  hero: { position: 'relative', isolation: 'isolate', backgroundColor: '#080C09', minHeight: 576, color: '#F8FAFC', '--t4f-focus': '#CBD5E1', overflow: 'clip' },
-  heroContent: { position: 'relative', zIndex: 1, width: { default: '40%', '@media (max-width: 760px)': '100%' }, paddingBlock: { default: 80, '@media (max-width: 1100px)': 56, '@media (max-width: 760px)': '40px 300px' } },
+  hero: { position: 'relative', isolation: 'isolate', backgroundColor: '#080C09', minHeight: 520, color: '#F8FAFC', '--t4f-focus': '#CBD5E1', overflow: 'clip' },
+  heroContent: { position: 'relative', zIndex: 1, width: { default: '56%', '@media (max-width: 760px)': '100%' }, paddingBlock: { default: 64, '@media (max-width: 1100px)': 56, '@media (max-width: 760px)': '40px 176px' } },
   heroTitle: { fontSize: 'clamp(30px, 3.2vw, 52px)', lineHeight: 1.2, letterSpacing: '-0.035em', fontWeight: 700, marginBlock: '0 24px', textWrap: 'balance' },
   heroLine: { display: 'block' },
-  heroIntro: { marginBlock: '0 28px', color: '#CBD5E1', fontSize: { default: 16, '@media (max-width: 760px)': 15 }, lineHeight: 1.8, maxWidth: 500 },
-  heroCta: { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: 46, paddingInline: 20, borderRadius: tokens.radiusSm, backgroundColor: { default: '#E5E7EB', ':hover': '#F8FAFC' }, color: '#252A32', textDecoration: 'none', fontWeight: 600, fontSize: 14 },
-  heroStatus: { marginBlock: '16px 0', color: '#CBD5E1', fontSize: 13 },
+  heroIntro: { marginBlock: '0 8px', color: '#CBD5E1', fontSize: { default: 16, '@media (max-width: 760px)': 15 }, lineHeight: 1.8, maxWidth: 640 },
+  heroIntroLast: { marginBottom: 28 },
+  heroCta: { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: 46, paddingInline: 20, borderRadius: tokens.radiusSm, backgroundColor: { default: '#E5E7EB', ':hover': '#F8FAFC', ':focus-visible': '#F8FAFC' }, color: '#252A32', textDecoration: 'none', fontWeight: 600, fontSize: 14, transitionProperty: 'background-color, color', transitionDuration: { default: '300ms', '@media (prefers-reduced-motion: reduce)': '0s' }, '--hero-reveal-opacity': { default: '0', ':focus-visible': '1' }, '--hero-reveal-offset': { default: '12px', ':focus-visible': '0px' } },
+  // Visible by default: no scripting, unsupported media query, and Reduced Motion skip entry.
+  // Focus overrides only the CTA's starting values, preserving the one-shot timeline.
+  heroReveal: { animationName: { default: 'none', '@media (scripting: enabled) and (prefers-reduced-motion: no-preference)': heroReveal }, animationTimingFunction: 'cubic-bezier(.22, 1, .36, 1)', animationFillMode: 'both', animationIterationCount: 1 },
+  revealTitleLead: { animationDelay: '0ms', animationDuration: '880ms' },
+  revealTitleClose: { animationDelay: '220ms', animationDuration: '980ms' },
+  revealIntroLead: { animationDelay: '680ms', animationDuration: '950ms' },
+  revealIntroDetail: { animationDelay: '1000ms', animationDuration: '950ms' },
+  revealCta: { animationDelay: '1420ms', animationDuration: '900ms' },
   heroScene: { position: 'absolute', inset: 0, zIndex: -1 },
   wavePoster: { position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 'max(1123.2px, 100%)', height: 'auto', maxWidth: 'none', pointerEvents: 'none', opacity: { default: 1, ':is([data-wavefield="ready"] > *)': 0 }, transition: { default: 'none', ':is([data-wavefield="ready"] > *)': 'opacity 280ms ease' }, '@media (prefers-reduced-motion: reduce)': { transition: 'none' } },
   waveCanvas: { position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', opacity: { default: 0, ':is([data-wavefield="ready"] > *)': 1 }, transition: { default: 'none', ':is([data-wavefield="ready"] > *)': 'opacity 280ms ease' }, '@media (prefers-reduced-motion: reduce)': { transition: 'none' } },

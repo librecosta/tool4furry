@@ -206,8 +206,16 @@ assert.equal(document.querySelectorAll('h1').length, 1);
 assert.equal(
   document.querySelector('h1')?.textContent.trim().replace(/\s+/g, ' '),
   locale === 'zh'
-    ? '灵感尽情发挥。繁琐留给工具。'
-    : 'More room for imagination. Less time on the tedious bits.',
+    ? '那些梦幻中的世界，等你创造。'
+    : "Worlds you've dreamed of. Yours to bring to life.",
+);
+const hero = document.querySelector('[data-home-section="hero"]');
+assert.deepEqual(
+  [...hero.querySelectorAll('p')].map(p => p.textContent.trim()),
+  locale === 'zh'
+    ? ['从一个角色的诞生，到一件作品的完成。', '我们打磨工具，也珍惜创作中的每一份热爱。']
+    : ["From a character's first spark to the finishing touch on a creation.", 'We craft tools with care, knowing how much heart goes into everything you make.'],
+  'Hero has exactly the two frozen introduction paragraphs, without a status tail',
 );
 assert(document.querySelector('main#main-content'), 'Missing skip-link target');
 assert.equal(

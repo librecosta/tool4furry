@@ -36,6 +36,10 @@ const zh = {
   eyebrow: '为 Furry 创作者而造',
   heroLead: '灵感尽情发挥。',
   heroAccent: '繁琐留给工具。',
+  homeHeroLead: '那些梦幻中的世界，',
+  homeHeroClose: '等你创造。',
+  homeHeroIntroLead: '从一个角色的诞生，到一件作品的完成。',
+  homeHeroIntroDetail: '我们打磨工具，也珍惜创作中的每一份热爱。',
   heroStatus: '正在打造首批工具',
   explore: '探索工具箱',
   intro:
@@ -101,6 +105,10 @@ const en: Messages = {
   eyebrow: 'FOR FURRY CREATORS',
   heroLead: 'More room for imagination.',
   heroAccent: 'Less time on the tedious bits.',
+  homeHeroLead: "Worlds you've dreamed of.",
+  homeHeroClose: 'Yours to bring to life.',
+  homeHeroIntroLead: "From a character's first spark to the finishing touch on a creation.",
+  homeHeroIntroDetail: 'We craft tools with care, knowing how much heart goes into everything you make.',
   heroStatus: 'Building our first tools',
   explore: 'Explore tools',
   intro:

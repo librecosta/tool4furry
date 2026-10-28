@@ -17,10 +17,10 @@ const t = messages[locale];
   </div>
   <div {...stylex.attrs(h.inner)}>
     <div {...stylex.attrs(h.heroContent)}>
-      <h1 id="hero-heading" {...stylex.attrs(h.heroTitle)}>{t.heroLead}{locale === 'en' ? ' ' : ''}<span {...stylex.attrs(h.heroLine)}>{t.heroAccent}</span></h1>
-      <p {...stylex.attrs(h.heroIntro)}>{t.intro}</p>
-      <a href={hasTools ? '#tools' : localizedPath('/tools/', region, locale)} data-home-cta {...stylex.attrs(h.heroCta)}>{t.explore}</a>
-      {!hasTools && <p {...stylex.attrs(h.heroStatus)}>{t.heroStatus}</p>}
+      <h1 id="hero-heading" {...stylex.attrs(h.heroTitle)}><span {...stylex.attrs(h.heroLine, h.heroReveal, h.revealTitleLead)}>{t.homeHeroLead}</span>{locale === 'en' ? ' ' : ''}<span {...stylex.attrs(h.heroLine, h.heroReveal, h.revealTitleClose)}>{t.homeHeroClose}</span></h1>
+      <p {...stylex.attrs(h.heroIntro, h.heroReveal, h.revealIntroLead)}>{t.homeHeroIntroLead}</p>
+      <p {...stylex.attrs(h.heroIntro, h.heroIntroLast, h.heroReveal, h.revealIntroDetail)}>{t.homeHeroIntroDetail}</p>
+      <a href={hasTools ? '#tools' : localizedPath('/tools/', region, locale)} data-home-cta {...stylex.attrs(h.heroCta, h.heroReveal, h.revealCta)}>{t.explore}</a>
     </div>
   </div>
 </section>
