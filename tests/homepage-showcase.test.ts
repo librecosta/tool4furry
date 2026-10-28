@@ -67,7 +67,12 @@ describe('homepage editorial role projection', () => {
   });
 
   it('defines six bilingual roles and matching bilingual workflow structure without making tools', () => {
-    expect(roleShowcases.map(role => role.id)).toEqual(['painter', 'composer', 'developer', 'animator', 'operations', 'finance']);
+    expect(roleShowcases.map(role => role.id)).toEqual(['painter', 'composer', 'developer', 'animator', 'operations', 'studio']);
+    expect(roleShowcases.slice(3).map(role => ({ label: role.label, description: role.description }))).toEqual([
+      { label: { zh: '动画师', en: 'Animators' }, description: { zh: '每一帧都值得打磨', en: 'Every frame deserves care.' } },
+      { label: { zh: '运营', en: 'Community teams' }, description: { zh: '为内容与社群增添色彩', en: 'Bring more color to content and communities.' } },
+      { label: { zh: '工作室', en: 'Studios' }, description: { zh: '工作细节决定成败', en: 'Details make the difference.' } },
+    ]);
     for (const role of roleShowcases) {
       expect(role.label.zh).toBeTruthy();
       expect(role.label.en).toBeTruthy();

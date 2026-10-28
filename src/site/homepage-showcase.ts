@@ -21,6 +21,7 @@ export type RoleShowcase = {
   description: Localized;
   toolIds: readonly string[];
   media?: HomeMedia;
+  icon?: HomeMedia;
 };
 
 // Local editorial slots only, never a publication list. Set a path after the
@@ -38,9 +39,9 @@ export const roleShowcases: readonly RoleShowcase[] = [
   { id: 'painter', label: { zh: '画家', en: 'Artists' }, description: { zh: '从画布到交付素材', en: 'From the canvas to finished assets' }, toolIds: ['image-converter'] },
   { id: 'composer', label: { zh: '作曲家', en: 'Composers' }, description: { zh: '围绕声音的创作日常', en: 'The everyday work around sound' }, toolIds: [] },
   { id: 'developer', label: { zh: '开发者', en: 'Developers' }, description: { zh: '让创作与代码相遇', en: 'Where creative work meets code' }, toolIds: ['image-converter'] },
-  { id: 'animator', label: { zh: '动画师', en: 'Animators' }, description: { zh: '照顾每一帧的素材', en: 'Care for the assets behind each frame' }, toolIds: ['image-converter'] },
-  { id: 'operations', label: { zh: '运营', en: 'Community teams' }, description: { zh: '为内容整理与协作留空间', en: 'Room for content and collaboration' }, toolIds: ['image-converter'] },
-  { id: 'finance', label: { zh: '财务', en: 'Finance teams' }, description: { zh: '关注日常工作里的细节', en: 'Attention to the everyday details' }, toolIds: [] },
+  { id: 'animator', label: { zh: '动画师', en: 'Animators' }, description: { zh: '每一帧都值得打磨', en: 'Every frame deserves care.' }, toolIds: ['image-converter'] },
+  { id: 'operations', label: { zh: '运营', en: 'Community teams' }, description: { zh: '为内容与社群增添色彩', en: 'Bring more color to content and communities.' }, toolIds: ['image-converter'] },
+  { id: 'studio', label: { zh: '工作室', en: 'Studios' }, description: { zh: '工作细节决定成败', en: 'Details make the difference.' }, toolIds: [] },
 ];
 
 export function getRoleShowcases(region: Region, locale: Locale, dev = false, registry = tools, roles = roleShowcases) {
@@ -71,8 +72,6 @@ const zh = {
   demo: '开发演示 · 非工具',
   toolSlot: '工具展示位',
   draft: '草稿预览',
-  rolesTitle: '按创作角色探索',
-  rolesIntro: '按你的工作视角，寻找合适的工具。',
   roleEmpty: '这个分区的工具正在准备中。',
   more: '查看更多',
   workflowTitle: '从素材，到处理，再到成果',
@@ -89,8 +88,6 @@ const en: { [K in keyof typeof zh]: typeof zh[K] } = {
   demo: 'Development demo · not a tool',
   toolSlot: 'Tool display slot',
   draft: 'Draft preview',
-  rolesTitle: 'Explore by creative role',
-  rolesIntro: 'Find tools through the lens of your work.',
   roleEmpty: 'Tools for this section are on the way.',
   more: 'View more',
   workflowTitle: 'From assets, through processing, to results',

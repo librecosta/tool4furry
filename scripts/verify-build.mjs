@@ -371,9 +371,14 @@ if (locale === 'en')
   );
 const cards = [...catalog.querySelectorAll('[data-home-tool]')];
 assert.deepEqual([...document.querySelectorAll('[data-home-section]')].map(section => section.dataset.homeSection),
-  ['hero', 'featured', 'roles', 'workflow', 'principles'], 'The complete five-section homepage is statically rendered');
+  ['hero', 'featured', 'roles', 'workflow', 'principles'], 'The five homepage blocks are statically rendered');
 assert.deepEqual([...document.querySelectorAll('[data-home-role]')].map(role => role.dataset.homeRole),
-  ['painter', 'composer', 'developer', 'animator', 'operations', 'finance']);
+  ['painter', 'composer', 'developer', 'animator', 'operations', 'studio']);
+assert.deepEqual([...catalog.children].map(block => block.dataset.homeSection), ['featured', 'roles'], 'One continuous discovery section');
+assert.equal(catalog.querySelectorAll('h2').length, 1, 'One visible discovery heading');
+assert.equal(catalog.querySelectorAll('#roles-heading').length, 0, 'No duplicate role section header');
+for (const artwork of catalog.querySelectorAll('[data-role-artwork]'))
+  assert(artwork.querySelector('img'), 'Production role artwork requires a real asset');
 assert.equal(document.querySelectorAll('[data-home-demo], [data-home-dev-preview]').length, 0, 'No development demonstration slots in production');
 assert.equal(document.querySelectorAll('[data-home-dots]').length, 0, 'No obsolete document-scrolling homepage dots');
 const featuredLayout = catalog.querySelector('[data-featured-layout]');
@@ -381,7 +386,7 @@ assert.equal(featuredLayout.querySelector('[data-featured-content]').parentEleme
 for (const decor of document.querySelectorAll('[data-home-decor]')) {
   assert.equal(decor.parentElement, featuredLayout, 'Artwork is the first normal Grid child');
   assert.equal(featuredLayout.firstElementChild, decor);
-  assert.equal(decor.closest('[data-home-section]'), catalog, 'Artwork belongs only to the featured section');
+  assert.equal(decor.closest('[data-home-section]'), catalog.querySelector('[data-home-section="featured"]'), 'Artwork belongs only to the featured block');
   assert.equal(decor.querySelectorAll('img').length, 1, 'Production artwork requires a supplied asset');
   assert.equal(decor.querySelector('img').getAttribute('alt'), '');
   assert.equal(decor.querySelector('img').getAttribute('loading'), 'lazy');
@@ -478,12 +483,7 @@ for (const [dom, list] of [
     );
   }
 }
-assert.equal(
-  document.querySelectorAll('a[href="#tools"]').length,
-  allCards.length ? 1 : 0,
-  'With no published tools the Hero links to the real catalog instead',
-);
-assert.equal(document.querySelector('[data-home-cta]')?.getAttribute('href'), allCards.length ? '#tools' : localPath('/tools/'));
+assert.equal(document.querySelector('[data-home-cta]')?.getAttribute('href'), localPath('/tools/'), 'Hero always navigates to the regional localized catalog');
 for (const card of cards) {
   const full = allCards.find(
     (entry) => entry.dataset.toolCard === card.dataset.toolCard,

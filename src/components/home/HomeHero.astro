@@ -5,8 +5,8 @@ import { localizedPath } from '../../i18n/locale';
 import type { Region } from '../../config/region';
 import { messages } from '../../i18n/messages';
 import { homeStyles as h } from '../../styles/homepage';
-interface Props { region: Region; locale: Locale; hasTools: boolean }
-const { region, locale, hasTools } = Astro.props;
+interface Props { region: Region; locale: Locale }
+const { region, locale } = Astro.props;
 const t = messages[locale];
 ---
 <section data-home-section="hero" aria-labelledby="hero-heading" {...stylex.attrs(h.hero)}>
@@ -20,7 +20,7 @@ const t = messages[locale];
       <h1 id="hero-heading" {...stylex.attrs(h.heroTitle)}><span {...stylex.attrs(h.heroLine, h.heroReveal, h.revealTitleLead)}>{t.homeHeroLead}</span>{locale === 'en' ? ' ' : ''}<span {...stylex.attrs(h.heroLine, h.heroReveal, h.revealTitleClose)}>{t.homeHeroClose}</span></h1>
       <p {...stylex.attrs(h.heroIntro, h.heroReveal, h.revealIntroLead)}>{t.homeHeroIntroLead}</p>
       <p {...stylex.attrs(h.heroIntro, h.heroIntroLast, h.heroReveal, h.revealIntroDetail)}>{t.homeHeroIntroDetail}</p>
-      <a href={hasTools ? '#tools' : localizedPath('/tools/', region, locale)} data-home-cta {...stylex.attrs(h.heroCta, h.heroReveal, h.revealCta)}>{t.explore}</a>
+      <a href={localizedPath('/tools/', region, locale)} data-home-cta {...stylex.attrs(h.heroCta, h.heroReveal, h.revealCta)}>{t.explore}</a>
     </div>
   </div>
 </section>

@@ -22,7 +22,7 @@ const presentDecor = decor && /^\/(?!\/)(?!.*\.\.)[^?#]+$/.test(decor.src)
   && statSync(resolve('public', decor.src.slice(1)), { throwIfNoEntry: false })?.isFile();
 const showDecor = !!presentDecor || import.meta.env.DEV;
 ---
-<section id="tools" data-home-section="featured" aria-labelledby="tools-heading" {...stylex.attrs(h.inner, h.section, h.featuredSection)}>
+<div data-home-section="featured" {...stylex.attrs(h.inner, h.featuredSection)}>
   <div data-featured-layout {...stylex.attrs(h.featuredLayout, showDecor && h.featuredWithDecor)}>
   {showDecor && <div data-home-decor data-home-demo={!presentDecor || undefined} aria-hidden="true" {...stylex.attrs(h.featuredDecor)}>
     {presentDecor && decor ? <img src={decor.src} width={decor.width} height={decor.height} alt="" loading="lazy" decoding="async" {...stylex.attrs(h.featuredDecorImage)} />
@@ -51,4 +51,4 @@ const showDecor = !!presentDecor || import.meta.env.DEV;
   </div>}
   </div>
   </div>
-</section>
+</div>
