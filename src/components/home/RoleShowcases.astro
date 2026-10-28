@@ -13,12 +13,12 @@ const roles = getRoleShowcases(region, locale, import.meta.env.DEV);
 const c = homepageCopy[locale];
 ---
 <section data-home-section="roles" aria-labelledby="roles-heading" {...stylex.attrs(h.rolesBackground)}>
-  <div {...stylex.attrs(h.inner, h.section, h.contentLayer, h.rolesSection)}>
+  <div {...stylex.attrs(h.inner, h.section, h.rolesSection)}>
     <div {...stylex.attrs(h.sectionHead)}><div><h2 id="roles-heading" {...stylex.attrs(h.heading)}>{c.rolesTitle}</h2><p {...stylex.attrs(h.intro)}>{c.rolesIntro}</p></div></div>
     <div {...stylex.attrs(h.roles)}>{roles.map(role => <article data-home-role={role.id} aria-labelledby={`role-${role.id}`} {...stylex.attrs(h.role)}>
       <div {...stylex.attrs(h.roleHead)}>
         <div><h3 id={`role-${role.id}`} {...stylex.attrs(h.roleTitle)}>{role.label[locale]}</h3><p {...stylex.attrs(h.roleDescription)}>{role.description[locale]}</p></div>
-        <a href={localizedPath('/tools/', region, locale)} aria-label={`${role.label[locale]} — ${c.more}`} {...stylex.attrs(h.link)}>{c.more}</a>
+        <a href={localizedPath('/tools/', region, locale)} aria-label={`${role.label[locale]} — ${c.more}`} {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{c.more}</span></a>
       </div>
       <div {...stylex.attrs(h.roleBody)}>
         <div {...stylex.attrs(h.roleVisual)}><HomeMedia media={role.media} kind="portrait" locale={locale} decorative /></div>

@@ -11,14 +11,14 @@ const { region, locale } = Astro.props;
 const t = messages[locale];
 const c = homepageCopy[locale];
 ---
-<section data-home-section="principles" aria-labelledby="principles-heading" {...stylex.attrs(h.inner, h.principles, h.contentLayer)}>
+<section data-home-section="principles" aria-labelledby="principles-heading" {...stylex.attrs(h.inner, h.principles)}>
   <div {...stylex.attrs(h.editorial)}>
     <h2 id="principles-heading" {...stylex.attrs(h.heading)}>{c.principlesTitle}</h2>
     <div><p {...stylex.attrs(h.intro)}>{c.principlesIntro}</p><p {...stylex.attrs(h.intro)}>{c.principlesDetail}</p>
       <div {...stylex.attrs(h.editorialLinks)}>
-        <a href={localizedPath('/about/', region, locale)} {...stylex.attrs(h.link)}>{t.about}</a>
-        <a href="https://github.com/librecosta/tool4furry" {...stylex.attrs(h.link)}>{t.source}</a>
-        <a href={localizedPath('/privacy/', region, locale)} {...stylex.attrs(h.link)}>{t.privacy}</a>
+        <a href={localizedPath('/about/', region, locale)} {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{t.about}</span></a>
+        <a href="https://github.com/librecosta/tool4furry" {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{t.source}</span></a>
+        <a href={localizedPath('/privacy/', region, locale)} {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{t.privacy}</span></a>
       </div>
     </div>
   </div>

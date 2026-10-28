@@ -2,6 +2,9 @@ import * as stylex from '@stylexjs/stylex';
 // GoFurry dev b186325 tokens.less: preserve the mapped gray values and alpha.
 export const neutralDarkValues = {
   page: '#1D1F22',
+  pageDot: 'rgba(193,197,203,0.18)',
+  pageDotMedium: 'rgba(193,197,203,0.12)',
+  pageDotSmall: 'rgba(193,197,203,0.08)',
   navBackground: 'rgba(20,22,25,0.97)',
   navFloatingBackground: '#393B3E',
   navText: 'rgba(248,250,252,0.94)',
@@ -78,6 +81,9 @@ export const neutralDarkValues = {
 export const neutralLightValues = {
   ...neutralDarkValues,
   page: '#F8F9FA',
+  pageDot: 'rgba(88,97,107,0.20)',
+  pageDotMedium: 'rgba(88,97,107,0.13)',
+  pageDotSmall: 'rgba(88,97,107,0.10)',
   navBackground: '#30343A',
   navFloatingBackground: '#30343A',
   navSecondary: '#CBD5E1',

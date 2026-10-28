@@ -4,9 +4,13 @@
 
 DEV 可补三个带明确“非工具”说明且无链接的裁剪/压缩/取色设计示例；不进入 Registry。生产只显示真实已发布条目，零条目保留原空状态。无新增 JS、依赖或入场动画，Hover 为 260ms 背景变化；Hero、职业区、故事区、导航、Footer 和工具业务均不变。
 
-最后视觉补充（[评论 6469265435](https://github.com/librecosta/tool4furry/issues/23#issuecomment-6469265435)）：精选区上下 32/36px、标题下 20px（手机 18px）、桌面卡片最小高度 152px / 内边距 16px，职业区外侧上下 40px；不改共享 section 或职业内部结构。Hero 后的专属背景层沿用 [GoFurry #149 最终源码](https://github.com/gofurry/gofurry-nav-site/blob/b186325c59c086351cf2b37d0b5c6530b937813c/apps/cn/web/app/components/common/PublicPageBackground.vue) 的纯 CSS 微点阵：30px 间距、1.1px 半径、外侧 15% 后向内渐隐、顶部 18% 后向下渐隐、最大高度 720px。两侧范围额外限制在实际空白边缘；小于 1200px 隐藏，正文与卡片保持干净。点阵在角色底色之上、内容之下，不使用图片、SVG 或脚本。
+最新纠偏（[评论 6470211603](https://github.com/librecosta/tool4furry/issues/23#issuecomment-6470211603)）覆盖前轮首页点阵与绝对定位约定。保留精选区上下 32/36px、标题下 20px（手机 18px）、桌面卡片最小高度 152px / 内边距 16px，职业区外侧上下 40px；不改职业内部结构。共享 `SiteLayout` 沿用 [GoFurry #149 最终源码](https://github.com/gofurry/gofurry-nav-site/blob/b186325c59c086351cf2b37d0b5c6530b937813c/apps/cn/web/app/components/common/PublicPageBackground.vue)：固定视口基底与点阵，30px 间距、1.1px 半径、边宽 `min(30%,460px)`、左右 15% 后向内渐隐、顶部 18% 后向下渐隐、高度 `min(720px,100svh)`，滚动不改变屏幕坐标。768–1279px 减淡；手机单层满宽、28px / 0.8px、185px 上显下隐，不再隐藏整个背景。按维护者本轮减淡反馈，Light/Dark alpha 为桌面 .20/.18、中屏 .13/.12、手机 .10/.08，仅使用一次 alpha；颜色由现有 StyleX 主题的三个 pageDot 语义值提供。
 
-`homepageMedia.featuredDecor` 是可选的本地原创素材槽，仅当文件存在且尺寸有效时输出装饰性、延迟加载的图片。1880px 起在内容左侧外缘显示 128px，不挤压四槽；更窄时隐藏。当前未配置素材，生产不输出该节点或图片请求；DEV 仅显示中性 3:4“素材预留 / Artwork slot”，待维护者提供正式原创文件后替换。
+背景仅一份、无 JS：shell 隔离负层级，固定基底 -3、角色底色伪元素 -2、固定点阵 -1、实际内容在其上。Hero 与 Header/Footer 沿用自身底色；现有 `workspace && !documentScroll` 的 Canvas/沉浸 Lab 隐藏点阵，Form/Batch 背景不浮到实际工具内容上。
+
+`homepageMedia.featuredDecor` 是可选的本地原创素材槽，仅当文件存在且尺寸有效时输出装饰性、延迟加载的图片。精选父级是正常 Grid：≥1440px 有素材/DEV 占位时为 160px 插画列 + 32px 间距 + 右侧内容列（标题、浏览全部、四卡整体）；更窄时隐藏插画。当前未配置素材，生产只渲染右列且不预留空白；DEV 显示中性 3:4“素材预留 / Artwork slot”。没有绝对定位、负偏移或虚构图片请求。
+
+首页轻量文本链接采用 [DeepFurry `.hero-action::after`](https://github.com/deepfurry/website/blob/main/src/styles/global.css)：文字 span 的 1px 完整下划线，Hover 从左侧 180ms 收缩至 62%，移出恢复；44px 命中区不参与划线，键盘焦点保留，Reduced Motion 为 0ms。不改主 CTA、导航或 Footer 的交互。
 
 ---
 

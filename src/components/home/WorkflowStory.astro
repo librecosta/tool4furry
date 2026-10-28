@@ -9,7 +9,7 @@ interface Props { locale: Locale; converter?: CatalogEntry }
 const { locale, converter } = Astro.props;
 const c = homepageCopy[locale];
 ---
-<section data-home-section="workflow" aria-labelledby="workflow-heading" {...stylex.attrs(h.inner, h.section, h.contentLayer)}>
+<section data-home-section="workflow" aria-labelledby="workflow-heading" {...stylex.attrs(h.inner, h.section)}>
   <div {...stylex.attrs(h.storyLayout)}>
     <HomeMedia media={homepageMedia.workflow} kind="story" locale={locale} />
     <div {...stylex.attrs(h.storyText)}>
@@ -17,7 +17,7 @@ const c = homepageCopy[locale];
       <p {...stylex.attrs(h.intro)}>{c.workflowIntro}</p>
       <ol {...stylex.attrs(h.steps)}>{c.workflowSteps.map((step, index) => <li {...stylex.attrs(h.step)}><span aria-hidden="true" {...stylex.attrs(h.stepNumber)}>{String(index + 1).padStart(2, '0')}</span>{step}</li>)}</ol>
       <p {...stylex.attrs(h.intro)}>{c.workflowDetail}</p>
-      {import.meta.env.DEV && converter && <a href={converter.href} data-home-dev-preview {...stylex.attrs(h.link)}>{c.workflowPreview}</a>}
+      {import.meta.env.DEV && converter && <a href={converter.href} data-home-dev-preview {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{c.workflowPreview}</span></a>}
     </div>
   </div>
 </section>

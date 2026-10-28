@@ -45,6 +45,12 @@ function assertAppearanceScript(dom) {
   return script;
 }
 function assertStaticNavigation(dom, homepage = false) {
+  assert.equal(dom.querySelectorAll('[data-site-background]').length, 1, 'One shared page canvas');
+  const dots = dom.querySelectorAll('[data-page-dots]');
+  assert.equal(dots.length, 1, 'One shared fixed CSS dot field on every static page');
+  assert.equal(dots[0].getAttribute('aria-hidden'), 'true');
+  assert.deepEqual([...dots[0].children].map(side => side.dataset.pageDotSide), ['left', 'right']);
+  assert.equal(dots[0].querySelectorAll('img, svg, canvas').length, 0, 'Dot pattern is CSS only');
   assertAppearanceScript(dom);
   assertNavigationScript(dom);
   assertDocumentScroll(dom);
@@ -369,13 +375,12 @@ assert.deepEqual([...document.querySelectorAll('[data-home-section]')].map(secti
 assert.deepEqual([...document.querySelectorAll('[data-home-role]')].map(role => role.dataset.homeRole),
   ['painter', 'composer', 'developer', 'animator', 'operations', 'finance']);
 assert.equal(document.querySelectorAll('[data-home-demo], [data-home-dev-preview]').length, 0, 'No development demonstration slots in production');
-const dotField = document.querySelector('[data-home-dots]');
-assert.equal(document.querySelectorAll('[data-home-dots]').length, 1, 'One homepage-only CSS dot field');
-assert.equal(dotField.getAttribute('aria-hidden'), 'true');
-assert.equal(dotField.parentElement, catalog.parentElement, 'Dots belong after Hero, alongside the featured content');
-assert.deepEqual([...dotField.children].map(side => side.dataset.homeDotSide), ['left', 'right']);
-assert.equal(dotField.querySelectorAll('img, svg, canvas').length, 0, 'Dot pattern is CSS only');
+assert.equal(document.querySelectorAll('[data-home-dots]').length, 0, 'No obsolete document-scrolling homepage dots');
+const featuredLayout = catalog.querySelector('[data-featured-layout]');
+assert.equal(featuredLayout.querySelector('[data-featured-content]').parentElement, featuredLayout);
 for (const decor of document.querySelectorAll('[data-home-decor]')) {
+  assert.equal(decor.parentElement, featuredLayout, 'Artwork is the first normal Grid child');
+  assert.equal(featuredLayout.firstElementChild, decor);
   assert.equal(decor.closest('[data-home-section]'), catalog, 'Artwork belongs only to the featured section');
   assert.equal(decor.querySelectorAll('img').length, 1, 'Production artwork requires a supplied asset');
   assert.equal(decor.querySelector('img').getAttribute('alt'), '');

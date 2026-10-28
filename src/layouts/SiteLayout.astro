@@ -75,6 +75,11 @@ const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function
   </head>
   <body {...stylex.attrs(s.body)}>
     <div {...stylex.attrs(s.frame)}>
+      <div data-site-background aria-hidden="true" {...stylex.attrs(s.pageBackground)}></div>
+      <div data-page-dots aria-hidden="true" {...stylex.attrs(s.pageDots, workspace && !documentScroll && s.workspaceDotsHidden)}>
+        <span data-page-dot-side="left" {...stylex.attrs(s.pageDotSide, s.pageDotsLeft)}></span>
+        <span data-page-dot-side="right" {...stylex.attrs(s.pageDotSide, s.pageDotsRight)}></span>
+      </div>
       <a {...stylex.attrs(s.skip)} href="#main-content">{t.skip}</a>
       {!workspace && <header data-site-header {...stylex.attrs(s.fullBleed, s.productHeader)}>
         <nav {...stylex.attrs(s.fluid, s.nav)} aria-label={t.headerNav}>

@@ -12,7 +12,15 @@ export const siteStyles = stylex.create({
     backgroundColor: tokens.page,
     fontSize: 16,
   },
-  frame: { minHeight: '100dvh', display: 'flex', flexDirection: 'column' },
+  frame: { minHeight: '100dvh', display: 'flex', flexDirection: 'column', position: 'relative', isolation: 'isolate' },
+  // GoFurry PublicPageBackground: fixed page canvas, then fixed viewport dots.
+  // Negative layers stay in this shell; content, Hero and chrome paint above them.
+  pageBackground: { position: 'fixed', inset: 0, zIndex: -3, backgroundColor: tokens.page, pointerEvents: 'none' },
+  pageDots: { position: 'fixed', insetInline: 0, top: 0, zIndex: -1, pointerEvents: 'none', height: { default: 'min(720px, 100svh)', '@media (max-width: 767px)': 'min(185px, 100svh)' }, maskImage: { default: 'linear-gradient(to bottom, #000 18%, transparent)', '@media (max-width: 767px)': 'linear-gradient(to bottom, #000, transparent)' } },
+  pageDotSide: { position: 'absolute', insetBlock: 0, width: 'min(30%, 460px)', color: { default: tokens.pageDot, '@media (min-width: 768px) and (max-width: 1279px)': tokens.pageDotMedium, '@media (max-width: 767px)': tokens.pageDotSmall }, backgroundImage: { default: 'radial-gradient(circle, currentColor 1.1px, transparent 1.1px)', '@media (max-width: 767px)': 'radial-gradient(circle, currentColor .8px, transparent .8px)' }, backgroundRepeat: 'repeat', backgroundSize: { default: '30px 30px', '@media (max-width: 767px)': '28px 28px' } },
+  pageDotsLeft: { left: 0, width: { default: 'min(30%, 460px)', '@media (max-width: 767px)': '100%' }, maskImage: { default: 'linear-gradient(to right, #000 15%, transparent)', '@media (max-width: 767px)': 'none' } },
+  pageDotsRight: { right: 0, backgroundPosition: 'right top', maskImage: 'linear-gradient(to left, #000 15%, transparent)', display: { default: 'block', '@media (max-width: 767px)': 'none' } },
+  workspaceDotsHidden: { display: 'none' },
   fullBleed: { width: '100%' },
   fluid: {
     width: '100%',
