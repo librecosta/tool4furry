@@ -216,11 +216,41 @@ for (const [property, expected] of Object.entries({
 assert.equal(document.querySelectorAll('h1').length, 1);
 const pillars = document.querySelector('[data-home-section="workflow"] [data-home-pillars]');
 assert(pillars, 'Three static pillars precede the unchanged workflow story');
+const community = document.querySelector('[data-home-community]');
+assert.equal(community?.nextElementSibling, pillars, 'Community cards immediately precede the existing pillars');
+const communityCards = [...community.querySelectorAll('[data-community-card]')];
+assert.deepEqual(communityCards.map(card => card.dataset.communityCard), region === 'cn' ? ['qq', 'telegram', 'support'] : ['discord', 'telegram', 'support']);
+assert.deepEqual([...community.querySelectorAll('h3')].map(h => h.textContent), region === 'cn'
+  ? (locale === 'zh' ? ['QQ 交流群', 'Telegram 群组', '赞助与支持'] : ['QQ Group', 'Telegram Group', 'Support'])
+  : (locale === 'zh' ? ['Discord 社群', 'Telegram 群组', '赞助与支持'] : ['Discord Community', 'Telegram Group', 'Support the Project']));
+const communityLinks = [...community.querySelectorAll('a')];
+assert.deepEqual(communityLinks.map(a => a.getAttribute('href')), region === 'cn'
+  ? ['https://t.me/+-Fn3F3hprS8wY2M9', 'https://afdian.com/a/gofurry']
+  : ['https://discord.gg/gEEgV8pkS', 'https://t.me/+-Fn3F3hprS8wY2M9', 'https://ko-fi.com/gofurry']);
+assert(communityLinks.every(a => a.target === '_blank' && a.rel === 'noopener noreferrer'), 'Community destinations are native external links');
+assert.equal(community.querySelectorAll('button, script, astro-island').length, 0, 'Community cards add no scripts or fake actions');
+if (region === 'cn') {
+  const qr = community.querySelector('img');
+  assert.equal(qr?.getAttribute('src'), '/community/QQ-Group.avif');
+  assert.equal(qr.width, 128); assert.equal(qr.height, 128);
+  assert.equal(communityCards[0].querySelectorAll('a').length, 0, 'QQ has no invented direct link');
+  const qrBytes = await readFile(resolve(root, 'community/QQ-Group.avif'));
+  assert.deepEqual(qrBytes, await readFile('public/community/QQ-Group.avif'));
+  assert.equal(createHash('sha256').update(qrBytes).digest('hex'), '3cd0e1d70b2a0153024d13212cce2844bc0ff5ed00b6b634e4b57ad9748fc3b4', 'Approved QR bytes remain unchanged');
+  assert(communityCards[2].textContent.includes('GoFurry'), 'Support identifies the actual Afdian account');
+} else {
+  assert.equal(community.querySelectorAll('img').length, 0, 'Global pages never request the CN QR image');
+  assert.equal(communityCards[2].querySelectorAll('a').length, 1, 'One real Ko-fi sponsorship entry');
+  assert.equal(communityCards[2].querySelector('a').textContent, locale === 'zh' ? '在 Ko-fi 支持我们' : 'Support us on Ko-fi');
+  assert(communityCards[2].textContent.includes('GoFurry'), 'Support identifies the actual Ko-fi account');
+}
 assert.equal(pillars.nextElementSibling?.id, 't4f-home-pillars');
+assert.equal(pillars.querySelectorAll('h2').length, 1);
+assert.equal(pillars.querySelector('h2')?.textContent.trim(), locale === 'zh' ? '关于 Tool4Furry' : 'About Tool4Furry');
 assert.deepEqual([...pillars.querySelectorAll('[data-pillar]')].map(item => item.dataset.pillar), ['experience', 'safety', 'privacy']);
 assert.deepEqual([...pillars.querySelectorAll('h3')].map(item => item.textContent), locale === 'zh' ? ['体验优先', '安全优先', '隐私优先'] : ['Experience First', 'Security First', 'Privacy First']);
 assert.deepEqual([...pillars.querySelectorAll('[data-pillar-part="number"]')].map(item => item.textContent), ['01', '02', '03']);
-assert.equal(pillars.querySelectorAll('[data-pillar-part="cap"]').length, 1, 'One shared cap spans the complete group');
+assert.equal(pillars.querySelectorAll('[data-pillar-part="cap"]').length, 2, 'Two shared cap segments leave room for the visible H2');
 assert.equal(pillars.querySelectorAll('[data-pillar-separator]').length, 2);
 assert.equal(pillars.querySelectorAll('[data-pillar-artwork] svg').length, 3);
 assert.equal(new Set([...pillars.querySelectorAll('[data-pillar-artwork] svg')].map(item => item.innerHTML)).size, 3, 'Distinct experience, security and privacy icons');
@@ -337,16 +367,17 @@ for (const path of [symbol, horizontal, '/brand/tool4furry-og-master.svg', '/bra
 }
 for (const image of document.querySelectorAll('img')) {
   const src = image.getAttribute('src');
+  const communityQR = region === 'cn' && src === '/community/QQ-Group.avif' && image.closest('[data-home-community] [data-community-card="qq"]');
   assert(
     image.closest('[data-site-compliance]')
       ? src?.startsWith('/') && !src.startsWith('//')
-      : src?.startsWith('/brand/') || (src === '/visuals/wavefield/wavefield.avif' && image.closest('[data-wavefield]')),
-    'Homepage images must be local brand/compliance assets or the exact approved Wavefield poster',
+      : communityQR || src?.startsWith('/brand/') || (src === '/visuals/wavefield/wavefield.avif' && image.closest('[data-wavefield]')),
+    'Homepage images are approved local brand/compliance art, Wavefield poster or the exact CN community QR',
   );
   assert.equal(
     image.getAttribute('alt'),
-    '',
-    'Decorative art must have empty alt',
+    communityQR ? (locale === 'zh' ? 'QQ 交流群二维码' : 'QQ Group QR code') : '',
+    'The community QR has descriptive alt; decorative art retains empty alt',
   );
   assert(
     image.hasAttribute('width') && image.hasAttribute('height'),

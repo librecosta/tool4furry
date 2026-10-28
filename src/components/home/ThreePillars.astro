@@ -12,8 +12,11 @@ const { region, locale } = Astro.props;
 const icons = { experience: CursorClickIcon, safety: ShieldCheckIcon, privacy: LockKeyIcon };
 ---
 <section data-home-pillars aria-labelledby="pillars-heading" {...stylex.attrs(p.section)}>
-  <h2 id="pillars-heading" {...stylex.attrs(p.accessibleHeading)}>{locale === 'zh' ? '我们的优先事项' : 'Our priorities'}</h2>
-  <span data-pillar-part="cap" aria-hidden="true" {...stylex.attrs(p.cap)} />
+  <h2 id="pillars-heading" {...stylex.attrs(p.capHeading)}>
+    <span data-pillar-part="cap" aria-hidden="true" {...stylex.attrs(p.cap)} />
+    <span data-pillar-part="cap-title" {...stylex.attrs(p.capTitle)}>{locale === 'zh' ? '关于 Tool4Furry' : 'About Tool4Furry'}</span>
+    <span data-pillar-part="cap" aria-hidden="true" {...stylex.attrs(p.cap)} />
+  </h2>
   <div {...stylex.attrs(p.grid)}>
     {homepagePillars[locale].map((pillar, index) => { const Icon = icons[pillar.id]; return <article data-pillar={pillar.id} aria-labelledby={`pillar-${pillar.id}`} {...stylex.attrs(p.pillar, index === 1 && p.second, index === 2 && p.third)}>
       {index > 0 && <span data-pillar-separator aria-hidden="true" {...stylex.attrs(p.separator)}><span data-pillar-part="line" {...stylex.attrs(p.stroke)} /></span>}

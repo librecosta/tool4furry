@@ -1,3 +1,13 @@
+# Issue #27 — 社群与支持衔接（2026-10-29）
+
+`CommunitySupport.astro` 是 `WorkflowStory` 内 `ThreePillars` 的前一个兄弟。角色区既有 40px 底留白后直接进入三卡，局部覆盖 workflow 顶部 padding；三卡后 48px 接入三栏理念。卡片使用现有中性 Surface、14px 圆角，无实体边框或阴影；三列 / ≤1100px 两列 / ≤600px 单列，等高、最小 250px 且内容可自然撑高。原第四区下半图文、第五区及前三块不变。
+
+`src/site/home-community.ts` 只按 Region 选择 QQ/Discord 和赞助入口，Locale 只选中英文文案。CN 使用附件原样 `public/community/QQ-Group.avif`（128×128，原生 128×128 contain 显示，无重采样，SHA-256 `3cd0e1d70b2a0153024d13212cce2844bc0ff5ed00b6b634e4b57ad9748fc3b4`），无捏造 QQ 直链；Global 页面不引用或请求该图片。Discord/Telegram/GoFurry 爱发电及维护者随后补充的 `https://ko-fi.com/gofurry` 使用原始 URL，原生外链加 noopener/noreferrer；CN / Global 均明示实际 GoFurry 账户。Global Ko-fi 入口为「Support us on Ko-fi / 在 Ko-fi 支持我们」，取代初始占位；没有虚构赞助渠道。没有新脚本、Island、依赖或入场动效；链接 44px 命中区、220ms Hover，Reduced Motion 为 0ms。
+
+原封顶线改为一个可见 H2「关于 Tool4Furry / About Tool4Furry」和左右两段 2px 线；标题与两线复用现有整组 Reveal 的 0–320ms 阶段，后续时间轴、01/02/03、环绕正文、桌面粗斜线及单列隐藏规则不变。无 JS/Reduced Motion 下标题和线条直接可见。外部邀请是否仍有效、实际扫码加入未作为自动验收结论，维护者可另行核验。
+
+---
+
 # Issue #26 — 第四区上半部三栏理念（2026-10-29 补充精修）
 
 [维护者补充评论](https://github.com/librecosta/tool4furry/issues/26#issuecomment-6475918093) 覆盖首轮短文案和统一齿轮；编号及环绕排版采用维护者随后截图纠偏。仅调整 `ThreePillars.astro`：第四区下半旧图文、第五区和前三块不变。三栏透明，无卡片背景、边框或阴影；整组唯一 2px 封顶线、桌面两条 6px / 12° 斜线。按维护者最新截图纠偏，恢复 01 / 02 / 03（80–96px），标题基线同行优先、空间不足自然回绕。≤840px 单列且完全隐藏斜线，栏目间距 40px。64px（≤480px 为 48px）Phosphor Regular CursorClick / ShieldCheck / LockKey 无底板，仅淡入微移。图标在 flow-root 内浮动，正文从其右侧开始，超过图标高度后恢复全栏宽；`data-pillar-artwork` 保留按栏目 ID 替换正式素材的入口。
