@@ -1,12 +1,14 @@
-# Issue #26 — 第四区上半部三栏理念（2026-10-29）
+# Issue #26 — 第四区上半部三栏理念（2026-10-29 补充精修）
 
-`ThreePillars.astro` 仅插入 `WorkflowStory` 旧图文之前，下半部和第五区原样保留。01 体验优先、02 安全优先、03 隐私优先为等权栏目，不是处理流程：透明背景，无卡片、边框或阴影；96px 栏间留白容纳两条 6px / 12° 斜线，80–96px 序号、64–80px 齿轮。`data-pillar-artwork` 为三件未来独立素材的替换槽，当前静态 Phosphor GearSix，无底板。≤840px 纵排，斜线缩成 32px 短分隔。所有文案和六个真实链接由 `homepagePillars` 双语数据提供；私密安全报告仅 mailto，不进入公开 Issue。
+[维护者补充评论](https://github.com/librecosta/tool4furry/issues/26#issuecomment-6475918093) 覆盖首轮短文案和统一齿轮；编号及环绕排版采用维护者随后截图纠偏。仅调整 `ThreePillars.astro`：第四区下半旧图文、第五区和前三块不变。三栏透明，无卡片背景、边框或阴影；整组唯一 2px 封顶线、桌面两条 6px / 12° 斜线。按维护者最新截图纠偏，恢复 01 / 02 / 03（80–96px），标题基线同行优先、空间不足自然回绕。≤840px 单列且完全隐藏斜线，栏目间距 40px。64px（≤480px 为 48px）Phosphor Regular CursorClick / ShieldCheck / LockKey 无底板，仅淡入微移。图标在 flow-root 内浮动，正文从其右侧开始，超过图标高度后恢复全栏宽；`data-pillar-artwork` 保留按栏目 ID 替换正式素材的入口。
 
-仅首页多一段逐字审计的 `#t4f-home-pillars` 内联脚本，既有三个全站脚本及唯一 Wavefield 懒模块不变；无 Island、依赖、JS preload、RAF 或全局滚动监听。一个 IntersectionObserver 分别观察三栏，首次进入收窄底部 32px 的视口、可见比例达 12% 后打一次 visible 标记并 unobserve；全部进入后 disconnect 并移除监听。手机逐栏触发，后面的栏目不会在离屏时播完。初始已在视口内或上方的栏目直接显示，避免锚点/恢复滚动位置时闪回。
+`homepagePillars` 逐字保存维护者中英文正文，六个真实链接和现有下划线不变。安全文字是维护者提供的平台长期范围介绍，不据此新增账户/支付功能；公开部署前仍由维护者复核实际措施与承诺的一致性。
 
-CSS 过渡只动 transform / opacity / clip-path：斜线 0–480ms 轴向展开；数字 180–680ms 裁切揭示及 10px 微移；齿轮 360–920ms 从 -16° 轻旋入；标题 480–880ms、正文 560–960ms、链接 640–1040ms 进入。三栏依次增加 0/140/280ms（斜线不叠加），桌面整体 1320ms 收束。滚动往返、主题改变不重播；没有持续齿轮转动。
+仅首页多一段逐字审计的 `#t4f-home-pillars` 内联脚本，既有三个全站脚本及唯一 Wavefield 懒模块不变；无 Island、依赖、JS preload、RAF 或滚动监听。一个 IntersectionObserver 只观察整个 section，首次进入收窄底部 64px 的视口后启动一次完整时间轴并 disconnect，手机同样整组触发，不再逐栏观察。初始已在视口内或上方时直接显示，滚动往返、主题改变和 bfcache 恢复不重播。
 
-静态 HTML 默认全部可见，观察器成功建立后才对未来进入的栏目启用 pending；无 JS/无 IO 保持静态，初始化异常回滚所有 pending。Reduced Motion 跳过增强，运行中改为 Reduce 或 pagehide 将全部显示并清理；键盘提前进入栏目也立即显示。用户可通过系统减少动态效果或禁用 JS 关闭动效，无新设置界面。
+CSS 仅过渡 transform / opacity / clip-path：封顶线 0–320ms 从左到右；两条斜线 160–520ms 沿轴展开；数字 360–800ms 裁切揭示及 10px 微移；标题 420–820ms；图标 560–960ms；正文 620–1060ms；链接 740–1140ms。第二、三栏分别错峰 80/160ms，线条不叠加错峰，整组 1300ms 收束。无循环、旋转或尺寸动画。
+
+静态 HTML 默认全部可见，IO 成功 observe 后才对整组启用 pending；无 JS / 无 IO 保持静态，初始化异常恢复可见。Reduced Motion 跳过增强，运行中切换 Reduce、pagehide 或任一链接提前聚焦将整组显示并清理；CSS 同时确保 Reduce 下无位移、裁切和时长。没有新设置界面。
 
 ---
 

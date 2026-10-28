@@ -1,6 +1,6 @@
 ---
 import * as stylex from '@stylexjs/stylex';
-import { GearSixIcon } from '@phosphor-icons/react/ssr';
+import { CursorClickIcon, ShieldCheckIcon, LockKeyIcon } from '@phosphor-icons/react/ssr';
 import type { Region } from '../../config/region';
 import { localizedPath, type Locale } from '../../i18n/locale';
 import { homepagePillars } from '../../site/homepage-showcase';
@@ -9,21 +9,25 @@ import { pillarStyles as p } from '../../styles/home-pillars';
 import revealSource from '../../styles/pillars-reveal.js?raw';
 interface Props { region: Region; locale: Locale }
 const { region, locale } = Astro.props;
+const icons = { experience: CursorClickIcon, safety: ShieldCheckIcon, privacy: LockKeyIcon };
 ---
 <section data-home-pillars aria-labelledby="pillars-heading" {...stylex.attrs(p.section)}>
   <h2 id="pillars-heading" {...stylex.attrs(p.accessibleHeading)}>{locale === 'zh' ? '我们的优先事项' : 'Our priorities'}</h2>
+  <span data-pillar-part="cap" aria-hidden="true" {...stylex.attrs(p.cap)} />
   <div {...stylex.attrs(p.grid)}>
-    {homepagePillars[locale].map((pillar, index) => <article data-pillar={pillar.id} aria-labelledby={`pillar-${pillar.id}`} {...stylex.attrs(p.pillar, index === 1 && p.second, index === 2 && p.third)}>
+    {homepagePillars[locale].map((pillar, index) => { const Icon = icons[pillar.id]; return <article data-pillar={pillar.id} aria-labelledby={`pillar-${pillar.id}`} {...stylex.attrs(p.pillar, index === 1 && p.second, index === 2 && p.third)}>
       {index > 0 && <span data-pillar-separator aria-hidden="true" {...stylex.attrs(p.separator)}><span data-pillar-part="line" {...stylex.attrs(p.stroke)} /></span>}
-      <div aria-hidden="true" {...stylex.attrs(p.numberWindow)}><span data-pillar-part="number" {...stylex.attrs(p.motion, p.number)}>{String(index + 1).padStart(2, '0')}</span></div>
-      <h3 id={`pillar-${pillar.id}`} data-pillar-part="title" {...stylex.attrs(p.motion, p.title)}>{pillar.title}</h3>
+      <div {...stylex.attrs(p.heading)}>
+        <div aria-hidden="true" {...stylex.attrs(p.numberWindow)}><span data-pillar-part="number" {...stylex.attrs(p.motion, p.number)}>{String(index + 1).padStart(2, '0')}</span></div>
+        <h3 id={`pillar-${pillar.id}`} data-pillar-part="title" {...stylex.attrs(p.motion, p.title)}>{pillar.title}</h3>
+      </div>
       <div {...stylex.attrs(p.body)}>
-        {/* Independent decorative slots: replace each gear with an approved asset later. */}
-        <span data-pillar-artwork={pillar.id} data-pillar-part="gear" aria-hidden="true" {...stylex.attrs(p.motion, p.gear)}><GearSixIcon size={80} weight="regular" focusable="false" className={stylex.attrs(p.gearIcon).class} /></span>
+        {/* Independent decorative slots remain keyed by column for future approved artwork. */}
+        <span data-pillar-artwork={pillar.id} data-pillar-part="icon" aria-hidden="true" {...stylex.attrs(p.motion, p.icon)}><Icon size={64} weight="regular" focusable="false" className={stylex.attrs(p.iconSvg).class} /></span>
         <p data-pillar-part="description" {...stylex.attrs(p.motion, p.description)}>{pillar.description}</p>
       </div>
       <div data-pillar-part="links" {...stylex.attrs(p.motion, p.links)}>{pillar.links.map(link => <a href={link.href.startsWith('/') ? localizedPath(link.href, region, locale) : link.href} target={link.href.startsWith('https:') ? '_blank' : undefined} rel={link.href.startsWith('https:') ? 'noopener noreferrer' : undefined} {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{link.label}</span></a>)}</div>
-    </article>)}
+    </article>; })}
   </div>
 </section>
 <script is:inline id="t4f-home-pillars" set:html={revealSource} />

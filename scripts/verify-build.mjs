@@ -218,11 +218,15 @@ const pillars = document.querySelector('[data-home-section="workflow"] [data-hom
 assert(pillars, 'Three static pillars precede the unchanged workflow story');
 assert.equal(pillars.nextElementSibling?.id, 't4f-home-pillars');
 assert.deepEqual([...pillars.querySelectorAll('[data-pillar]')].map(item => item.dataset.pillar), ['experience', 'safety', 'privacy']);
-assert.deepEqual([...pillars.querySelectorAll('h3')].map(item => item.textContent), locale === 'zh' ? ['体验优先', '安全优先', '隐私优先'] : ['Experience first', 'Safety first', 'Privacy first']);
+assert.deepEqual([...pillars.querySelectorAll('h3')].map(item => item.textContent), locale === 'zh' ? ['体验优先', '安全优先', '隐私优先'] : ['Experience First', 'Security First', 'Privacy First']);
+assert.deepEqual([...pillars.querySelectorAll('[data-pillar-part="number"]')].map(item => item.textContent), ['01', '02', '03']);
+assert.equal(pillars.querySelectorAll('[data-pillar-part="cap"]').length, 1, 'One shared cap spans the complete group');
 assert.equal(pillars.querySelectorAll('[data-pillar-separator]').length, 2);
 assert.equal(pillars.querySelectorAll('[data-pillar-artwork] svg').length, 3);
+assert.equal(new Set([...pillars.querySelectorAll('[data-pillar-artwork] svg')].map(item => item.innerHTML)).size, 3, 'Distinct experience, security and privacy icons');
 assert.equal(pillars.querySelectorAll('[data-pillar-reveal], [data-pillars-enhanced]').length, 0, 'Static HTML is fully visible without enhancement');
 assert(!pillars.hasAttribute('data-pillars-enhanced'), 'The static root is not pre-armed');
+assert(!pillars.hasAttribute('data-pillar-reveal'), 'The group is fully visible without JavaScript');
 const pillarLinks = [...pillars.querySelectorAll('a')];
 assert.deepEqual(pillarLinks.map(link => link.getAttribute('href')), [localPath('/tools/'), localPath('/about/'), 'https://github.com/librecosta/tool4furry/issues', 'mailto:contact@librecosta.com', localPath('/privacy/'), localPath('/terms/')]);
 assert.equal(pillarLinks[2].target, '_blank');

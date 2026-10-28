@@ -100,16 +100,16 @@ const en: { [K in keyof typeof zh]: typeof zh[K] } = {
 };
 export const homepageCopy = { zh, en };
 
-type HomepagePillar = { id: string; title: string; description: string; links: readonly { label: string; href: string }[] };
+type HomepagePillar = { id: 'experience' | 'safety' | 'privacy'; title: string; description: string; links: readonly { label: string; href: string }[] };
 export const homepagePillars: Record<Locale, readonly HomepagePillar[]> = {
   zh: [
-    { id: 'experience', title: '体验优先', description: '让操作清晰，让反馈及时。', links: [{ label: '浏览工具箱', href: '/tools/' }, { label: '关于项目', href: '/about/' }] },
-    { id: 'safety', title: '安全优先', description: '认真校验每一项输入，谨慎处理每一项结果。', links: [{ label: '问题反馈', href: 'https://github.com/librecosta/tool4furry/issues' }, { label: '安全漏洞报告', href: 'mailto:contact@librecosta.com' }] },
-    { id: 'privacy', title: '隐私优先', description: '最小化必要数据，优先在浏览器本地处理。', links: [{ label: '隐私说明', href: '/privacy/' }, { label: '使用条款', href: '/terms/' }] },
+    { id: 'experience', title: '体验优先', description: '我们关心你操作的每一步，从使用者的角度出发用心打磨每一款工具。让清晰易懂的界面、及时准确的反馈带给你更好的交互体验。', links: [{ label: '浏览工具箱', href: '/tools/' }, { label: '关于项目', href: '/about/' }] },
+    { id: 'safety', title: '安全优先', description: '从用户管理、支付到服务的权限边界，我们严格遵守安全开发的业界标准，积极升级、维护我们的服务。', links: [{ label: '问题反馈', href: 'https://github.com/librecosta/tool4furry/issues' }, { label: '安全漏洞报告', href: 'mailto:contact@librecosta.com' }] },
+    { id: 'privacy', title: '隐私优先', description: '我们坚持最小化必要的数据收集，优先让素材在浏览器本地处理并且核心代码开源。用户有权了解自己的数据如何被使用、保存与保护。', links: [{ label: '隐私说明', href: '/privacy/' }, { label: '使用条款', href: '/terms/' }] },
   ],
   en: [
-    { id: 'experience', title: 'Experience first', description: 'Clear controls. Timely feedback.', links: [{ label: 'Browse toolbox', href: '/tools/' }, { label: 'About the project', href: '/about/' }] },
-    { id: 'safety', title: 'Safety first', description: 'Validate every input. Handle every result with care.', links: [{ label: 'Report an issue', href: 'https://github.com/librecosta/tool4furry/issues' }, { label: 'Report a vulnerability', href: 'mailto:contact@librecosta.com' }] },
-    { id: 'privacy', title: 'Privacy first', description: 'Keep necessary data to a minimum. Prioritize processing in your browser.', links: [{ label: 'Privacy', href: '/privacy/' }, { label: 'Terms', href: '/terms/' }] },
+    { id: 'experience', title: 'Experience First', description: "We care about every step of your experience, thoughtfully refining each tool from the user's perspective. Clear, intuitive interfaces and timely, accurate feedback help make every interaction better.", links: [{ label: 'Browse toolbox', href: '/tools/' }, { label: 'About the project', href: '/about/' }] },
+    { id: 'safety', title: 'Security First', description: 'From account management and payments to service access boundaries, we strictly follow industry standards for secure development and proactively update and maintain our services.', links: [{ label: 'Report an issue', href: 'https://github.com/librecosta/tool4furry/issues' }, { label: 'Report a vulnerability', href: 'mailto:contact@librecosta.com' }] },
+    { id: 'privacy', title: 'Privacy First', description: 'We are committed to minimizing the data we collect, prioritizing local processing of assets in the browser, and keeping our core code open source. Users have the right to know how their data is used, stored, and protected.', links: [{ label: 'Privacy', href: '/privacy/' }, { label: 'Terms', href: '/terms/' }] },
   ],
 };

@@ -2,52 +2,34 @@
   const root = document.querySelector('[data-home-pillars]');
   if (!root || root.dataset.pillarsEnhanced) return;
   root.dataset.pillarsEnhanced = 'true';
-  const items = [...root.querySelectorAll('[data-pillar]')];
-  const pending = new Set();
   let observer, motion;
   const cleanup = () => {
     observer?.disconnect();
     motion?.removeEventListener?.('change', preference);
-    root.removeEventListener('focusin', focus);
+    root.removeEventListener('focusin', finish);
     window.removeEventListener('pagehide', finish);
   };
   const finish = () => {
-    for (const item of items) item.dataset.pillarReveal = 'done';
-    pending.clear();
+    root.dataset.pillarReveal = 'done';
     cleanup();
   };
   const preference = () => { if (motion.matches) finish(); };
-  const focus = event => {
-    const item = event.target.closest('[data-pillar]');
-    if (!pending.delete(item)) return;
-    item.dataset.pillarReveal = 'done';
-    observer.unobserve(item);
-    if (!pending.size) cleanup();
-  };
   try {
     motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (motion.matches || typeof IntersectionObserver !== 'function') return;
+    // Restored/anchored content is already readable; only future natural entry animates.
+    const anchor = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
+    if (root.contains(anchor) || root.getBoundingClientRect().top < window.innerHeight) return;
     observer = new IntersectionObserver(entries => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting || entry.intersectionRatio < .12 || !pending.delete(entry.target)) continue;
-        entry.target.dataset.pillarReveal = 'visible';
-        observer.unobserve(entry.target);
-      }
-      if (!pending.size) cleanup();
-    }, { threshold: .12, rootMargin: '0px 0px -32px 0px' });
-    for (const item of items) {
-      // Restored/anchored content is already readable; only future natural entry animates.
-      if (item.getBoundingClientRect().top < window.innerHeight) {
-        item.dataset.pillarReveal = 'done';
-        continue;
-      }
-      observer.observe(item);
-      pending.add(item);
-      item.dataset.pillarReveal = 'pending';
-    }
-    if (!pending.size) { cleanup(); return; }
+      if (root.dataset.pillarReveal !== 'pending') return;
+      if (!entries.some(entry => entry.target === root && entry.isIntersecting)) return;
+      root.dataset.pillarReveal = 'visible';
+      cleanup();
+    }, { threshold: 0, rootMargin: '0px 0px -64px 0px' });
+    observer.observe(root);
+    root.dataset.pillarReveal = 'pending';
     motion.addEventListener('change', preference);
-    root.addEventListener('focusin', focus);
+    root.addEventListener('focusin', finish);
     window.addEventListener('pagehide', finish, { once: true });
   } catch {
     // Never leave content concealed after partial initialization or a missing browser API.
