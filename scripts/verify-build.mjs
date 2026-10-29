@@ -676,6 +676,10 @@ for (const page of htmlFiles) {
     assert.equal(dom.querySelectorAll('[data-filter="role"]').length, 6);
     assert.deepEqual([...dom.querySelectorAll('[data-filter="role"]')].map(el => el.dataset.value), ['painter', 'composer', 'developer', 'animator', 'operations', 'studio']);
     assert.equal(dom.querySelectorAll('[data-catalog-filters]').length, 1, 'One responsive filter tree');
+    assert.equal(dom.querySelectorAll('[data-toggle-sidebar][hidden]').length, 1, 'No dead fold control without enhancement');
+    assert.equal(dom.querySelectorAll('[data-catalog-jump-dialog]').length, 1, 'One native page dialog');
+    assert.equal(dom.querySelector('[data-catalog-jump-dialog]').open, false);
+    assert.equal(dom.querySelectorAll('[data-catalog-pagination] [data-catalog-jump]').length, 0, 'No permanent jump form in pagination');
     for (const card of dom.querySelectorAll('[data-catalog-item]')) assert.equal(card.hidden, false, 'No-JS catalog shows every real card');
     assertStaticNavigation(dom);
   } else {

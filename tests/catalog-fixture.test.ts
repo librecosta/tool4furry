@@ -27,8 +27,15 @@ describe('catalog-only DEV samples', () => {
     const real = getCatalogEntries('global', tools, true, 'en'), sections = getCatalogSections('global', tools, true, 'en');
     expect(addCatalogFixture(real, sections, 'en', 'off')).toEqual({ entries: real, sections, fixtureCount: 0 });
     const extended = addCatalogFixture(real, sections, 'en', 'pagination');
-    expect(extended.fixtureCount).toBe(108);
-    expect(catalogPage(extended.entries.map(entry => ({ ...entry, search: entry.title })), emptyCatalogState()).totalPages).toBe(10);
+    expect(extended.fixtureCount).toBe(180);
+    const entries = extended.entries.map(entry => ({ ...entry, search: entry.title }));
+    for (const [scope, total, totalPages] of [
+      [{}, 181, 16], [{ category: 'images' }, 133, 12], [{ group: 'image-processing' }, 109, 10],
+    ] as const) {
+      const page = catalogPage(entries, { ...emptyCatalogState(), ...scope });
+      expect(page.total).toBe(total); expect(page.totalPages).toBe(totalPages);
+    }
+    expect(extended.sections.flatMap(section => section.groups).map(group => group.entries.filter(entry => entry.fixture).length)).toEqual([108, 24, 12, 12, 12, 12]);
     expect(() => addCatalogFixture(real, sections, 'en', 'invalid')).toThrow('T4F_CATALOG_FIXTURE');
   });
 });

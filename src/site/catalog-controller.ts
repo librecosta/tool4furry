@@ -11,6 +11,8 @@ export function initCatalog(root: HTMLElement, win: Window = window) {
   const chips = find<HTMLElement>('[data-catalog-chips]'), count = find<HTMLElement>('[data-result-count]');
   const pagination = find<HTMLElement>('[data-catalog-pagination]'), pages = find<HTMLElement>('[data-catalog-pages]');
   const jump = find<HTMLFormElement>('[data-catalog-jump]'), jumpInput = jump.querySelector('input')!;
+  const jumpDialog = find<HTMLDialogElement>('[data-catalog-jump-dialog]');
+  const sidebar = find<HTMLElement>('[data-catalog-sidebar]'), toggleSidebar = find<HTMLButtonElement>('[data-toggle-sidebar]');
   const error = find<HTMLElement>('#catalog-page-error'), dialog = find<HTMLDialogElement>('[data-catalog-filters]');
   const trigger = find<HTMLButtonElement>('[data-open-filters]'), searchAll = find<HTMLButtonElement>('[data-search-all]');
   const filters = [...root.querySelectorAll<HTMLButtonElement>('[data-filter]')];
@@ -27,7 +29,8 @@ export function initCatalog(root: HTMLElement, win: Window = window) {
   };
   const abort = new AbortController(), options = { signal: abort.signal };
   const media = win.matchMedia('(min-width: 900px)');
-  let state = parseCatalogState(win.location.search, scope), totalPages = 1, typing = false, previousGroup = '';
+  let state = parseCatalogState(win.location.search, scope), totalPages = 1, typing = false, previousGroup = '', collapsed = false;
+  let jumpTrigger: HTMLButtonElement | undefined;
   function elementButton(text: string, attrs: Record<string, string> = {}) {
     const button = root.ownerDocument.createElement('button');
     button.type = 'button'; button.textContent = text;
@@ -73,23 +76,34 @@ export function initCatalog(root: HTMLElement, win: Window = window) {
     pages.replaceChildren();
     if (!pagination.hidden) {
       const previous = elementButton(t.previous, { 'data-page': String(state.page - 1) }); previous.disabled = state.page === 1; pages.append(previous);
+      let precedingPage = 0;
       for (const value of pageNumbers(state.page, page.totalPages)) {
-        if (value === '…') { const span = root.ownerDocument.createElement('span'); span.textContent = value; span.className = stylex.props(c.ellipsis).className ?? ''; pages.append(span); continue; }
+        if (value === '…') { pages.append(elementButton(value, { 'data-open-jump': '', 'aria-haspopup': 'dialog', 'aria-label': precedingPage < state.page ? t.jumpEarlier : t.jumpLater })); continue; }
         pages.append(elementButton(String(value), { 'data-page': String(value), 'aria-label': t.page.replace('{page}', String(value)), ...(value === state.page ? { 'aria-current': 'page' } : {}) }));
+        precedingPage = value;
       }
       const next = elementButton(t.next, { 'data-page': String(state.page + 1) }); next.disabled = state.page === page.totalPages; pages.append(next);
     }
     find<HTMLElement>('[data-page-range]').textContent = t.range.replace('{start}', String(page.start)).replace('{end}', String(page.end)).replace('{total}', String(page.total));
-    jump.hidden = page.totalPages <= 7; jumpInput.value = ''; jumpInput.removeAttribute('aria-invalid'); error.hidden = true;
+    jumpInput.removeAttribute('aria-invalid'); error.hidden = true;
     if (language && languagePath.startsWith('/')) language.setAttribute('href', catalogLanguageHref(languagePath, state));
   }
   function update(next: CatalogState, mode: 'pushState' | 'replaceState', resetScroll = true, preserveInput = false) {
+    const wasJumpOpen = jumpDialog.open;
+    if (wasJumpOpen) closeJump(false);
     state = parseCatalogState(catalogQuery(next), scope); render(preserveInput);
     const url = win.location.pathname + catalogQuery(state);
     const changed = url !== win.location.pathname + win.location.search + win.location.hash;
     if (changed) win.history[mode](win.history.state, '', url);
     if (resetScroll) results.scrollTop = 0;
+    if (wasJumpOpen) results.focus({ preventScroll: true });
     return changed;
+  }
+  function closeJump(restore = true) {
+    const source = jumpTrigger;
+    if (jumpDialog.open) jumpDialog.close();
+    jumpTrigger = undefined;
+    if (restore) (source?.isConnected ? source : results).focus({ preventScroll: true });
   }
   function closeDrawer(restore = true) {
     if (dialog.open && !media.matches) dialog.close();
@@ -97,15 +111,34 @@ export function initCatalog(root: HTMLElement, win: Window = window) {
     if (restore && !media.matches) trigger.focus({ preventScroll: true });
   }
   function syncLayout() {
+    const active = root.ownerDocument.activeElement;
     const wasModal = dialog.matches(':modal');
     if (wasModal || (!media.matches && dialog.open)) dialog.close();
     trigger.setAttribute('aria-expanded', 'false');
-    if (media.matches) { dialog.setAttribute('open', ''); if (wasModal) input.focus({ preventScroll: true }); }
+    const hidden = media.matches && collapsed;
+    if (hidden && dialog.contains(active)) toggleSidebar.focus({ preventScroll: true });
+    root.dataset.sidebarCollapsed = String(hidden);
+    dialog.inert = hidden;
+    sidebar.setAttribute('aria-hidden', String(hidden));
+    toggleSidebar.setAttribute('aria-expanded', String(!collapsed));
+    toggleSidebar.setAttribute('aria-label', collapsed ? t.expandSidebar : t.collapseSidebar);
+    if (media.matches) {
+      dialog.setAttribute('open', '');
+      if (wasModal) (hidden ? toggleSidebar : input).focus({ preventScroll: true });
+    } else if (active === toggleSidebar) trigger.focus({ preventScroll: true });
   }
   root.addEventListener('click', event => {
     const target = (event.target as Element).closest<HTMLButtonElement>('button'); if (!target || target.disabled) return;
-    if (target.hasAttribute('data-open-filters')) { dialog.showModal(); trigger.setAttribute('aria-expanded', 'true'); return; }
+    if (target.hasAttribute('data-toggle-sidebar')) { collapsed = !collapsed; syncLayout(); return; }
+    if (target.hasAttribute('data-open-filters')) { if (jumpDialog.open) closeJump(false); dialog.showModal(); trigger.setAttribute('aria-expanded', 'true'); return; }
     if (target.hasAttribute('data-close-filters')) { closeDrawer(); return; }
+    if (target.hasAttribute('data-open-jump')) {
+      closeDrawer(false); jumpTrigger = target;
+      find<HTMLElement>('[data-jump-context]').textContent = t.jumpContext.replace('{page}', String(state.page)).replace('{total}', String(totalPages));
+      jumpInput.value = String(state.page); jumpInput.removeAttribute('aria-invalid'); error.hidden = true;
+      jumpDialog.showModal(); jumpInput.focus(); jumpInput.select(); return;
+    }
+    if (target.hasAttribute('data-close-jump')) { closeJump(); return; }
     if (target.dataset.filter === 'category' && target.hasAttribute('aria-controls')) {
       const open = target.getAttribute('aria-expanded') === 'true';
       expand(target, !open);
@@ -135,19 +168,23 @@ export function initCatalog(root: HTMLElement, win: Window = window) {
   input.addEventListener('blur', () => { typing = false; }, options);
   find<HTMLFormElement>('[data-catalog-search]').addEventListener('submit', event => { event.preventDefault(); typing = false; update({ ...state, q: input.value, page: 1 }, 'replaceState'); }, options);
   jump.addEventListener('submit', event => {
-    event.preventDefault(); const page = validJump(jumpInput.value, totalPages);
+    event.preventDefault(); if (!jumpDialog.open) return;
+    const page = validJump(jumpInput.value, totalPages);
     if (page === null) { jumpInput.setAttribute('aria-invalid', 'true'); error.textContent = t.jumpError.replace('{total}', String(totalPages)); error.hidden = false; return; }
-    typing = false; update({ ...state, page }, 'pushState'); results.focus({ preventScroll: true });
+    closeJump(false); typing = false; update({ ...state, page }, 'pushState'); results.focus({ preventScroll: true });
   }, options);
+  jumpDialog.addEventListener('cancel', event => { event.preventDefault(); closeJump(); }, options);
+  jumpDialog.addEventListener('click', event => { if (event.target === jumpDialog) { const box = jumpDialog.getBoundingClientRect(); if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) closeJump(); } }, options);
   dialog.addEventListener('cancel', event => { event.preventDefault(); closeDrawer(); }, options);
   dialog.addEventListener('click', event => { if (event.target === dialog && !media.matches) { const box = dialog.getBoundingClientRect(); if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) closeDrawer(); } }, options);
   dialog.addEventListener('close', () => { trigger.setAttribute('aria-expanded', 'false'); }, options);
   media.addEventListener('change', syncLayout, options);
   win.addEventListener('popstate', () => { typing = false; state = parseCatalogState(win.location.search, scope); update(state, 'replaceState'); }, options);
-  const cleanup = () => { abort.abort(); if (dialog.open && !media.matches) dialog.close(); };
-  win.addEventListener('pagehide', event => { closeDrawer(false); if (!(event as PageTransitionEvent).persisted) cleanup(); }, options);
+  const cleanup = () => { abort.abort(); closeJump(false); if (dialog.open && !media.matches) dialog.close(); };
+  win.addEventListener('pagehide', event => { closeDrawer(false); closeJump(false); if (!(event as PageTransitionEvent).persisted) cleanup(); }, options);
   // Initialize in the first module task: no artificial hide/delay or JS-only cards.
   update(state, 'replaceState', false); syncLayout();
+  toggleSidebar.hidden = false;
   for (const control of root.querySelectorAll<HTMLInputElement | HTMLButtonElement>('[data-catalog-control]')) control.disabled = false;
   find<HTMLButtonElement>('[data-clear-search]').disabled = !state.q;
   return cleanup;

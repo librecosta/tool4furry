@@ -1,6 +1,6 @@
 ---
 import * as stylex from '@stylexjs/stylex';
-import { MagnifyingGlassIcon, XIcon, SlidersHorizontalIcon, SquaresFourIcon } from '@phosphor-icons/react/ssr';
+import { MagnifyingGlassIcon, XIcon, SlidersHorizontalIcon, SquaresFourIcon, CaretLeftIcon } from '@phosphor-icons/react/ssr';
 import type { Region } from '../../config/region';
 import type { Locale } from '../../i18n/locale';
 import { getCatalogEntries, getCatalogSections } from '../../site/catalog';
@@ -26,6 +26,7 @@ if (import.meta.env.DEV) {
 const onlyDrafts = realEntries.length > 0 && realEntries.every(entry => entry.status === 'draft');
 ---
 <main id="main-content" data-tools-catalog data-locale={locale} {...stylex.attrs(c.root)}>
+  <div data-catalog-sidebar {...stylex.attrs(c.sidebarClip)}>
   <dialog open id="catalog-filters" data-catalog-filters aria-label={t.filters} {...stylex.attrs(c.sidebar)}>
     <div {...stylex.attrs(c.sidebarInner, c.scroll)}>
       <div {...stylex.attrs(c.drawerTitle)}><strong>{t.filters}</strong><button type="button" data-close-filters aria-label={t.close} {...stylex.attrs(c.button, c.iconButton)}><XIcon size={20} aria-hidden /></button></div>
@@ -50,7 +51,9 @@ const onlyDrafts = realEntries.length > 0 && realEntries.every(entry => entry.st
       </nav>
     </div>
   </dialog>
+  </div>
   <div {...stylex.attrs(c.main)}>
+    <button type="button" hidden data-toggle-sidebar aria-controls="catalog-filters" aria-expanded="true" aria-label={t.collapseSidebar} {...stylex.attrs(c.collapseControl)}><span {...stylex.attrs(c.collapseBall)}><CaretLeftIcon size={18} aria-hidden className={stylex.attrs(c.collapseArrow).class} /></span></button>
     <div {...stylex.attrs(c.top, c.scroll)}>
       <div {...stylex.attrs(c.titleRow)}>
         <div><h1 {...stylex.attrs(c.title)}>{site.tools}</h1><p {...stylex.attrs(c.intro)}>{site.catalogIntro}</p></div>
@@ -60,7 +63,7 @@ const onlyDrafts = realEntries.length > 0 && realEntries.every(entry => entry.st
         <label {...stylex.attrs(c.search)}><MagnifyingGlassIcon size={20} aria-hidden /><input data-catalog-control disabled type="search" name="q" maxlength="160" aria-label={t.search} placeholder={t.placeholder} autocomplete="off" {...stylex.attrs(c.input)} /><button type="button" disabled data-catalog-control data-clear-search aria-label={t.clearSearch} {...stylex.attrs(c.button, c.iconButton)}><XIcon size={18} aria-hidden /></button></label>
         <button type="button" hidden data-search-all {...stylex.attrs(c.button)}>{t.searchAll}</button>
       </form>
-      <div data-catalog-chips aria-label={t.selected} hidden {...stylex.attrs(c.chips)}></div>
+      <div data-catalog-chips aria-label={t.selected} hidden {...stylex.attrs(c.chips, c.scroll)}></div>
       <div {...stylex.attrs(c.status)}><p data-result-count role="status" aria-live="polite" aria-atomic="true" {...stylex.attrs(c.muted)}>{entries.length === 1 ? t.countOne : t.count.replace('{count}', String(entries.length))}</p>{onlyDrafts && <p data-catalog-drafts {...stylex.attrs(c.muted)}>{t.drafts}</p>}</div>
       {fixtureCount > 0 && <p data-catalog-fixture-note {...stylex.attrs(c.muted)}>{t.fixtureNote.replace('{count}', String(fixtureCount))}</p>}
       <noscript><p {...stylex.attrs(c.muted)}>{t.noJS}</p></noscript>
@@ -72,9 +75,13 @@ const onlyDrafts = realEntries.length > 0 && realEntries.every(entry => entry.st
       <nav data-catalog-pagination hidden aria-label={t.pagination} {...stylex.attrs(c.pagination)}>
         <div data-catalog-pages {...stylex.attrs(c.pages)}></div>
         <p data-page-range {...stylex.attrs(c.muted)}></p>
-        <form data-catalog-jump hidden {...stylex.attrs(c.jump)}><label for="catalog-page">{t.jump}</label><input id="catalog-page" type="text" inputmode="numeric" autocomplete="off" aria-describedby="catalog-page-error" {...stylex.attrs(c.jumpInput)} /><button type="submit" {...stylex.attrs(c.button)}>{t.go}</button><p id="catalog-page-error" role="alert" hidden {...stylex.attrs(c.error)}></p></form>
       </nav>
     </section>
+    <dialog data-catalog-jump-dialog aria-labelledby="catalog-jump-title" aria-describedby="catalog-jump-context" {...stylex.attrs(c.jumpDialog, c.scroll)}>
+      <div {...stylex.attrs(c.titleRow)}><h2 id="catalog-jump-title" {...stylex.attrs(c.emptyTitle)}>{t.jump}</h2><button type="button" data-close-jump aria-label={t.closeJump} {...stylex.attrs(c.button, c.iconButton)}><XIcon size={20} aria-hidden /></button></div>
+      <p id="catalog-jump-context" data-jump-context {...stylex.attrs(c.muted)}></p>
+      <form data-catalog-jump {...stylex.attrs(c.jump)}><input id="catalog-page" type="text" inputmode="numeric" autocomplete="off" autofocus aria-label={t.jump} aria-describedby="catalog-page-error" {...stylex.attrs(c.jumpInput)} /><p id="catalog-page-error" role="alert" hidden {...stylex.attrs(c.error)}></p><div {...stylex.attrs(c.jumpActions)}><button type="button" data-close-jump {...stylex.attrs(c.button)}>{t.cancel}</button><button type="submit" {...stylex.attrs(c.button, c.confirmJump)}>{t.go}</button></div></form>
+    </dialog>
   </div>
 </main>
 <script>

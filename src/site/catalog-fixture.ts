@@ -18,10 +18,12 @@ const sampleGroups = [
 /** Called only behind import.meta.env.DEV in ToolsCatalog.astro. */
 export function addCatalogFixture(real: CatalogEntry[], realSections: CatalogDisplaySection[], locale: Locale, mode = 'compact'): { entries: CatalogDisplayEntry[]; sections: CatalogDisplaySection[]; fixtureCount: number } {
   if (!['compact', 'pagination', 'off'].includes(mode)) throw new RangeError('Invalid T4F_CATALOG_FIXTURE: expected compact, pagination or off');
-  const fixtureCount = mode === 'off' ? 0 : mode === 'pagination' ? 108 : 48;
+  const counts = mode === 'off' ? [0, 0, 0, 0, 0, 0] : mode === 'pagination' ? [108, 24, 12, 12, 12, 12] : [8, 8, 8, 8, 8, 8];
+  const fixtureCount = counts.reduce((sum, count) => sum + count, 0);
+  const distribution = sampleGroups.flatMap((group, index) => Array.from({ length: counts[index] }, () => group));
   const roleIds = Object.keys(roles) as RoleId[];
   const samples: CatalogDisplayEntry[] = Array.from({ length: fixtureCount }, (_, index) => {
-    const group = sampleGroups[Math.floor(index / (fixtureCount / sampleGroups.length))];
+    const group = distribution[index];
     const sequence = String(index + 1).padStart(3, '0');
     const summary = locale === 'zh' ? '仅用于目录分页、筛选和长标题验收，不提供工具功能。' : 'For catalog pagination, filters and long-title QA only. No tool functionality.';
     return {
