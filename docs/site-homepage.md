@@ -1,6 +1,6 @@
 # Issue #27 — 社群与支持衔接（2026-10-29）
 
-最新评论 `6489181171` 覆盖下方上一轮的对齐和 Dark 按钮色：仅 Dark communityAction / Hover / onCommunityAction 改为 #755C8C / #806898 / #FFFFFF，Light 不变。非 QQ 标题、正文（最大 340px）、辅助说明和底部按钮水平居中；QQ 仅标题居中，主体继续左文右码且文字左对齐。赞助来源说明仍在按钮上方，按钮底部对齐、196px 最小高度与 18px 内边距不变。仅 FeaturedTools 的「浏览全部工具」局部增加 supportLavender Hover/Focus-visible（180ms，Reduce 0ms）；共享 h.link 和 62% 下划线动效不变。文案、URL、素材（含维护者本地提交的 Telegram 图标）、其他首页区域及主题控制均不改。
+评论 `6489181171` 覆盖下方上一轮的对齐和 Dark 按钮色：仅 Dark communityAction / Hover / onCommunityAction 改为 #755C8C / #806898 / #FFFFFF，Light 不变。非 QQ 标题、正文（最大 340px）、辅助说明和底部按钮水平居中；QQ 仅标题居中，主体继续左文右码且文字左对齐。赞助来源说明仍在按钮上方，按钮底部对齐、196px 最小高度与 18px 内边距不变。最新评论 `6489584393` 将雾紫交互统一到共享 h.link：首页所有既有 h.link / h.linkText 文字链接默认中性色，Hover / Focus-visible 使用 supportLavender，颜色与 62% 下划线收缩均为 180ms（Reduced Motion 为 0ms）；删除 browseAllLink 特例。Hero、社群按钮、工具卡片、导航及 Footer 不受影响，第四区下半部仅继承链接交互，不改内容。文案、URL、素材（含维护者本地提交的 Telegram 图标）、其他首页区域及主题控制均不改。
 
 `CommunitySupport.astro` 是 `WorkflowStory` 内 `ThreePillars` 的前一个兄弟。角色区既有 40px 底留白后直接进入三卡，局部覆盖 workflow 顶部 padding；三卡后 48px 接入三栏理念。卡片使用现有中性 Surface、14px 圆角，无实体边框或阴影；三列 / ≤1100px 两列 / ≤600px 单列，桌面同行等高，最小 196px、内容自然撑高；窄屏不人为补齐行高。2026-10-29 收尾评论覆盖旧居中分布：18px 内边距、10px 内容间距、标题/正文/按钮左对齐；QQ 采用左文右码，常规 128px、≤360px 为 112px，保留完整静区。原第四区下半图文、第五区及前三块不变。
 
