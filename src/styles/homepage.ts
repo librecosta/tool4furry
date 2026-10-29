@@ -111,8 +111,10 @@ export const homeStyles = stylex.create({
   storyLinkReveal: { '--story-distance': '8px', '--story-delay': '440ms', '--story-duration': '710ms' },
   // WorkflowStory already contributes 64px (40px on phones) before this section.
   principles: { paddingBlock: { default: '32px 104px', '@media (max-width: 760px)': '48px 96px' }, scrollMarginTop: 24, '--principles-opacity': { default: '1', ':is([data-principles-reveal="pending"])': '0' }, '--principles-hidden': { default: '0', ':is([data-principles-reveal="pending"])': '1' }, '@media (prefers-reduced-motion: reduce)': { '--principles-opacity': '1', '--principles-hidden': '0' } },
-  editorial: { display: 'grid', gridTemplateColumns: { default: 'minmax(0, .42fr) minmax(0, .58fr)', '@media (max-width: 1023px)': 'minmax(0, 1fr)' }, columnGap: 'clamp(32px, 4.5vw, 64px)', rowGap: { default: 32, '@media (max-width: 767px)': 24 }, alignItems: 'start', maxWidth: 1240, marginInline: 'auto' },
-  principlesHeading: { minWidth: 0, margin: 0, color: tokens.textPrimary, fontSize: { default: 'clamp(52px, 3.9vw, 56px)', '@media (max-width: 1023px)': 'clamp(36px, 4.8vw, 48px)' }, fontWeight: 650, lineHeight: 1.16, letterSpacing: '-.03em', textWrap: 'balance' },
+  editorial: { display: 'grid', gridTemplateColumns: { default: 'minmax(0, .35fr) minmax(0, .65fr)', '@media (max-width: 1023px)': 'minmax(0, 1fr)' }, columnGap: 'clamp(32px, 4.5vw, 64px)', rowGap: { default: 32, '@media (max-width: 767px)': 24 }, alignItems: 'start', maxWidth: 1240, marginInline: 'auto' },
+  principlesTitle: { minWidth: 0, alignSelf: 'start', textAlign: 'start' },
+  principlesHeading: { minWidth: 0, margin: 0, color: tokens.textPrimary, fontSize: { default: 'clamp(48px, 3.9vw, 56px)', '@media (max-width: 1023px)': 'clamp(36px, 4.8vw, 48px)' }, fontWeight: 650, lineHeight: 1.16, letterSpacing: '-.03em', textWrap: 'balance' },
+  principlesSubtitle: { display: 'block', marginTop: 12, color: tokens.textSecondary, fontSize: 14, fontWeight: 400, lineHeight: 1.5 },
   principlesText: { minWidth: 0, maxWidth: 680 },
   principlesBody: { margin: 0, color: tokens.textPrimary, fontSize: { default: 16, '@media (max-width: 767px)': 15 }, lineHeight: 1.8, textWrap: 'pretty' },
   principlesDetail: { marginTop: { default: 22, '@media (max-width: 767px)': 18 }, color: tokens.textSecondary },
