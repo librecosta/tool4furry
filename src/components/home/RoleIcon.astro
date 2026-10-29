@@ -2,7 +2,9 @@
 import * as stylex from '@stylexjs/stylex';
 import { statSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { PaletteIcon, MusicNotesIcon, CodeIcon, FilmStripIcon, MegaphoneIcon, BuildingsIcon, SquaresFourIcon } from '@phosphor-icons/react/ssr';
+import { SquaresFourIcon } from '@phosphor-icons/react/ssr';
+import { roleIcon } from '../site/role-icons';
+import { roles, type RoleId } from '../../site/roles';
 import type { HomeMedia } from '../../site/homepage-showcase';
 import { homeStyles as h } from '../../styles/homepage';
 interface Props { id: string; media?: HomeMedia }
@@ -10,8 +12,7 @@ const { id, media } = Astro.props;
 const present = media && /^\/(?!\/)(?!.*\.\.)[^?#]+$/.test(media.src)
   && Number.isInteger(media.width) && media.width > 0 && Number.isInteger(media.height) && media.height > 0
   && statSync(resolve('public', media.src.slice(1)), { throwIfNoEntry: false })?.isFile();
-const icons = { painter: PaletteIcon, composer: MusicNotesIcon, developer: CodeIcon, animator: FilmStripIcon, operations: MegaphoneIcon, studio: BuildingsIcon };
-const Icon = Object.hasOwn(icons, id) ? icons[id as keyof typeof icons] : SquaresFourIcon;
+const Icon = Object.hasOwn(roles, id) ? roleIcon(id as RoleId) : SquaresFourIcon;
 ---
 <span data-role-icon aria-hidden="true" {...stylex.attrs(h.roleIcon)}>
   {present && media ? <img src={media.src} width={media.width} height={media.height} alt="" loading="lazy" decoding="async" {...stylex.attrs(h.roleIconImage)} />

@@ -1,4 +1,5 @@
 import { domains, groups, audiences, contexts } from '../site/taxonomy';
+import { roles } from '../site/roles';
 import { locales } from '../i18n/locale';
 import { regions } from '../config/region';
 import type { ToolDefinition } from './types';
@@ -42,6 +43,7 @@ export function registryIssues(
       issues.push(`${tool.id}: invalid category/group relationship`);
     knownList(tool.audiences ?? [], audiences, `${tool.id}: audiences`);
     knownList(tool.contexts ?? [], contexts, `${tool.id}: contexts`);
+    knownList(tool.roles ?? [], roles, `${tool.id}: roles`);
     knownList(tool.regions, regions, `${tool.id}: regions`);
     if (!tool.regions.length) issues.push(`${tool.id}: missing regions`);
     if (!['draft', 'published'].includes(tool.status))

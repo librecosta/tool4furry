@@ -1,5 +1,6 @@
 import type { Locale } from '../i18n/locale';
 import type { Region } from '../config/region';
+import type { RoleId } from '../site/roles';
 import type {
   DomainId,
   GroupId,
@@ -12,6 +13,7 @@ export type ToolDefinition = {
   slug: string;
   category: DomainId;
   group: GroupId;
+  roles?: readonly RoleId[];
   audiences?: readonly AudienceId[];
   contexts?: readonly ContextId[];
   mode: WorkspaceMode;

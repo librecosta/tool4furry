@@ -1,44 +1,13 @@
 ---
 import { localePaths } from '../../../i18n/locale';
-import * as stylex from '@stylexjs/stylex';
 import SiteLayout from '../../../layouts/SiteLayout.astro';
-import ToolCards from '../../../components/site/ToolCards.astro';
-import CatalogEmpty from '../../../components/site/CatalogEmpty.astro';
-import { getCatalogSections, getDiscoverySections } from '../../../site/catalog';
+import ToolsCatalog from '../../../components/site/ToolsCatalog.astro';
 import { region } from '../../../config/site';
 import { messages } from '../../../i18n/messages';
-import { siteStyles as s } from '../../../styles/site';
 export function getStaticPaths() { return localePaths(region); }
 const { locale } = Astro.props;
 const t = messages[locale];
-const sections = getCatalogSections(region, undefined, import.meta.env.DEV, locale);
-const discovery = getDiscoverySections(region, undefined, import.meta.env.DEV, locale);
 ---
-<SiteLayout locale={locale} title={t.tools} fullTitle={t.catalogTitle} description={t.catalogDescription}>
-  <main id="main-content" {...stylex.attrs(s.fluid, s.main)}>
-    <h1 {...stylex.attrs(s.catalogTitle)}>{t.tools}</h1>
-    <p {...stylex.attrs(s.intro)}>{t.catalogIntro}</p>
-    {sections.length === 0 ? <section aria-label={t.tools} {...stylex.attrs(s.catalogSection)}><CatalogEmpty region={region} locale={locale} /></section> : <>
-      <nav aria-label={t.categories} {...stylex.attrs(s.catalogNav)}>
-        {sections.map(section => <a href={`#domain-${section.id}`} {...stylex.attrs(s.link)}>{section.label}</a>)}
-        {discovery.length > 0 && <a href="#discovery" {...stylex.attrs(s.link)}>{t.discover}</a>}
-      </nav>
-      {sections.map(section => <section id={`domain-${section.id}`} aria-labelledby={`heading-${section.id}`} {...stylex.attrs(s.catalogSection)}>
-        <h2 id={`heading-${section.id}`} {...stylex.attrs(s.sectionHeading)}>{section.label}</h2>
-        {section.groups.map(group => <section aria-labelledby={`heading-${group.id}`}>
-          <h3 id={`heading-${group.id}`} {...stylex.attrs(s.groupHeading)}>{group.label}</h3>
-          <ToolCards entries={group.entries} headingLevel={4} />
-        </section>)}
-      </section>)}
-      {discovery.length > 0 && <section id="discovery" aria-labelledby="discovery-heading" {...stylex.attrs(s.catalogSection)}>
-        <h2 id="discovery-heading" {...stylex.attrs(s.sectionHeading)}>{t.discover}</h2>
-        <nav aria-label={t.discover} {...stylex.attrs(s.catalogNav)}>{discovery.map(section => <a href={`#${section.id}`} {...stylex.attrs(s.link)}>{section.label}</a>)}</nav>
-        {discovery.map(section => <section id={section.id} aria-labelledby={`heading-${section.id}`} {...stylex.attrs(s.discovery)}>
-          <h3 id={`heading-${section.id}`} {...stylex.attrs(s.groupHeading)}>{section.label}</h3>
-          <p>{section.reason}</p>
-          <ul {...stylex.attrs(s.discoveryLinks)}>{section.entries.map(entry => <li><a href={entry.href} {...stylex.attrs(s.link)}>{entry.title}</a></li>)}</ul>
-        </section>)}
-      </section>}
-    </>}
-  </main>
+<SiteLayout locale={locale} title={t.tools} fullTitle={t.catalogTitle} description={t.catalogDescription} catalogWorkbench>
+  <ToolsCatalog region={region} locale={locale} />
 </SiteLayout>

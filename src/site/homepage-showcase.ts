@@ -2,6 +2,7 @@ import type { Region } from '../config/region';
 import type { Locale } from '../i18n/locale';
 import { getCatalogEntries, type CatalogEntry } from './catalog';
 import { tools } from '../tools/registry';
+import { roleLabel, type RoleId } from './roles';
 
 type Localized = Record<Locale, string>;
 type MediaCandidate = { src: `/${string}`; width: number };
@@ -16,7 +17,7 @@ export type HomeMedia = {
   webp?: readonly MediaCandidate[];
 };
 export type RoleShowcase = {
-  id: string;
+  id: RoleId;
   label: Localized;
   description: Localized;
   toolIds: readonly string[];
@@ -38,12 +39,12 @@ export const homepageMedia: {
 };
 
 export const roleShowcases: readonly RoleShowcase[] = [
-  { id: 'painter', label: { zh: '画家', en: 'Artists' }, description: { zh: '从画布到交付素材', en: 'From the canvas to finished assets' }, toolIds: ['image-converter'] },
-  { id: 'composer', label: { zh: '作曲家', en: 'Composers' }, description: { zh: '围绕声音的创作日常', en: 'The everyday work around sound' }, toolIds: [] },
-  { id: 'developer', label: { zh: '开发者', en: 'Developers' }, description: { zh: '让创作与代码相遇', en: 'Where creative work meets code' }, toolIds: ['image-converter'] },
-  { id: 'animator', label: { zh: '动画师', en: 'Animators' }, description: { zh: '每一帧都值得打磨', en: 'Every frame deserves care.' }, toolIds: ['image-converter'] },
-  { id: 'operations', label: { zh: '运营', en: 'Community teams' }, description: { zh: '为内容与社群增添色彩', en: 'Bring more color to content and communities.' }, toolIds: ['image-converter'] },
-  { id: 'studio', label: { zh: '工作室', en: 'Studios' }, description: { zh: '工作细节决定成败', en: 'Details make the difference.' }, toolIds: [] },
+  { id: 'painter', label: roleLabel('painter'), description: { zh: '从画布到交付素材', en: 'From the canvas to finished assets' }, toolIds: ['image-converter'] },
+  { id: 'composer', label: roleLabel('composer'), description: { zh: '围绕声音的创作日常', en: 'The everyday work around sound' }, toolIds: [] },
+  { id: 'developer', label: roleLabel('developer'), description: { zh: '让创作与代码相遇', en: 'Where creative work meets code' }, toolIds: ['image-converter'] },
+  { id: 'animator', label: roleLabel('animator'), description: { zh: '每一帧都值得打磨', en: 'Every frame deserves care.' }, toolIds: ['image-converter'] },
+  { id: 'operations', label: { ...roleLabel('operations'), en: 'Community teams' }, description: { zh: '为内容与社群增添色彩', en: 'Bring more color to content and communities.' }, toolIds: ['image-converter'] },
+  { id: 'studio', label: roleLabel('studio'), description: { zh: '工作细节决定成败', en: 'Details make the difference.' }, toolIds: [] },
 ];
 
 export function getRoleShowcases(region: Region, locale: Locale, dev = false, registry = tools, roles = roleShowcases) {

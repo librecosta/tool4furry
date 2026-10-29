@@ -50,7 +50,7 @@ const zh = {
   browseAll: '浏览全部工具',
   catalogTitle: '工具箱 — Tool4Furry',
   catalogDescription:
-    '按任务、身份和场景浏览 Tool4Furry 已发布的浏览器工具。首批工具正在准备中。',
+    '按功能分类与创作身份查找 Tool4Furry 已发布的浏览器工具。首批工具正在准备中。',
   catalogIntro: '从你想完成的事情出发，找到合适的浏览器工具。',
   discover: '适合谁，在哪里用',
   categories: '按任务浏览',
@@ -119,7 +119,7 @@ const en: Messages = {
   browseAll: 'Browse all tools',
   catalogTitle: 'Toolbox — Tool4Furry',
   catalogDescription:
-    'Browse published Tool4Furry browser tools by task, audience and context. Our first tools are on the way.',
+    'Find published Tool4Furry browser tools by function and creative role. Our first tools are on the way.',
   catalogIntro:
     'Start with what you want to do. Find a browser tool that fits.',
   discover: 'Who it is for, where it fits',

@@ -59,6 +59,8 @@ describe('publication metadata gate', () => {
     { contexts: ['personal'] },
     { audiences: ['creator', 'creator'] },
     { contexts: ['studio', 'studio'] },
+    { roles: ['unknown'] },
+    { roles: ['painter', 'painter'] },
     { regions: ['other'] },
     { regions: ['cn', 'cn'] },
     { regions: [] },

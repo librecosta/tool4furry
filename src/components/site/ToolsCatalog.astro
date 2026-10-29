@@ -1,0 +1,79 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { MagnifyingGlassIcon, XIcon, SlidersHorizontalIcon, CaretRightIcon, SquaresFourIcon } from '@phosphor-icons/react/ssr';
+import type { Region } from '../../config/region';
+import type { Locale } from '../../i18n/locale';
+import { getCatalogEntries, getCatalogSections } from '../../site/catalog';
+import { roles } from '../../site/roles';
+import { roleIcon } from './role-icons';
+import { catalogCopy } from '../../site/catalog-copy';
+import { messages } from '../../i18n/messages';
+import { catalogStyles as c } from '../../styles/catalog';
+import ToolCards from './ToolCards.astro';
+import CatalogEmpty from './CatalogEmpty.astro';
+interface Props { region: Region; locale: Locale }
+const { region, locale } = Astro.props;
+const t = catalogCopy[locale], site = messages[locale];
+const entries = getCatalogEntries(region, undefined, import.meta.env.DEV, locale);
+const sections = getCatalogSections(region, undefined, import.meta.env.DEV, locale);
+const onlyDrafts = entries.length > 0 && entries.every(entry => entry.status === 'draft');
+---
+<main id="main-content" data-tools-catalog data-locale={locale} {...stylex.attrs(c.root)}>
+  <dialog open id="catalog-filters" data-catalog-filters aria-label={t.filters} {...stylex.attrs(c.sidebar)}>
+    <div {...stylex.attrs(c.sidebarInner, c.scroll)}>
+      <div {...stylex.attrs(c.drawerTitle)}><strong>{t.filters}</strong><button type="button" data-close-filters aria-label={t.close} {...stylex.attrs(c.button, c.iconButton)}><XIcon size={20} aria-hidden /></button></div>
+      <nav aria-label={t.filters} {...stylex.attrs(c.nav)}>
+        <div {...stylex.attrs(c.fixed)}>
+          <button type="button" disabled data-catalog-control data-filter="all" aria-pressed="true" {...stylex.attrs(c.button, c.all)}><SquaresFourIcon size={20} aria-hidden />{t.all}<span>{entries.length}</span></button>
+        </div>
+        <section {...stylex.attrs(c.fixed)} aria-labelledby="catalog-roles-heading">
+          <h2 id="catalog-roles-heading" {...stylex.attrs(c.heading)}>{t.roles}</h2>
+          <div {...stylex.attrs(c.roles)}>{Object.entries(roles).map(([id, role]) => { const Icon = roleIcon(id as keyof typeof roles); return <button type="button" disabled data-catalog-control data-filter="role" data-value={id} data-label={role[locale]} aria-pressed="false" lang={locale} {...stylex.attrs(c.button, c.role)}><span {...stylex.attrs(c.roleIcon, c[id as keyof typeof roles])}><Icon size={24} weight="regular" aria-hidden /></span><span>{role[locale]}</span></button>; })}</div>
+        </section>
+        <section {...stylex.attrs(c.treeArea)} aria-labelledby="catalog-categories-heading">
+          <h2 id="catalog-categories-heading" {...stylex.attrs(c.heading)}>{t.categories}</h2>
+          <div data-catalog-tree tabindex="0" role="group" aria-labelledby="catalog-categories-heading" {...stylex.attrs(c.tree, c.scroll)}>
+            {sections.length === 0 && <p {...stylex.attrs(c.muted)}>{t.noCategories}</p>}
+            {sections.map(section => <div>
+              <div {...stylex.attrs(c.treeRow)}>
+                <button type="button" disabled data-catalog-control data-filter="category" data-value={section.id} data-label={section.label} aria-pressed="false" {...stylex.attrs(c.button, c.treeButton)}><span>{section.label}</span><span>{section.groups.reduce((n, group) => n + group.entries.length, 0)}</span></button>
+                {section.groups.length > 0 && <button type="button" disabled data-catalog-control data-expand={section.id} data-label={section.label} aria-expanded="false" aria-controls={`catalog-group-${section.id}`} aria-label={t.expand.replace('{name}', section.label)} {...stylex.attrs(c.button, c.chevron)}><CaretRightIcon size={18} aria-hidden className={stylex.attrs(c.chevronIcon).class} /></button>}
+              </div>
+              {section.groups.length > 0 && <div id={`catalog-group-${section.id}`} data-group-list={section.id} hidden {...stylex.attrs(c.subgroup)}>{section.groups.map(group => <button type="button" disabled data-catalog-control data-filter="group" data-value={group.id} data-parent={section.id} data-label={group.label} aria-pressed="false" {...stylex.attrs(c.button, c.treeButton, c.groupButton)}><span>{group.label}</span><span>{group.entries.length}</span></button>)}</div>}
+            </div>)}
+          </div>
+        </section>
+      </nav>
+    </div>
+  </dialog>
+  <div {...stylex.attrs(c.main)}>
+    <div {...stylex.attrs(c.top, c.scroll)}>
+      <div {...stylex.attrs(c.titleRow)}>
+        <div><h1 {...stylex.attrs(c.title)}>{site.tools}</h1><p {...stylex.attrs(c.intro)}>{site.catalogIntro}</p></div>
+        <button type="button" disabled data-catalog-control data-open-filters aria-label={t.filters} aria-expanded="false" aria-controls="catalog-filters" {...stylex.attrs(c.button, c.mobile)}><SlidersHorizontalIcon size={20} aria-hidden /><span {...stylex.attrs(c.filterLabel)}>{t.filters}</span></button>
+      </div>
+      <form data-catalog-search role="search" {...stylex.attrs(c.searchRow)}>
+        <label {...stylex.attrs(c.search)}><MagnifyingGlassIcon size={20} aria-hidden /><input data-catalog-control disabled type="search" name="q" maxlength="160" aria-label={t.search} placeholder={t.placeholder} autocomplete="off" {...stylex.attrs(c.input)} /><button type="button" disabled data-catalog-control data-clear-search aria-label={t.clearSearch} {...stylex.attrs(c.button, c.iconButton)}><XIcon size={18} aria-hidden /></button></label>
+        <button type="button" hidden data-search-all {...stylex.attrs(c.button)}>{t.searchAll}</button>
+      </form>
+      <div data-catalog-chips aria-label={t.selected} hidden {...stylex.attrs(c.chips)}></div>
+      <div {...stylex.attrs(c.status)}><p data-result-count role="status" aria-live="polite" aria-atomic="true" {...stylex.attrs(c.muted)}>{entries.length === 1 ? t.countOne : t.count.replace('{count}', String(entries.length))}</p>{onlyDrafts && <p data-catalog-drafts {...stylex.attrs(c.muted)}>{t.drafts}</p>}</div>
+      <noscript><p {...stylex.attrs(c.muted)}>{t.noJS}</p></noscript>
+    </div>
+    <section data-catalog-results tabindex="0" aria-label={t.results} {...stylex.attrs(c.results, c.scroll)}>
+      <ToolCards entries={entries} locale={locale} />
+      {entries.length === 0 && <div {...stylex.attrs(c.empty)}><CatalogEmpty region={region} locale={locale} /></div>}
+      <div data-catalog-no-match hidden {...stylex.attrs(c.empty)}><h2 {...stylex.attrs(c.emptyTitle)}>{t.noMatch}</h2><p {...stylex.attrs(c.muted)}>{t.noMatchDetail}</p><button type="button" data-clear-all {...stylex.attrs(c.button)}>{t.clear}</button></div>
+      <nav data-catalog-pagination hidden aria-label={t.pagination} {...stylex.attrs(c.pagination)}>
+        <div data-catalog-pages {...stylex.attrs(c.pages)}></div>
+        <p data-page-range {...stylex.attrs(c.muted)}></p>
+        <form data-catalog-jump hidden {...stylex.attrs(c.jump)}><label for="catalog-page">{t.jump}</label><input id="catalog-page" type="text" inputmode="numeric" autocomplete="off" aria-describedby="catalog-page-error" {...stylex.attrs(c.jumpInput)} /><button type="submit" {...stylex.attrs(c.button)}>{t.go}</button><p id="catalog-page-error" role="alert" hidden {...stylex.attrs(c.error)}></p></form>
+      </nav>
+    </section>
+  </div>
+</main>
+<script>
+  import { initCatalog } from '../../site/catalog-controller';
+  const root = document.querySelector<HTMLElement>('[data-tools-catalog]');
+  if (root) initCatalog(root);
+</script>

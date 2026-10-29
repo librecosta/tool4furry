@@ -20,8 +20,10 @@ import '@fontsource-variable/noto-sans-sc/wght.css';
 import '../styles/global.css';
 import Brand from '../components/site/Brand.astro';
 import SiteFooter from '../components/site/SiteFooter.astro';
-interface Props { locale: Locale; title: string; fullTitle?: string; description?: string; workspace?: boolean; noindex?: boolean; documentScroll?: boolean }
-const { locale, title, fullTitle, description, workspace = false, noindex = false, documentScroll = true } = Astro.props;
+import { catalogStyles as c } from '../styles/catalog';
+interface Props { locale: Locale; title: string; fullTitle?: string; description?: string; workspace?: boolean; noindex?: boolean; documentScroll?: boolean; catalogWorkbench?: boolean }
+const { locale, title, fullTitle, description, workspace = false, noindex = false, documentScroll = true, catalogWorkbench = false } = Astro.props;
+const scrollEnabled = documentScroll && !catalogWorkbench;
 const t = messages[locale];
 const canonical = new URL(Astro.url.pathname, regionConfig.site);
 const resolvedTitle = fullTitle ?? `${title} · Tool4Furry`;
@@ -38,7 +40,7 @@ const regionOrigins = JSON.stringify(import.meta.env.DEV ? Object.values(devOrig
 const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function ', 'function ')}\n${scrollSource}\n})();`;
 ---
 <!doctype html>
-<html lang={locales[locale].lang} data-color-theme={theme.colorTheme} data-appearance={theme.appearance} {...stylex.attrs(theme.style, s.themeRoot)} style={`--t4f-focus: ${tokens.focus};`}>
+<html lang={locales[locale].lang} data-color-theme={theme.colorTheme} data-appearance={theme.appearance} data-catalog-workbench={catalogWorkbench || undefined} {...stylex.attrs(theme.style, s.themeRoot, catalogWorkbench && c.viewport)} style={`--t4f-focus: ${tokens.focus};`}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -73,15 +75,15 @@ const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function
       <script is:inline type="module" src="/src/styles/stylex-dev-css.ts"></script>
     </>}
   </head>
-  <body {...stylex.attrs(s.body)}>
-    <div {...stylex.attrs(s.frame)}>
+  <body {...stylex.attrs(s.body, catalogWorkbench && c.viewport)}>
+    <div {...stylex.attrs(s.frame, catalogWorkbench && c.frame)}>
       <div data-site-background aria-hidden="true" {...stylex.attrs(s.pageBackground)}></div>
       <div data-page-dots aria-hidden="true" {...stylex.attrs(s.pageDots, workspace && !documentScroll && s.workspaceDotsHidden)}>
         <span data-page-dot-side="left" {...stylex.attrs(s.pageDotSide, s.pageDotsLeft)}></span>
         <span data-page-dot-side="right" {...stylex.attrs(s.pageDotSide, s.pageDotsRight)}></span>
       </div>
       <a {...stylex.attrs(s.skip)} href="#main-content">{t.skip}</a>
-      {!workspace && <header data-site-header {...stylex.attrs(s.fullBleed, s.productHeader)}>
+      {!workspace && <header data-site-header {...stylex.attrs(s.fullBleed, s.productHeader, catalogWorkbench && c.header)}>
         <nav {...stylex.attrs(s.fluid, s.nav)} aria-label={t.headerNav}>
           <div {...stylex.attrs(s.navLinks)}>
             <Brand navigation locale={locale} />
@@ -91,10 +93,10 @@ const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function
         </nav>
       </header>}
       <slot />
-      <SiteFooter region={region} locale={locale} />
+      {!catalogWorkbench && <SiteFooter region={region} locale={locale} />}
     </div>
     <script is:inline id="t4f-navigation" set:html={navigationSource} />
-    {documentScroll && <>
+    {scrollEnabled && <>
       <DocumentScrollDock region={region} locale={locale} />
       <script is:inline id="t4f-document-scroll" set:html={documentScrollSource} />
     </>}

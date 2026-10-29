@@ -4,7 +4,6 @@ import {
   getCatalogEntries,
   getHomepageEntries,
   getCatalogSections,
-  getDiscoverySections,
 } from '../src/site/catalog';
 import type { ToolDefinition } from '../src/tools/types';
 import { fixtureTools } from './fixtures/tools';
@@ -49,13 +48,9 @@ describe('static tool discovery', () => {
       expect(getCatalogSections(region, undefined, true).flatMap((section) =>
         section.groups.flatMap((group) => group.entries),
       )).toEqual(entries);
-      for (const section of getDiscoverySections(region, undefined, true))
-        expect(section.entries).toEqual(entries);
-      expect(getDiscoverySections(region, undefined, true)).toHaveLength(3);
       expect(getCatalogEntries(region)).toEqual([]);
       expect(getHomepageEntries(region)).toEqual([]);
       expect(getCatalogSections(region)).toEqual([]);
-      expect(getDiscoverySections(region)).toEqual([]);
       expect(imageConverterDefinition.status).toBe('draft');
     },
   );
@@ -75,8 +70,6 @@ describe('static tool discovery', () => {
       expect(getCatalogSections(region, list, true).flatMap((section) =>
         section.groups.flatMap((group) => group.entries),
       )).toEqual(entries);
-      for (const section of getDiscoverySections(region, list, true))
-        expect(section.entries).toEqual(entries);
       expect(getCatalogEntries(region, list).map((entry) => entry.id)).toEqual(['fixture-1']);
     },
   );
@@ -101,8 +94,8 @@ describe('static tool discovery', () => {
         categoryId: 'images',
         groupId: 'image-processing',
         group: region === 'cn' ? '图片处理' : 'Image Processing',
-        audiences: [],
-        contexts: [],
+        roles: [],
+        status: 'published',
       });
       expect(registry.map((tool) => tool.status)).toEqual([
         'published',
@@ -156,22 +149,12 @@ describe('static tool discovery', () => {
       expect(getCatalogEntries('cn', list, true)).toEqual(entries);
       expect(getHomepageEntries('cn', list, undefined, true)).toEqual(getHomepageEntries('cn', list));
       expect(getCatalogSections('cn', list, true)).toEqual(sections);
-      expect(getDiscoverySections('cn', list, true)).toEqual(getDiscoverySections('cn', list));
       expect(
         sections.flatMap((section) =>
           section.groups.flatMap((group) => group.entries),
         ),
       ).toEqual(entries);
       expect(getHomepageEntries('cn', list)).toHaveLength(Math.min(9, count));
-      for (const discovery of getDiscoverySections('cn', list)) {
-        expect(new Set(discovery.entries.map((entry) => entry.id)).size).toBe(
-          count,
-        );
-        expect(discovery.entries.map((entry) => entry.href)).toEqual(
-          entries.map((entry) => entry.href),
-        );
-      }
-      if (!count) expect(getDiscoverySections('cn', list)).toEqual([]);
     },
   );
   it('filters editorial IDs, deduplicates and fills in stable registry order', () => {
@@ -195,8 +178,5 @@ describe('static tool discovery', () => {
     expect(getCatalogSections('cn', list).map((section) => section.id)).toEqual(
       ['images'],
     );
-    expect(
-      getDiscoverySections('cn', list).map((section) => section.id),
-    ).toEqual(['audience-creator', 'audience-developer', 'context-studio']);
   });
 });

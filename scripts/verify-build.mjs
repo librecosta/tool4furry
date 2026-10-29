@@ -12,12 +12,12 @@ const principlesSource = (await readFile('src/styles/principles-reveal.js', 'utf
 const scrollMetrics = (await readFile('src/ui/scroll-metrics.js', 'utf8')).replace(/\r\n?/g, '\n');
 const scrollSource = (await readFile('src/styles/document-scroll.js', 'utf8')).replace(/\r\n?/g, '\n');
 const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function ', 'function ')}\n${scrollSource}\n})();`;
-function assertDocumentScroll(dom, enabled = !dom.querySelector('[data-workbench="canvas"]')) {
+function assertDocumentScroll(dom, enabled = !dom.querySelector('[data-workbench="canvas"], [data-tools-catalog]')) {
   const scripts = dom.querySelectorAll('script#t4f-document-scroll');
   const docks = dom.querySelectorAll('[data-document-dock]');
   if (!enabled) {
-    assert.equal(scripts.length, 0, 'Canvas never receives the document dock script');
-    assert.equal(docks.length, 0, 'Canvas never receives a document dock');
+    assert.equal(scripts.length, 0, 'Canvas/catalog never receives the document dock script');
+    assert.equal(docks.length, 0, 'Canvas/catalog never receives a document dock');
     return;
   }
   assert.equal(scripts.length, 1, 'One audited document-scroll enhancement');
@@ -48,6 +48,7 @@ function assertAppearanceScript(dom) {
   return script;
 }
 function assertStaticNavigation(dom, homepage = false) {
+  const workbench = dom.documentElement.hasAttribute('data-catalog-workbench');
   assert.equal(dom.querySelectorAll('[data-site-background]').length, 1, 'One shared page canvas');
   const dots = dom.querySelectorAll('[data-page-dots]');
   assert.equal(dots.length, 1, 'One shared fixed CSS dot field on every static page');
@@ -60,8 +61,8 @@ function assertStaticNavigation(dom, homepage = false) {
   assert.equal(dom.querySelectorAll('astro-island').length, 0);
   const scripts = [...dom.querySelectorAll('script')];
   assert.deepEqual(scripts.filter(script => !script.hasAttribute('src')).map(script => script.id),
-    homepage ? ['t4f-appearance', 't4f-home-pillars', 't4f-home-stories', 't4f-home-principles', 't4f-navigation', 't4f-document-scroll'] : ['t4f-appearance', 't4f-navigation', 't4f-document-scroll'], 'Audited inline scripts retain their content and order');
-  assert.equal(scripts.length, homepage ? 7 : 3, 'Only the homepage adds Wavefield and the three audited reveal observers');
+    homepage ? ['t4f-appearance', 't4f-home-pillars', 't4f-home-stories', 't4f-home-principles', 't4f-navigation', 't4f-document-scroll'] : workbench ? ['t4f-appearance', 't4f-navigation'] : ['t4f-appearance', 't4f-navigation', 't4f-document-scroll'], 'Audited inline scripts retain their content and order');
+  assert.equal(scripts.length, homepage ? 7 : 3, 'Only explicitly owned route enhancements are allowed');
   if (homepage) {
     const pillars = dom.querySelector('script#t4f-home-pillars');
     assert.deepEqual([...pillars.attributes].map(attribute => attribute.name), ['id']);
@@ -80,6 +81,12 @@ function assertStaticNavigation(dom, homepage = false) {
     assert.deepEqual([...external[0].attributes].map(a => a.name).sort(), ['src', 'type']);
     assert.equal(external[0].type, 'module');
     assert.equal(external[0].getAttribute('src'), waveEntry, 'Only the identified homepage enhancement entry');
+  } else if (workbench) {
+    const external = scripts.filter(script => script.hasAttribute('src'));
+    assert.equal(external.length, 1, 'Catalog owns exactly one module');
+    assert.deepEqual([...external[0].attributes].map(a => a.name).sort(), ['src', 'type']);
+    assert.equal(external[0].type, 'module');
+    assert.equal(external[0].getAttribute('src'), catalogEntry, 'Only the identified catalog enhancement');
   }
   assert.equal(dom.querySelectorAll('link[rel="modulepreload"], link[as="script"]').length, 0);
 }
@@ -107,6 +114,12 @@ if (fixtureMode)
 const files = (await readdir(root, { recursive: true })).map((file) =>
   file.replaceAll('\\', '/'),
 );
+const catalogModules = files.filter(file => /^_astro\/ToolsCatalog\.astro_astro_type_script_index_0_lang\.[\w-]+\.js$/.test(file));
+assert.equal(catalogModules.length, 1, 'One traceable catalog module');
+const catalogEntry = '/' + catalogModules[0];
+const catalogCode = await readFile(resolve(root, catalogModules[0]), 'utf8');
+assert(catalogCode.length < 40000 && catalogCode.includes('[data-tools-catalog]') && catalogCode.includes('popstate') && catalogCode.includes('replaceState'));
+assert(!/astro-island|react-dom|fetch\(|XMLHttpRequest|localStorage|ConverterSession|createShaderModule/.test(catalogCode), 'Catalog enhancement has no app root, persistence, network or tool core');
 // Identify the owned Astro entry and inspect its actual emitted dependency;
 // never allow arbitrary external scripts or an eager WebGPU dependency.
 const waveEntries = [];
@@ -570,10 +583,10 @@ for (const [dom, list] of [
     );
     assert.equal(
       dom.querySelectorAll(
-        '[id^="domain-"], [id^="audience-"], [id^="context-"], input[type="search"]',
+        '[id^="domain-"], [id^="audience-"], [id^="context-"]',
       ).length,
       0,
-      'No empty discovery trees or search',
+      'No obsolete/empty discovery sections',
     );
   }
   for (const card of list) {
@@ -651,7 +664,21 @@ for (const page of htmlFiles) {
     `Dev StyleX refresh shim in ${page}`,
   );
   const dom = new JSDOM(content).window.document;
+  assert.equal(dom.documentElement.hasAttribute('data-catalog-workbench'), page === 'tools/index.html', 'Fixed catalog shell is route-specific');
   const footers = dom.querySelectorAll('[data-site-footer]');
+  if (page === 'tools/index.html') {
+    assert.equal(footers.length, 0, 'Catalog has no ordinary Footer');
+    assert.equal(dom.querySelectorAll('[data-site-compliance], [data-footer-compliance-slot], [data-footer-compliance-preview], [data-document-dock]').length, 0);
+    assert.equal(dom.querySelectorAll('[data-site-header]').length, 1);
+    assert.equal(dom.querySelectorAll('input[type="search"]').length, 1);
+    assert(dom.querySelector('input[type="search"]').disabled, 'No fake search without JS');
+    assert(dom.querySelector('noscript')?.textContent.includes('JavaScript'));
+    assert.equal(dom.querySelectorAll('[data-filter="role"]').length, 6);
+    assert.deepEqual([...dom.querySelectorAll('[data-filter="role"]')].map(el => el.dataset.value), ['painter', 'composer', 'developer', 'animator', 'operations', 'studio']);
+    assert.equal(dom.querySelectorAll('[data-catalog-filters]').length, 1, 'One responsive filter tree');
+    for (const card of dom.querySelectorAll('[data-catalog-item]')) assert.equal(card.hidden, false, 'No-JS catalog shows every real card');
+    assertStaticNavigation(dom);
+  } else {
   assert.equal(footers.length, 1, `Exactly one shared footer in ${page}`);
   const footer = footers[0];
   assert.equal(footer.tagName, 'FOOTER');
@@ -713,6 +740,7 @@ for (const page of htmlFiles) {
     assert.equal(entry.closest('[data-footer-compliance-slot]'), slot, 'Approved records stay in the bottom compliance slot');
     assert(entry.textContent.trim(), 'Empty compliance label');
     assert(new URL(entry.href).protocol === 'https:', 'Compliance queries must use HTTPS');
+  }
   }
   if (toolPages.includes(page)) {
     if (page === 'tools/image-converter/index.html')
@@ -840,7 +868,7 @@ for (const page of htmlFiles) {
     assert.equal(dom.querySelectorAll('meta[property^="og:"], meta[name^="twitter:"]').length, 0, 'No social metadata on noindex pages');
   }
   if (page === 'tools/index.html')
-    for (const tag of ['header', 'footer'])
+    for (const tag of ['header'])
       assert(
         dom.querySelector(`${tag} a[href="${localPath('/tools/')}"]`),
         `Missing full catalog navigation: ${tag}`,
@@ -1061,7 +1089,7 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
 }
 assert((await stat(root)).isDirectory());
 console.log(
-  `Verified ${region}/${locale}: ${htmlFiles.length} static pages, three audited inline scripts + homepage-only Wavefield/pillars/stories/principles enhancements, SEO/OG/favicon, ${cards.length} real catalog cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
+  `Verified ${region}/${locale}: ${htmlFiles.length} static pages, exact static/homepage/catalog script contracts, SEO/OG/favicon, ${cards.length} real homepage cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
 );
 
 }

@@ -5,6 +5,7 @@ export const imageConverterDefinition: ToolDefinition = {
   slug: 'image-converter',
   category: 'images',
   group: 'image-processing',
+  roles: ['painter', 'developer', 'animator', 'operations'],
   audiences: ['creator', 'developer'],
   contexts: ['studio'],
   mode: 'form',

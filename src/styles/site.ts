@@ -155,27 +155,6 @@ export const siteStyles = stylex.create({
     transform: 'rotate(var(--faq-chevron-rotation, 0deg))',
   },
   faqAnswer: { color: tokens.textSecondary, marginBlock: '0 16px', paddingInline: tokens.space16 },
-  catalogTitle: {
-    fontSize: { default: 40, '@media (max-width: 600px)': 32 },
-    fontWeight: 700,
-    marginBlock: '0 16px',
-  },
-  catalogSection: { marginTop: 40, scrollMarginTop: tokens.space24 },
-  catalogNav: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: tokens.space24,
-    marginBlock: tokens.space24,
-  },
-  groupHeading: { fontSize: 18, fontWeight: 600, marginBlock: '16px 12px' },
-  discovery: { marginTop: tokens.space32, scrollMarginTop: tokens.space24 },
-  discoveryLinks: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    columnGap: tokens.space24,
-    listStyle: 'none',
-    padding: 0,
-  },
   sectionHeading: {
     fontSize: { default: 24, '@media (max-width: 600px)': 20 },
     fontWeight: 600,

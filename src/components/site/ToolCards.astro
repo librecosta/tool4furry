@@ -1,22 +1,18 @@
 ---
 import * as stylex from '@stylexjs/stylex';
-import { siteStyles as s } from '../../styles/site';
+import { catalogStyles as c } from '../../styles/catalog';
 import type { CatalogEntry } from '../../site/catalog';
-interface Props { entries: readonly CatalogEntry[]; headingLevel?: 3 | 4 }
-const { entries, headingLevel = 3 } = Astro.props;
-const Heading = headingLevel === 4 ? 'h4' : 'h3';
+import type { Locale } from '../../i18n/locale';
+import { catalogCopy } from '../../site/catalog-copy';
+import FeaturedToolIcon from '../home/FeaturedToolIcon.astro';
+interface Props { entries: readonly CatalogEntry[]; locale: Locale }
+const { entries, locale } = Astro.props;
 ---
-<ul {...stylex.attrs(s.cards)}>{entries.map(tool => <li>
-  <a href={tool.href} data-tool-card={tool.id} {...stylex.attrs(s.card)}>
-    <span {...stylex.attrs(s.cardTop)}>
-      <svg width="32" height="32" viewBox="8 8 28 28" fill="none" aria-hidden="true" {...stylex.attrs(s.cardIcon)}>
-        <rect x="12" y="16" width="20" height="16" rx="3" stroke="currentColor" stroke-width="1.5" />
-        <path d="M17 16v-3a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v3M12 23h20M22 21v4" stroke="currentColor" stroke-width="1.5" />
-      </svg>
-      <span aria-hidden="true">↗</span>
-    </span>
-    <Heading {...stylex.attrs(s.cardTitle)}>{tool.title}</Heading>
-    <p {...stylex.attrs(s.cardDescription)}>{tool.description}</p>
-    {tool.category && <span {...stylex.attrs(s.category)}>{tool.category}</span>}
+<ul data-catalog-cards {...stylex.attrs(c.cards)}>{entries.map(tool => <li data-catalog-item data-id={tool.id} data-category={tool.categoryId} data-group={tool.groupId} data-roles={tool.roles.join(' ')} data-search={[tool.title, tool.summary, tool.description, tool.category, tool.group].filter(Boolean).join(' ')}>
+  <a href={tool.href} data-tool-card={tool.id} {...stylex.attrs(c.card)}>
+    <span {...stylex.attrs(c.cardTop)}><FeaturedToolIcon id={tool.id} size={32} />{tool.status === 'draft' && <span {...stylex.attrs(c.muted)}>{catalogCopy[locale].draft}</span>}</span>
+    <h3 {...stylex.attrs(c.cardTitle)}>{tool.title}</h3>
+    <p {...stylex.attrs(c.summary)}>{tool.summary ?? tool.description}</p>
+    <span {...stylex.attrs(c.category)}>{tool.category} / {tool.group}</span>
   </a>
 </li>)}</ul>

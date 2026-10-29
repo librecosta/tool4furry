@@ -1,7 +1,7 @@
 import { defaultLocale, localizedPath, type Locale } from '../i18n/locale';
 import type { Region } from '../config/region';
 import { getAvailableTools, tools } from '../tools/registry';
-import { domains, groups, audiences, contexts } from './taxonomy';
+import { domains, groups } from './taxonomy';
 
 // Editorial order, not another publication list. Unknown/unavailable IDs are ignored.
 export const featuredToolIds: readonly string[] = [];
@@ -19,8 +19,8 @@ export function getCatalogEntries(region: Region, registry = tools, dev = false,
     categoryId: tool.category,
     groupId: tool.group,
     group: groups[tool.group]?.[locale],
-    audiences: tool.audiences ?? [],
-    contexts: tool.contexts ?? [],
+    roles: tool.roles ?? [],
+    status: tool.status,
   }));
 }
 export type CatalogEntry = ReturnType<typeof getCatalogEntries>[number];
@@ -60,26 +60,4 @@ export function getCatalogSections(region: Region, registry = tools, dev = false
         .filter((group) => group.entries.length > 0),
     }))
     .filter((domain) => domain.groups.length > 0);
-}
-
-export function getDiscoverySections(region: Region, registry = tools, dev = false, locale: Locale = defaultLocale(region)) {
-  const entries = getCatalogEntries(region, registry, dev, locale);
-  return [
-    ...Object.entries(audiences).map(([id, label]) => ({
-      id: `audience-${id}`,
-      label: label[locale],
-      reason: label.reason[locale],
-      entries: entries.filter((entry) =>
-        entry.audiences.some((value) => value === id),
-      ),
-    })),
-    ...Object.entries(contexts).map(([id, label]) => ({
-      id: `context-${id}`,
-      label: label[locale],
-      reason: label.reason[locale],
-      entries: entries.filter((entry) =>
-        entry.contexts.some((value) => value === id),
-      ),
-    })),
-  ].filter((section) => section.entries.length > 0);
 }
