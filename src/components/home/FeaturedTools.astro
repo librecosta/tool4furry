@@ -31,7 +31,7 @@ const showDecor = !!presentDecor || import.meta.env.DEV;
   <div data-featured-content {...stylex.attrs(h.featuredContent)}>
   <div {...stylex.attrs(h.sectionHead, h.featuredHead)}>
     <h2 id="tools-heading" {...stylex.attrs(h.heading)}>{t.featuredTools}</h2>
-    <a href={localizedPath('/tools/', region, locale)} {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{t.browseAll}</span></a>
+    <a href={localizedPath('/tools/', region, locale)} {...stylex.attrs(h.link, h.browseAllLink)}><span {...stylex.attrs(h.linkText)}>{t.browseAll}</span></a>
   </div>
   {cards.length > 0 ? <ul data-home-featured {...stylex.attrs(h.featuredGrid)}>
     {cards.map(card => {

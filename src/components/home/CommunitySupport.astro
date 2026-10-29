@@ -16,7 +16,7 @@ const { region, locale } = Astro.props;
         <div {...stylex.attrs(s.qqCopy)}><p {...stylex.attrs(s.description)}>{card.description}</p><p {...stylex.attrs(s.note, s.qqHint)}>{card.note}</p></div>
         <img src={card.qr.src} width={card.qr.width} height={card.qr.height} alt={card.qr.alt} loading="lazy" {...stylex.attrs(s.qr)} />
       </div> : <>
-        <p {...stylex.attrs(s.description)}>{card.description}</p>
+        <p {...stylex.attrs(s.description, s.centeredCopy)}>{card.description}</p>
         <div {...stylex.attrs(s.footer)}>
           {card.note && <p {...stylex.attrs(s.note)}>{card.note}</p>}
           <a href={card.href} target="_blank" rel="noopener noreferrer" {...stylex.attrs(s.action)}>
