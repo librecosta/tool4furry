@@ -1,29 +1,32 @@
 ---
 import * as stylex from '@stylexjs/stylex';
 import type { Locale } from '../../i18n/locale';
-import type { CatalogEntry } from '../../site/catalog';
-import { homepageCopy, homepageMedia } from '../../site/homepage-showcase';
+import { homepageStories, homepageMedia } from '../../site/homepage-showcase';
 import { homeStyles as h } from '../../styles/homepage';
-import HomeMedia from './HomeMedia.astro';
 import ThreePillars from './ThreePillars.astro';
 import CommunitySupport from './CommunitySupport.astro';
 import { communityStyles } from '../../styles/home-community';
 import type { Region } from '../../config/region';
-interface Props { region: Region; locale: Locale; converter?: CatalogEntry }
-const { region, locale, converter } = Astro.props;
-const c = homepageCopy[locale];
+interface Props { region: Region; locale: Locale }
+const { region, locale } = Astro.props;
 ---
-<section data-home-section="workflow" aria-labelledby="workflow-heading" {...stylex.attrs(h.inner, h.section, communityStyles.workflow)}>
+<div data-home-section="workflow" {...stylex.attrs(h.inner, h.section, communityStyles.workflow)}>
   <CommunitySupport region={region} locale={locale} />
   <ThreePillars region={region} locale={locale} />
-  <div {...stylex.attrs(h.storyLayout)}>
-    <HomeMedia media={homepageMedia.workflow} kind="story" locale={locale} />
-    <div {...stylex.attrs(h.storyText)}>
-      <h2 id="workflow-heading" {...stylex.attrs(h.heading)}>{c.workflowTitle}</h2>
-      <p {...stylex.attrs(h.intro)}>{c.workflowIntro}</p>
-      <ol {...stylex.attrs(h.steps)}>{c.workflowSteps.map((step, index) => <li {...stylex.attrs(h.step)}><span aria-hidden="true" {...stylex.attrs(h.stepNumber)}>{String(index + 1).padStart(2, '0')}</span>{step}</li>)}</ol>
-      <p {...stylex.attrs(h.intro)}>{c.workflowDetail}</p>
-      {import.meta.env.DEV && converter && <a href={converter.href} data-home-dev-preview {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{c.workflowPreview}</span></a>}
-    </div>
+  <div data-home-stories {...stylex.attrs(h.stories)}>
+    {homepageStories[locale].map((story, index) => {
+      const media = homepageMedia[story.id];
+      const external = story.link.href.startsWith('https:');
+      return <section data-home-story={story.id} aria-labelledby={`story-${story.id}`} {...stylex.attrs(h.storyRow)}>
+        <div {...stylex.attrs(h.storyText, index === 0 && h.storyTextRight)}>
+          <h2 id={`story-${story.id}`} {...stylex.attrs(h.storyHeading)}>{story.title}</h2>
+          <p {...stylex.attrs(h.storyBody)}>{story.body}</p>
+          <a href={story.link.href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined} {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{story.link.label}</span></a>
+        </div>
+        <div aria-hidden="true" {...stylex.attrs(h.storyArtwork, index === 0 && h.storyArtworkLeft)}>
+          <img src={media.src} width={media.width} height={media.height} alt="" loading="lazy" decoding="async" {...stylex.attrs(h.storyImage)} />
+        </div>
+      </section>;
+    })}
   </div>
-</section>
+</div>

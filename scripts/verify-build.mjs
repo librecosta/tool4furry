@@ -215,7 +215,31 @@ for (const [property, expected] of Object.entries({
 }
 assert.equal(document.querySelectorAll('h1').length, 1);
 const pillars = document.querySelector('[data-home-section="workflow"] [data-home-pillars]');
-assert(pillars, 'Three static pillars precede the unchanged workflow story');
+assert(pillars, 'Three static pillars precede the editorial stories');
+const stories = [...document.querySelectorAll('[data-home-story]')];
+assert.deepEqual(stories.map(story => story.dataset.homeStory), ['feedback', 'collaboration']);
+assert(!document.querySelector('#workflow-heading, [data-home-dev-preview]'), 'Obsolete workflow content and preview link are removed');
+const storyAssets = [
+  ['luminous-blue.avif', 'e4ec08ff7285dd922a23dee64f47da03510f0658fa256d3b744c77fc1d1225ec'],
+  ['luminous-purple.avif', 'c9222193d9103b54a0eeede5dd460d14c41a796ec8f101a4d112ae42b82c99a2'],
+];
+for (const [index, story] of stories.entries()) {
+  const heading = story.querySelector('h2');
+  assert.equal(story.getAttribute('aria-labelledby'), heading?.id);
+  assert.equal(heading.textContent, (locale === 'zh' ? ['倾听需求，持续改进', '开放交流，欢迎合作'] : ['Listening, Learning, Improving', 'Open to Conversation and Collaboration'])[index]);
+  assert.equal(story.querySelector('a')?.getAttribute('href'), ['https://github.com/librecosta/tool4furry/issues', 'mailto:contact@librecosta.com'][index]);
+  const img = story.querySelector('img');
+  assert.equal(img?.getAttribute('src'), `/visuals/home/${storyAssets[index][0]}`);
+  assert.equal(img.width, 500); assert.equal(img.height, 400);
+  assert.equal(img.alt, ''); assert.equal(img.getAttribute('loading'), 'lazy'); assert.equal(img.getAttribute('decoding'), 'async');
+  assert(!(story.querySelector('script, astro-island, canvas, video, button')));
+  assert(story.firstElementChild.contains(heading) && !story.firstElementChild.contains(img), 'Reading order is text before decorative artwork');
+  const bytes = await readFile(resolve(root, `visuals/home/${storyAssets[index][0]}`));
+  assert.equal(createHash('sha256').update(bytes).digest('hex'), storyAssets[index][1], 'Approved AVIF is copied without re-encoding');
+}
+assert.equal(stories[0].querySelector('a').target, '_blank');
+assert.equal(stories[0].querySelector('a').rel, 'noopener noreferrer');
+assert(!stories[1].querySelector('a').hasAttribute('target'));
 const community = document.querySelector('[data-home-community]');
 assert.equal(community?.nextElementSibling, pillars, 'Community cards immediately precede the existing pillars');
 const communityCards = [...community.querySelectorAll('[data-community-card]')];
@@ -374,11 +398,12 @@ for (const image of document.querySelectorAll('img')) {
   const src = image.getAttribute('src');
   const communityQR = region === 'cn' && src === '/community/QQ-Group.avif' && image.closest('[data-home-community] [data-community-card="qq"]');
   const communityLogo = communityLogos.includes(src) && image.closest('[data-home-community] a');
+  const editorialArtwork = storyAssets.some(([name]) => src === `/visuals/home/${name}`) && image.closest('[data-home-story]');
   assert(
     image.closest('[data-site-compliance]')
       ? src?.startsWith('/') && !src.startsWith('//')
-      : communityQR || communityLogo || src?.startsWith('/brand/') || (src === '/visuals/wavefield/wavefield.avif' && image.closest('[data-wavefield]')),
-    'Homepage images are approved local brand/compliance art, Wavefield poster or exact regional community assets',
+      : communityQR || communityLogo || editorialArtwork || src?.startsWith('/brand/') || (src === '/visuals/wavefield/wavefield.avif' && image.closest('[data-wavefield]')),
+    'Homepage images are approved brand/compliance, Wavefield, regional community or exact editorial assets',
   );
   assert.equal(
     image.getAttribute('alt'),

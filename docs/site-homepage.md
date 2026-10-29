@@ -1,3 +1,13 @@
+# Issue #28 — 下半部双组图文故事（2026-10-29）
+
+仅替换 WorkflowStory 的旧流程 H2、三步说明、DEV Converter 入口和相关文案/媒体字段。社群、三栏理念、前三块及 PrinciplesStory 保持原样。两组「倾听需求，持续改进 / Listening, Learning, Improving」「开放交流，欢迎合作 / Open to Conversation and Collaboration」采用 Issue 冻结的双语正文，分别链接真实 Issues 与 contact@librecosta.com；共享 h.link / h.linkText 的雾紫 Hover/Focus 和 180ms 下划线不变。
+
+按维护者随后补充的三级布局：≥1440px 两组并排一行；900–1439px 上下两组，第一组左图右文、第二组左文右图；<900px 每组文字在前、图片在后，DOM 也为同样阅读顺序。无背景板、描边、阴影或新增动效。社群和三栏既有间距保留，未叠加新顶部 padding。
+
+正式附件原样存于 `public/visuals/home/luminous-blue.avif`（500×400，8,694 bytes，SHA-256 `e4ec08ff7285dd922a23dee64f47da03510f0658fa256d3b744c77fc1d1225ec`）及 `luminous-purple.avif`（500×400，16,886 bytes，SHA-256 `c9222193d9103b54a0eeede5dd460d14c41a796ec8f101a4d112ae42b82c99a2`）。按维护者视觉修正保留柔边矩形：两级局部线性 mask 分别柔化水平/垂直边缘，中部保持清晰，含 WebKit 前缀；不支持 mask 时保留 24px 圆角原图。图片 alt 为空、准确尺寸、lazy/async，不预加载，不引入 JS、Island、依赖或图片副本。
+
+---
+
 # Issue #27 — 社群与支持衔接（2026-10-29）
 
 评论 `6489181171` 覆盖下方上一轮的对齐和 Dark 按钮色：仅 Dark communityAction / Hover / onCommunityAction 改为 #755C8C / #806898 / #FFFFFF，Light 不变。非 QQ 标题、正文（最大 340px）、辅助说明和底部按钮水平居中；QQ 仅标题居中，主体继续左文右码且文字左对齐。赞助来源说明仍在按钮上方，按钮底部对齐、196px 最小高度与 18px 内边距不变。最新评论 `6489584393` 将雾紫交互统一到共享 h.link：首页所有既有 h.link / h.linkText 文字链接默认中性色，Hover / Focus-visible 使用 supportLavender，颜色与 62% 下划线收缩均为 180ms（Reduced Motion 为 0ms）；删除 browseAllLink 特例。Hero、社群按钮、工具卡片、导航及 Footer 不受影响，第四区下半部仅继承链接交互，不改内容。文案、URL、素材（含维护者本地提交的 Telegram 图标）、其他首页区域及主题控制均不改。

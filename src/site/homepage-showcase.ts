@@ -28,10 +28,13 @@ export type RoleShowcase = {
 // approved file is delivered; absent files render geometry, never broken images.
 export const homepageMedia: {
   featuredDecor?: HomeMedia;
-  workflow?: HomeMedia;
+  feedback: HomeMedia;
+  collaboration: HomeMedia;
   principles?: HomeMedia;
   tools: Readonly<Record<string, HomeMedia>>;
 } = {
+  feedback: { src: '/visuals/home/luminous-blue.avif', width: 500, height: 400, alt: { zh: '', en: '' } },
+  collaboration: { src: '/visuals/home/luminous-purple.avif', width: 500, height: 400, alt: { zh: '', en: '' } },
   tools: {},
 };
 
@@ -73,11 +76,6 @@ const zh = {
   draft: '草稿预览',
   roleEmpty: '这个分区的工具正在准备中。',
   more: '查看更多',
-  workflowTitle: '从素材，到处理，再到成果',
-  workflowIntro: '一段创作流程里，整理和交付也值得被认真对待。工具应围绕具体任务展开，让你看清输入、处理与结果。',
-  workflowSteps: ['准备素材', '按任务处理', '检查与交付'],
-  workflowDetail: '先了解素材，再选择合适的处理方式；交付前确认结果。这里将用实际工具与作品呈现这段过程。',
-  workflowPreview: '查看图片转换开发预览',
   principlesTitle: 'Tool4Furry 的设计与工程',
   principlesIntro: 'Tool4Furry 是 LibreCosta 为 Furry 创作者打造的浏览器工具箱。我们从具体的小任务出发，重视清楚的操作、克制的界面和真实可用的能力。',
   principlesDetail: '优先探索浏览器本地处理，让素材处理更贴近创作本身。具体的数据处理方式以每个工具的说明为准；前端代码开放，设计与实现也接受检验。',
@@ -88,17 +86,24 @@ const en: { [K in keyof typeof zh]: typeof zh[K] } = {
   draft: 'Draft preview',
   roleEmpty: 'Tools for this section are on the way.',
   more: 'View more',
-  workflowTitle: 'From assets, through processing, to results',
-  workflowIntro: 'Preparation and delivery deserve the same care as creation. A tool should serve a specific task and make its input, processing and result clear.',
-  workflowSteps: ['Prepare assets', 'Process for the task', 'Check and deliver'],
-  workflowDetail: 'Understand the source, choose the right process, then check the result before delivery. This space will tell that story with real tools and work.',
-  workflowPreview: 'Open the Image Converter development preview',
   principlesTitle: 'How we design and build Tool4Furry',
   principlesIntro: 'Tool4Furry is a browser toolbox by LibreCosta for furry creators. We start with specific, everyday tasks and value clear controls, restrained interfaces and capabilities that work.',
   principlesDetail: 'We prioritize processing in the browser where practical. Each tool explains how it handles data. The frontend code is open, so its design and implementation can be examined.',
   principlesNote: 'Light pages, clear boundaries and tools refined over time.',
 };
 export const homepageCopy = { zh, en };
+
+type EditorialStory = { id: 'feedback' | 'collaboration'; title: string; body: string; link: { label: string; href: string } };
+export const homepageStories: Record<Locale, readonly EditorialStory[]> = {
+  zh: [
+    { id: 'feedback', title: '倾听需求，持续改进', body: '我们希望工具真正帮上忙。那些不够顺手的操作、缺少的能力，或一点值得分享的灵感，都欢迎告诉我们。改进，就从这些真实的声音开始。', link: { label: '分享反馈', href: 'https://github.com/librecosta/tool4furry/issues' } },
+    { id: 'collaboration', title: '开放交流，欢迎合作', body: '好的创作不必独自完成。我们乐于与创作者、开发者及社群伙伴交流，探索那些值得认真做好的新想法。', link: { label: '联系我们', href: 'mailto:contact@librecosta.com' } },
+  ],
+  en: [
+    { id: 'feedback', title: 'Listening, Learning, Improving', body: 'We want our tools to be genuinely useful. An awkward step, a missing feature, or a small idea worth sharing—tell us about it. Real feedback is where improvement begins.', link: { label: 'Share feedback', href: 'https://github.com/librecosta/tool4furry/issues' } },
+    { id: 'collaboration', title: 'Open to Conversation and Collaboration', body: "Good things don't have to be made alone. We're open to conversations with creators, developers, and community partners about ideas worth building with care.", link: { label: 'Get in touch', href: 'mailto:contact@librecosta.com' } },
+  ],
+};
 
 type HomepagePillar = { id: 'experience' | 'safety' | 'privacy'; title: string; description: string; links: readonly { label: string; href: string }[] };
 export const homepagePillars: Record<Locale, readonly HomepagePillar[]> = {

@@ -23,7 +23,7 @@ const tools = getHomepageEntries(region, undefined, undefined, import.meta.env.D
       <FeaturedTools region={region} locale={locale} entries={tools} />
       <RoleShowcases region={region} locale={locale} />
     </section>
-    <WorkflowStory region={region} locale={locale} converter={tools.find(tool => tool.id === 'image-converter')} />
+    <WorkflowStory region={region} locale={locale} />
     <PrinciplesStory region={region} locale={locale} />
   </main>
 </SiteLayout>

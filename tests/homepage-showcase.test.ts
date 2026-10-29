@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getRoleShowcases, getFeaturedShowcase, roleShowcases, homepageCopy } from '../src/site/homepage-showcase';
+import { getRoleShowcases, getFeaturedShowcase, roleShowcases, homepageCopy, homepageStories } from '../src/site/homepage-showcase';
 import { getHomepageEntries } from '../src/site/catalog';
 import { imageConverterDefinition } from '../src/tools/image-converter/definition';
 import { fixtureTools } from './fixtures/tools';
@@ -72,7 +72,7 @@ describe('homepage editorial role projection', () => {
     expect(getRoleShowcases('cn', 'zh', true, list, roles)[0].entries.map(entry => entry.id)).toEqual(roles[0].toolIds);
   });
 
-  it('defines six bilingual roles and matching bilingual workflow structure without making tools', () => {
+  it('defines six bilingual roles and two localized editorial stories without making tools', () => {
     expect(roleShowcases.map(role => role.id)).toEqual(['painter', 'composer', 'developer', 'animator', 'operations', 'studio']);
     expect(roleShowcases.slice(3).map(role => ({ label: role.label, description: role.description }))).toEqual([
       { label: { zh: '动画师', en: 'Animators' }, description: { zh: '每一帧都值得打磨', en: 'Every frame deserves care.' } },
@@ -85,7 +85,9 @@ describe('homepage editorial role projection', () => {
       expect(role.description.en).toBeTruthy();
     }
     expect(Object.keys(homepageCopy.zh)).toEqual(Object.keys(homepageCopy.en));
-    expect(homepageCopy.zh.workflowSteps).toHaveLength(3);
-    expect(homepageCopy.en.workflowSteps).toHaveLength(3);
+    for (const locale of ['zh', 'en'] as const) {
+      expect(homepageStories[locale].map(story => story.id)).toEqual(['feedback', 'collaboration']);
+      expect(homepageStories[locale].map(story => story.link.href)).toEqual(['https://github.com/librecosta/tool4furry/issues', 'mailto:contact@librecosta.com']);
+    }
   });
 });
