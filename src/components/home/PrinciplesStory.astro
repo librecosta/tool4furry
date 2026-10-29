@@ -12,15 +12,15 @@ const c = homepageCopy[locale];
 <section data-home-section="principles" aria-labelledby="principles-heading" {...stylex.attrs(h.inner, h.principles)}>
   <div {...stylex.attrs(h.editorial)}>
     <div data-principles-part="title" {...stylex.attrs(h.principlesTitle, h.principlesMotion, h.principlesTitleReveal)}>
-      <h2 id="principles-heading" {...stylex.attrs(h.principlesHeading)}>{c.principlesTitle}</h2>
+      <h2 id="principles-heading" {...stylex.attrs(h.principlesHeading, locale === 'en' && h.principlesHeadingEnglish)}>{c.principlesTitle}</h2>
       {c.principlesSubtitle && <span lang="en" {...stylex.attrs(h.principlesSubtitle)}>{c.principlesSubtitle}</span>}
     </div>
     <div {...stylex.attrs(h.principlesText)}>
       <p data-principles-part="intro" {...stylex.attrs(h.principlesBody, h.principlesMotion, h.principlesIntroReveal)}>{c.principlesIntro}</p>
       <p data-principles-part="detail" {...stylex.attrs(h.principlesBody, h.principlesDetail, h.principlesMotion, h.principlesDetailReveal)}>{c.principlesDetail}</p>
-      <div data-principles-part="link" {...stylex.attrs(h.principlesLink, h.principlesMotion, h.principlesLinkReveal)}>
-        <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{c.principlesSource}</span></a>
-      </div>
+    </div>
+    <div data-principles-part="link" {...stylex.attrs(h.principlesLink, h.principlesMotion, h.principlesLinkReveal)}>
+      <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{c.principlesSource}</span></a>
     </div>
   </div>
 </section>
