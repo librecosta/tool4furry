@@ -6,6 +6,8 @@ compliance row or document scroll dock. Other pages retain their shell.
 At ≤899px the same filter DOM becomes a native modal Dialog; Escape, backdrop,
 focus return and desktop restoration are page-local. Very short viewports let
 the sidebar and result controls scroll so inputs remain reachable.
+Cards and pagination stay centered in the result area. At ≥1600px, four columns
+use up to 1600px; narrower viewports retain the existing three/two/one columns.
 
 Registry `getAvailableTools(region, dev)` is still the sole publication gate.
 `taxonomy.ts` owns two-level category/group relationships; `roles.ts` owns six
