@@ -15,8 +15,8 @@ track absorbs a tall aside without stretching the input/result rows. This is
 an optional StyleX layout recipe, not a file/parameter schema or state owner.
 Converter changes classes only; task IDs, inputs, preview and settings stay mounted.
 
-Astro `ToolGuide` independently caps instructions and FAQ at 1200px including
-gutters. Steps + limitations share top-aligned 55:45 columns above 1050px;
+Astro `ToolGuide` aligns instructions and FAQ with the wide Form shell at 1400px
+including the same safe gutters. Steps + limitations share top-aligned 55:45 columns above 1050px;
 a single supplied section uses the full width, and narrow screens stack.
 FAQ uses that same outer alignment and full-width native summaries; answer
 text alone caps at 820px. Other readable site content retains its 820px layout.

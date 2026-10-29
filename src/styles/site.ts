@@ -125,7 +125,7 @@ export const siteStyles = stylex.create({
   },
   toolGuide: {
     display: 'grid',
-    maxWidth: 1200,
+    maxWidth: 1400,
     marginInline: 'auto',
     minWidth: 0,
     gap: tokens.space32,
