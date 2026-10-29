@@ -18,10 +18,10 @@ const { region, locale } = Astro.props;
       </div> : <>
         <p {...stylex.attrs(s.description)}>{card.description}</p>
         <div {...stylex.attrs(s.footer)}>
+          {card.note && <p {...stylex.attrs(s.note)}>{card.note}</p>}
           <a href={card.href} target="_blank" rel="noopener noreferrer" {...stylex.attrs(s.action)}>
             <img src={card.logo} width="20" height="20" alt="" aria-hidden="true" loading="lazy" {...stylex.attrs(s.logo)} />{card.action}
           </a>
-          {card.note && <p {...stylex.attrs(s.note)}>{card.note}</p>}
         </div>
       </>}
     </article>)}
