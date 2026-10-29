@@ -41,7 +41,8 @@ cancel/Escape and focus restoration. Confirm resets only result scrolling;
 invalid input does not change URL. No permanent jump-input row. Filter and jump
 dialogs never stack. Only the result scrollport resets on filtering/page changes.
 
-Desktop has a 32px edge handle with a 44px target: one 300ms Grid transition
+Desktop has a borderless, shadow-free 24px handle inset into the menu edge,
+growing to 32px when collapsed; the target stays 44px. One 300ms Grid transition
 collapses the sidebar from 256px to zero without remounting it. Inert/clipping
 protect hidden controls; filtering, expansions and scroll positions survive.
 This view preference is page-local, never a URL/storage field. Mobile keeps the
