@@ -1,3 +1,7 @@
+# C7 收尾 — 真实工具与素材（2026-10-29）
+
+首页精选仅展示现有 Registry 可访问条目，最多四项，不再补充开发演示工具；零项使用现有真实空状态，DEV 仍可展示 draft。精选左侧原创插画、角色 3:4 插画与身份 Icon 的真实素材配置和替换能力保留，但未提供素材时不生成几何占位、不预留空列。已交付的 Wavefield、Luminous 图、社群素材及角色 Phosphor 身份图标保持不变。此约定覆盖下方历史 DEV 演示/插画占位说明。目录显式测试夹具见 `site-tools.md`，不影响首页或导航。
+
 # Issue #29 — 技术与工程终章（2026-10-29）
 
 仅重做第五区 `PrinciplesStory`，覆盖下方旧媒体占位与三链接设计。逐字采用 Issue 的「技术与工程 / Technology & Engineering」标题、两段正文及「查看源代码 / View source code」；前段描述当前 Astro/React/StyleX 基础，后段保留按需探索的将来语义。唯一链接为仓库，原生新标签加 noopener/noreferrer，复用 h.link / h.linkText；没有新增技术标签、图片、卡片、分隔线或背景。删除本区 principlesNote、媒体字段、未使用导入及旧 caption/链接组样式，不修改 HomeMedia 的公共约定。
@@ -66,7 +70,7 @@ CSS 仅过渡 transform / opacity / clip-path：封顶线 0–320ms 从左到右
 
 角色原 finance 改为 studio / 工作室 / Studios；动画师、运营、工作室分别采用 Issue 冻结的「每一帧都值得打磨」「为内容与社群增添色彩」「工作细节决定成败」及对应英文。前三角色文案不变，角色编排仍与现有 Registry 取交集，不新增分类、工具或发布状态。
 
-角色插画每人仅一幅 3:4 母稿，建议 900×1200 或 1200×1600px，中央安全焦点，后续使用 WebP/AVIF 并保留绘画源稿。桌面框宽最高 145px、中屏缩至约 110px，始终 3:4；按维护者本轮截图补充，与右侧工具网格底部对齐，禁止随工具网格拉伸。≤600px 隐藏插画，3×2 工具网格使用完整宽度；工具缩略图仍为 4:3。复用 HomeMedia 本地图片检查与 focus；DEV 严格等比占位，生产无有效本地插画时不渲染媒体列，内容自然铺开。六角色图尚未提供，不生成新素材。
+角色插画每人仅一幅 3:4 母稿，建议 900×1200 或 1200×1600px，中央安全焦点，后续使用 WebP/AVIF 并保留绘画源稿。桌面框宽最高 145px、中屏缩至约 110px，始终 3:4；按维护者本轮截图补充，与右侧工具网格底部对齐，禁止随工具网格拉伸。≤600px 隐藏插画，3×2 工具网格使用完整宽度；工具缩略图仍为 4:3。复用 HomeMedia 本地图片检查与 focus；DEV 与生产均在无有效本地插画时不渲染媒体列，内容自然铺开。六角色图尚未提供，不生成新素材。
 
 维护者截图补充：每组角色标题左侧保留独立的 28px 图标素材槽，当前使用已有 Phosphor Regular 24px 图标；手机端也显示。后续填写 `RoleShowcase.icon` 的本地路径与真实尺寸即可替换，不影响底部角色竖幅插画。缺少或无效文件回退现有图标，静态输出且不请求不存在的图片。
 
@@ -76,13 +80,13 @@ CSS 仅过渡 transform / opacity / clip-path：封顶线 0–320ms 从左到右
 
 仅取代下方历史胶片精选区：首页第二区域沿用 `getHomepageEntries` 的地区、发布和精选顺序，再独立限四项；导航的九项上限不变。≥1200px 四列、640–1199px 两列、<640px 无整行背景的 Icon 左置列表。图标采用已有 Phosphor 的 Regular 单色线性图标，40px SVG 静态输出，未知 ID 回退通用图标；不使用自绘路径、封面、序号或横向滚动。短摘要由工具自身的可选 `copy.summary` 提供，详情/SEO 描述不变。
 
-DEV 可补三个带明确“非工具”说明且无链接的裁剪/压缩/取色设计示例；不进入 Registry。生产只显示真实已发布条目，零条目保留原空状态。无新增 JS、依赖或入场动画，Hover 为 260ms 背景变化；Hero、职业区、故事区、导航、Footer 和工具业务均不变。
+DEV 仅展示真实可访问的 draft/published 条目，不再补裁剪/压缩/取色设计示例。生产只显示真实已发布条目，零条目保留原空状态。无新增 JS、依赖或入场动画，Hover 为 260ms 背景变化；Hero、职业区、故事区、导航、Footer 和工具业务均不变。
 
 最新纠偏（[评论 6470211603](https://github.com/librecosta/tool4furry/issues/23#issuecomment-6470211603)）覆盖前轮首页点阵与绝对定位约定。保留精选区上下 32/36px、标题下 20px（手机 18px）、桌面卡片最小高度 152px / 内边距 16px，职业区外侧上下 40px；不改职业内部结构。共享 `SiteLayout` 沿用 [GoFurry #149 最终源码](https://github.com/gofurry/gofurry-nav-site/blob/b186325c59c086351cf2b37d0b5c6530b937813c/apps/cn/web/app/components/common/PublicPageBackground.vue)：固定视口基底与点阵，30px 间距、1.1px 半径、边宽 `min(30%,460px)`、左右 15% 后向内渐隐、顶部 18% 后向下渐隐、高度 `min(720px,100svh)`，滚动不改变屏幕坐标。768–1279px 减淡；手机单层满宽、28px / 0.8px、185px 上显下隐，不再隐藏整个背景。按维护者本轮减淡反馈，Light/Dark alpha 为桌面 .20/.18、中屏 .13/.12、手机 .10/.08，仅使用一次 alpha；颜色由现有 StyleX 主题的三个 pageDot 语义值提供。
 
 背景仅一份、无 JS：shell 隔离负层级，固定基底 -3、角色底色伪元素 -2、固定点阵 -1、实际内容在其上。Hero 与 Header/Footer 沿用自身底色；现有 `workspace && !documentScroll` 的 Canvas/沉浸 Lab 隐藏点阵，Form/Batch 背景不浮到实际工具内容上。
 
-`homepageMedia.featuredDecor` 是可选的本地原创素材槽，仅当文件存在且尺寸有效时输出装饰性、延迟加载的图片。精选父级是正常 Grid：≥1440px 有素材/DEV 占位时为 160px 插画列 + 32px 间距 + 右侧内容列（标题、浏览全部、四卡整体）；更窄时隐藏插画。当前未配置素材，生产只渲染右列且不预留空白；DEV 显示中性 3:4“素材预留 / Artwork slot”。没有绝对定位、负偏移或虚构图片请求。
+`homepageMedia.featuredDecor` 是可选的本地原创素材槽，仅当文件存在且尺寸有效时输出装饰性、延迟加载的图片。精选父级是正常 Grid：≥1440px 有真实素材时为 160px 插画列 + 32px 间距 + 右侧内容列（标题、浏览全部、最多四卡整体）；更窄时隐藏插画。当前未配置素材，DEV 与生产均只渲染右列且不预留空白。没有绝对定位、负偏移或虚构图片请求。
 
 首页轻量文本链接采用 [DeepFurry `.hero-action::after`](https://github.com/deepfurry/website/blob/main/src/styles/global.css)：文字 span 的 1px 完整下划线，Hover 从左侧 180ms 收缩至 62%，移出恢复；44px 命中区不参与划线，键盘焦点保留，Reduced Motion 为 0ms。不改主 CTA、导航或 Footer 的交互。
 
@@ -120,7 +124,7 @@ DEV 可补三个带明确“非工具”说明且无链接的裁剪/压缩/取�
 - `src/site/homepage-showcase.ts` 是本地媒体与职业编排入口。待审核素材到位后，在 `homepageMedia.hero` 填入 `/brand/tool4furry-standing-wolf-hero.png` 的路径、真实尺寸和双语 alt 即可；工具封面、角色代表图及两处故事图也在同一配置维护。媒体组件只输出确实存在的本地 public 文件，预留比例、焦点及 AVIF/WebP source，缺图使用中性几何画幅，绝不输出 404 图片。Hero 优先加载，其他图延迟加载。
 - 精选沿用 `getHomepageEntries` / `featuredToolIds` 与 9 项上限；原生横向滚动、scroll-snap、可聚焦滚动区和真实工具链接支持键盘浏览，无装饰性箭头或自动播放。
 - 六角色固定为画家、作曲家、开发者、动画师、运营、财务，仅是展示视角，不新增分类或路由。各角色 ID 编排先与当前地区 Registry 可用条目取交集、去重，再限 6 项；桌面 2×3 分区、每区 3×2 位，窄屏单列。当前没有发布工具，生产为真实空状态；不得伪造 36 个产品。
-- DEV 胶片补足 6 位、角色各补足 6 位，演示槽明确标注且没有 href，真实 Converter 明确为草稿预览。生产不含演示标记、演示文案、draft 信息或链接；Image Converter 仍为 draft。工作流和工程理念不承诺未上线服务、虚假性能或所有工具离线。
+- 历史 C6 首轮曾用 DEV 演示槽补位；已在 C7 收尾移除，首页只展示真实工具与已交付素材，真实 Converter 仍明确为草稿预览。生产不含演示标记、演示文案、draft 信息或链接；Image Converter 仍为 draft。工作流和工程理念不承诺未上线服务、虚假性能或所有工具离线。
 - 验证按 L1：相关投影测试、check、两地区真实构建守卫；浏览器定向覆盖双语言/外观、320/390/960/1440px、原生胶片滚动和唯一 H1。正式素材及文案仍待维护者后续视觉验收与替换，不需要新的实施框架。
 
 ---

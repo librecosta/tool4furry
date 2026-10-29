@@ -70,7 +70,9 @@ static pages retain their existing script and Footer contracts.
 ## DEV catalog samples (C7-r1/r2)
 
 Only `ToolsCatalog.astro`, inside `import.meta.env.DEV`, dynamically imports
-`src/site/catalog-fixture.ts`. Default `compact` appends 48 clearly labeled,
+`src/site/catalog-fixture.ts`. The default is `off`: ordinary `pnpm dev` shows
+only current-region real draft/published tools, with no sample note or cards.
+Explicit `$env:T4F_CATALOG_FIXTURE='compact'; pnpm dev` appends 48 clearly labeled,
 noninteractive samples (no href/loader/route), in six groups across five parent
 categories and all six roles. With the current real draft this gives 49 entries,
 five pages. The Registry, homepage and Header discovery never receive samples.
@@ -82,7 +84,7 @@ Images & Assets 133/12, Image Processing 109/10. Check first/middle/last at
 1/8/16, 1/6/12 and 1/5/10 respectively, plus both ellipses, invalid input,
 cancel/Escape, filter resets and browser Back. `off` restores only real tools.
 Stop both services before changing the
-mode; remove the env variable to restore 48 samples. Unknown DEV values fail.
+mode; remove the env variable to restore the real-tool-only default. Unknown DEV values fail.
 Production ignores this environment variable and the build guard rejects sample
 markup/data. The mode is not a query/filter dimension or a publishing setting.
 

@@ -14,9 +14,9 @@ interface Props { region: Region; locale: Locale }
 const { region, locale } = Astro.props;
 const roles = getRoleShowcases(region, locale, import.meta.env.DEV).map(role => ({
   ...role,
-  showArtwork: import.meta.env.DEV || (role.media && /^\/(?!\/)(?!.*\.\.)[^?#]+$/.test(role.media.src)
+  showArtwork: role.media && /^\/(?!\/)(?!.*\.\.)[^?#]+$/.test(role.media.src)
     && Number.isInteger(role.media.width) && role.media.width > 0 && Number.isInteger(role.media.height) && role.media.height > 0
-    && statSync(resolve('public', role.media.src.slice(1)), { throwIfNoEntry: false })?.isFile()),
+    && statSync(resolve('public', role.media.src.slice(1)), { throwIfNoEntry: false })?.isFile(),
 }));
 const c = homepageCopy[locale];
 ---

@@ -16,7 +16,7 @@ const sampleGroups = [
 ] as const satisfies readonly { id: string; category: DomainId; zh: string; en: string; keyword: string }[];
 
 /** Called only behind import.meta.env.DEV in ToolsCatalog.astro. */
-export function addCatalogFixture(real: CatalogEntry[], realSections: CatalogDisplaySection[], locale: Locale, mode = 'compact'): { entries: CatalogDisplayEntry[]; sections: CatalogDisplaySection[]; fixtureCount: number } {
+export function addCatalogFixture(real: CatalogEntry[], realSections: CatalogDisplaySection[], locale: Locale, mode = 'off'): { entries: CatalogDisplayEntry[]; sections: CatalogDisplaySection[]; fixtureCount: number } {
   if (!['compact', 'pagination', 'off'].includes(mode)) throw new RangeError('Invalid T4F_CATALOG_FIXTURE: expected compact, pagination or off');
   const counts = mode === 'off' ? [0, 0, 0, 0, 0, 0] : mode === 'pagination' ? [108, 24, 12, 12, 12, 12] : [8, 8, 8, 8, 8, 8];
   const fixtureCount = counts.reduce((sum, count) => sum + count, 0);

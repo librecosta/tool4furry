@@ -15,18 +15,16 @@ interface Props { region: Region; locale: Locale; entries: readonly CatalogEntry
 const { region, locale, entries } = Astro.props;
 const t = messages[locale];
 const c = homepageCopy[locale];
-const cards = getFeaturedShowcase(entries, locale, import.meta.env.DEV);
+const cards = getFeaturedShowcase(entries);
 const decor = homepageMedia.featuredDecor;
 const presentDecor = decor && /^\/(?!\/)(?!.*\.\.)[^?#]+$/.test(decor.src)
   && Number.isInteger(decor.width) && decor.width > 0 && Number.isInteger(decor.height) && decor.height > 0
   && statSync(resolve('public', decor.src.slice(1)), { throwIfNoEntry: false })?.isFile();
-const showDecor = !!presentDecor || import.meta.env.DEV;
 ---
 <div data-home-section="featured" {...stylex.attrs(h.inner, h.featuredSection)}>
-  <div data-featured-layout {...stylex.attrs(h.featuredLayout, showDecor && h.featuredWithDecor)}>
-  {showDecor && <div data-home-decor data-home-demo={!presentDecor || undefined} aria-hidden="true" {...stylex.attrs(h.featuredDecor)}>
-    {presentDecor && decor ? <img src={decor.src} width={decor.width} height={decor.height} alt="" loading="lazy" decoding="async" {...stylex.attrs(h.featuredDecorImage)} />
-      : <div {...stylex.attrs(h.featuredDecorPlaceholder)}>{locale === 'zh' ? '素材预留' : 'Artwork slot'}</div>}
+  <div data-featured-layout {...stylex.attrs(h.featuredLayout, presentDecor && h.featuredWithDecor)}>
+  {presentDecor && decor && <div data-home-decor aria-hidden="true" {...stylex.attrs(h.featuredDecor)}>
+    <img src={decor.src} width={decor.width} height={decor.height} alt="" loading="lazy" decoding="async" {...stylex.attrs(h.featuredDecorImage)} />
   </div>}
   <div data-featured-content {...stylex.attrs(h.featuredContent)}>
   <div {...stylex.attrs(h.sectionHead, h.featuredHead)}>
@@ -34,18 +32,15 @@ const showDecor = !!presentDecor || import.meta.env.DEV;
     <a href={localizedPath('/tools/', region, locale)} {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{t.browseAll}</span></a>
   </div>
   {cards.length > 0 ? <ul data-home-featured {...stylex.attrs(h.featuredGrid)}>
-    {cards.map(card => {
-      const Tag = card.demo ? 'div' : 'a';
-      return <li {...stylex.attrs(h.featuredItem)}>
-        <Tag href={card.demo ? undefined : card.href} data-home-demo={card.demo || undefined} data-home-tool={card.demo ? undefined : card.id} data-tool-card={card.demo ? undefined : card.id} {...stylex.attrs(h.featuredCard, !card.demo && h.featuredInteractive)}>
+    {cards.map(card => <li {...stylex.attrs(h.featuredItem)}>
+        <a href={card.href} data-home-tool={card.id} data-tool-card={card.id} {...stylex.attrs(h.featuredCard, h.featuredInteractive)}>
           <span {...stylex.attrs(h.featuredIconPlate)}><FeaturedToolIcon id={card.id} /></span>
           <div {...stylex.attrs(h.featuredText)}>
-            <h3 {...stylex.attrs(h.featuredTitle)}>{card.title}{!card.demo && import.meta.env.DEV && registry.find(tool => tool.id === card.id)?.status === 'draft' && <span {...stylex.attrs(h.featuredStatus)}>{c.draft}</span>}</h3>
+            <h3 {...stylex.attrs(h.featuredTitle)}>{card.title}{import.meta.env.DEV && registry.find(tool => tool.id === card.id)?.status === 'draft' && <span {...stylex.attrs(h.featuredStatus)}>{c.draft}</span>}</h3>
             <p {...stylex.attrs(h.featuredDescription)}>{card.description}</p>
           </div>
-        </Tag>
-      </li>;
-    })}
+        </a>
+      </li>)}
   </ul> : <div data-catalog-empty {...stylex.attrs(h.empty)}>
     <h3 {...stylex.attrs(h.featuredTitle)}>{t.empty}</h3><p {...stylex.attrs(h.intro)}>{t.emptyDetail}</p>
   </div>}

@@ -6,10 +6,18 @@ import { roles } from '../src/site/roles';
 import { tools } from '../src/tools/registry';
 
 describe('catalog-only DEV samples', () => {
+  it.each(['cn', 'global'] as const)('defaults to real zero/one-tool %s views in both locales', region => {
+    for (const locale of ['zh', 'en'] as const) for (const dev of [false, true]) {
+      const real = getCatalogEntries(region, tools, dev, locale), sections = getCatalogSections(region, tools, dev, locale);
+      expect(real).toHaveLength(dev ? 1 : 0);
+      expect(addCatalogFixture(real, sections, locale)).toEqual({ entries: real, sections, fixtureCount: 0 });
+      expect(addCatalogFixture(real, sections, locale, 'off')).toEqual({ entries: real, sections, fixtureCount: 0 });
+    }
+  });
   it.each(['zh', 'en'] as const)('adds 48 noninteractive %s samples across real parent categories', locale => {
     const real = getCatalogEntries('cn', tools, true, locale), sections = getCatalogSections('cn', tools, true, locale);
     const snapshot = structuredClone({ real, sections, tools });
-    const result = addCatalogFixture(real, sections, locale);
+    const result = addCatalogFixture(real, sections, locale, 'compact');
     expect(result.fixtureCount).toBe(48); expect(result.entries).toHaveLength(49);
     expect(catalogPage(result.entries.map(entry => ({ ...entry, search: entry.title })), emptyCatalogState()).totalPages).toBe(5);
     const samples = result.entries.filter(entry => entry.fixture);

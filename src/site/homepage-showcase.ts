@@ -26,7 +26,7 @@ export type RoleShowcase = {
 };
 
 // Local editorial slots only, never a publication list. Set a path after the
-// approved file is delivered; absent files render geometry, never broken images.
+// approved file is delivered; absent files render no artwork or empty column.
 export const homepageMedia: {
   featuredDecor?: HomeMedia;
   feedback: HomeMedia;
@@ -56,23 +56,13 @@ export function getRoleShowcases(region: Region, locale: Locale, dev = false, re
 }
 
 // A presentation cap only: navigation retains getHomepageEntries' nine-item limit.
-export function getFeaturedShowcase(entries: readonly CatalogEntry[], locale: Locale, dev = false) {
-  const real = entries.slice(0, 4).map(entry => ({
-    ...entry, description: entry.summary ?? entry.description, demo: false as const,
+export function getFeaturedShowcase(entries: readonly CatalogEntry[]) {
+  return entries.slice(0, 4).map(entry => ({
+    ...entry, description: entry.summary ?? entry.description,
   }));
-  if (!dev) return real;
-  const examples = [
-    { id: 'image-crop', title: { zh: '图片裁剪', en: 'Image Crop' } },
-    { id: 'image-compress', title: { zh: '图片压缩', en: 'Image Compression' } },
-    { id: 'color-picker', title: { zh: '颜色提取', en: 'Color Picker' } },
-  ];
-  return [...real, ...examples.filter(example => !entries.some(entry => entry.id === example.id)).map(example => ({
-    id: example.id, title: example.title[locale], description: homepageCopy[locale].demo, demo: true as const,
-  }))].slice(0, 4);
 }
 
 const zh = {
-  demo: '开发演示 · 非工具',
   draft: '草稿预览',
   roleEmpty: '这个分区的工具正在准备中。',
   more: '查看更多',
@@ -83,7 +73,6 @@ const zh = {
   principlesSource: '查看源代码',
 };
 const en: { [K in keyof typeof zh]: typeof zh[K] } = {
-  demo: 'Development demo · not a tool',
   draft: 'Draft preview',
   roleEmpty: 'Tools for this section are on the way.',
   more: 'View more',

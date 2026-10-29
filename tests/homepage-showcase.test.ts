@@ -14,29 +14,29 @@ describe('four-slot featured presentation', () => {
     ] satisfies ToolDefinition[];
     for (const locale of ['zh', 'en'] as const) {
       const navigation = getHomepageEntries(region, list, ['missing', 'other-region', 'fixture-8', 'fixture-8'], false, locale);
-      const cards = getFeaturedShowcase(navigation, locale);
+      const cards = getFeaturedShowcase(navigation);
       expect(navigation).toHaveLength(9);
       expect(cards.map(card => card.id)).toEqual(['fixture-8', 'fixture-1', 'fixture-2', 'fixture-3']);
-      expect(cards.every(card => !card.demo)).toBe(true);
       expect(cards[0].title).toBe(list.find(tool => tool.id === 'fixture-8')!.copy[locale].title);
       expect(cards[0]).toMatchObject({ href: navigation[0].href });
     }
   });
 
-  it.each([0, 1, 3, 4, 9])('does not fill %i production entries with examples', count => {
-    const cards = getFeaturedShowcase(getHomepageEntries('cn', fixtureTools(count)), 'zh');
+  it.each([0, 1, 3, 4, 9])('does not fill %i entries with examples', count => {
+    const cards = getFeaturedShowcase(getHomepageEntries('cn', fixtureTools(count)));
     expect(cards).toHaveLength(Math.min(count, 4));
-    expect(cards.every(card => !card.demo)).toBe(true);
   });
 
-  it.each(['zh', 'en'] as const)('keeps %s design examples non-interactive and uses the tool-owned short summary', locale => {
-    const entries = getHomepageEntries('cn', undefined, undefined, true, locale);
-    const cards = getFeaturedShowcase(entries, locale, true);
-    expect(cards.map(card => card.id)).toEqual(['image-converter', 'image-crop', 'image-compress', 'color-picker']);
-    expect(cards[0].description).toBe(imageConverterDefinition.copy[locale].summary);
-    expect(entries[0].description).toBe(imageConverterDefinition.copy[locale].description);
-    for (const card of cards.filter(card => card.demo)) expect(card).not.toHaveProperty('href');
-    expect(getFeaturedShowcase(getHomepageEntries('cn'), locale)).toEqual([]);
+  it.each(['cn', 'global'] as const)('shows only the real draft in %s DEV and no examples in either locale', region => {
+    for (const locale of ['zh', 'en'] as const) {
+      const entries = getHomepageEntries(region, undefined, undefined, true, locale);
+      const cards = getFeaturedShowcase(entries);
+      expect(cards.map(card => card.id)).toEqual(['image-converter']);
+      expect(cards[0].description).toBe(imageConverterDefinition.copy[locale].summary);
+      expect(entries[0].description).toBe(imageConverterDefinition.copy[locale].description);
+      expect(cards[0].href).toBe(entries[0].href);
+      expect(getFeaturedShowcase(getHomepageEntries(region, undefined, undefined, false, locale))).toEqual([]);
+    }
     expect(imageConverterDefinition.status).toBe('draft');
   });
 });

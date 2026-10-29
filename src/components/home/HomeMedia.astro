@@ -19,11 +19,9 @@ const sources = (['avif', 'webp'] as const).map(format => ({
   srcset: media?.[format]?.filter(candidate => present(candidate.src)).map(candidate => `${candidate.src} ${candidate.width}w`).join(', '),
 })).filter(source => source.srcset);
 ---
-<div data-home-media={kind} {...stylex.attrs(h.media, h[kind])}>
-  {media && present(media.src) ? <picture {...stylex.attrs(h.picture)}>
+{media && present(media.src) && <div data-home-media={kind} {...stylex.attrs(h.media, h[kind])}>
+  <picture {...stylex.attrs(h.picture)}>
     {sources.map(source => <source type={source.type} srcset={source.srcset} sizes={media.sizes ?? '100vw'} />)}
     <img src={media.src} alt={decorative ? '' : media.alt[locale]} width={media.width} height={media.height} loading="lazy" decoding="async" style={{objectPosition: media.focus ?? 'center'}} {...stylex.attrs(h.image)} />
-  </picture> : <div aria-hidden="true" {...stylex.attrs(h.geometry, kind === 'thumbnail' && h.smallGeometry, kind === 'story' && h.storyGeometry, kind === 'wide' && h.brandGeometry)}>
-    <span {...stylex.attrs(h.plane)}></span><span {...stylex.attrs(h.plane, h.planeOffset)}></span>
-  </div>}
-</div>
+  </picture>
+</div>}
