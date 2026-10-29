@@ -655,7 +655,7 @@ for (const page of htmlFiles) {
   const content = await readHTML(page);
   if (!fixtureMode)
     assert(
-      !/STATIC_GUIDE_ONLY_|data-fixture-counter/.test(content),
+      !/STATIC_GUIDE_ONLY_|data-fixture-counter|data-catalog-fixture|catalog-fixture-/.test(content),
       `Test content leaked: ${page}`,
     );
   assert(!content.includes('virtual:stylex'), `Dev StyleX runtime in ${page}`);
@@ -1071,7 +1071,7 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
   );
   if (!fixtureMode)
     assert(
-      !/data-fixture-counter|publicationFixtures|image\/x-tool4furry-unsupported/.test(
+      !/data-fixture-counter|publicationFixtures|addCatalogFixture|catalog-fixture-|image\/x-tool4furry-unsupported/.test(
         js,
       ),
       `Test implementation leaked: ${file}`,

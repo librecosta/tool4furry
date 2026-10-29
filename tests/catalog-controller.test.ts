@@ -12,11 +12,9 @@ function fixture(n = 121, query = '') {
     <button data-catalog-control disabled data-filter="all">All</button>
     <button data-catalog-control disabled data-filter="role" data-value="painter" data-label="Artists">Artists</button>
     <button data-catalog-control disabled data-filter="role" data-value="composer" data-label="Composers">Composers</button>
-    <button data-catalog-control disabled data-filter="category" data-value="images" data-label="Images">Images</button>
-    <button data-catalog-control disabled data-expand="images" data-label="Images" aria-controls="groups-images" aria-expanded="false">Expand</button>
+    <button data-catalog-control disabled data-filter="category" data-value="images" data-label="Images" aria-controls="groups-images" aria-expanded="false">Images</button>
     <div id="groups-images" hidden><button data-catalog-control disabled data-filter="group" data-value="image-processing" data-parent="images" data-label="Processing">Processing</button></div>
-    <button data-catalog-control disabled data-filter="category" data-value="development" data-label="Code">Code</button>
-    <button data-catalog-control disabled data-expand="development" data-label="Code" aria-controls="groups-code" aria-expanded="false">Expand</button><div id="groups-code" hidden></div></dialog>
+    <button data-catalog-control disabled data-filter="category" data-value="development" data-label="Code" aria-controls="groups-code" aria-expanded="false">Code</button><div id="groups-code" hidden></div></dialog>
     <button data-catalog-control disabled data-open-filters aria-expanded="false">Filters</button>
     <form data-catalog-search><input disabled data-catalog-control type="search"><button type="button" data-clear-search>Clear search</button><button type="button" data-search-all>Search all</button></form>
     <div data-catalog-chips></div><p data-result-count></p><section data-catalog-results tabindex="0">
@@ -41,18 +39,36 @@ describe('catalog browser controller with isolated fixtures', () => {
     expect(visibleIds()).toEqual(['item-25','item-27','item-29','item-31','item-33','item-35']);
     expect(window.location.search).toBe('?group=image-processing&role=painter&page=2');
     expect(document.querySelector('[data-language-link]')?.getAttribute('href')).toBe('/en/tools/?group=image-processing&role=painter&page=2');
-    expect(document.querySelector('[data-expand="images"]')?.getAttribute('aria-expanded')).toBe('true');
+    expect(document.querySelector('[data-filter="category"][data-value="images"]')?.getAttribute('aria-expanded')).toBe('true');
   });
-  it('keeps expansion independent of filtering and preserves multiple expanded parents', () => {
-    fixture(); click('[data-expand="images"]'); click('[data-expand="development"]');
-    expect(window.location.search).toBe('');
-    click('[data-filter="category"]');
+  it('opens and selects whole parent rows, but collapsing preserves filters, page and scrolling', () => {
+    const { results } = fixture();
+    click('[data-filter="category"][data-value="development"]');
+    click('[data-filter="category"][data-value="images"]');
     expect(window.location.search).toBe('?category=images');
-    expect(document.querySelectorAll('[data-expand][aria-expanded="true"]')).toHaveLength(2);
+    expect(document.querySelectorAll('[data-filter="category"][aria-expanded="true"]')).toHaveLength(2);
+    click('[data-page="2"]'); results.scrollTop = 123;
+    click('[data-filter="category"][data-value="images"]');
+    expect(window.location.search).toBe('?category=images&page=2');
+    expect(results.scrollTop).toBe(123);
+    expect(document.querySelector('[data-filter="category"][data-value="images"]')?.getAttribute('aria-expanded')).toBe('false');
+    expect(document.querySelector('[data-filter="category"][data-value="images"]')?.getAttribute('aria-pressed')).toBe('true');
+    click('[data-filter="category"][data-value="images"]');
+    expect(window.location.search).toBe('?category=images'); expect(results.scrollTop).toBe(0);
     click('[data-filter="role"]');
     expect(window.location.search).toBe('?category=images&role=painter');
     click('[data-filter="role"]'); expect(window.location.search).toBe('?category=images');
-    click('[data-filter="category"]'); expect(window.location.search).toBe('');
+    click('[data-remove="category"]'); expect(window.location.search).toBe('');
+  });
+  it('keeps subgroup selection and expansion through search and permits clearing it', () => {
+    const { search } = fixture(); click('[data-filter="category"][data-value="images"]');
+    click('[data-filter="group"]'); expect(window.location.search).toBe('?group=image-processing');
+    click('[data-filter="category"][data-value="images"]');
+    expect(window.location.search).toBe('?group=image-processing');
+    fireEvent.input(search, {target:{value:'PNG'}});
+    expect(document.querySelector('[data-filter="category"][data-value="images"]')?.getAttribute('aria-expanded')).toBe('false');
+    click('[data-filter="category"][data-value="images"]'); expect(window.location.search).toBe('?category=images&q=PNG');
+    click('[data-filter="group"]'); click('[data-filter="group"]'); expect(window.location.search).toBe('?q=PNG');
   });
   it('filters before paging, scrolls only results and validates jump errors', () => {
     const { results } = fixture(); results.scrollTop = 600;

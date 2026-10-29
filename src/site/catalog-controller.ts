@@ -14,7 +14,7 @@ export function initCatalog(root: HTMLElement, win: Window = window) {
   const error = find<HTMLElement>('#catalog-page-error'), dialog = find<HTMLDialogElement>('[data-catalog-filters]');
   const trigger = find<HTMLButtonElement>('[data-open-filters]'), searchAll = find<HTMLButtonElement>('[data-search-all]');
   const filters = [...root.querySelectorAll<HTMLButtonElement>('[data-filter]')];
-  const expanders = [...root.querySelectorAll<HTMLButtonElement>('[data-expand]')];
+  const parents = filters.filter(button => button.dataset.filter === 'category' && button.hasAttribute('aria-controls'));
   const language = root.ownerDocument.querySelector<HTMLAnchorElement>('[data-language-link]');
   const languagePath = language?.getAttribute('href') ?? '';
   const items = [...root.querySelectorAll<HTMLElement>('[data-catalog-item]')].map(element => ({
@@ -37,7 +37,6 @@ export function initCatalog(root: HTMLElement, win: Window = window) {
   }
   function expand(button: HTMLButtonElement, open: boolean) {
     button.setAttribute('aria-expanded', String(open));
-    button.setAttribute('aria-label', (open ? t.collapse : t.expand).replace('{name}', button.dataset.label!));
     root.ownerDocument.getElementById(button.getAttribute('aria-controls')!)!.hidden = !open;
   }
   function render(preserveInput = false) {
@@ -56,7 +55,7 @@ export function initCatalog(root: HTMLElement, win: Window = window) {
       button.setAttribute('aria-pressed', String(pressed));
     }
     if (state.group && state.group !== previousGroup) {
-      const parent = expanders.find(button => button.dataset.expand === scope.groups[state.group]);
+      const parent = parents.find(button => button.dataset.value === scope.groups[state.group]);
       if (parent) expand(parent, true);
     }
     previousGroup = state.group;
@@ -107,7 +106,13 @@ export function initCatalog(root: HTMLElement, win: Window = window) {
     const target = (event.target as Element).closest<HTMLButtonElement>('button'); if (!target || target.disabled) return;
     if (target.hasAttribute('data-open-filters')) { dialog.showModal(); trigger.setAttribute('aria-expanded', 'true'); return; }
     if (target.hasAttribute('data-close-filters')) { closeDrawer(); return; }
-    if (target.hasAttribute('data-expand')) { expand(target, target.getAttribute('aria-expanded') !== 'true'); return; }
+    if (target.dataset.filter === 'category' && target.hasAttribute('aria-controls')) {
+      const open = target.getAttribute('aria-expanded') === 'true';
+      expand(target, !open);
+      // Collapsing is disclosure-only: keep the active filter, page and scroll.
+      if (!open) { typing = false; update({ ...state, category: target.dataset.value!, group: '', page: 1 }, 'pushState'); }
+      return;
+    }
     typing = false;
     if (target.dataset.filter) {
       const key = target.dataset.filter;

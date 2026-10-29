@@ -7,7 +7,8 @@ export const catalogCopy = {
     noJS: '搜索与筛选需要 JavaScript。下方显示本地区全部可用工具，可直接打开。',
     pagination: '结果分页', previous: '上一页', next: '下一页', jump: '跳转页码', go: '跳转',
     page: '第 {page} 页', count: '{count} 个工具', countOne: '1 个工具', range: '{start}–{end} / {total} 个工具', jumpError: '请输入 1–{total} 的整数页码。',
-    expand: '展开 {name}', collapse: '收起 {name}', remove: '移除 {name}', keyword: '关键词：{name}',
+    fixtureBadge: '目录样本 · 不可打开', fixtureNote: 'DEV 目录验收：包含 {count} 个非交互样本，不是真实工具。',
+    remove: '移除 {name}', keyword: '关键词：{name}',
   },
   en: {
     all: 'All tools', roles: 'Creative roles', categories: 'Categories', filters: 'Categories & filters', close: 'Close filters',
@@ -17,6 +18,7 @@ export const catalogCopy = {
     noJS: 'Search and filters require JavaScript. All available tools for this region are shown below and can be opened directly.',
     pagination: 'Result pages', previous: 'Previous', next: 'Next', jump: 'Go to page', go: 'Go',
     page: 'Page {page}', count: '{count} tools', countOne: '1 tool', range: '{start}–{end} of {total} tools', jumpError: 'Enter a whole page number from 1 to {total}.',
-    expand: 'Expand {name}', collapse: 'Collapse {name}', remove: 'Remove {name}', keyword: 'Keyword: {name}',
+    fixtureBadge: 'Catalog sample · Not a tool', fixtureNote: 'DEV catalog QA: includes {count} noninteractive samples, not real tools.',
+    remove: 'Remove {name}', keyword: 'Keyword: {name}',
   },
 } as const;

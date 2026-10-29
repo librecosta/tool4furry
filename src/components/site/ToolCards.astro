@@ -1,18 +1,18 @@
 ---
 import * as stylex from '@stylexjs/stylex';
 import { catalogStyles as c } from '../../styles/catalog';
-import type { CatalogEntry } from '../../site/catalog';
+import type { CatalogDisplayEntry } from '../../site/catalog-fixture';
 import type { Locale } from '../../i18n/locale';
 import { catalogCopy } from '../../site/catalog-copy';
 import FeaturedToolIcon from '../home/FeaturedToolIcon.astro';
-interface Props { entries: readonly CatalogEntry[]; locale: Locale }
+interface Props { entries: readonly CatalogDisplayEntry[]; locale: Locale }
 const { entries, locale } = Astro.props;
 ---
-<ul data-catalog-cards {...stylex.attrs(c.cards)}>{entries.map(tool => <li data-catalog-item data-id={tool.id} data-category={tool.categoryId} data-group={tool.groupId} data-roles={tool.roles.join(' ')} data-search={[tool.title, tool.summary, tool.description, tool.category, tool.group].filter(Boolean).join(' ')}>
-  <a href={tool.href} data-tool-card={tool.id} {...stylex.attrs(c.card)}>
-    <span {...stylex.attrs(c.cardTop)}><FeaturedToolIcon id={tool.id} size={32} />{tool.status === 'draft' && <span {...stylex.attrs(c.muted)}>{catalogCopy[locale].draft}</span>}</span>
+<ul data-catalog-cards {...stylex.attrs(c.cards)}>{entries.map(tool => { const Tag = tool.fixture ? 'div' : 'a'; return <li data-catalog-item data-catalog-fixture={tool.fixture || undefined} data-id={tool.id} data-category={tool.categoryId} data-group={tool.groupId} data-roles={tool.roles.join(' ')} data-search={[tool.title, tool.summary, tool.description, tool.category, tool.group].filter(Boolean).join(' ')}>
+  <Tag href={tool.fixture ? undefined : tool.href} data-tool-card={tool.fixture ? undefined : tool.id} {...stylex.attrs(c.card, tool.fixture && c.fixtureCard)}>
+    <span {...stylex.attrs(c.cardTop)}><FeaturedToolIcon id={tool.id} size={32} />{(tool.fixture || tool.status === 'draft') && <span {...stylex.attrs(c.muted)}>{tool.fixture ? catalogCopy[locale].fixtureBadge : catalogCopy[locale].draft}</span>}</span>
     <h3 {...stylex.attrs(c.cardTitle)}>{tool.title}</h3>
     <p {...stylex.attrs(c.summary)}>{tool.summary ?? tool.description}</p>
     <span {...stylex.attrs(c.category)}>{tool.category} / {tool.group}</span>
-  </a>
-</li>)}</ul>
+  </Tag>
+</li>; })}</ul>

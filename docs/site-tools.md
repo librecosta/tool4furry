@@ -30,8 +30,12 @@ editing merges one typing session into a history entry; popstate restores the
 view. Locale links carry only sanitized catalog state, then validate against the
 target locale's regional data. Canonical/hreflang remain clean static paths.
 
-Expansion is independent of filtering. Choosing a group opens its parent; later
-search/pagination do not reset user expansion or tree scroll. Pagination includes
+Parent rows contain a solid dot and own both disclosure and filtering: opening
+selects that parent; collapsing preserves the current filter, page and scroll.
+Several parents can stay open. Child rows have hollow dots, filled on selection;
+dot, label and subdued count share one button/hover target. Choosing a group
+opens its parent; later search/pagination do not reset expansion or tree scroll.
+Pagination includes
 first/last/neighbors, noninteractive ellipses, and validated jump input above
 seven pages. Only the result scrollport resets on filtering/page changes.
 
@@ -40,3 +44,23 @@ URL safety, search scopes, empty results and cleanup. Fixtures never enter the
 Registry. `verify-build.mjs` separately identifies the catalog module and audits
 its exact script/layout exception for CN/Global and both locales; all other
 static pages retain their existing script and Footer contracts.
+
+## DEV catalog samples (C7-r1)
+
+Only `ToolsCatalog.astro`, inside `import.meta.env.DEV`, dynamically imports
+`src/site/catalog-fixture.ts`. Default `compact` appends 48 clearly labeled,
+noninteractive samples (no href/loader/route), in six groups across five parent
+categories and all six roles. With the current real draft this gives 49 entries,
+five pages. The Registry, homepage and Header discovery never receive samples.
+
+For ellipses/jump QA (>7 pages), start DEV in PowerShell with
+`$env:T4F_CATALOG_FIXTURE='pagination'; pnpm dev`: 108 samples + the real draft,
+ten pages. `off` restores only real tools. Stop both services before changing the
+mode; remove the env variable to restore 48 samples. Unknown DEV values fail.
+Production ignores this environment variable and the build guard rejects sample
+markup/data. The mode is not a query/filter dimension or a publishing setting.
+
+To remove later: delete the DEV branch/type import in `ToolsCatalog.astro`,
+`catalog-fixture.ts` and its tests; restore `ToolCards.astro` to plain
+`CatalogEntry` cards, remove sample-only copy/styles and this section. Preserve
+the production anti-leak guard and real Registry gate.
