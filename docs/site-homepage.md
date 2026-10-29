@@ -1,10 +1,14 @@
 # Issue #28 — 下半部双组图文故事（2026-10-29）
 
-仅替换 WorkflowStory 的旧流程 H2、三步说明、DEV Converter 入口和相关文案/媒体字段。社群、三栏理念、前三块及 PrinciplesStory 保持原样。两组「倾听需求，持续改进 / Listening, Learning, Improving」「开放交流，欢迎合作 / Open to Conversation and Collaboration」采用 Issue 冻结的双语正文，分别链接真实 Issues 与 contact@librecosta.com；共享 h.link / h.linkText 的雾紫 Hover/Focus 和 180ms 下划线不变。
+E3-r1 覆盖首轮下半部无动效及独立居中排版约定。≥1440px 两组通过两级 CSS subgrid 共用标题/正文/链接行，标题与正文开始 Y、底部链接对齐；图片列为 clamp(230px,17vw,280px)，文字用剩余空间。900–1439px 继续上下交错，<900px 继续文字在前。两张装饰图仅局部禁拖拽、禁选中及 pointer-events，矩形双轴柔边和原图字节不变。
 
-按维护者随后补充的三级布局：≥1440px 两组并排一行；900–1439px 上下两组，第一组左图右文、第二组左文右图；<900px 每组文字在前、图片在后，DOM 也为同样阅读顺序。无背景板、描边、阴影或新增动效。社群和三栏既有间距保留，未叠加新顶部 padding。
+独立 `#t4f-home-stories` 内联脚本逐字加入构建审计，不改三栏脚本。一个 IntersectionObserver 观察两组，成功注册后仅将视口下方内容设 pending；每组首次进入底部收窄 48px 的视口即解除观察。图片 0–850ms、标题 120–760ms、正文 260–960ms、链接 440–1150ms，只变 opacity/translateY，ease 为 cubic-bezier(.22,1,.36,1)；大屏紫色组额外延后 100ms。链接外层承担入场，不覆盖共享链接的颜色/下划线过渡。无 JS/IO、Reduced Motion、初始化异常、已有锚点与恢复可见内容直接显示；聚焦、偏好变化和 pagehide 立即收束，不重播。无新依赖、Island、滚动监听或 RAF。
 
-正式附件原样存于 `public/visuals/home/luminous-blue.avif`（500×400，8,694 bytes，SHA-256 `e4ec08ff7285dd922a23dee64f47da03510f0658fa256d3b744c77fc1d1225ec`）及 `luminous-purple.avif`（500×400，16,886 bytes，SHA-256 `c9222193d9103b54a0eeede5dd460d14c41a796ec8f101a4d112ae42b82c99a2`）。按维护者视觉修正保留柔边矩形：两级局部线性 mask 分别柔化水平/垂直边缘，中部保持清晰，含 WebKit 前缀；不支持 mask 时保留 24px 圆角原图。图片 alt 为空、准确尺寸、lazy/async，不预加载，不引入 JS、Island、依赖或图片副本。
+仅替换 WorkflowStory 的旧流程 H2、三步说明、DEV Converter 入口和相关文案/媒体字段。社群、三栏理念、前三块及 PrinciplesStory 保持原样。维护者在 E3-r1 执行期间提供了新的完整双语文案，现逐字采用「反馈与改进 / Feedback & Improvements」「交流与合作 / Contact & Collaboration」及其正文、入口文字；不自行润色，链接仍为真实 Issues 与 contact@librecosta.com。共享 h.link / h.linkText 的雾紫 Hover/Focus 和 180ms 下划线不变。
+
+按维护者随后补充的三级布局：≥1440px 两组并排一行；900–1439px 上下两组，第一组左图右文、第二组左文右图；<900px 每组文字在前、图片在后，DOM 也为同样阅读顺序。无背景板、描边或阴影。社群和三栏既有间距保留，未叠加新顶部 padding。
+
+正式附件原样存于 `public/visuals/home/luminous-blue.avif`（500×400，8,694 bytes，SHA-256 `e4ec08ff7285dd922a23dee64f47da03510f0658fa256d3b744c77fc1d1225ec`）及 `luminous-purple.avif`（500×400，16,886 bytes，SHA-256 `c9222193d9103b54a0eeede5dd460d14c41a796ec8f101a4d112ae42b82c99a2`）。按维护者视觉修正保留柔边矩形：两级局部线性 mask 分别柔化水平/垂直边缘，中部保持清晰，含 WebKit 前缀；不支持 mask 时保留 24px 圆角原图。图片 alt 为空、准确尺寸、lazy/async，不预加载，不引入 Island、依赖或图片副本。
 
 ---
 

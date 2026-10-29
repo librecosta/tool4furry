@@ -96,12 +96,12 @@ export const homepageCopy = { zh, en };
 type EditorialStory = { id: 'feedback' | 'collaboration'; title: string; body: string; link: { label: string; href: string } };
 export const homepageStories: Record<Locale, readonly EditorialStory[]> = {
   zh: [
-    { id: 'feedback', title: '倾听需求，持续改进', body: '我们希望工具真正帮上忙。那些不够顺手的操作、缺少的能力，或一点值得分享的灵感，都欢迎告诉我们。改进，就从这些真实的声音开始。', link: { label: '分享反馈', href: 'https://github.com/librecosta/tool4furry/issues' } },
-    { id: 'collaboration', title: '开放交流，欢迎合作', body: '好的创作不必独自完成。我们乐于与创作者、开发者及社群伙伴交流，探索那些值得认真做好的新想法。', link: { label: '联系我们', href: 'mailto:contact@librecosta.com' } },
+    { id: 'feedback', title: '反馈与改进', body: '我们持续完善 Tool4Furry 的功能与使用体验。如果你在使用过程中遇到问题，或有功能建议和新的工具需求，欢迎提交反馈。', link: { label: '提交反馈', href: 'https://github.com/librecosta/tool4furry/issues' } },
+    { id: 'collaboration', title: '交流与合作', body: '我们欢迎与创作者、开发者及社群组织交流。有关工具开发、技术协作或项目合作，可通过邮件与我们联系。', link: { label: '联系我们', href: 'mailto:contact@librecosta.com' } },
   ],
   en: [
-    { id: 'feedback', title: 'Listening, Learning, Improving', body: 'We want our tools to be genuinely useful. An awkward step, a missing feature, or a small idea worth sharing—tell us about it. Real feedback is where improvement begins.', link: { label: 'Share feedback', href: 'https://github.com/librecosta/tool4furry/issues' } },
-    { id: 'collaboration', title: 'Open to Conversation and Collaboration', body: "Good things don't have to be made alone. We're open to conversations with creators, developers, and community partners about ideas worth building with care.", link: { label: 'Get in touch', href: 'mailto:contact@librecosta.com' } },
+    { id: 'feedback', title: 'Feedback & Improvements', body: "We continue to improve Tool4Furry's features and usability. If you encounter an issue, have a suggestion, or would like to request a new tool, we'd welcome your feedback.", link: { label: 'Submit feedback', href: 'https://github.com/librecosta/tool4furry/issues' } },
+    { id: 'collaboration', title: 'Contact & Collaboration', body: 'We welcome discussions with creators, developers, and community organizations. For tool development, technical collaboration, or project proposals, please contact us by email.', link: { label: 'Contact us', href: 'mailto:contact@librecosta.com' } },
   ],
 };
 

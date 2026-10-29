@@ -7,6 +7,7 @@ import ThreePillars from './ThreePillars.astro';
 import CommunitySupport from './CommunitySupport.astro';
 import { communityStyles } from '../../styles/home-community';
 import type { Region } from '../../config/region';
+import revealSource from '../../styles/stories-reveal.js?raw';
 interface Props { region: Region; locale: Locale }
 const { region, locale } = Astro.props;
 ---
@@ -17,16 +18,17 @@ const { region, locale } = Astro.props;
     {homepageStories[locale].map((story, index) => {
       const media = homepageMedia[story.id];
       const external = story.link.href.startsWith('https:');
-      return <section data-home-story={story.id} aria-labelledby={`story-${story.id}`} {...stylex.attrs(h.storyRow)}>
+      return <section data-home-story={story.id} aria-labelledby={`story-${story.id}`} {...stylex.attrs(h.storyRow, index === 1 && h.storySecond)}>
         <div {...stylex.attrs(h.storyText, index === 0 && h.storyTextRight)}>
-          <h2 id={`story-${story.id}`} {...stylex.attrs(h.storyHeading)}>{story.title}</h2>
-          <p {...stylex.attrs(h.storyBody)}>{story.body}</p>
-          <a href={story.link.href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined} {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{story.link.label}</span></a>
+          <h2 id={`story-${story.id}`} data-story-part="title" {...stylex.attrs(h.storyHeading, h.storyMotion, h.storyTitleReveal)}>{story.title}</h2>
+          <p data-story-part="body" {...stylex.attrs(h.storyBody, h.storyMotion, h.storyBodyReveal)}>{story.body}</p>
+          <div data-story-part="link" {...stylex.attrs(h.storyLink, h.storyMotion, h.storyLinkReveal)}><a href={story.link.href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined} {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{story.link.label}</span></a></div>
         </div>
-        <div aria-hidden="true" {...stylex.attrs(h.storyArtwork, index === 0 && h.storyArtworkLeft)}>
-          <img src={media.src} width={media.width} height={media.height} alt="" loading="lazy" decoding="async" {...stylex.attrs(h.storyImage)} />
+        <div data-story-part="image" aria-hidden="true" {...stylex.attrs(h.storyArtwork, h.storyMotion, h.storyImageReveal, index === 0 && h.storyArtworkLeft)}>
+          <img src={media.src} width={media.width} height={media.height} alt="" draggable="false" loading="lazy" decoding="async" {...stylex.attrs(h.storyImage)} />
         </div>
       </section>;
     })}
   </div>
+  <script is:inline id="t4f-home-stories" set:html={revealSource} />
 </div>

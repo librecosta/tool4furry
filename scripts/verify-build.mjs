@@ -7,6 +7,7 @@ import { createHash } from 'node:crypto';
 const appearanceSource = (await readFile('src/styles/appearance-controller.js', 'utf8')).replace(/\r\n?/g, '\n');
 const navigationSource = (await readFile('src/styles/navigation-disclosure.js', 'utf8')).replace(/\r\n?/g, '\n');
 const pillarsSource = (await readFile('src/styles/pillars-reveal.js', 'utf8')).replace(/\r\n?/g, '\n');
+const storiesSource = (await readFile('src/styles/stories-reveal.js', 'utf8')).replace(/\r\n?/g, '\n');
 const scrollMetrics = (await readFile('src/ui/scroll-metrics.js', 'utf8')).replace(/\r\n?/g, '\n');
 const scrollSource = (await readFile('src/styles/document-scroll.js', 'utf8')).replace(/\r\n?/g, '\n');
 const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function ', 'function ')}\n${scrollSource}\n})();`;
@@ -58,13 +59,17 @@ function assertStaticNavigation(dom, homepage = false) {
   assert.equal(dom.querySelectorAll('astro-island').length, 0);
   const scripts = [...dom.querySelectorAll('script')];
   assert.deepEqual(scripts.filter(script => !script.hasAttribute('src')).map(script => script.id),
-    homepage ? ['t4f-appearance', 't4f-home-pillars', 't4f-navigation', 't4f-document-scroll'] : ['t4f-appearance', 't4f-navigation', 't4f-document-scroll'], 'Audited inline scripts retain their content and order');
-  assert.equal(scripts.length, homepage ? 5 : 3, 'Only the homepage adds Wavefield and the audited one-shot pillars observer');
+    homepage ? ['t4f-appearance', 't4f-home-pillars', 't4f-home-stories', 't4f-navigation', 't4f-document-scroll'] : ['t4f-appearance', 't4f-navigation', 't4f-document-scroll'], 'Audited inline scripts retain their content and order');
+  assert.equal(scripts.length, homepage ? 6 : 3, 'Only the homepage adds Wavefield and the two audited reveal observers');
   if (homepage) {
     const pillars = dom.querySelector('script#t4f-home-pillars');
     assert.deepEqual([...pillars.attributes].map(attribute => attribute.name), ['id']);
     assert.equal(pillars.textContent.trim(), pillarsSource.trim());
     assert(pillars.previousElementSibling.matches('[data-home-pillars]'));
+    const stories = dom.querySelector('script#t4f-home-stories');
+    assert.deepEqual([...stories.attributes].map(attribute => attribute.name), ['id']);
+    assert.equal(stories.textContent.trim(), storiesSource.trim());
+    assert(stories.previousElementSibling.matches('[data-home-stories]'));
     const external = scripts.filter(script => script.hasAttribute('src'));
     assert.equal(external.length, 1);
     assert.deepEqual([...external[0].attributes].map(a => a.name).sort(), ['src', 'type']);
@@ -226,12 +231,16 @@ const storyAssets = [
 for (const [index, story] of stories.entries()) {
   const heading = story.querySelector('h2');
   assert.equal(story.getAttribute('aria-labelledby'), heading?.id);
-  assert.equal(heading.textContent, (locale === 'zh' ? ['倾听需求，持续改进', '开放交流，欢迎合作'] : ['Listening, Learning, Improving', 'Open to Conversation and Collaboration'])[index]);
+  assert.equal(heading.textContent, (locale === 'zh' ? ['反馈与改进', '交流与合作'] : ['Feedback & Improvements', 'Contact & Collaboration'])[index]);
+  assert.equal(story.querySelector('a')?.textContent, (locale === 'zh' ? ['提交反馈', '联系我们'] : ['Submit feedback', 'Contact us'])[index]);
   assert.equal(story.querySelector('a')?.getAttribute('href'), ['https://github.com/librecosta/tool4furry/issues', 'mailto:contact@librecosta.com'][index]);
   const img = story.querySelector('img');
   assert.equal(img?.getAttribute('src'), `/visuals/home/${storyAssets[index][0]}`);
   assert.equal(img.width, 500); assert.equal(img.height, 400);
   assert.equal(img.alt, ''); assert.equal(img.getAttribute('loading'), 'lazy'); assert.equal(img.getAttribute('decoding'), 'async');
+  assert.equal(img.getAttribute('draggable'), 'false', 'Only these decorative images explicitly disable native dragging');
+  assert.equal(story.querySelectorAll('[data-story-part]').length, 4);
+  assert(!story.hasAttribute('data-story-reveal'), 'Static stories remain visible without JavaScript');
   assert(!(story.querySelector('script, astro-island, canvas, video, button')));
   assert(story.firstElementChild.contains(heading) && !story.firstElementChild.contains(img), 'Reading order is text before decorative artwork');
   const bytes = await readFile(resolve(root, `visuals/home/${storyAssets[index][0]}`));
@@ -1027,7 +1036,7 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
 }
 assert((await stat(root)).isDirectory());
 console.log(
-  `Verified ${region}/${locale}: ${htmlFiles.length} static pages, three audited inline scripts + homepage-only Wavefield/pillars enhancements, SEO/OG/favicon, ${cards.length} real catalog cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
+  `Verified ${region}/${locale}: ${htmlFiles.length} static pages, three audited inline scripts + homepage-only Wavefield/pillars/stories enhancements, SEO/OG/favicon, ${cards.length} real catalog cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
 );
 
 }
