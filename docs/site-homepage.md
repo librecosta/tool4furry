@@ -1,3 +1,13 @@
+# Issue #29 — 技术与工程终章（2026-10-29）
+
+仅重做第五区 `PrinciplesStory`，覆盖下方旧媒体占位与三链接设计。逐字采用 Issue 的「技术与工程 / Technology & Engineering」标题、两段正文及「查看源代码 / View source code」；前段描述当前 Astro/React/StyleX 基础，后段保留按需探索的将来语义。唯一链接为仓库，原生新标签加 noopener/noreferrer，复用 h.link / h.linkText；没有新增技术标签、图片、卡片、分隔线或背景。删除本区 principlesNote、媒体字段、未使用导入及旧 caption/链接组样式，不修改 HomeMedia 的公共约定。
+
+现有 h.inner 内的阅读布局上限 1240px，≥1024px 为顶部对齐的约 42:58 双栏，标题 52–56px/650，正文 16px/1.8、最大 680px，第二段使用次级文字色。更窄为自然单列，手机标题 36px、正文 15px。结合 WorkflowStory 原有 64/40px 底留白，本区仅加 32/48px 顶留白，合计 96/88px；内容后至 Footer 为 104/96px，不设固定高度。
+
+独立短脚本 `#t4f-home-principles` 只观察第五区，不改 Pillars/Stories。IO 成功 observe 后且区域在视口下方才 pending，首次进入底部收窄 48px 的视口后断开观察：标题 0/600ms、第一段 150/630ms、第二段 280/620ms、链接 440/610ms（延迟/时长），只过渡 opacity 与 12px（链接 8px）translateY，ease cubic-bezier(.22,1,.36,1)，共 1050ms。静态/无 JS/无 IO/Reduced Motion/恢复可见内容/初始锚点直接显示；提前聚焦、偏好变更、初始化异常或 pagehide 立即显示并清理，不重播。仅此首页内联脚本按数量、顺序、内容逐字纳入 verify-build，其他静态页面仍为三个脚本；无 Island、依赖、RAF 或 scroll 监听。
+
+---
+
 # Issue #28 — 下半部双组图文故事（2026-10-29）
 
 E3-r1 覆盖首轮下半部无动效及独立居中排版约定。≥1440px 两组通过两级 CSS subgrid 共用标题/正文/链接行，标题与正文开始 Y、底部链接对齐；图片列为 clamp(230px,17vw,280px)，文字用剩余空间。900–1439px 继续上下交错，<900px 继续文字在前。两张装饰图仅局部禁拖拽、禁选中及 pointer-events，矩形双轴柔边和原图字节不变。

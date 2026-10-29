@@ -8,6 +8,7 @@ const appearanceSource = (await readFile('src/styles/appearance-controller.js', 
 const navigationSource = (await readFile('src/styles/navigation-disclosure.js', 'utf8')).replace(/\r\n?/g, '\n');
 const pillarsSource = (await readFile('src/styles/pillars-reveal.js', 'utf8')).replace(/\r\n?/g, '\n');
 const storiesSource = (await readFile('src/styles/stories-reveal.js', 'utf8')).replace(/\r\n?/g, '\n');
+const principlesSource = (await readFile('src/styles/principles-reveal.js', 'utf8')).replace(/\r\n?/g, '\n');
 const scrollMetrics = (await readFile('src/ui/scroll-metrics.js', 'utf8')).replace(/\r\n?/g, '\n');
 const scrollSource = (await readFile('src/styles/document-scroll.js', 'utf8')).replace(/\r\n?/g, '\n');
 const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function ', 'function ')}\n${scrollSource}\n})();`;
@@ -59,8 +60,8 @@ function assertStaticNavigation(dom, homepage = false) {
   assert.equal(dom.querySelectorAll('astro-island').length, 0);
   const scripts = [...dom.querySelectorAll('script')];
   assert.deepEqual(scripts.filter(script => !script.hasAttribute('src')).map(script => script.id),
-    homepage ? ['t4f-appearance', 't4f-home-pillars', 't4f-home-stories', 't4f-navigation', 't4f-document-scroll'] : ['t4f-appearance', 't4f-navigation', 't4f-document-scroll'], 'Audited inline scripts retain their content and order');
-  assert.equal(scripts.length, homepage ? 6 : 3, 'Only the homepage adds Wavefield and the two audited reveal observers');
+    homepage ? ['t4f-appearance', 't4f-home-pillars', 't4f-home-stories', 't4f-home-principles', 't4f-navigation', 't4f-document-scroll'] : ['t4f-appearance', 't4f-navigation', 't4f-document-scroll'], 'Audited inline scripts retain their content and order');
+  assert.equal(scripts.length, homepage ? 7 : 3, 'Only the homepage adds Wavefield and the three audited reveal observers');
   if (homepage) {
     const pillars = dom.querySelector('script#t4f-home-pillars');
     assert.deepEqual([...pillars.attributes].map(attribute => attribute.name), ['id']);
@@ -70,6 +71,10 @@ function assertStaticNavigation(dom, homepage = false) {
     assert.deepEqual([...stories.attributes].map(attribute => attribute.name), ['id']);
     assert.equal(stories.textContent.trim(), storiesSource.trim());
     assert(stories.previousElementSibling.matches('[data-home-stories]'));
+    const principles = dom.querySelector('script#t4f-home-principles');
+    assert.deepEqual([...principles.attributes].map(attribute => attribute.name), ['id']);
+    assert.equal(principles.textContent.trim(), principlesSource.trim());
+    assert(principles.previousElementSibling.matches('section[data-home-section="principles"]'));
     const external = scripts.filter(script => script.hasAttribute('src'));
     assert.equal(external.length, 1);
     assert.deepEqual([...external[0].attributes].map(a => a.name).sort(), ['src', 'type']);
@@ -219,6 +224,26 @@ for (const [property, expected] of Object.entries({
   assert.equal(tags[0].content, expected);
 }
 assert.equal(document.querySelectorAll('h1').length, 1);
+const principles = document.querySelector('section[data-home-section="principles"]');
+assert(principles && principles === document.querySelector('main > section:last-of-type'), 'The editorial finale is the last semantic homepage section');
+assert.equal(principles.getAttribute('aria-labelledby'), 'principles-heading');
+assert.equal(principles.querySelectorAll('h2').length, 1);
+assert.equal(principles.querySelector('h2').textContent, locale === 'zh' ? '技术与工程' : 'Technology & Engineering');
+assert.deepEqual([...principles.querySelectorAll('p')].map(p => p.textContent), locale === 'zh' ? [
+  'Tool4Furry 基于 Astro、React 与 StyleX 构建，面向 Furry 创作者开发实用的浏览器工具。我们从浏览器原生图像处理起步，逐步拓展至创作流程中的更多任务。',
+  '在技术实现上，我们也将按需探索 WebAssembly、WebGL、WebGPU 与 Three.js，以支持更复杂的图像计算、实时渲染和交互式创作。',
+] : [
+  'Tool4Furry is built with Astro, React, and StyleX to develop practical browser-based tools for furry creators. Starting with native browser image processing, we aim to support more tasks across the creative workflow.',
+  "On the technical side, we'll explore WebAssembly, WebGL, WebGPU, and Three.js as needed to support more advanced image computation, real-time rendering, and interactive creation.",
+]);
+assert.equal(principles.querySelectorAll('a').length, 1);
+const sourceLink = principles.querySelector('a');
+assert.equal(sourceLink.textContent, locale === 'zh' ? '查看源代码' : 'View source code');
+assert.equal(sourceLink.getAttribute('href'), 'https://github.com/librecosta/tool4furry');
+assert.equal(sourceLink.target, '_blank'); assert.equal(sourceLink.rel, 'noopener noreferrer');
+assert.equal(principles.querySelectorAll('[data-principles-part]').length, 4);
+assert(!principles.hasAttribute('data-principles-reveal'), 'The static finale is readable without JavaScript');
+assert(!principles.querySelector('img, picture, svg, canvas, video, button, script, astro-island, [aria-hidden]'), 'The finale is text only, with no old media placeholder or hidden duplicate copy');
 const pillars = document.querySelector('[data-home-section="workflow"] [data-home-pillars]');
 assert(pillars, 'Three static pillars precede the editorial stories');
 const stories = [...document.querySelectorAll('[data-home-story]')];
@@ -1036,7 +1061,7 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
 }
 assert((await stat(root)).isDirectory());
 console.log(
-  `Verified ${region}/${locale}: ${htmlFiles.length} static pages, three audited inline scripts + homepage-only Wavefield/pillars/stories enhancements, SEO/OG/favicon, ${cards.length} real catalog cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
+  `Verified ${region}/${locale}: ${htmlFiles.length} static pages, three audited inline scripts + homepage-only Wavefield/pillars/stories/principles enhancements, SEO/OG/favicon, ${cards.length} real catalog cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
 );
 
 }

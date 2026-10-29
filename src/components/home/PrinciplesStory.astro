@@ -1,27 +1,24 @@
 ---
 import * as stylex from '@stylexjs/stylex';
 import type { Region } from '../../config/region';
-import { localizedPath, type Locale } from '../../i18n/locale';
-import { messages } from '../../i18n/messages';
-import { homepageCopy, homepageMedia } from '../../site/homepage-showcase';
+import type { Locale } from '../../i18n/locale';
+import { homepageCopy } from '../../site/homepage-showcase';
 import { homeStyles as h } from '../../styles/homepage';
-import HomeMedia from './HomeMedia.astro';
+import revealSource from '../../styles/principles-reveal.js?raw';
 interface Props { region: Region; locale: Locale }
-const { region, locale } = Astro.props;
-const t = messages[locale];
+const { locale } = Astro.props;
 const c = homepageCopy[locale];
 ---
 <section data-home-section="principles" aria-labelledby="principles-heading" {...stylex.attrs(h.inner, h.principles)}>
   <div {...stylex.attrs(h.editorial)}>
-    <h2 id="principles-heading" {...stylex.attrs(h.heading)}>{c.principlesTitle}</h2>
-    <div><p {...stylex.attrs(h.intro)}>{c.principlesIntro}</p><p {...stylex.attrs(h.intro)}>{c.principlesDetail}</p>
-      <div {...stylex.attrs(h.editorialLinks)}>
-        <a href={localizedPath('/about/', region, locale)} {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{t.about}</span></a>
-        <a href="https://github.com/librecosta/tool4furry" {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{t.source}</span></a>
-        <a href={localizedPath('/privacy/', region, locale)} {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{t.privacy}</span></a>
+    <h2 id="principles-heading" data-principles-part="title" {...stylex.attrs(h.principlesHeading, h.principlesMotion, h.principlesTitleReveal)}>{c.principlesTitle}</h2>
+    <div {...stylex.attrs(h.principlesText)}>
+      <p data-principles-part="intro" {...stylex.attrs(h.principlesBody, h.principlesMotion, h.principlesIntroReveal)}>{c.principlesIntro}</p>
+      <p data-principles-part="detail" {...stylex.attrs(h.principlesBody, h.principlesDetail, h.principlesMotion, h.principlesDetailReveal)}>{c.principlesDetail}</p>
+      <div data-principles-part="link" {...stylex.attrs(h.principlesLink, h.principlesMotion, h.principlesLinkReveal)}>
+        <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{c.principlesSource}</span></a>
       </div>
     </div>
   </div>
-  <HomeMedia media={homepageMedia.principles} kind="wide" locale={locale} />
-  <p {...stylex.attrs(h.caption)}>{c.principlesNote}</p>
 </section>
+<script is:inline id="t4f-home-principles" set:html={revealSource} />

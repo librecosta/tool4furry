@@ -30,7 +30,6 @@ export const homepageMedia: {
   featuredDecor?: HomeMedia;
   feedback: HomeMedia;
   collaboration: HomeMedia;
-  principles?: HomeMedia;
   tools: Readonly<Record<string, HomeMedia>>;
 } = {
   feedback: { src: '/visuals/home/luminous-blue.avif', width: 500, height: 400, alt: { zh: '', en: '' } },
@@ -76,20 +75,20 @@ const zh = {
   draft: '草稿预览',
   roleEmpty: '这个分区的工具正在准备中。',
   more: '查看更多',
-  principlesTitle: 'Tool4Furry 的设计与工程',
-  principlesIntro: 'Tool4Furry 是 LibreCosta 为 Furry 创作者打造的浏览器工具箱。我们从具体的小任务出发，重视清楚的操作、克制的界面和真实可用的能力。',
-  principlesDetail: '优先探索浏览器本地处理，让素材处理更贴近创作本身。具体的数据处理方式以每个工具的说明为准；前端代码开放，设计与实现也接受检验。',
-  principlesNote: '轻量的页面，清楚的边界，逐步打磨的工具。',
+  principlesTitle: '技术与工程',
+  principlesIntro: 'Tool4Furry 基于 Astro、React 与 StyleX 构建，面向 Furry 创作者开发实用的浏览器工具。我们从浏览器原生图像处理起步，逐步拓展至创作流程中的更多任务。',
+  principlesDetail: '在技术实现上，我们也将按需探索 WebAssembly、WebGL、WebGPU 与 Three.js，以支持更复杂的图像计算、实时渲染和交互式创作。',
+  principlesSource: '查看源代码',
 };
 const en: { [K in keyof typeof zh]: typeof zh[K] } = {
   demo: 'Development demo · not a tool',
   draft: 'Draft preview',
   roleEmpty: 'Tools for this section are on the way.',
   more: 'View more',
-  principlesTitle: 'How we design and build Tool4Furry',
-  principlesIntro: 'Tool4Furry is a browser toolbox by LibreCosta for furry creators. We start with specific, everyday tasks and value clear controls, restrained interfaces and capabilities that work.',
-  principlesDetail: 'We prioritize processing in the browser where practical. Each tool explains how it handles data. The frontend code is open, so its design and implementation can be examined.',
-  principlesNote: 'Light pages, clear boundaries and tools refined over time.',
+  principlesTitle: 'Technology & Engineering',
+  principlesIntro: 'Tool4Furry is built with Astro, React, and StyleX to develop practical browser-based tools for furry creators. Starting with native browser image processing, we aim to support more tasks across the creative workflow.',
+  principlesDetail: "On the technical side, we'll explore WebAssembly, WebGL, WebGPU, and Three.js as needed to support more advanced image computation, real-time rendering, and interactive creation.",
+  principlesSource: 'View source code',
 };
 export const homepageCopy = { zh, en };
 
