@@ -76,10 +76,6 @@ export const converterStyles = stylex.create({
     transitionProperty: 'color, background-color',
     transitionDuration: { default: '180ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
   },
-  parameterMode: {
-    backgroundColor: { default: t.surfaceMuted, ':hover': t.surfaceMuted },
-    color: { default: t.supportLavender, ':hover': t.supportLavender },
-  },
   qualityInput: {
     width: 64,
     flexShrink: 0,

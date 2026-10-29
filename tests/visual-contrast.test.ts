@@ -119,8 +119,7 @@ describe.each([
       for (const foreground of ['supportClay', 'supportAmber', 'supportLavender', 'supportSlate'] as const)
         expect(contrast(color(foreground), background), `${foreground} on ${name}`).toBeGreaterThanOrEqual(4.5);
   });
-  it('keeps Converter accents readable on selected parameters and neutral controls', () => {
-    expect(contrast(color('supportLavender'), over(color('surfaceMuted'), modeRail)), 'selected mode label').toBeGreaterThanOrEqual(4.5);
+  it('keeps Converter accents readable on selected formats and quality controls', () => {
     for (const background of [
       over(color('actionTint'), hosts.settings),
       over(color('surfaceHover'), hosts.settings),
@@ -128,7 +127,6 @@ describe.each([
       hosts.floating,
     ])
       expect(contrast(color('supportLavender'), background), 'selected border / Slider').toBeGreaterThanOrEqual(3);
-    expect(contrast(color('supportSlate'), hosts.surface), 'import icon').toBeGreaterThanOrEqual(3);
   });
   it('keeps navigation/footer text, icons and focus readable on their dedicated chrome', () => {
     const nav = over(color('navBackground'), page);

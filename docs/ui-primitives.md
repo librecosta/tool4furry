@@ -27,7 +27,7 @@ B3-B2：列表也可接受 `children`，配合导出的纯展示 `FileTaskRow it
 
 例如工具内部直接使用 `TextField value={name} onChange={setName} label={t.name}`。工具已位于 ToolRuntime 的 Provider 内，通过 `useToast().notify({type:'success', title:t.saved})` 反馈；不要再在 SiteLayout 或 WorkbenchShell 添加 Provider。
 
-Converter 局部辅助色显式 opt-in：`FileDropzone accent="slate"` 只强调导入图标与既有 dragging 状态；`SliderField accent="lavender"` 只强调已选进度与 Thumb 边界。默认调用、禁用灰阶及错误语义不变，不添加拖放监听或业务状态。
+Converter 导入区使用 `FileDropzone` 默认中性色，不启用可选的 `accent="slate"`；`SliderField accent="lavender"` 只强调已选进度与 Thumb 边界。默认调用、禁用灰阶及错误语义不变，不添加拖放监听或业务状态。
 
 `Button` 可用 `xstyle` 显式合并工具局部 StyleX 样式。Converter 的添加文件夹、转换全部复用首页辅助 CTA 色值及 220ms 过渡；禁用时仍为灰阶，不改默认 primary 或 ZIP 按钮。
 

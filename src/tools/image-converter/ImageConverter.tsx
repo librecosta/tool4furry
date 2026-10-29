@@ -157,7 +157,6 @@ export default function ImageConverter({ locale }: ToolProps) {
             <FileDropzone
               id="converter-source"
               appearance={hasTasks ? 'compact' : 'expanded'}
-              accent="slate"
               label={hasTasks ? t.addImages : t.pick}
               hint={!hasTasks ? `PNG / JPEG / WebP · ${t.local}` : undefined}
               multiple
@@ -272,7 +271,6 @@ export default function ImageConverter({ locale }: ToolProps) {
                     s.mode,
                     s.parameterControl,
                     state.mode === mode && s.currentMode,
-                    state.mode === mode && !view.checkingCapabilities && s.parameterMode,
                   )}
                   onClick={() => {
                     setQualityDraft(undefined);
