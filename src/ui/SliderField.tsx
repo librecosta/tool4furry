@@ -15,6 +15,8 @@ export interface SliderFieldProps extends Omit<FieldProps, 'required'> {
   unit?: string;
   name?: string;
   valueControl?: ReactNode;
+  /** Opt-in supporting accent; the default Slider and feedback colors are unchanged. */
+  accent?: 'lavender';
 }
 export function SliderField({
   value,
@@ -25,6 +27,7 @@ export function SliderField({
   unit = '',
   name,
   valueControl,
+  accent,
   ...field
 }: SliderFieldProps) {
   const ids = useField(field);
@@ -54,12 +57,22 @@ export function SliderField({
           )}
         </div>
         <Slider.Control {...stylex.props(styles.control)}>
-          <Slider.Track {...stylex.props(styles.track)}>
-            <Slider.Indicator {...stylex.props(styles.indicator)} />
+          <Slider.Track {...stylex.props(
+            styles.track,
+            accent === 'lavender' && !field.disabled && styles.lavenderTrack,
+          )}>
+            <Slider.Indicator {...stylex.props(
+              styles.indicator,
+              accent === 'lavender' && !field.disabled && styles.lavenderIndicator,
+            )} />
             <Slider.Thumb
               aria-describedby={ids.describedBy}
               getAriaValueText={(value) => `${value}${unit}`}
-              {...stylex.props(styles.thumb, !!field.error && controls.invalid)}
+              {...stylex.props(
+                styles.thumb,
+                accent === 'lavender' && !field.disabled && styles.lavenderThumb,
+                !!field.error && controls.invalid,
+              )}
             />
           </Slider.Track>
         </Slider.Control>
@@ -93,6 +106,18 @@ const styles = stylex.create({
     backgroundColor: tokens.borderStrong,
   },
   indicator: { backgroundColor: tokens.accent, borderRadius: 3 },
+  // A neutral rail with enough contrast against the supporting progress color.
+  lavenderTrack: { backgroundColor: tokens.border },
+  lavenderIndicator: {
+    backgroundColor: tokens.supportLavender,
+    transitionProperty: 'background-color',
+    transitionDuration: { default: '180ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
+  },
+  lavenderThumb: {
+    borderColor: tokens.supportLavender,
+    transitionProperty: 'border-color, background-color',
+    transitionDuration: { default: '180ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
+  },
   thumb: {
     width: 26,
     height: 26,

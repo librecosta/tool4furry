@@ -59,6 +59,14 @@ export const converterStyles = stylex.create({
     backgroundColor: t.actionTint,
     color: t.textPrimary,
   },
+  parameterControl: {
+    transitionProperty: 'color, background-color',
+    transitionDuration: { default: '180ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
+  },
+  parameterMode: {
+    backgroundColor: { default: t.surfaceMuted, ':hover': t.surfaceMuted },
+    color: { default: t.supportLavender, ':hover': t.supportLavender },
+  },
   qualityInput: {
     width: 64,
     flexShrink: 0,
@@ -116,11 +124,11 @@ export const converterStyles = stylex.create({
   choiceLabel: { minWidth: 0, overflowWrap: 'anywhere' },
   chosen: {
     backgroundColor: { default: t.actionTint, ':hover': t.surfaceHover },
-    borderColor: t.accent,
+    borderColor: t.supportLavender,
   },
   disabled: { opacity: 0.55, cursor: 'not-allowed' },
   radio: {
-    accentColor: t.accent,
+    accentColor: { default: t.supportLavender, ':disabled': t.accent },
     width: 18,
     height: 18,
     margin: 0,

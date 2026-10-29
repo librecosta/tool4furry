@@ -157,6 +157,7 @@ export default function ImageConverter({ locale }: ToolProps) {
             <FileDropzone
               id="converter-source"
               appearance={hasTasks ? 'compact' : 'expanded'}
+              accent="slate"
               label={hasTasks ? t.addImages : t.pick}
               hint={!hasTasks ? `PNG / JPEG / WebP · ${t.local}` : undefined}
               multiple
@@ -268,7 +269,9 @@ export default function ImageConverter({ locale }: ToolProps) {
                   aria-pressed={state.mode === mode}
                   {...stylex.props(
                     s.mode,
+                    s.parameterControl,
                     state.mode === mode && s.currentMode,
+                    state.mode === mode && !view.checkingCapabilities && s.parameterMode,
                   )}
                   onClick={() => {
                     setQualityDraft(undefined);
@@ -297,7 +300,7 @@ export default function ImageConverter({ locale }: ToolProps) {
                     }
                     {...stylex.props(
                       s.choice,
-                      settings.format === format && s.chosen,
+                      settings.format === format && !disabled && s.chosen,
                       disabled && s.disabled,
                     )}
                   >
@@ -348,6 +351,7 @@ export default function ImageConverter({ locale }: ToolProps) {
                 <div>
                   <SliderField
                     id={qualityId}
+                    accent="lavender"
                     label={t.quality}
                     value={
                       Number.isFinite(settings.quality)

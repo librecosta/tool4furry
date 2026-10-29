@@ -27,6 +27,8 @@ B3-B2：列表也可接受 `children`，配合导出的纯展示 `FileTaskRow it
 
 例如工具内部直接使用 `TextField value={name} onChange={setName} label={t.name}`。工具已位于 ToolRuntime 的 Provider 内，通过 `useToast().notify({type:'success', title:t.saved})` 反馈；不要再在 SiteLayout 或 WorkbenchShell 添加 Provider。
 
+Converter 局部辅助色显式 opt-in：`FileDropzone accent="slate"` 只强调导入图标与既有 dragging 状态；`SliderField accent="lavender"` 只强调已选进度与 Thumb 边界。默认调用、禁用灰阶及错误语义不变，不添加拖放监听或业务状态。
+
 ## 实现边界与版本差异
 
 沿用已锁定的 Base UI 1.8.0、StyleX 0.19.1、React 19.3.0 和 Astro 7.3.8，无运行依赖升级。Button/Input 使用原生语义；Select、Checkbox、Slider、Tooltip、AlertDialog、Toast 使用 Base UI，键盘导航、焦点约束、返回焦点和通知计时均由库管理。

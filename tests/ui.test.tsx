@@ -166,6 +166,7 @@ describe('UI primitives', () => {
           />
           <SliderField
             label="Size"
+            accent="lavender"
             min={0}
             max={10}
             step={2}

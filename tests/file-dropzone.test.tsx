@@ -15,7 +15,7 @@ const issueMessages = {
 };
 const imageFile = (name = 'a.png') =>
   new File(['test'], name, { type: 'image/png' });
-function setup(disabled = false) {
+function setup(disabled = false, accent?: 'slate') {
   const onFilesSelected = vi.fn();
   const onRejected = vi.fn();
   const props = {
@@ -26,6 +26,7 @@ function setup(disabled = false) {
     maxFiles: 2,
     maxSizeBytes: 4,
     disabled,
+    accent,
     issueMessages,
     onFilesSelected,
     onRejected,
@@ -121,8 +122,8 @@ describe('FileDropzone', () => {
     expect(screen.getByRole('alert').textContent).toContain('Too large');
     expect(onFilesSelected).toHaveBeenCalledTimes(2);
   });
-  it('tracks nested drag boundaries, partially accepts drop and leaves unrelated drops alone', () => {
-    const { button, onFilesSelected, onRejected } = setup();
+  it.each([undefined, 'slate'] as const)('tracks nested drag boundaries, partially accepts drop and leaves unrelated drops alone (%s accent)', (accent) => {
+    const { button, onFilesSelected, onRejected } = setup(false, accent);
     const file = imageFile();
     const bad = new File(['x'], 'bad.txt');
     const dataTransfer = {
