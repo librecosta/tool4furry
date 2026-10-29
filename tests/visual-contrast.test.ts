@@ -94,6 +94,11 @@ describe.each([
         expect(contrast(color('onDanger'), over(color(fill), background)), `onDanger on ${name}/${fill}`).toBeGreaterThanOrEqual(4.5);
     }
   });
+  it('keeps the community-only lavender CTA readable on default and hover fills', () => {
+    for (const fill of ['communityAction', 'communityActionHover'] as const)
+      expect(contrast(color('onCommunityAction'), color(fill)), fill).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(color('focus'), hosts.panel)).toBeGreaterThanOrEqual(3);
+  });
   it('keeps input/select boundaries, focus, selected outlines and progress identifiable', () => {
     for (const [name, background] of backgrounds)
       for (const foreground of ['controlBorder', 'focus', 'accent'] as const)

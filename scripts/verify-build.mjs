@@ -221,13 +221,18 @@ assert.equal(community?.nextElementSibling, pillars, 'Community cards immediatel
 const communityCards = [...community.querySelectorAll('[data-community-card]')];
 assert.deepEqual(communityCards.map(card => card.dataset.communityCard), region === 'cn' ? ['qq', 'telegram', 'support'] : ['discord', 'telegram', 'support']);
 assert.deepEqual([...community.querySelectorAll('h3')].map(h => h.textContent), region === 'cn'
-  ? (locale === 'zh' ? ['QQ 交流群', 'Telegram 群组', '赞助与支持'] : ['QQ Group', 'Telegram Group', 'Support'])
+  ? (locale === 'zh' ? ['QQ 交流群', 'Telegram 群组', '赞助与支持'] : ['QQ Group', 'Telegram Group', 'Support the Project'])
   : (locale === 'zh' ? ['Discord 社群', 'Telegram 群组', '赞助与支持'] : ['Discord Community', 'Telegram Group', 'Support the Project']));
 const communityLinks = [...community.querySelectorAll('a')];
 assert.deepEqual(communityLinks.map(a => a.getAttribute('href')), region === 'cn'
   ? ['https://t.me/+-Fn3F3hprS8wY2M9', 'https://afdian.com/a/gofurry']
   : ['https://discord.gg/gEEgV8pkS', 'https://t.me/+-Fn3F3hprS8wY2M9', 'https://ko-fi.com/gofurry']);
 assert(communityLinks.every(a => a.target === '_blank' && a.rel === 'noopener noreferrer'), 'Community destinations are native external links');
+const communityLogos = region === 'cn' ? ['/community/telegram.png', '/community/afdian.png'] : ['/community/discord.png', '/community/telegram.png', '/community/ko-fi.png'];
+assert.deepEqual(communityLinks.map(a => a.querySelector('img')?.getAttribute('src')), communityLogos);
+assert(communityLinks.every(a => a.querySelector('img')?.getAttribute('alt') === '' && a.querySelector('img')?.getAttribute('aria-hidden') === 'true'), 'Link text owns the accessible name');
+for (const name of ['discord.png', 'telegram.png', 'afdian.png', 'ko-fi.ico', 'ko-fi.png'])
+  assert.deepEqual(await readFile(resolve(root, 'community', name)), await readFile(resolve('public/community', name)), 'Platform assets are copied unchanged');
 assert.equal(community.querySelectorAll('button, script, astro-island').length, 0, 'Community cards add no scripts or fake actions');
 if (region === 'cn') {
   const qr = community.querySelector('img');
@@ -239,9 +244,9 @@ if (region === 'cn') {
   assert.equal(createHash('sha256').update(qrBytes).digest('hex'), '3cd0e1d70b2a0153024d13212cce2844bc0ff5ed00b6b634e4b57ad9748fc3b4', 'Approved QR bytes remain unchanged');
   assert(communityCards[2].textContent.includes('GoFurry'), 'Support identifies the actual Afdian account');
 } else {
-  assert.equal(community.querySelectorAll('img').length, 0, 'Global pages never request the CN QR image');
+  assert.equal(community.querySelectorAll('img[src="/community/QQ-Group.avif"]').length, 0, 'Global pages never request the CN QR image');
   assert.equal(communityCards[2].querySelectorAll('a').length, 1, 'One real Ko-fi sponsorship entry');
-  assert.equal(communityCards[2].querySelector('a').textContent, locale === 'zh' ? '在 Ko-fi 支持我们' : 'Support us on Ko-fi');
+  assert.equal(communityCards[2].querySelector('a').textContent.trim(), locale === 'zh' ? '在 Ko-fi 支持我们' : 'Support on Ko-fi');
   assert(communityCards[2].textContent.includes('GoFurry'), 'Support identifies the actual Ko-fi account');
 }
 assert.equal(pillars.nextElementSibling?.id, 't4f-home-pillars');
@@ -368,11 +373,12 @@ for (const path of [symbol, horizontal, '/brand/tool4furry-og-master.svg', '/bra
 for (const image of document.querySelectorAll('img')) {
   const src = image.getAttribute('src');
   const communityQR = region === 'cn' && src === '/community/QQ-Group.avif' && image.closest('[data-home-community] [data-community-card="qq"]');
+  const communityLogo = communityLogos.includes(src) && image.closest('[data-home-community] a');
   assert(
     image.closest('[data-site-compliance]')
       ? src?.startsWith('/') && !src.startsWith('//')
-      : communityQR || src?.startsWith('/brand/') || (src === '/visuals/wavefield/wavefield.avif' && image.closest('[data-wavefield]')),
-    'Homepage images are approved local brand/compliance art, Wavefield poster or the exact CN community QR',
+      : communityQR || communityLogo || src?.startsWith('/brand/') || (src === '/visuals/wavefield/wavefield.avif' && image.closest('[data-wavefield]')),
+    'Homepage images are approved local brand/compliance art, Wavefield poster or exact regional community assets',
   );
   assert.equal(
     image.getAttribute('alt'),

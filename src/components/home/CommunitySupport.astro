@@ -1,25 +1,29 @@
 ---
 import * as stylex from '@stylexjs/stylex';
-import { ChatsCircleIcon, DiscordLogoIcon, TelegramLogoIcon, HandHeartIcon } from '@phosphor-icons/react/ssr';
 import type { Region } from '../../config/region';
 import type { Locale } from '../../i18n/locale';
 import { getCommunityCards } from '../../site/home-community';
 import { communityStyles as s } from '../../styles/home-community';
 interface Props { region: Region; locale: Locale }
 const { region, locale } = Astro.props;
-const icons = { qq: ChatsCircleIcon, discord: DiscordLogoIcon, telegram: TelegramLogoIcon, support: HandHeartIcon };
 ---
 <section data-home-community aria-labelledby="community-heading" {...stylex.attrs(s.section)}>
   <h2 id="community-heading" {...stylex.attrs(s.accessibleHeading)}>{locale === 'zh' ? '社群与支持' : 'Community & Support'}</h2>
   <div {...stylex.attrs(s.grid)}>
-    {getCommunityCards(region, locale).map(card => { const Icon = icons[card.id]; return <article data-community-card={card.id} aria-labelledby={`community-${card.id}`} {...stylex.attrs(s.card)}>
-      <h3 id={`community-${card.id}`} {...stylex.attrs(s.title)}><Icon size={24} weight="regular" aria-hidden="true" focusable="false" className={stylex.attrs(s.icon).class} />{card.title}</h3>
-      <div {...stylex.attrs(s.body)}>
-        {card.qr ? <img src={card.qr.src} width={card.qr.width} height={card.qr.height} alt={card.qr.alt} loading="lazy" {...stylex.attrs(s.qr)} /> : <p {...stylex.attrs(s.description)}>{card.description}</p>}
-      </div>
-      <div {...stylex.attrs(s.footer)}>
-        {card.href ? <a href={card.href} target="_blank" rel="noopener noreferrer" {...stylex.attrs(s.action)}>{card.action}</a> : card.qr && <p {...stylex.attrs(s.hint)}>{card.description}</p>}
-      </div>
-    </article>; })}
+    {getCommunityCards(region, locale).map(card => <article data-community-card={card.id} aria-labelledby={`community-${card.id}`} {...stylex.attrs(s.card)}>
+      <h3 id={`community-${card.id}`} {...stylex.attrs(s.title)}>{card.title}</h3>
+      {card.qr ? <div {...stylex.attrs(s.qqBody)}>
+        <div {...stylex.attrs(s.qqCopy)}><p {...stylex.attrs(s.description)}>{card.description}</p><p {...stylex.attrs(s.note, s.qqHint)}>{card.note}</p></div>
+        <img src={card.qr.src} width={card.qr.width} height={card.qr.height} alt={card.qr.alt} loading="lazy" {...stylex.attrs(s.qr)} />
+      </div> : <>
+        <p {...stylex.attrs(s.description)}>{card.description}</p>
+        <div {...stylex.attrs(s.footer)}>
+          <a href={card.href} target="_blank" rel="noopener noreferrer" {...stylex.attrs(s.action)}>
+            <img src={card.logo} width="20" height="20" alt="" aria-hidden="true" loading="lazy" {...stylex.attrs(s.logo)} />{card.action}
+          </a>
+          {card.note && <p {...stylex.attrs(s.note)}>{card.note}</p>}
+        </div>
+      </>}
+    </article>)}
   </div>
 </section>
