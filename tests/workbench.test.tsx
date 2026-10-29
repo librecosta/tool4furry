@@ -13,6 +13,21 @@ beforeEach(() => {
   setViewport();
 });
 describe('shell contract', () => {
+  it('opts into a wide Form without remounting its main or settings slots', async () => {
+    const user = userEvent.setup();
+    const view = (wide: boolean) => <WorkbenchShell mode="form" labels={t} formWidth={wide ? 'wide' : 'default'} right={<input aria-label="Settings slot" defaultValue="original" />}><input aria-label="Main slot" defaultValue="source" /></WorkbenchShell>;
+    const { rerender } = render(view(false));
+    const main = screen.getByRole('textbox', { name: 'Main slot' });
+    const settings = screen.getByRole('textbox', { name: 'Settings slot' });
+    await user.type(settings, '-kept');
+    rerender(view(true));
+    expect(screen.getByRole('textbox', { name: 'Main slot' })).toBe(main);
+    expect(screen.getByRole('textbox', { name: 'Settings slot' })).toBe(settings);
+    expect((settings as HTMLInputElement).value).toBe('original-kept');
+    rerender(view(false));
+    expect(screen.getByRole('textbox', { name: 'Settings slot' })).toBe(settings);
+  });
+
   it('opens directly on a compact viewport with focus and nested Select intact', async () => {
     setViewport(true);
     const user = userEvent.setup();

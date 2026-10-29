@@ -125,10 +125,26 @@ export const siteStyles = stylex.create({
   },
   toolGuide: {
     display: 'grid',
+    maxWidth: 1200,
+    marginInline: 'auto',
+    minWidth: 0,
     gap: tokens.space32,
     paddingBlock: tokens.space32,
     fontSize: 15,
     lineHeight: 1.8,
+  },
+  toolInstructions: {
+    display: 'grid',
+    gridTemplateColumns: 'minmax(0, 1fr)',
+    gap: tokens.space32,
+    alignItems: 'start',
+    minWidth: 0,
+  },
+  toolInstructionColumns: {
+    gridTemplateColumns: {
+      default: 'minmax(0, 11fr) minmax(0, 9fr)',
+      '@media (max-width: 1050px)': 'minmax(0, 1fr)',
+    },
   },
   faqItem: {
     borderBottomWidth: 1,
@@ -148,13 +164,14 @@ export const siteStyles = stylex.create({
     backgroundColor: { default: 'transparent', ':hover': tokens.surfacePanel },
     cursor: 'pointer',
     listStyle: 'none',
+    overflowWrap: 'anywhere',
     '::-webkit-details-marker': { display: 'none' },
   },
   faqChevron: {
     flexShrink: 0,
     transform: 'rotate(var(--faq-chevron-rotation, 0deg))',
   },
-  faqAnswer: { color: tokens.textSecondary, marginBlock: '0 16px', paddingInline: tokens.space16 },
+  faqAnswer: { color: tokens.textSecondary, marginBlock: '0 16px', paddingInline: tokens.space16, maxWidth: 820, overflowWrap: 'anywhere' },
   sectionHeading: {
     fontSize: { default: 24, '@media (max-width: 600px)': 20 },
     fontWeight: 600,

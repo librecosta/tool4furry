@@ -11,6 +11,7 @@ import { controls as c } from '../styles/controls';
 import { tokens } from '../styles/tokens.stylex';
 import { siteStyles as site } from '../styles/site';
 import { useCompact } from './useCompact';
+import { formToolLayout } from './form-tool-layout';
 
 export interface WorkbenchShellProps {
   mode: WorkspaceMode;
@@ -30,6 +31,7 @@ export interface WorkbenchShellProps {
   right?: ReactNode;
   bottom?: ReactNode;
   children: ReactNode;
+  /** Form only: wide opts into a centered 1400px shell (including safe gutters). */
   formWidth?: 'default' | 'wide';
 }
 
@@ -66,8 +68,9 @@ export default function WorkbenchShell({
             s.flow,
             site.fluid,
             mode === 'form' ? s.form : mode === 'batch' ? s.batch : s.custom,
-            mode === 'form' && formWidth === 'wide' && s.formWide,
             right != null && mode === 'form' && s.formColumns,
+            mode === 'form' && formWidth === 'wide' && s.formWide,
+            right != null && mode === 'form' && formWidth === 'wide' && formToolLayout.columns,
             right != null && mode === 'batch' && s.batchColumns,
           )}
         >
@@ -364,7 +367,7 @@ const s = stylex.create({
   },
   form: { maxWidth: 760 },
   formWide: {
-    maxWidth: 'none',
+    maxWidth: 1400,
   },
   batch: { maxWidth: 'none' },
   formColumns: {

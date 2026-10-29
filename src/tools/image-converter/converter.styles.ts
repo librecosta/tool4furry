@@ -1,31 +1,11 @@
 import * as stylex from '@stylexjs/stylex';
 import { tokens as t } from '../../styles/tokens.stylex';
 export const converterStyles = stylex.create({
-  layout: {
-    display: 'grid',
-    gridTemplateColumns: {
-      default: 'minmax(0, 1fr) 320px',
-      '@media (max-width: 900px)': 'minmax(0, 1fr)',
-    },
-    gridTemplateRows: {
-      default: 'auto 1fr',
-      '@media (max-width: 900px)': 'auto',
-    },
-    gap: t.space24,
-    alignItems: 'start',
-  },
-  emptyLayout: {
-    gridTemplateColumns: 'minmax(0, 1fr)',
-    maxWidth: 960,
-    marginInline: 'auto',
-  },
   file: {
-    gridColumn: { default: '1', '@media (max-width: 900px)': 'auto' },
     minWidth: 0,
     display: 'grid',
     gap: t.space12,
   },
-  emptyFile: { gridColumn: '1 / -1' },
   intakeActions: {
     display: 'grid',
     gap: t.space8,
@@ -42,8 +22,6 @@ export const converterStyles = stylex.create({
   },
   delivery: { display: 'grid', gap: t.space8 },
   settings: {
-    gridColumn: { default: '2', '@media (max-width: 900px)': 'auto' },
-    gridRow: { default: '1 / span 2', '@media (max-width: 900px)': 'auto' },
     display: 'grid',
     gap: t.space16,
     minWidth: 0,
@@ -51,7 +29,6 @@ export const converterStyles = stylex.create({
     backgroundColor: t.surfacePanel,
     borderRadius: t.radiusLg,
   },
-  emptySettings: { gridColumn: '1 / -1', gridRow: 'auto' },
   settingsHeader: {
     display: 'flex',
     alignItems: 'center',
@@ -94,11 +71,6 @@ export const converterStyles = stylex.create({
     gap: t.space12,
     fontSize: 12,
     color: t.textSecondary,
-  },
-  tasks: {
-    gridColumn: { default: '1', '@media (max-width: 900px)': 'auto' },
-    gridRow: { default: '2', '@media (max-width: 900px)': 'auto' },
-    minWidth: 0,
   },
   note: {
     fontSize: 13,

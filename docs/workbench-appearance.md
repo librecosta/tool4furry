@@ -1,3 +1,28 @@
+# V0.6-B1 — Reusable Form Tool Layout
+
+`WorkbenchShell mode="form" formWidth="wide"` now opts into a centered 1400px
+maximum, including the existing responsive safe gutters. Default Form, Batch
+and Canvas layouts are unchanged. With the existing `right` slot, wide Form
+uses an adaptive main column + 350px aside, stacking at ≤1050px. No tool state
+or file handling belongs to the shell.
+
+For a tool with leading input, settings and results, import `formToolLayout`
+from `src/workbench/form-tool-layout.ts`: apply `container` to the inner grid;
+opt into `columns` + `split` when expanded, and apply `leading`, `aside`, `main`
+to those three children. Keep DOM order input → settings → results. The stack
+is capped at 960px; split uses the shell's available width. Its final flexible
+track absorbs a tall aside without stretching the input/result rows. This is
+an optional StyleX layout recipe, not a file/parameter schema or state owner.
+Converter changes classes only; task IDs, inputs, preview and settings stay mounted.
+
+Astro `ToolGuide` independently caps instructions and FAQ at 1200px including
+gutters. Steps + limitations share top-aligned 55:45 columns above 1050px;
+a single supplied section uses the full width, and narrow screens stack.
+FAQ uses that same outer alignment and full-width native summaries; answer
+text alone caps at 820px. Other readable site content retains its 820px layout.
+
+---
+
 # Tool4Furry V0.3-B — Workbench Appearance & Responsive Architecture
 
 > 0–8 节为随任务导入的原始冻结合同；当前实现与验收结果见第 9 节。

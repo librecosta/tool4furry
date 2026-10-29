@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import WorkbenchShell from '../../workbench/WorkbenchShell';
+import { formToolLayout as form } from '../../workbench/form-tool-layout';
 import { FileDropzone } from '../../ui/FileDropzone';
 import { Button } from '../../ui/Button';
 import { TextField } from '../../ui/TextField';
@@ -144,12 +145,13 @@ export default function ImageConverter({ locale }: ToolProps) {
     <WorkbenchShell mode="form" formWidth="wide" labels={labels}>
       <div
         data-image-converter
-        {...stylex.props(s.layout, !hasTasks && s.emptyLayout)}
+        data-form-layout={hasTasks ? 'split' : 'stack'}
+        {...stylex.props(form.container, hasTasks && form.columns, hasTasks && form.split)}
       >
         <section
           data-converter-part="file"
           aria-label={t.file}
-          {...stylex.props(s.file, !hasTasks && s.emptyFile)}
+          {...stylex.props(s.file, hasTasks && form.leading)}
         >
           <div {...stylex.props(s.intakeActions, hasTasks && s.compactIntake)}>
             <FileDropzone
@@ -251,7 +253,7 @@ export default function ImageConverter({ locale }: ToolProps) {
         <section
           data-converter-part="settings"
           aria-labelledby="converter-settings"
-          {...stylex.props(s.settings, !hasTasks && s.emptySettings)}
+          {...stylex.props(s.settings, hasTasks && form.aside)}
         >
           <div {...stylex.props(s.settingsHeader)}>
             <h2 id="converter-settings" {...stylex.props(s.settingsTitle)}>
@@ -482,7 +484,7 @@ export default function ImageConverter({ locale }: ToolProps) {
           hidden={!hasTasks}
           data-converter-part="tasks"
           aria-label={t.tasks}
-          {...stylex.props(s.tasks)}
+          {...stylex.props(hasTasks && form.main)}
         >
           {session && (
             <FileTaskList label={t.tasks}>

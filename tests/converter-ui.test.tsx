@@ -59,6 +59,38 @@ beforeEach(() => {
   );
 });
 describe('real workspace interaction contract (codec mocked; not browser evidence)', () => {
+  it('switches stack/split layouts without resetting settings or a ready result', async () => {
+    const resize = setViewport(false), user = userEvent.setup();
+    const { container } = render(<ImageConverter region="global" locale="en" />);
+    const layout = container.querySelector('[data-image-converter]')!;
+    const source = container.querySelector('input[type=file]')!;
+    const settings = container.querySelector('[data-converter-part="settings"]');
+    await waitFor(() => expect(screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled')).toBe(false));
+    expect(layout.getAttribute('data-form-layout')).toBe('stack');
+    await user.click(screen.getByRole('button', { name: 'Advanced' }));
+    const quality = screen.getByRole('textbox', { name: 'Exact quality (1–100)' });
+    await user.clear(quality); await user.type(quality, '77');
+    fireEvent.change(source, { target: { files: [new File(['png'], 'layout.png')] } });
+    await waitFor(() => expect(layout.getAttribute('data-form-layout')).toBe('split'));
+    expect(encode).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', { name: 'Convert all' }));
+    const result = await screen.findByRole('link', { name: 'Download result' });
+    const href = result.getAttribute('href');
+    act(() => resize(true)); act(() => resize(false));
+    expect(screen.getByRole('link', { name: 'Download result' })).toBe(result);
+    expect(result.getAttribute('href')).toBe(href);
+    expect(encode).toHaveBeenCalledTimes(1);
+    await user.click(screen.getByRole('button', { name: 'Clear list' }));
+    await user.click(await screen.findByRole('button', { name: 'Clear' }));
+    await waitFor(() => expect(layout.getAttribute('data-form-layout')).toBe('stack'));
+    expect(container.querySelector('input[type=file]')).toBe(source);
+    expect(container.querySelector('[data-converter-part="settings"]')).toBe(settings);
+    expect(screen.getByRole('textbox', { name: 'Exact quality (1–100)' })).toBe(quality);
+    expect((quality as HTMLInputElement).value).toBe('77');
+    expect(screen.queryByRole('link', { name: 'Download result' })).toBeNull();
+    expect(encode).toHaveBeenCalledTimes(1);
+  });
+
   it('shows desktop limits from the session and keeps them when only the viewport changes', async () => {
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Windows NT');
     const changeViewport = setViewport(false);
