@@ -8,6 +8,8 @@ export interface ButtonProps extends ComponentProps<'button'> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   size?: 'sm' | 'md';
   loading?: boolean;
+  /** Merge opt-in local styles with the base states through StyleX. */
+  xstyle?: stylex.StyleXStyles;
 }
 
 const spin = stylex.keyframes({
@@ -43,6 +45,7 @@ export function Button({
   type = 'button',
   className,
   children,
+  xstyle,
   ...props
 }: ButtonProps) {
   const sx = stylex.props(
@@ -53,6 +56,7 @@ export function Button({
     size === 'sm' && controls.small,
     (props['aria-pressed'] === true || props['aria-pressed'] === 'true') &&
       controls.active,
+    xstyle,
   );
   return (
     <button

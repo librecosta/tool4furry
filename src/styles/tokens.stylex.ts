@@ -51,7 +51,7 @@ export const neutralDarkValues = {
   supportClay: '#D49C7D',
   supportAmber: '#D6B27A',
   supportLavender: '#B9ABD0',
-  // Community CTAs only; primary actions and feedback retain their own palette.
+  // Limited supporting CTAs; default primary actions and feedback keep their palette.
   communityAction: '#755C8C',
   communityActionHover: '#806898',
   onCommunityAction: '#FFFFFF',

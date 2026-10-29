@@ -191,6 +191,7 @@ export default function ImageConverter({ locale }: ToolProps) {
               }}
             />
             <Button
+              xstyle={s.supportAction}
               disabled={!session || folderSupported === false}
               aria-describedby={
                 folderSupported === false ? 'converter-folder-hint' : undefined
@@ -469,6 +470,7 @@ export default function ImageConverter({ locale }: ToolProps) {
           {hasTasks && (state.mode === 'advanced' || pending) && (
             <Button
               variant="primary"
+              xstyle={s.supportAction}
               disabled={!canProcess || !pending}
               onClick={() => session?.generateAll()}
             >

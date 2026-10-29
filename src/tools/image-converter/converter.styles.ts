@@ -13,6 +13,19 @@ export const converterStyles = stylex.create({
     minWidth: 0,
   },
   compactIntake: { gridTemplateColumns: 'minmax(0, 1fr) auto' },
+  supportAction: {
+    backgroundColor: {
+      default: t.communityAction,
+      ':hover': t.communityActionHover,
+      ':focus-visible': t.communityActionHover,
+      ':active': t.communityActionHover,
+      ':disabled': t.surface,
+    },
+    borderColor: { default: 'transparent', ':disabled': t.controlBorder },
+    color: { default: t.onCommunityAction, ':disabled': t.textSecondary },
+    transitionProperty: 'background-color, border-color, color',
+    transitionDuration: { default: '220ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
+  },
   listActions: {
     display: 'flex',
     alignItems: 'center',
