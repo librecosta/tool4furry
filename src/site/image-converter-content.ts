@@ -9,37 +9,47 @@ export const imageConverterContent: ToolContentMap[string] = {
     intro:
       '添加多张图片或文件夹，使用推荐设置转换格式，或调整质量和 JPEG 背景。可用输出格式由浏览器实测决定。',
     steps: [
-      '选择或拖入多张静态 PNG、JPEG、WebP 或受支持的 AVIF，也可添加文件夹，后续添加会追加到列表。每个文件独立检查真实结构、动画、尺寸和方向。',
-      '快速模式默认 WebP 85；不支持 WebP 输出时选择 PNG。新增图片或点击格式推荐后按序自动转换；高级模式调整参数后点击“转换全部”。',
-      '检查原图与输出的真实格式、分辨率和大小。修改编码参数会令旧结果过期，修改文件名不会重复编码。',
-      '在文件行逐项预览和下载当前已验证结果，无需等待其他文件完成。多文件任务结束后可下载成功结果的 ZIP。快速模式同格式优先无损清理常见隐私元数据；无法可靠清理时会提示，可主动使用高级模式重新编码。',
+      '**添加图片**：选择或拖入 PNG、JPEG、WebP、AVIF 图片，也可以直接添加文件夹。支持批量处理，后续添加的图片会继续加入列表。',
+      '**选择输出格式**：快速模式使用推荐设置自动转换；高级模式可以调整编码质量、JPEG 背景色和 AVIF 彩色边缘保真等选项。',
+      '**查看转换结果**：预览原图与转换后的图片，比较文件大小和分辨率。每张图片都有独立的处理状态，失败的任务可以单独重试。',
+      '**下载图片**：可以逐张下载，也可以在批量处理完成后，将成功转换的图片打包为 ZIP 下载。',
     ],
     limitations: [
-      '批量静态图片转换，当前数量、大小和尺寸限制见工具内“支持格式与限制”。AVIF 仅接受经过验证的 8-bit SDR 静态结构；输出仅桌面可用，最多 4,194,304 像素、单边 4096px。不会自动缩小，不支持 APNG、动画 WebP、多帧 AVIF、GIF、HEIC、TIFF 或 SVG。',
-      'JPEG 使用指定的不透明背景，默认白色。PNG/WebP/AVIF 支持透明；有损输出不保证像素或文件大小相同。',
-      '默认移除常见隐私元数据，可能保留必要的方向与色彩信息；不清除像素水印或隐写内容。重新编码可能改变色彩，不提供专业色彩或来源凭证保全保证。',
-      '运行时验证 PNG/JPEG/WebP 输出能力；AVIF 输出按需加载编码器，Quick 同格式也会重新编码以移除来源元数据。输入可解码不表示同格式一定可编码。大图处理可能较慢，请保留原文件。',
+      '支持 **PNG、JPEG、WebP、AVIF** 四种静态图片格式的双向转换。暂不支持 GIF、APNG 等动画，以及 HEIC、TIFF、SVG 等其他格式。文件数量、大小和分辨率限制请查看工具内的“支持格式与限制”。',
+      '**AVIF 有独立的处理限制**：输入仅支持经过验证的静态 8-bit SDR 图片；输出目前仅对受支持的桌面设备开放，最多 4,194,304 像素、单边 4096px。转换不会自动缩小图片。',
+      'JPEG 不支持透明背景，转换时会填充指定颜色，默认为白色。不同格式和质量设置可能影响画面细节、色彩与文件大小，转换后的图片不一定更小。',
+      '默认移除常见的 EXIF、GPS 等来源隐私信息。高级模式可选择保留受支持的作者与版权字段，目前仅限 JPEG 来源转换为 JPEG、PNG 或 WebP。必要的方向与色彩信息可能保留；不保证完整元数据、专业色彩或来源凭证的保全。',
     ],
     faq: [
       {
-        question: 'PNG 转 JPEG 后透明背景去哪了？',
+        question: '图片会上传到服务器吗？',
         answer:
-          '透明和半透明像素会与 JPEG 背景合成，默认白色；高级模式可指定 #RRGGBB 背景。',
+          '不会。图片的读取、转换和预览都在你的浏览器中完成。部分格式可能需要加载额外的编码组件，但图片文件本身不会上传。',
       },
       {
-        question: '转换后一定更小吗？',
+        question: '转换后的图片一定会更小吗？',
         answer:
-          '不一定。格式、图片内容、编码器与质量都会影响大小，结果可能变大，界面按真实字节展示差异。',
+          '不一定。压缩效果取决于原图内容、输出格式和质量设置。AVIF、WebP 通常能提供较好的压缩效率，但较高的质量要求也可能增加文件大小。',
       },
       {
-        question: '图片会上传吗？',
+        question: '为什么 AVIF 转换需要更长时间？',
         answer:
-          '不会。读取、检查、解码、编码和预览都在当前浏览器内完成，离开页面释放该工具持有的资源。',
+          'AVIF 编码通常需要更多计算资源，尤其是高分辨率图片。首次使用时，浏览器可能还需要加载编码组件；后续访问通常可以利用缓存，避免重复下载相同版本的资源。',
       },
       {
-        question: '为什么不能输出 WebP？',
+        question: 'PNG 转为 JPEG 后，透明背景会怎样？',
         answer:
-          '输出选项取决于浏览器实际编码与回解码验证。检测失败时禁用该选项，可以重试检测或使用支持的 PNG/JPEG。',
+          'JPEG 不支持透明通道。透明区域会与背景颜色合成，默认使用白色。你可以在高级模式中选择其他背景色。',
+      },
+      {
+        question: '转换时会删除 EXIF 和 GPS 信息吗？',
+        answer:
+          '默认会清理常见的拍摄位置、设备信息和其他来源隐私元数据。高级模式可选择保留部分 JPEG 图片中的作者与版权信息，但不会因此保留 GPS、拍摄时间或完整 EXIF。请注意，元数据清理不等于删除画面中的水印或隐藏信息。',
+      },
+      {
+        question: '为什么有些图片或输出格式不可用？',
+        answer:
+          '为了避免生成损坏、方向错误或内容不完整的图片，工具会检查文件结构、浏览器能力和处理资源。动画、部分特殊图片变体，以及超过 AVIF 输出限制的图片可能无法转换。遇到这种情况，可以尝试其他受支持的输出格式。',
       },
     ],
   },
@@ -51,37 +61,47 @@ export const imageConverterContent: ToolContentMap[string] = {
     intro:
       'Add images or a folder for quick conversion, or adjust quality and JPEG background. Available export formats are checked in your browser.',
     steps: [
-      'Choose or drop multiple static PNG, JPEG, WebP or supported AVIF images, or add a folder. Later imports append to the list. Each file is checked for structure, animation, dimensions and orientation.',
-      'Quick starts with WebP quality 85, or PNG when WebP export is unavailable. New images and format presets convert automatically in order; in Advanced, adjust settings and click Convert all.',
-      'Compare actual formats, resolution and sizes. Encoding changes make old results stale; renaming does not re-encode.',
-      'Preview and download each current verified result from its file row without waiting for other files. Once all tasks finish, download successful results as a ZIP. For the same format, Quick prefers lossless removal of common private metadata. If reliable cleanup is unavailable, it reports an error; you can explicitly re-encode in Advanced.',
+      '**Add images**: Select or drag in PNG, JPEG, WebP or AVIF images, or add a folder. Batch processing is supported, and any images added later are appended to the list.',
+      '**Choose an output format**: Quick mode converts automatically using recommended settings. Advanced mode lets you adjust encoding quality, the JPEG background color and options such as AVIF colored-edge preservation.',
+      '**Review the results**: Preview the original and converted images, and compare file size and resolution. Each image has its own processing status, and failed tasks can be retried individually.',
+      '**Download images**: Download images individually or, once batch processing is complete, download the successfully converted images together as a ZIP.',
     ],
     limitations: [
-      'Static image batches; see Supported formats and limits in the tool for current count, size and dimension limits. AVIF accepts verified static 8-bit SDR structures only; export is desktop-only, up to 4,194,304 pixels and 4096px per side. No automatic resizing, APNG, animated WebP, multi-frame AVIF, GIF, HEIC, TIFF or SVG.',
-      'JPEG uses an opaque background, white by default. PNG/WebP/AVIF can retain transparency; lossy output is not guaranteed pixel-identical or smaller.',
-      'Common private metadata is removed by default; necessary orientation and color information may remain. Pixel watermarks and steganography are not removed. Re-encoding may change colors; professional color or provenance preservation is not guaranteed.',
-      'PNG/JPEG/WebP export is tested at runtime. AVIF export loads its encoder on demand; Quick re-encodes even same-format AVIF to remove source metadata. Input decoding does not imply encoding support. Large images may take longer. Keep your original files.',
+      'Convert static images to and from **PNG, JPEG, WebP and AVIF**. GIF, APNG and other animated formats, along with HEIC, TIFF, SVG and other formats, are not currently supported. See “Supported formats and limits” in the tool for file count, size and resolution limits.',
+      '**AVIF has separate processing limits**: Input supports only verified static 8-bit SDR images. Output is currently available only on supported desktop devices, up to 4,194,304 pixels and 4096px on either side. Images are not automatically resized during conversion.',
+      'JPEG does not support transparent backgrounds. Transparent areas are filled with the selected color, which is white by default. Format and quality settings may affect detail, color and file size; converted images may not be smaller.',
+      'Common source privacy information, such as EXIF and GPS data, is removed by default. Advanced mode can preserve supported author and copyright fields, currently only when converting JPEG sources to JPEG, PNG or WebP. Necessary orientation and color information may remain; complete metadata, professional color fidelity and provenance credentials are not guaranteed to be preserved.',
     ],
     faq: [
       {
-        question: 'What happens to transparency when converting PNG to JPEG?',
+        question: 'Are my images uploaded to a server?',
         answer:
-          'Transparent and semi-transparent pixels are composited over the JPEG background. The default is white; Advanced accepts a #RRGGBB background.',
+          'No. Images are read, converted and previewed entirely in your browser. Some formats may require downloading additional encoding components, but the image files themselves are not uploaded.',
       },
       {
-        question: 'Will conversion always make the file smaller?',
+        question: 'Will converted images always be smaller?',
         answer:
-          'No. Format, content, encoder and quality affect size. Output may grow; the interface reports the actual byte difference.',
+          'No. Compression depends on the image content, output format and quality settings. AVIF and WebP often offer good compression efficiency, but higher quality requirements may also increase file size.',
       },
       {
-        question: 'Are my images uploaded?',
+        question: 'Why does AVIF conversion take longer?',
         answer:
-          'No. Reading, validation, decoding, encoding and preview stay in this browser. Leaving the page releases the resources owned by this tool.',
+          'AVIF encoding generally requires more processing power, especially for high-resolution images. The first use may also require the browser to download encoding components. Subsequent visits can usually use cached resources to avoid downloading the same version again.',
       },
       {
-        question: 'Why is WebP export unavailable?',
+        question: 'What happens to the transparent background when converting PNG to JPEG?',
         answer:
-          'Options depend on actual browser encoding and decoding checks. Failed formats are disabled; retry detection or use a supported PNG/JPEG output.',
+          'JPEG does not support an alpha channel. Transparent areas are composited with the background color, which is white by default. You can choose a different background color in Advanced mode.',
+      },
+      {
+        question: 'Are EXIF and GPS data removed during conversion?',
+        answer:
+          'Common location, device and other source privacy metadata is removed by default. Advanced mode can preserve author and copyright information from some JPEG images, but this does not retain GPS, capture time or full EXIF data. Metadata cleanup does not remove watermarks or hidden information within the image itself.',
+      },
+      {
+        question: 'Why are some images or output formats unavailable?',
+        answer:
+          'To avoid producing corrupt, incorrectly oriented or incomplete images, the tool checks file structure, browser capabilities and processing resources. Animations, some special image variants and images exceeding AVIF output limits may not be convertible. If this happens, try another supported output format.',
       },
     ],
   },

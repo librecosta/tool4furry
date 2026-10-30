@@ -51,8 +51,8 @@ assert(files.some(file => /ImageConverter.*\.js$/.test(file)), 'Changing status 
 for (const file of files.filter((file) => file.endsWith('.js'))) {
   const js = await readFile(resolve(outDir, file), 'utf8');
   assert(
-    !js.includes('PNG 转 JPEG 后透明背景去哪了？') &&
-      !js.includes('What happens to transparency when converting PNG to JPEG?'),
+    !js.includes('PNG 转为 JPEG 后，透明背景会怎样？') &&
+      !js.includes('What happens to the transparent background when converting PNG to JPEG?'),
     'Long Astro FAQ leaked into JS',
   );
 }

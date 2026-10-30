@@ -998,7 +998,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
       const content = toolPageContents['image-converter'][defaultLocale(region)]!;
       expect(content.h1).toBeTruthy();
       expect(content.steps?.length).toBe(4);
-      expect(content.faq?.length).toBe(4);
+      expect(content.faq?.length).toBe(6);
       expect(content.title.match(/Tool4Furry/g)).toHaveLength(1);
     }
   });
