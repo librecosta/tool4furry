@@ -1,0 +1,4312 @@
+{
+  "schema": 1,
+  "date": "2026-10-30",
+  "productionBase": "14564024d8dd44b672ea6991ff0c030ed299df2d",
+  "scope": "isolated research; no production changes",
+  "environment": {
+    "date": "2026-10-30T07:31:39.187Z",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+    "hardwareConcurrency": 16,
+    "deviceMemory": 32,
+    "visibility": "visible",
+    "crossOriginIsolated": false,
+    "jsHeap": {
+      "used": 5279084,
+      "total": 6406928,
+      "limit": 4395630592
+    }
+  },
+  "host": {
+    "os": "Windows",
+    "cpu": "AMD Ryzen 7 5800H",
+    "logicalCores": 16,
+    "physicalMemoryBytes": 33719382016,
+    "python": "3.12.14 bundled Codex runtime",
+    "pillow": "12.3.0"
+  },
+  "engine": {
+    "name": "@jsquash/avif",
+    "version": "2.1.1",
+    "npmGitHead": "b7fa9ac9ec02f224847ad23d19d115f9e296a368",
+    "wasmSha256": "d9f2a95164362af48558d176e619becfd49dd97b50b86c679b47100860522b3d",
+    "rawBytes": 3485872,
+    "gzipBytes": 1125519,
+    "brotliBytes": 842416,
+    "singleThread": true,
+    "defaultOptions": {
+      "qualityAlpha": -1,
+      "speed": 6,
+      "subsample": 1,
+      "bitDepth": 8,
+      "tune": 0,
+      "sharpness": 0,
+      "denoiseLevel": 0,
+      "tileColsLog2": 0,
+      "tileRowsLog2": 0,
+      "enableSharpYUV": false,
+      "chromaDeltaQ": false,
+      "lossless": false
+    }
+  },
+  "method": {
+    "timing": "single sequential wall-clock measurement per configuration; init/decode/transfer/disk/metrics excluded from encodeMs; repeats explicitly named",
+    "psnr": "8-bit RGB MSE; fully transparent hidden RGB makes raw RGB/SSIM unsuitable for alpha assets",
+    "ssim": "non-overlapping 8x8 luma blocks, Rec709 coefficients, population variance, C1=6.5025 C2=58.5225; not Gaussian-window reference SSIM",
+    "alpha": "also report black/white composite PSNR and separate alpha PSNR/max error; null PSNR means exact/infinite",
+    "heap": "observed non-shrinking WASM linear memory capacity after call, not active allocation, peak RSS or whole browser memory",
+    "independentDecoder": "Pillow 12.3.0 full load + format/dimensions/SHA256"
+  },
+  "samples": [
+    {
+      "name": "character-1mp.png",
+      "kind": "character",
+      "width": 1024,
+      "height": 1024,
+      "source": "self-authored Pillow primitives; deterministic seed 261030",
+      "bytes": 19099,
+      "sha256": "eb4f7ce5d7d81a6fa648bb328651a035fe83a7cb843b8bd957eac6dbdc961d9c"
+    },
+    {
+      "name": "detail-1mp.png",
+      "kind": "detail",
+      "width": 1024,
+      "height": 1024,
+      "source": "self-authored Pillow primitives; deterministic seed 261030",
+      "bytes": 108282,
+      "sha256": "9d3b208a5065fe0265bab5c2afcc7e4cafee0540ae3dec9953432920c209591d"
+    },
+    {
+      "name": "manga-1mp.png",
+      "kind": "manga",
+      "width": 1024,
+      "height": 1024,
+      "source": "self-authored Pillow primitives; deterministic seed 261030",
+      "bytes": 51760,
+      "sha256": "eb4cfae018489d4eabe01992280a155b4627e9bb684e8b67141b6c130bb4a794"
+    },
+    {
+      "name": "alpha-1mp.png",
+      "kind": "alpha",
+      "width": 1024,
+      "height": 1024,
+      "source": "self-authored Pillow primitives; deterministic seed 261030",
+      "bytes": 76099,
+      "sha256": "01165c852faf3ff61a2f37c656865223498c54bf07b6f7be1171935eda6436ee"
+    },
+    {
+      "name": "photo.png",
+      "kind": "photo",
+      "width": 1024,
+      "height": 768,
+      "source": "SciPy dataset-face; Judy Weggelaar, Pixnio CC0 raccoon photograph; source image already processed, not RAW",
+      "bytes": 1177535,
+      "sha256": "978a3f0935a91af5196654624043c1a0dab06c90206d329e3d6b0b952be01e10"
+    },
+    {
+      "name": "character-4mp.png",
+      "kind": "character",
+      "width": 2048,
+      "height": 2048,
+      "source": "self-authored, rendered at target size",
+      "bytes": 49415,
+      "sha256": "b06689433f76ad5dec4f2452e45358996325476503e505bd2463fbe08ee25ee2"
+    },
+    {
+      "name": "detail-4mp.png",
+      "kind": "detail",
+      "width": 2048,
+      "height": 2048,
+      "source": "self-authored, rendered at target size",
+      "bytes": 228116,
+      "sha256": "9ccdf536c29ac56d59fb8de7d05f394fb67804f063154a0737b53ba979361720"
+    },
+    {
+      "name": "detail-8mp.png",
+      "kind": "detail",
+      "width": 2830,
+      "height": 2830,
+      "source": "self-authored, rendered at target size",
+      "bytes": 299988,
+      "sha256": "4330010ac8787d2c1f1254c265758b631605df691cb50eebed7e1048ffbf1d9d"
+    }
+  ],
+  "quality": {
+    "environment": {
+      "date": "2026-10-30T07:31:39.187Z",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "hardwareConcurrency": 16,
+      "deviceMemory": 32,
+      "visibility": "visible",
+      "crossOriginIsolated": false,
+      "jsHeap": {
+        "used": 5279084,
+        "total": 6406928,
+        "limit": 4395630592
+      }
+    },
+    "init": {
+      "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+      "initMs": 37.29999999888241,
+      "heap": 16777216
+    },
+    "after": {
+      "date": "2026-10-30T07:33:32.521Z",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "hardwareConcurrency": 16,
+      "deviceMemory": 32,
+      "visibility": "visible",
+      "crossOriginIsolated": false,
+      "jsHeap": {
+        "used": 69496178,
+        "total": 70760186,
+        "limit": 4395630592
+      }
+    },
+    "records": [
+      {
+        "source": "character-1mp.png",
+        "inputBytes": 19099,
+        "options": {
+          "quality": 50,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 1,
+        "ms": 1818.5,
+        "heapBefore": 16777216,
+        "heapAfter": 126353408,
+        "name": "character-1mp-q50-s6.avif",
+        "bytes": 5619,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 42.508,
+        "ssim8Luma": 0.999791,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 42.508,
+        "compositeWhitePsnr": 42.508,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "c44303fd1128ebcc6cc5206d09e2f851b3ba500225fef6736dc27ad0c87b1ed1"
+      },
+      {
+        "source": "character-1mp.png",
+        "inputBytes": 19099,
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 2,
+        "ms": 1429.7000000011176,
+        "heapBefore": 126353408,
+        "heapAfter": 126353408,
+        "name": "character-1mp-q55-s6.avif",
+        "bytes": 5982,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 43.112,
+        "ssim8Luma": 0.999784,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 43.112,
+        "compositeWhitePsnr": 43.112,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "9e1b52743f558bf262f1a4c933a5e0327a587641a6c7aca07ba6c5f495f4285f"
+      },
+      {
+        "source": "character-1mp.png",
+        "inputBytes": 19099,
+        "options": {
+          "quality": 60,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 3,
+        "ms": 1400.5,
+        "heapBefore": 126353408,
+        "heapAfter": 126353408,
+        "name": "character-1mp-q60-s6.avif",
+        "bytes": 6386,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 43.737,
+        "ssim8Luma": 0.999806,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 43.737,
+        "compositeWhitePsnr": 43.737,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "28f3be6a11424c3f19667d6b811992a89f7a393c92d722cfa65373b7f45f56ed"
+      },
+      {
+        "source": "character-1mp.png",
+        "inputBytes": 19099,
+        "options": {
+          "quality": 75,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 4,
+        "ms": 1491.5,
+        "heapBefore": 126353408,
+        "heapAfter": 126353408,
+        "name": "character-1mp-q75-s6.avif",
+        "bytes": 7297,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 44.389,
+        "ssim8Luma": 0.999762,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 44.389,
+        "compositeWhitePsnr": 44.389,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "44c314dc7ee4f874d12fd592b7a3db332d55422afd61af8639e33866a5922d8f"
+      },
+      {
+        "source": "character-1mp.png",
+        "ms": 55.899999998509884,
+        "inputBytes": 19099,
+        "options": {
+          "quality": 0.85
+        },
+        "name": "character-1mp-webp85.webp",
+        "bytes": 30292,
+        "mime": "image/webp",
+        "magic": "webp",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 43.192,
+        "ssim8Luma": 0.999509,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 43.192,
+        "compositeWhitePsnr": 43.192,
+        "decodeFormat": "WEBP",
+        "frames": 1,
+        "sha256": "09f229674af5524663e917e3230f0212a398505d1a14da5b74c0fa5ac5a82f5e"
+      },
+      {
+        "source": "detail-1mp.png",
+        "inputBytes": 108282,
+        "options": {
+          "quality": 50,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 5,
+        "ms": 3374.4000000003725,
+        "heapBefore": 126353408,
+        "heapAfter": 151650304,
+        "name": "detail-1mp-q50-s6.avif",
+        "bytes": 31821,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 35.507,
+        "ssim8Luma": 0.997361,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 35.507,
+        "compositeWhitePsnr": 35.507,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "bfd759c009aa636648de009a0da60126961fba4280c90a8deb9a6b6f749ae967"
+      },
+      {
+        "source": "detail-1mp.png",
+        "inputBytes": 108282,
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 6,
+        "ms": 3130.5,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "detail-1mp-q55-s6.avif",
+        "bytes": 33871,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 35.806,
+        "ssim8Luma": 0.997869,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 35.806,
+        "compositeWhitePsnr": 35.806,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "9756b47ac87589efec87c1a96c8bc88d13b1785eed3eae1385dac24fcd148fc8"
+      },
+      {
+        "source": "detail-1mp.png",
+        "inputBytes": 108282,
+        "options": {
+          "quality": 60,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 7,
+        "ms": 3175.5,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "detail-1mp-q60-s6.avif",
+        "bytes": 35185,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 35.995,
+        "ssim8Luma": 0.998097,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 35.995,
+        "compositeWhitePsnr": 35.995,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "2d6c0d19537b342ad065c05cd78a1165a1bb44ae791993564c6c4927b7d5fb29"
+      },
+      {
+        "source": "detail-1mp.png",
+        "ms": 70.59999999962747,
+        "inputBytes": 108282,
+        "options": {
+          "quality": 0.85
+        },
+        "name": "detail-1mp-webp85.webp",
+        "bytes": 113594,
+        "mime": "image/webp",
+        "magic": "webp",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 35.453,
+        "ssim8Luma": 0.994784,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 35.453,
+        "compositeWhitePsnr": 35.453,
+        "decodeFormat": "WEBP",
+        "frames": 1,
+        "sha256": "657d2df02b350210d7a4c923014de6fa1a53314ccc40e18135d9c65428e142f7"
+      },
+      {
+        "source": "manga-1mp.png",
+        "inputBytes": 51760,
+        "options": {
+          "quality": 50,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 8,
+        "ms": 2183.5999999996275,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "manga-1mp-q50-s6.avif",
+        "bytes": 15296,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 29.773,
+        "ssim8Luma": 0.999328,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 29.773,
+        "compositeWhitePsnr": 29.773,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "b3adac0add997054dea36f267821ed6e3cbb33417cdcd74ded31081285ce24f1"
+      },
+      {
+        "source": "manga-1mp.png",
+        "inputBytes": 51760,
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 9,
+        "ms": 2100,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "manga-1mp-q55-s6.avif",
+        "bytes": 15944,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 29.785,
+        "ssim8Luma": 0.999336,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 29.785,
+        "compositeWhitePsnr": 29.785,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "650e22ddb6f7d6831dd7582375f404390e7f873b88b3a4f2129a93fb07eadc0f"
+      },
+      {
+        "source": "manga-1mp.png",
+        "inputBytes": 51760,
+        "options": {
+          "quality": 60,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 10,
+        "ms": 2145,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "manga-1mp-q60-s6.avif",
+        "bytes": 16260,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 29.806,
+        "ssim8Luma": 0.999334,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 29.806,
+        "compositeWhitePsnr": 29.806,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "b078ee227c3ef6a8c6c8678df5955221f977d35138ebbd81bb5fa913e47faf8e"
+      },
+      {
+        "source": "manga-1mp.png",
+        "inputBytes": 51760,
+        "options": {
+          "quality": 75,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 11,
+        "ms": 2300.4000000003725,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "manga-1mp-q75-s6.avif",
+        "bytes": 17505,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 29.88,
+        "ssim8Luma": 0.999341,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 29.88,
+        "compositeWhitePsnr": 29.88,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "15aeabd66ef6632f2f9e1003eb41406266f970d0fa8dfb4f2aa75b8f3932cc18"
+      },
+      {
+        "source": "manga-1mp.png",
+        "inputBytes": 51760,
+        "options": {
+          "quality": 55,
+          "speed": 8
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 12,
+        "ms": 220.5,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "manga-1mp-q55-s8.avif",
+        "bytes": 24566,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 29.625,
+        "ssim8Luma": 0.997899,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 29.625,
+        "compositeWhitePsnr": 29.625,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "83a5df1d7d9eca2370186463612b6c6d7bb4eed0eae023a0ca8b56a3f2a712d5"
+      },
+      {
+        "source": "manga-1mp.png",
+        "inputBytes": 51760,
+        "options": {
+          "quality": 55,
+          "speed": 6,
+          "subsample": 3
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 13,
+        "ms": 2482,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "manga-1mp-q55-s6-444.avif",
+        "bytes": 16589,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 46.324,
+        "ssim8Luma": 0.999933,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 46.324,
+        "compositeWhitePsnr": 46.324,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "cb5d05acc7977f94d3981bd98cb5d17ad252099b8264deaca8299fcd2b3a9013"
+      },
+      {
+        "source": "manga-1mp.png",
+        "inputBytes": 51760,
+        "options": {
+          "quality": 75,
+          "speed": 6,
+          "subsample": 3
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 14,
+        "ms": 2554.9000000003725,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "manga-1mp-q75-s6-444.avif",
+        "bytes": 19525,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 48.336,
+        "ssim8Luma": 0.999966,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 48.336,
+        "compositeWhitePsnr": 48.336,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "af29848c451b82f44ca98cce72202e4534ee993bb83b263c44f03f8c5b3e301f"
+      },
+      {
+        "source": "manga-1mp.png",
+        "ms": 57,
+        "inputBytes": 51760,
+        "options": {
+          "quality": 0.85
+        },
+        "name": "manga-1mp-webp85.webp",
+        "bytes": 68732,
+        "mime": "image/webp",
+        "magic": "webp",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 30.352,
+        "ssim8Luma": 0.999074,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 30.352,
+        "compositeWhitePsnr": 30.352,
+        "decodeFormat": "WEBP",
+        "frames": 1,
+        "sha256": "4fb6039b9aefbc1c4957d56c1c18fc4739ab937fc82a5b783575a5a1fcb2298a"
+      },
+      {
+        "source": "alpha-1mp.png",
+        "inputBytes": 76099,
+        "options": {
+          "quality": 50,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 15,
+        "ms": 3381,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "alpha-1mp-q50-s6.avif",
+        "bytes": 12745,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 9.186,
+        "ssim8Luma": 0.650189,
+        "alphaPsnr": 53.626,
+        "alphaMaxError": 19,
+        "compositeBlackPsnr": 38.099,
+        "compositeWhitePsnr": 38.122,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "1a34c3e6572a44468a97a00230bf19925838a48cf6ab2faa5458c32b14487cac"
+      },
+      {
+        "source": "alpha-1mp.png",
+        "inputBytes": 76099,
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 16,
+        "ms": 3332.199999999255,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "alpha-1mp-q55-s6.avif",
+        "bytes": 14097,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 9.186,
+        "ssim8Luma": 0.649928,
+        "alphaPsnr": 54.966,
+        "alphaMaxError": 14,
+        "compositeBlackPsnr": 38.202,
+        "compositeWhitePsnr": 38.215,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "f7f3d06fed68e7b7b002b097a7c96c73fbd3fcc70676ce0c2c46f0c230063506"
+      },
+      {
+        "source": "alpha-1mp.png",
+        "inputBytes": 76099,
+        "options": {
+          "quality": 60,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 17,
+        "ms": 3369.4000000003725,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "alpha-1mp-q60-s6.avif",
+        "bytes": 15638,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 9.185,
+        "ssim8Luma": 0.649798,
+        "alphaPsnr": 55.624,
+        "alphaMaxError": 14,
+        "compositeBlackPsnr": 38.245,
+        "compositeWhitePsnr": 38.258,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "35f56e00c1baf9dc3c7b6425498f8c6436a86c7b5ea68a7f00b864766c4f9178"
+      },
+      {
+        "source": "alpha-1mp.png",
+        "inputBytes": 76099,
+        "options": {
+          "quality": 55,
+          "speed": 8
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 18,
+        "ms": 297.19999999925494,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "alpha-1mp-q55-s8.avif",
+        "bytes": 39514,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 9.187,
+        "ssim8Luma": 0.635667,
+        "alphaPsnr": 44.557,
+        "alphaMaxError": 86,
+        "compositeBlackPsnr": 37.266,
+        "compositeWhitePsnr": 37.384,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "d0b9c9a249afc0f01d163063c9033f9a37c6332d96a9c801fb7b8d71914e5cf7"
+      },
+      {
+        "source": "alpha-1mp.png",
+        "inputBytes": 76099,
+        "options": {
+          "quality": 55,
+          "speed": 6,
+          "qualityAlpha": 100
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 19,
+        "ms": 4070.0999999996275,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "alpha-1mp-q55-s6-a100.avif",
+        "bytes": 61544,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 9.186,
+        "ssim8Luma": 0.649928,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 38.236,
+        "compositeWhitePsnr": 38.236,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "26fb99188907715238407253bfc22711db979996780cddd6e6a7fddda18a96e2"
+      },
+      {
+        "source": "alpha-1mp.png",
+        "ms": 159,
+        "inputBytes": 76099,
+        "options": {
+          "quality": 0.85
+        },
+        "name": "alpha-1mp-webp85.webp",
+        "bytes": 80792,
+        "mime": "image/webp",
+        "magic": "webp",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304,
+        "rgbPsnr": 9.331,
+        "ssim8Luma": 0.656444,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 38.583,
+        "compositeWhitePsnr": 38.583,
+        "decodeFormat": "WEBP",
+        "frames": 1,
+        "sha256": "f51f318207ae7ca59d09dd2ba3473e72bdc07f57fda0d8fb4d6421ac67c70140"
+      },
+      {
+        "source": "photo.png",
+        "inputBytes": 1177535,
+        "options": {
+          "quality": 50,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 20,
+        "ms": 1065.4000000003725,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "photo-q50-s6.avif",
+        "bytes": 63252,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          768
+        ],
+        "pixelBytes": 3145728,
+        "rgbPsnr": 35.586,
+        "ssim8Luma": 0.971433,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 35.586,
+        "compositeWhitePsnr": 35.586,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "02a0d329a617f707186fa0b82460fb8dc1289d8483d26c48a839158052b49a33"
+      },
+      {
+        "source": "photo.png",
+        "inputBytes": 1177535,
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 21,
+        "ms": 1080.2999999988824,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "photo-q55-s6.avif",
+        "bytes": 79263,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          768
+        ],
+        "pixelBytes": 3145728,
+        "rgbPsnr": 37.274,
+        "ssim8Luma": 0.97991,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 37.274,
+        "compositeWhitePsnr": 37.274,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "f52563657334b7fe4e201bd5c944a7c0254d5604205050aef647c778aa67fc0d"
+      },
+      {
+        "source": "photo.png",
+        "inputBytes": 1177535,
+        "options": {
+          "quality": 60,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 22,
+        "ms": 1105.2000000011176,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "photo-q60-s6.avif",
+        "bytes": 92842,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          768
+        ],
+        "pixelBytes": 3145728,
+        "rgbPsnr": 38.687,
+        "ssim8Luma": 0.985062,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 38.687,
+        "compositeWhitePsnr": 38.687,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "0c8da9aaeba5b3d1bf73f00196688bed18188e90d9da1aa14510e3e2fa40d749"
+      },
+      {
+        "source": "photo.png",
+        "inputBytes": 1177535,
+        "options": {
+          "quality": 55,
+          "speed": 8
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 23,
+        "ms": 354.09999999962747,
+        "heapBefore": 151650304,
+        "heapAfter": 151650304,
+        "name": "photo-q55-s8.avif",
+        "bytes": 80161,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          768
+        ],
+        "pixelBytes": 3145728,
+        "rgbPsnr": 36.746,
+        "ssim8Luma": 0.977605,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 36.746,
+        "compositeWhitePsnr": 36.746,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "6f8e5c703a3fe5da375ed8f74afebde3dc23a88ad27c664259902aa003e47038"
+      },
+      {
+        "source": "photo.png",
+        "ms": 75.5,
+        "inputBytes": 1177535,
+        "options": {
+          "quality": 0.85
+        },
+        "name": "photo-webp85.webp",
+        "bytes": 142312,
+        "mime": "image/webp",
+        "magic": "webp",
+        "decoded": [
+          1024,
+          768
+        ],
+        "pixelBytes": 3145728,
+        "rgbPsnr": 39.174,
+        "ssim8Luma": 0.986376,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 39.174,
+        "compositeWhitePsnr": 39.174,
+        "decodeFormat": "WEBP",
+        "frames": 1,
+        "sha256": "7cdd5e7132ed2cdac50df55b215db6b9141d524345309974e5527ba4f98aba90"
+      },
+      {
+        "source": "character-4mp.png",
+        "inputBytes": 49415,
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 24,
+        "ms": 5093.5,
+        "heapBefore": 151650304,
+        "heapAfter": 377487360,
+        "name": "character-4mp-q55-s6.avif",
+        "bytes": 8775,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          2048,
+          2048
+        ],
+        "pixelBytes": 16777216,
+        "rgbPsnr": 46.055,
+        "ssim8Luma": 0.999856,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 46.055,
+        "compositeWhitePsnr": 46.055,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "e944b831d27daf9d5614007d0e0d1eeebe808057df797d4ae3d6c6e3c31f3ab0"
+      },
+      {
+        "source": "character-4mp.png",
+        "inputBytes": 49415,
+        "options": {
+          "quality": 55,
+          "speed": 8
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 25,
+        "ms": 491.19999999925494,
+        "heapBefore": 377487360,
+        "heapAfter": 377487360,
+        "name": "character-4mp-q55-s8.avif",
+        "bytes": 17997,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          2048,
+          2048
+        ],
+        "pixelBytes": 16777216,
+        "rgbPsnr": 44.917,
+        "ssim8Luma": 0.99892,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 44.917,
+        "compositeWhitePsnr": 44.917,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "cd0d9207c5ce08dfa17383d6ffddfff00952656ce0a767e0bf87896339c42a8a"
+      },
+      {
+        "source": "character-4mp.png",
+        "ms": 160.2999999988824,
+        "inputBytes": 49415,
+        "options": {
+          "quality": 0.85
+        },
+        "name": "character-4mp-webp85.webp",
+        "bytes": 64488,
+        "mime": "image/webp",
+        "magic": "webp",
+        "decoded": [
+          2048,
+          2048
+        ],
+        "pixelBytes": 16777216,
+        "rgbPsnr": 45.432,
+        "ssim8Luma": 0.999666,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 45.432,
+        "compositeWhitePsnr": 45.432,
+        "decodeFormat": "WEBP",
+        "frames": 1,
+        "sha256": "9038b7ad7722ff4bd1a2ca5f44d28c64fc09c758557e26cb896562f6ae5542b4"
+      },
+      {
+        "source": "detail-4mp.png",
+        "inputBytes": 228116,
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 26,
+        "ms": 9260.700000001118,
+        "heapBefore": 377487360,
+        "heapAfter": 452984832,
+        "name": "detail-4mp-q55-s6.avif",
+        "bytes": 70230,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          2048,
+          2048
+        ],
+        "pixelBytes": 16777216,
+        "rgbPsnr": 38.381,
+        "ssim8Luma": 0.9988,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 38.381,
+        "compositeWhitePsnr": 38.381,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "f9fac4be72539d83bb4deafd460dca72db4103c97b9be527eb72d415d85949b9"
+      },
+      {
+        "source": "detail-4mp.png",
+        "inputBytes": 228116,
+        "options": {
+          "quality": 55,
+          "speed": 8
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 27,
+        "ms": 696.0999999996275,
+        "heapBefore": 452984832,
+        "heapAfter": 452984832,
+        "name": "detail-4mp-q55-s8.avif",
+        "bytes": 135933,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          2048,
+          2048
+        ],
+        "pixelBytes": 16777216,
+        "rgbPsnr": 35.558,
+        "ssim8Luma": 0.973156,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 35.558,
+        "compositeWhitePsnr": 35.558,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "7059e314cfc80d02ef438fb541b0fb9b5fc57861e721e9309636cf91d6e8fe3b"
+      },
+      {
+        "source": "detail-4mp.png",
+        "ms": 223.90000000037253,
+        "inputBytes": 228116,
+        "options": {
+          "quality": 0.85
+        },
+        "name": "detail-4mp-webp85.webp",
+        "bytes": 278680,
+        "mime": "image/webp",
+        "magic": "webp",
+        "decoded": [
+          2048,
+          2048
+        ],
+        "pixelBytes": 16777216,
+        "rgbPsnr": 37.98,
+        "ssim8Luma": 0.997307,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 37.98,
+        "compositeWhitePsnr": 37.98,
+        "decodeFormat": "WEBP",
+        "frames": 1,
+        "sha256": "a70800467b3580cf51e0db05de1c488a1e02b3db9e1ab6e186c5aa6e40297510"
+      },
+      {
+        "source": "detail-4mp.png",
+        "repeat": 0,
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 28,
+        "ms": 9393.599999999627,
+        "heapBefore": 452984832,
+        "heapAfter": 452984832,
+        "name": "repeat4mp-0.avif",
+        "bytes": 70230,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          2048,
+          2048
+        ],
+        "pixelBytes": 16777216,
+        "rgbPsnr": 38.381,
+        "ssim8Luma": 0.9988,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 38.381,
+        "compositeWhitePsnr": 38.381,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "f9fac4be72539d83bb4deafd460dca72db4103c97b9be527eb72d415d85949b9"
+      },
+      {
+        "source": "detail-4mp.png",
+        "repeat": 1,
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 29,
+        "ms": 9830.900000000373,
+        "heapBefore": 452984832,
+        "heapAfter": 452984832,
+        "name": "repeat4mp-1.avif",
+        "bytes": 70230,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          2048,
+          2048
+        ],
+        "pixelBytes": 16777216,
+        "rgbPsnr": 38.381,
+        "ssim8Luma": 0.9988,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 38.381,
+        "compositeWhitePsnr": 38.381,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "f9fac4be72539d83bb4deafd460dca72db4103c97b9be527eb72d415d85949b9"
+      },
+      {
+        "source": "detail-4mp.png",
+        "repeat": 2,
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 30,
+        "ms": 9761.900000000373,
+        "heapBefore": 452984832,
+        "heapAfter": 452984832,
+        "name": "repeat4mp-2.avif",
+        "bytes": 70230,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          2048,
+          2048
+        ],
+        "pixelBytes": 16777216,
+        "rgbPsnr": 38.381,
+        "ssim8Luma": 0.9988,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 38.381,
+        "compositeWhitePsnr": 38.381,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "f9fac4be72539d83bb4deafd460dca72db4103c97b9be527eb72d415d85949b9"
+      },
+      {
+        "source": "detail-8mp.png",
+        "inputBytes": 299988,
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 31,
+        "ms": 17282.599999999627,
+        "heapBefore": 452984832,
+        "heapAfter": 745078784,
+        "name": "detail-8mp-q55-s6.avif",
+        "bytes": 80570,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          2830,
+          2830
+        ],
+        "pixelBytes": 32035600,
+        "rgbPsnr": 40.713,
+        "ssim8Luma": 0.99876,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 40.713,
+        "compositeWhitePsnr": 40.713,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "0adf90ac78b76c34cf4c44e28ffb9d0106ed011f03745da77fb287cd81415217"
+      },
+      {
+        "source": "detail-8mp.png",
+        "inputBytes": 299988,
+        "options": {
+          "quality": 55,
+          "speed": 8
+        },
+        "engineId": "9eda2c7b-0118-426e-8896-fae7be4f785b",
+        "count": 32,
+        "ms": 1241.199999999255,
+        "heapBefore": 745078784,
+        "heapAfter": 745078784,
+        "name": "detail-8mp-q55-s8.avif",
+        "bytes": 141089,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          2830,
+          2830
+        ],
+        "pixelBytes": 32035600,
+        "rgbPsnr": 38.47,
+        "ssim8Luma": 0.986732,
+        "alphaPsnr": null,
+        "alphaMaxError": 0,
+        "compositeBlackPsnr": 38.47,
+        "compositeWhitePsnr": 38.47,
+        "decodeFormat": "AVIF",
+        "frames": 1,
+        "sha256": "87c65d0202127aa5ede471a7a1291980357efe2bafc3850d6daa93eb355f5ff1"
+      }
+    ]
+  },
+  "freshBudget": {
+    "environment": {
+      "date": "2026-10-30T07:36:10.318Z",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "hardwareConcurrency": 16,
+      "deviceMemory": 32,
+      "visibility": "visible",
+      "crossOriginIsolated": false,
+      "jsHeap": {
+        "used": 101693345,
+        "total": 103058721,
+        "limit": 4395630592
+      }
+    },
+    "initializations": [
+      {
+        "engineId": "a7a26928-f60f-4ec1-8d23-291c7a390343",
+        "initMs": 32.09999999962747,
+        "heap": 16777216
+      },
+      {
+        "engineId": "1587f0dd-aa85-4cb7-8d41-3247af5c37d2",
+        "initMs": 34,
+        "heap": 16777216
+      },
+      {
+        "engineId": "04d34a94-7303-456a-8c24-2070b42fb18e",
+        "initMs": 28.09999999962747,
+        "heap": 16777216
+      },
+      {
+        "engineId": "aa7b9ab8-967f-49e6-9cce-c3e7ba10970d",
+        "initMs": 71.09999999962747,
+        "heap": 16777216
+      }
+    ],
+    "records": [
+      {
+        "source": "detail-4mp.png",
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "a7a26928-f60f-4ec1-8d23-291c7a390343",
+        "count": 1,
+        "ms": 11962.099999999627,
+        "heapBefore": 16777216,
+        "heapAfter": 394395648,
+        "name": "fresh-4mp-s6.avif",
+        "bytes": 70230,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          2048,
+          2048
+        ],
+        "pixelBytes": 16777216
+      },
+      {
+        "source": "detail-4mp.png",
+        "options": {
+          "quality": 55,
+          "speed": 8
+        },
+        "engineId": "1587f0dd-aa85-4cb7-8d41-3247af5c37d2",
+        "count": 1,
+        "ms": 875.0999999996275,
+        "heapBefore": 16777216,
+        "heapAfter": 158400512,
+        "name": "fresh-4mp-s8.avif",
+        "bytes": 135933,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          2048,
+          2048
+        ],
+        "pixelBytes": 16777216
+      },
+      {
+        "source": "detail-8mp.png",
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "04d34a94-7303-456a-8c24-2070b42fb18e",
+        "count": 1,
+        "ms": 24992.700000001118,
+        "heapBefore": 16777216,
+        "heapAfter": 715653120,
+        "name": "fresh-8mp-s6.avif",
+        "bytes": 80570,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          2830,
+          2830
+        ],
+        "pixelBytes": 32035600
+      },
+      {
+        "source": "detail-8mp.png",
+        "options": {
+          "quality": 55,
+          "speed": 8
+        },
+        "engineId": "aa7b9ab8-967f-49e6-9cce-c3e7ba10970d",
+        "count": 1,
+        "ms": 1689.4000000003725,
+        "heapBefore": 16777216,
+        "heapAfter": 297533440,
+        "name": "fresh-8mp-s8.avif",
+        "bytes": 141089,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          2830,
+          2830
+        ],
+        "pixelBytes": 32035600
+      }
+    ]
+  },
+  "cancellation": {
+    "environment": {
+      "date": "2026-10-30T07:37:16.608Z",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "hardwareConcurrency": 16,
+      "deviceMemory": 32,
+      "visibility": "visible",
+      "crossOriginIsolated": false,
+      "jsHeap": {
+        "used": 45938156,
+        "total": 47106016,
+        "limit": 4395630592
+      }
+    },
+    "startedAt": 11.699999999254942,
+    "terminatedAt": 72.09999999962747,
+    "message": "Error: Worker terminated",
+    "reinitialized": {
+      "engineId": "6c26d7bb-e98d-4a47-be1d-ba6a99310adf",
+      "initMs": 24.40000000037253,
+      "heap": 16777216
+    },
+    "records": [
+      {
+        "source": "character-1mp.png",
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "6c26d7bb-e98d-4a47-be1d-ba6a99310adf",
+        "count": 1,
+        "ms": 1575.5999999996275,
+        "heapBefore": 16777216,
+        "heapAfter": 126353408,
+        "name": "recovery.avif",
+        "bytes": 5982,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          1024,
+          1024
+        ],
+        "pixelBytes": 4194304
+      }
+    ],
+    "pending": 0
+  },
+  "metadataBrowser": {
+    "environment": {
+      "date": "2026-10-30T07:36:13.780Z",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "hardwareConcurrency": 16,
+      "deviceMemory": 32,
+      "visibility": "visible",
+      "crossOriginIsolated": false,
+      "jsHeap": {
+        "used": 74180798,
+        "total": 75451806,
+        "limit": 4395630592
+      }
+    },
+    "observation": [
+      {
+        "source": "jpg",
+        "oriented": [
+          160,
+          256
+        ]
+      },
+      {
+        "source": "png",
+        "oriented": [
+          160,
+          256
+        ]
+      },
+      {
+        "source": "webp",
+        "oriented": [
+          256,
+          160
+        ]
+      },
+      {
+        "source": "avif",
+        "oriented": [
+          160,
+          256
+        ]
+      },
+      {
+        "clean": "jpg",
+        "dimensions": [
+          160,
+          256
+        ],
+        "sourceDimensions": [
+          160,
+          256
+        ],
+        "maxChannelDelta": 0,
+        "mismatch": 0
+      },
+      {
+        "clean": "png",
+        "dimensions": [
+          160,
+          256
+        ],
+        "sourceDimensions": [
+          160,
+          256
+        ],
+        "maxChannelDelta": 0,
+        "mismatch": 0
+      },
+      {
+        "clean": "webp",
+        "dimensions": [
+          256,
+          160
+        ],
+        "sourceDimensions": [
+          256,
+          160
+        ],
+        "maxChannelDelta": 0,
+        "mismatch": 0
+      }
+    ],
+    "records": [
+      {
+        "source": "meta.jpg",
+        "ms": 3.899999998509884,
+        "name": "meta-jpg-to-png.png",
+        "bytes": 9503,
+        "mime": "image/png",
+        "magic": "png",
+        "decoded": [
+          160,
+          256
+        ],
+        "pixelBytes": 163840
+      },
+      {
+        "source": "meta.jpg",
+        "ms": 2.400000000372529,
+        "name": "meta-jpg-to-jpeg.jpg",
+        "bytes": 3157,
+        "mime": "image/jpeg",
+        "magic": "jpeg",
+        "decoded": [
+          160,
+          256
+        ],
+        "pixelBytes": 163840
+      },
+      {
+        "source": "meta.jpg",
+        "ms": 2.699999999254942,
+        "name": "meta-jpg-to-webp.webp",
+        "bytes": 1446,
+        "mime": "image/webp",
+        "magic": "webp",
+        "decoded": [
+          160,
+          256
+        ],
+        "pixelBytes": 163840
+      },
+      {
+        "source": "meta.jpg",
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "96690bd4-9ec8-48a0-ac52-7ced7ac36d42",
+        "count": 1,
+        "ms": 77.29999999888241,
+        "heapBefore": 16777216,
+        "heapAfter": 16777216,
+        "name": "meta-jpg-to-avif.avif",
+        "bytes": 634,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          160,
+          256
+        ],
+        "pixelBytes": 163840
+      },
+      {
+        "source": "meta.png",
+        "ms": 871.0999999996275,
+        "name": "meta-png-to-png.png",
+        "bytes": 2916,
+        "mime": "image/png",
+        "magic": "png",
+        "decoded": [
+          160,
+          256
+        ],
+        "pixelBytes": 163840
+      },
+      {
+        "source": "meta.png",
+        "ms": 0.7000000011175871,
+        "name": "meta-png-to-jpeg.jpg",
+        "bytes": 3127,
+        "mime": "image/jpeg",
+        "magic": "jpeg",
+        "decoded": [
+          160,
+          256
+        ],
+        "pixelBytes": 163840
+      },
+      {
+        "source": "meta.png",
+        "ms": 3.5,
+        "name": "meta-png-to-webp.webp",
+        "bytes": 1364,
+        "mime": "image/webp",
+        "magic": "webp",
+        "decoded": [
+          160,
+          256
+        ],
+        "pixelBytes": 163840
+      },
+      {
+        "source": "meta.png",
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "96690bd4-9ec8-48a0-ac52-7ced7ac36d42",
+        "count": 2,
+        "ms": 75.5,
+        "heapBefore": 16777216,
+        "heapAfter": 16777216,
+        "name": "meta-png-to-avif.avif",
+        "bytes": 627,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          160,
+          256
+        ],
+        "pixelBytes": 163840
+      },
+      {
+        "source": "meta.webp",
+        "ms": 0.8000000007450581,
+        "name": "meta-webp-to-png.png",
+        "bytes": 7028,
+        "mime": "image/png",
+        "magic": "png",
+        "decoded": [
+          256,
+          160
+        ],
+        "pixelBytes": 163840
+      },
+      {
+        "source": "meta.webp",
+        "ms": 1,
+        "name": "meta-webp-to-jpeg.jpg",
+        "bytes": 3086,
+        "mime": "image/jpeg",
+        "magic": "jpeg",
+        "decoded": [
+          256,
+          160
+        ],
+        "pixelBytes": 163840
+      },
+      {
+        "source": "meta.webp",
+        "ms": 2.399999998509884,
+        "name": "meta-webp-to-webp.webp",
+        "bytes": 1368,
+        "mime": "image/webp",
+        "magic": "webp",
+        "decoded": [
+          256,
+          160
+        ],
+        "pixelBytes": 163840
+      },
+      {
+        "source": "meta.webp",
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "96690bd4-9ec8-48a0-ac52-7ced7ac36d42",
+        "count": 3,
+        "ms": 88.59999999962747,
+        "heapBefore": 16777216,
+        "heapAfter": 20185088,
+        "name": "meta-webp-to-avif.avif",
+        "bytes": 670,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          256,
+          160
+        ],
+        "pixelBytes": 163840
+      },
+      {
+        "source": "meta.avif",
+        "ms": 1,
+        "name": "meta-avif-to-png.png",
+        "bytes": 4426,
+        "mime": "image/png",
+        "magic": "png",
+        "decoded": [
+          160,
+          256
+        ],
+        "pixelBytes": 163840
+      },
+      {
+        "source": "meta.avif",
+        "ms": 0.5,
+        "name": "meta-avif-to-jpeg.jpg",
+        "bytes": 3080,
+        "mime": "image/jpeg",
+        "magic": "jpeg",
+        "decoded": [
+          160,
+          256
+        ],
+        "pixelBytes": 163840
+      },
+      {
+        "source": "meta.avif",
+        "ms": 2.300000000745058,
+        "name": "meta-avif-to-webp.webp",
+        "bytes": 1386,
+        "mime": "image/webp",
+        "magic": "webp",
+        "decoded": [
+          160,
+          256
+        ],
+        "pixelBytes": 163840
+      },
+      {
+        "source": "meta.avif",
+        "options": {
+          "quality": 55,
+          "speed": 6
+        },
+        "engineId": "96690bd4-9ec8-48a0-ac52-7ced7ac36d42",
+        "count": 4,
+        "ms": 62.19999999925494,
+        "heapBefore": 20185088,
+        "heapAfter": 20185088,
+        "name": "meta-avif-to-avif.avif",
+        "bytes": 632,
+        "mime": "image/avif",
+        "magic": "avif",
+        "decoded": [
+          160,
+          256
+        ],
+        "pixelBytes": 163840
+      }
+    ]
+  },
+  "metadataReencodeComparison": [
+    {
+      "name": "meta-jpg-to-png.png",
+      "source": "meta.jpg",
+      "encodeMs": 3.899999998509884,
+      "inputBytes": 5102,
+      "outputBytes": 9503,
+      "expectedOrientedDimensions": [
+        160,
+        256
+      ],
+      "actualDimensions": [
+        160,
+        256
+      ],
+      "orientationCorrect": true,
+      "rgbPsnr": null,
+      "rgbMaxError": 0
+    },
+    {
+      "name": "meta-jpg-to-jpeg.jpg",
+      "source": "meta.jpg",
+      "encodeMs": 2.400000000372529,
+      "inputBytes": 5102,
+      "outputBytes": 3157,
+      "expectedOrientedDimensions": [
+        160,
+        256
+      ],
+      "actualDimensions": [
+        160,
+        256
+      ],
+      "orientationCorrect": true,
+      "rgbPsnr": 42.33,
+      "rgbMaxError": 48
+    },
+    {
+      "name": "meta-jpg-to-webp.webp",
+      "source": "meta.jpg",
+      "encodeMs": 2.699999999254942,
+      "inputBytes": 5102,
+      "outputBytes": 1446,
+      "expectedOrientedDimensions": [
+        160,
+        256
+      ],
+      "actualDimensions": [
+        160,
+        256
+      ],
+      "orientationCorrect": true,
+      "rgbPsnr": 41.813,
+      "rgbMaxError": 36
+    },
+    {
+      "name": "meta-jpg-to-avif.avif",
+      "source": "meta.jpg",
+      "encodeMs": 77.29999999888241,
+      "inputBytes": 5102,
+      "outputBytes": 634,
+      "expectedOrientedDimensions": [
+        160,
+        256
+      ],
+      "actualDimensions": [
+        160,
+        256
+      ],
+      "orientationCorrect": true,
+      "rgbPsnr": 41.93,
+      "rgbMaxError": 38
+    },
+    {
+      "name": "meta-png-to-png.png",
+      "source": "meta.png",
+      "encodeMs": 871.0999999996275,
+      "inputBytes": 2394,
+      "outputBytes": 2916,
+      "expectedOrientedDimensions": [
+        160,
+        256
+      ],
+      "actualDimensions": [
+        160,
+        256
+      ],
+      "orientationCorrect": true,
+      "rgbPsnr": null,
+      "rgbMaxError": 0
+    },
+    {
+      "name": "meta-png-to-jpeg.jpg",
+      "source": "meta.png",
+      "encodeMs": 0.7000000011175871,
+      "inputBytes": 2394,
+      "outputBytes": 3127,
+      "expectedOrientedDimensions": [
+        160,
+        256
+      ],
+      "actualDimensions": [
+        160,
+        256
+      ],
+      "orientationCorrect": true,
+      "rgbPsnr": 30.448,
+      "rgbMaxError": 127
+    },
+    {
+      "name": "meta-png-to-webp.webp",
+      "source": "meta.png",
+      "encodeMs": 3.5,
+      "inputBytes": 2394,
+      "outputBytes": 1364,
+      "expectedOrientedDimensions": [
+        160,
+        256
+      ],
+      "actualDimensions": [
+        160,
+        256
+      ],
+      "orientationCorrect": true,
+      "rgbPsnr": 30.438,
+      "rgbMaxError": 129
+    },
+    {
+      "name": "meta-png-to-avif.avif",
+      "source": "meta.png",
+      "encodeMs": 75.5,
+      "inputBytes": 2394,
+      "outputBytes": 627,
+      "expectedOrientedDimensions": [
+        160,
+        256
+      ],
+      "actualDimensions": [
+        160,
+        256
+      ],
+      "orientationCorrect": true,
+      "rgbPsnr": 30.453,
+      "rgbMaxError": 139
+    },
+    {
+      "name": "meta-webp-to-png.png",
+      "source": "meta.webp",
+      "encodeMs": 0.8000000007450581,
+      "inputBytes": 2238,
+      "outputBytes": 7028,
+      "expectedOrientedDimensions": [
+        160,
+        256
+      ],
+      "actualDimensions": [
+        256,
+        160
+      ],
+      "orientationCorrect": false
+    },
+    {
+      "name": "meta-webp-to-jpeg.jpg",
+      "source": "meta.webp",
+      "encodeMs": 1,
+      "inputBytes": 2238,
+      "outputBytes": 3086,
+      "expectedOrientedDimensions": [
+        160,
+        256
+      ],
+      "actualDimensions": [
+        256,
+        160
+      ],
+      "orientationCorrect": false
+    },
+    {
+      "name": "meta-webp-to-webp.webp",
+      "source": "meta.webp",
+      "encodeMs": 2.399999998509884,
+      "inputBytes": 2238,
+      "outputBytes": 1368,
+      "expectedOrientedDimensions": [
+        160,
+        256
+      ],
+      "actualDimensions": [
+        256,
+        160
+      ],
+      "orientationCorrect": false
+    },
+    {
+      "name": "meta-webp-to-avif.avif",
+      "source": "meta.webp",
+      "encodeMs": 88.59999999962747,
+      "inputBytes": 2238,
+      "outputBytes": 670,
+      "expectedOrientedDimensions": [
+        160,
+        256
+      ],
+      "actualDimensions": [
+        256,
+        160
+      ],
+      "orientationCorrect": false
+    },
+    {
+      "name": "meta-avif-to-png.png",
+      "source": "meta.avif",
+      "encodeMs": 1,
+      "inputBytes": 2049,
+      "outputBytes": 4426,
+      "expectedOrientedDimensions": [
+        160,
+        256
+      ],
+      "actualDimensions": [
+        160,
+        256
+      ],
+      "orientationCorrect": true,
+      "rgbPsnr": null,
+      "rgbMaxError": 0
+    },
+    {
+      "name": "meta-avif-to-jpeg.jpg",
+      "source": "meta.avif",
+      "encodeMs": 0.5,
+      "inputBytes": 2049,
+      "outputBytes": 3080,
+      "expectedOrientedDimensions": [
+        160,
+        256
+      ],
+      "actualDimensions": [
+        160,
+        256
+      ],
+      "orientationCorrect": true,
+      "rgbPsnr": 41.672,
+      "rgbMaxError": 43
+    },
+    {
+      "name": "meta-avif-to-webp.webp",
+      "source": "meta.avif",
+      "encodeMs": 2.300000000745058,
+      "inputBytes": 2049,
+      "outputBytes": 1386,
+      "expectedOrientedDimensions": [
+        160,
+        256
+      ],
+      "actualDimensions": [
+        160,
+        256
+      ],
+      "orientationCorrect": true,
+      "rgbPsnr": 41.822,
+      "rgbMaxError": 34
+    },
+    {
+      "name": "meta-avif-to-avif.avif",
+      "source": "meta.avif",
+      "encodeMs": 62.19999999925494,
+      "inputBytes": 2049,
+      "outputBytes": 632,
+      "expectedOrientedDimensions": [
+        160,
+        256
+      ],
+      "actualDimensions": [
+        160,
+        256
+      ],
+      "orientationCorrect": true,
+      "rgbPsnr": 43.193,
+      "rgbMaxError": 33
+    }
+  ],
+  "metadataOutputs": [
+    {
+      "name": "meta-avif-to-avif.avif",
+      "bytes": 632,
+      "format": "AVIF",
+      "size": [
+        160,
+        256
+      ],
+      "orientedSize": [
+        160,
+        256
+      ],
+      "orientation": 1,
+      "exifTags": [],
+      "gps": "{}",
+      "iccBytes": 0,
+      "iccSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [],
+      "rawCanary": false,
+      "sha256": "ebca0a7c4bfc3d7ca27295fe7ab4628b12e881333c3662c1fccd2ea04bc81e5f"
+    },
+    {
+      "name": "meta-avif-to-jpeg.jpg",
+      "bytes": 3080,
+      "format": "JPEG",
+      "size": [
+        160,
+        256
+      ],
+      "orientedSize": [
+        160,
+        256
+      ],
+      "orientation": 1,
+      "exifTags": [],
+      "gps": "{}",
+      "iccBytes": 456,
+      "iccSha256": "12afb4d9953adee0607d347daee5b78b18d6b3cab2d572b88970703f5edb37bc",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [
+        "0xe0",
+        "0xe2",
+        "0xdb",
+        "0xdb",
+        "0xc0",
+        "0xc4",
+        "0xc4",
+        "0xc4",
+        "0xc4",
+        "0xda"
+      ],
+      "rawCanary": false,
+      "sha256": "287983ca971e106d20f7c59af6e8c4679743faa8d0cad3cb837de68c6ec9fd8a"
+    },
+    {
+      "name": "meta-avif-to-png.png",
+      "bytes": 4426,
+      "format": "PNG",
+      "size": [
+        160,
+        256
+      ],
+      "orientedSize": [
+        160,
+        256
+      ],
+      "orientation": 1,
+      "exifTags": [],
+      "gps": "{}",
+      "iccBytes": 0,
+      "iccSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [
+        "IHDR",
+        "IDAT",
+        "IDAT",
+        "IDAT",
+        "IEND"
+      ],
+      "rawCanary": false,
+      "sha256": "5f99261ec99948dc7b4e9d2f3617e9a7735beb63babd8bc1bf6d25741fdc139a"
+    },
+    {
+      "name": "meta-avif-to-webp.webp",
+      "bytes": 1386,
+      "format": "WEBP",
+      "size": [
+        160,
+        256
+      ],
+      "orientedSize": [
+        160,
+        256
+      ],
+      "orientation": 1,
+      "exifTags": [],
+      "gps": "{}",
+      "iccBytes": 456,
+      "iccSha256": "12afb4d9953adee0607d347daee5b78b18d6b3cab2d572b88970703f5edb37bc",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [
+        "VP8X",
+        "ICCP",
+        "VP8 "
+      ],
+      "rawCanary": false,
+      "sha256": "ab50f336c26e3d86427c4c7abe45105094629407610756168b361d50acac5332"
+    },
+    {
+      "name": "meta-jpg-to-avif.avif",
+      "bytes": 634,
+      "format": "AVIF",
+      "size": [
+        160,
+        256
+      ],
+      "orientedSize": [
+        160,
+        256
+      ],
+      "orientation": 1,
+      "exifTags": [],
+      "gps": "{}",
+      "iccBytes": 0,
+      "iccSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [],
+      "rawCanary": false,
+      "sha256": "0499a816347735ba9ad7796120e7585adbff6f725013a0c695f0e0602e66c895"
+    },
+    {
+      "name": "meta-jpg-to-jpeg.jpg",
+      "bytes": 3157,
+      "format": "JPEG",
+      "size": [
+        160,
+        256
+      ],
+      "orientedSize": [
+        160,
+        256
+      ],
+      "orientation": 1,
+      "exifTags": [],
+      "gps": "{}",
+      "iccBytes": 456,
+      "iccSha256": "12afb4d9953adee0607d347daee5b78b18d6b3cab2d572b88970703f5edb37bc",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [
+        "0xe0",
+        "0xe2",
+        "0xdb",
+        "0xdb",
+        "0xc0",
+        "0xc4",
+        "0xc4",
+        "0xc4",
+        "0xc4",
+        "0xda"
+      ],
+      "rawCanary": false,
+      "sha256": "e75185c0a816bd6839463102e9de111913aa0fbb4670da5ca6bed2a0b1b04575"
+    },
+    {
+      "name": "meta-jpg-to-png.png",
+      "bytes": 9503,
+      "format": "PNG",
+      "size": [
+        160,
+        256
+      ],
+      "orientedSize": [
+        160,
+        256
+      ],
+      "orientation": 1,
+      "exifTags": [],
+      "gps": "{}",
+      "iccBytes": 0,
+      "iccSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [
+        "IHDR",
+        "IDAT",
+        "IDAT",
+        "IDAT",
+        "IDAT",
+        "IEND"
+      ],
+      "rawCanary": false,
+      "sha256": "3d9c696edcc3566314de0914572f78b0ee83657c5fff65d6908307c7a62d1a67"
+    },
+    {
+      "name": "meta-jpg-to-webp.webp",
+      "bytes": 1446,
+      "format": "WEBP",
+      "size": [
+        160,
+        256
+      ],
+      "orientedSize": [
+        160,
+        256
+      ],
+      "orientation": 1,
+      "exifTags": [],
+      "gps": "{}",
+      "iccBytes": 456,
+      "iccSha256": "12afb4d9953adee0607d347daee5b78b18d6b3cab2d572b88970703f5edb37bc",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [
+        "VP8X",
+        "ICCP",
+        "VP8 "
+      ],
+      "rawCanary": false,
+      "sha256": "710bd01488ddbce536f65818ffc7afe107995a6b1a6b535206a9d8fc3bb9fb7f"
+    },
+    {
+      "name": "meta-png-to-avif.avif",
+      "bytes": 627,
+      "format": "AVIF",
+      "size": [
+        160,
+        256
+      ],
+      "orientedSize": [
+        160,
+        256
+      ],
+      "orientation": 1,
+      "exifTags": [],
+      "gps": "{}",
+      "iccBytes": 0,
+      "iccSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [],
+      "rawCanary": false,
+      "sha256": "ff98e17b2aa3e6b685ba20ef31ac129bbc0f72d2df5b06f0fdf614753053b250"
+    },
+    {
+      "name": "meta-png-to-jpeg.jpg",
+      "bytes": 3127,
+      "format": "JPEG",
+      "size": [
+        160,
+        256
+      ],
+      "orientedSize": [
+        160,
+        256
+      ],
+      "orientation": 1,
+      "exifTags": [],
+      "gps": "{}",
+      "iccBytes": 456,
+      "iccSha256": "12afb4d9953adee0607d347daee5b78b18d6b3cab2d572b88970703f5edb37bc",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [
+        "0xe0",
+        "0xe2",
+        "0xdb",
+        "0xdb",
+        "0xc0",
+        "0xc4",
+        "0xc4",
+        "0xc4",
+        "0xc4",
+        "0xda"
+      ],
+      "rawCanary": false,
+      "sha256": "d09a07e401efe770f8053c08f36b1390b6ebb15bb20c211e1b08630cf37a5624"
+    },
+    {
+      "name": "meta-png-to-png.png",
+      "bytes": 2916,
+      "format": "PNG",
+      "size": [
+        160,
+        256
+      ],
+      "orientedSize": [
+        160,
+        256
+      ],
+      "orientation": 1,
+      "exifTags": [],
+      "gps": "{}",
+      "iccBytes": 0,
+      "iccSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [
+        "IHDR",
+        "IDAT",
+        "IDAT",
+        "IEND"
+      ],
+      "rawCanary": false,
+      "sha256": "9becc5f5d4bb4440b135691cecdc8c8f1c1a86d05f0076127d267f12c5f73125"
+    },
+    {
+      "name": "meta-png-to-webp.webp",
+      "bytes": 1364,
+      "format": "WEBP",
+      "size": [
+        160,
+        256
+      ],
+      "orientedSize": [
+        160,
+        256
+      ],
+      "orientation": 1,
+      "exifTags": [],
+      "gps": "{}",
+      "iccBytes": 456,
+      "iccSha256": "12afb4d9953adee0607d347daee5b78b18d6b3cab2d572b88970703f5edb37bc",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [
+        "VP8X",
+        "ICCP",
+        "VP8 "
+      ],
+      "rawCanary": false,
+      "sha256": "88e99f87b1947704fffbe493ac9f63a68d807b7f0496dc717db66c627d5d76ec"
+    },
+    {
+      "name": "meta-webp-to-avif.avif",
+      "bytes": 670,
+      "format": "AVIF",
+      "size": [
+        256,
+        160
+      ],
+      "orientedSize": [
+        256,
+        160
+      ],
+      "orientation": 1,
+      "exifTags": [],
+      "gps": "{}",
+      "iccBytes": 0,
+      "iccSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [],
+      "rawCanary": false,
+      "sha256": "16bc1ed9a96964a29a98d2e244a93be3ff33e088482961e937615122444c1acb"
+    },
+    {
+      "name": "meta-webp-to-jpeg.jpg",
+      "bytes": 3086,
+      "format": "JPEG",
+      "size": [
+        256,
+        160
+      ],
+      "orientedSize": [
+        256,
+        160
+      ],
+      "orientation": 1,
+      "exifTags": [],
+      "gps": "{}",
+      "iccBytes": 456,
+      "iccSha256": "12afb4d9953adee0607d347daee5b78b18d6b3cab2d572b88970703f5edb37bc",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [
+        "0xe0",
+        "0xe2",
+        "0xdb",
+        "0xdb",
+        "0xc0",
+        "0xc4",
+        "0xc4",
+        "0xc4",
+        "0xc4",
+        "0xda"
+      ],
+      "rawCanary": false,
+      "sha256": "485f81206b668797297eeef11091223b787fe76cd6e6ca6423c8f4cfbc331378"
+    },
+    {
+      "name": "meta-webp-to-png.png",
+      "bytes": 7028,
+      "format": "PNG",
+      "size": [
+        256,
+        160
+      ],
+      "orientedSize": [
+        256,
+        160
+      ],
+      "orientation": 1,
+      "exifTags": [],
+      "gps": "{}",
+      "iccBytes": 0,
+      "iccSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [
+        "IHDR",
+        "IDAT",
+        "IDAT",
+        "IDAT",
+        "IEND"
+      ],
+      "rawCanary": false,
+      "sha256": "f82664c737d1ffe5c168bbdb5e2a376caab0b21db0df1a9c46d90a8d1f41d294"
+    },
+    {
+      "name": "meta-webp-to-webp.webp",
+      "bytes": 1368,
+      "format": "WEBP",
+      "size": [
+        256,
+        160
+      ],
+      "orientedSize": [
+        256,
+        160
+      ],
+      "orientation": 1,
+      "exifTags": [],
+      "gps": "{}",
+      "iccBytes": 456,
+      "iccSha256": "12afb4d9953adee0607d347daee5b78b18d6b3cab2d572b88970703f5edb37bc",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [
+        "VP8X",
+        "ICCP",
+        "VP8 "
+      ],
+      "rawCanary": false,
+      "sha256": "79aac9740141f62f51df0d141aa1d65b8dcc4c4f482c5b72541d5b75a76cc330"
+    }
+  ],
+  "losslessCleanup": {
+    "fixtures": [
+      {
+        "source": {
+          "name": "meta.jpg",
+          "bytes": 5102,
+          "format": "JPEG",
+          "size": [
+            256,
+            160
+          ],
+          "orientedSize": [
+            160,
+            256
+          ],
+          "orientation": 6,
+          "exifTags": [
+            271,
+            272,
+            274,
+            306,
+            315,
+            33432,
+            34853
+          ],
+          "gps": "{1: 'N', 2: (1.0, 2.0, 3.0), 3: 'E', 4: (4.0, 5.0, 6.0)}",
+          "iccBytes": 588,
+          "iccSha256": "d506c8c15c61f2c17d909435fb0ea6de7dd4633fe27719c7330a01e7d4b06654",
+          "xmpBytes": 224,
+          "texts": {},
+          "chunks": [
+            "0xe1",
+            "0xed",
+            "0xfe",
+            "0xe0",
+            "0xe1",
+            "0xe2",
+            "0xdb",
+            "0xdb",
+            "0xc0",
+            "0xc4",
+            "0xc4",
+            "0xc4",
+            "0xc4",
+            "0xda"
+          ],
+          "rawCanary": true,
+          "sha256": "a1616991b2ba7847016a10d5a8eebbc914c264f8fb353a748354eea2f3c5f4c2"
+        },
+        "clean": {
+          "name": "clean.jpg",
+          "bytes": 4499,
+          "format": "JPEG",
+          "size": [
+            256,
+            160
+          ],
+          "orientedSize": [
+            160,
+            256
+          ],
+          "orientation": 6,
+          "exifTags": [
+            274
+          ],
+          "gps": "{}",
+          "iccBytes": 588,
+          "iccSha256": "d506c8c15c61f2c17d909435fb0ea6de7dd4633fe27719c7330a01e7d4b06654",
+          "xmpBytes": 0,
+          "texts": {},
+          "chunks": [
+            "0xe0",
+            "0xe1",
+            "0xe2",
+            "0xdb",
+            "0xdb",
+            "0xc0",
+            "0xc4",
+            "0xc4",
+            "0xc4",
+            "0xc4",
+            "0xda"
+          ],
+          "rawCanary": false,
+          "sha256": "730f2b051bfd633f8bca42cdd2a532d8ff0f2187037fa31b7536eb78a71647ca"
+        },
+        "codingPayloadIdentical": true,
+        "orientedPixelsIdenticalPillow": true,
+        "codingSha256": "3e598de46059622fdca28534703ab63c31f907dd2fce36b1d196c351ce64d83d",
+        "cleanupMs": 18.675100000109524
+      },
+      {
+        "source": {
+          "name": "meta.png",
+          "bytes": 2394,
+          "format": "PNG",
+          "size": [
+            256,
+            160
+          ],
+          "orientedSize": [
+            160,
+            256
+          ],
+          "orientation": 6,
+          "exifTags": [
+            271,
+            272,
+            274,
+            306,
+            315,
+            33432,
+            34853
+          ],
+          "gps": "{1: 'N', 2: (1.0, 2.0, 3.0), 3: 'E', 4: (4.0, 5.0, 6.0)}",
+          "iccBytes": 588,
+          "iccSha256": "d506c8c15c61f2c17d909435fb0ea6de7dd4633fe27719c7330a01e7d4b06654",
+          "xmpBytes": 224,
+          "texts": {
+            "Author": "C2A_TEST_PNG_AUTHOR",
+            "Comment": "C2A_TEST_PRIVATE_ZTXT",
+            "XML:com.adobe.xmp": "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"><rdf:Description xmlns:dc=\"http://purl.org/dc/elements/1.1/\" dc:description=\"C2A_TEST_PRIVATE_XMP\" /></rdf:RDF></x:xmpmeta>"
+          },
+          "chunks": [
+            "IHDR",
+            "iCCP",
+            "tEXt",
+            "zTXt",
+            "iTXt",
+            "eXIf",
+            "IDAT",
+            "IEND"
+          ],
+          "rawCanary": true,
+          "sha256": "f280ecedc36465123b463490067951d083d01c3ed253d3d1723d2274de742a08"
+        },
+        "clean": {
+          "name": "clean.png",
+          "bytes": 1786,
+          "format": "PNG",
+          "size": [
+            256,
+            160
+          ],
+          "orientedSize": [
+            160,
+            256
+          ],
+          "orientation": 6,
+          "exifTags": [
+            274
+          ],
+          "gps": "{}",
+          "iccBytes": 588,
+          "iccSha256": "d506c8c15c61f2c17d909435fb0ea6de7dd4633fe27719c7330a01e7d4b06654",
+          "xmpBytes": 0,
+          "texts": {},
+          "chunks": [
+            "IHDR",
+            "iCCP",
+            "eXIf",
+            "IDAT",
+            "IEND"
+          ],
+          "rawCanary": false,
+          "sha256": "75ee57d5305e92d48edb51003a16b32ff7636bcc8c6ac90f155ac5d819abe221"
+        },
+        "codingPayloadIdentical": true,
+        "orientedPixelsIdenticalPillow": true,
+        "codingSha256": "ffd30514ce981bf4c34e44b652058d46ea8226194f539b9783d644251da128ea",
+        "cleanupMs": 0.2602000004117144
+      },
+      {
+        "source": {
+          "name": "meta.webp",
+          "bytes": 2238,
+          "format": "WEBP",
+          "size": [
+            256,
+            160
+          ],
+          "orientedSize": [
+            160,
+            256
+          ],
+          "orientation": 6,
+          "exifTags": [
+            271,
+            272,
+            274,
+            306,
+            315,
+            33432,
+            34853
+          ],
+          "gps": "{1: 'N', 2: (1.0, 2.0, 3.0), 3: 'E', 4: (4.0, 5.0, 6.0)}",
+          "iccBytes": 588,
+          "iccSha256": "d506c8c15c61f2c17d909435fb0ea6de7dd4633fe27719c7330a01e7d4b06654",
+          "xmpBytes": 224,
+          "texts": {},
+          "chunks": [
+            "VP8X",
+            "ICCP",
+            "VP8 ",
+            "EXIF",
+            "XMP "
+          ],
+          "rawCanary": true,
+          "sha256": "6cc6c37118daae6c617e64b7a771fe962a780b231621d748790dfe08946addeb"
+        },
+        "clean": {
+          "name": "clean.webp",
+          "bytes": 1750,
+          "format": "WEBP",
+          "size": [
+            256,
+            160
+          ],
+          "orientedSize": [
+            160,
+            256
+          ],
+          "orientation": 6,
+          "exifTags": [
+            274
+          ],
+          "gps": "{}",
+          "iccBytes": 588,
+          "iccSha256": "d506c8c15c61f2c17d909435fb0ea6de7dd4633fe27719c7330a01e7d4b06654",
+          "xmpBytes": 0,
+          "texts": {},
+          "chunks": [
+            "VP8X",
+            "ICCP",
+            "VP8 ",
+            "EXIF"
+          ],
+          "rawCanary": false,
+          "sha256": "bea0134c67ff04537dbe42347dc4040f2215f63b3e2c796fec2856960e7286ee"
+        },
+        "codingPayloadIdentical": true,
+        "orientedPixelsIdenticalPillow": true,
+        "codingSha256": "d0907d94feeb4cf53673eea7e8f209717c4e6bbec23f647b9abb9fdc9cee2073",
+        "cleanupMs": 0.13479999870469328
+      }
+    ],
+    "avifInput": {
+      "name": "meta.avif",
+      "bytes": 2049,
+      "format": "AVIF",
+      "size": [
+        256,
+        160
+      ],
+      "orientedSize": [
+        160,
+        256
+      ],
+      "orientation": 6,
+      "exifTags": [
+        271,
+        272,
+        274,
+        306,
+        315,
+        33432,
+        34853
+      ],
+      "gps": "{1: 'N', 2: (1.0, 2.0, 3.0), 3: 'E', 4: (4.0, 5.0, 6.0)}",
+      "iccBytes": 588,
+      "iccSha256": "d506c8c15c61f2c17d909435fb0ea6de7dd4633fe27719c7330a01e7d4b06654",
+      "xmpBytes": 224,
+      "texts": {},
+      "chunks": [],
+      "rawCanary": true,
+      "sha256": "48683dac093e3fabca9577959d18181eb008e302c3934cf3f7e486ae148b495c"
+    },
+    "negativeTests": [
+      {
+        "case": "PNG bad CRC",
+        "rejected": true,
+        "reason": ""
+      },
+      {
+        "case": "WebP truncated",
+        "rejected": true,
+        "reason": ""
+      },
+      {
+        "case": "PNG APNG marker",
+        "rejected": true,
+        "reason": "animation refused"
+      },
+      {
+        "case": "PNG unknown chunk",
+        "rejected": true,
+        "reason": "unreviewed PNG chunk b'vpAg'"
+      }
+    ]
+  },
+  "preserve": {
+    "whitelistWriteback": [
+      {
+        "source": "meta.jpg",
+        "output": {
+          "name": "preserve.png",
+          "bytes": 9601,
+          "format": "PNG",
+          "size": [
+            160,
+            256
+          ],
+          "orientedSize": [
+            160,
+            256
+          ],
+          "orientation": 1,
+          "exifTags": [
+            274,
+            315,
+            33432
+          ],
+          "gps": "{}",
+          "iccBytes": 0,
+          "iccSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "xmpBytes": 0,
+          "texts": {},
+          "chunks": [
+            "IHDR",
+            "IDAT",
+            "IDAT",
+            "IDAT",
+            "IDAT",
+            "eXIf",
+            "IEND"
+          ],
+          "rawCanary": true,
+          "sha256": "fb7cc282f35008085864435b62dcea5b8a3f17854d81a7557fbe30f549ea735b"
+        },
+        "codingPayloadIdenticalToReencodedBase": true
+      },
+      {
+        "source": "meta.jpg",
+        "output": {
+          "name": "preserve.jpg",
+          "bytes": 3253,
+          "format": "JPEG",
+          "size": [
+            160,
+            256
+          ],
+          "orientedSize": [
+            160,
+            256
+          ],
+          "orientation": 1,
+          "exifTags": [
+            274,
+            315,
+            33432
+          ],
+          "gps": "{}",
+          "iccBytes": 456,
+          "iccSha256": "12afb4d9953adee0607d347daee5b78b18d6b3cab2d572b88970703f5edb37bc",
+          "xmpBytes": 0,
+          "texts": {},
+          "chunks": [
+            "0xe1",
+            "0xe0",
+            "0xe2",
+            "0xdb",
+            "0xdb",
+            "0xc0",
+            "0xc4",
+            "0xc4",
+            "0xc4",
+            "0xc4",
+            "0xda"
+          ],
+          "rawCanary": true,
+          "sha256": "23a1fd75ee9726df3ba36f8beb1960c84ac299c1f700586972e15d33d431c97a"
+        },
+        "codingPayloadIdenticalToReencodedBase": true
+      },
+      {
+        "source": "meta.jpg",
+        "output": {
+          "name": "preserve.webp",
+          "bytes": 1546,
+          "format": "WEBP",
+          "size": [
+            160,
+            256
+          ],
+          "orientedSize": [
+            160,
+            256
+          ],
+          "orientation": 1,
+          "exifTags": [
+            274,
+            315,
+            33432
+          ],
+          "gps": "{}",
+          "iccBytes": 456,
+          "iccSha256": "12afb4d9953adee0607d347daee5b78b18d6b3cab2d572b88970703f5edb37bc",
+          "xmpBytes": 0,
+          "texts": {},
+          "chunks": [
+            "VP8X",
+            "ICCP",
+            "VP8 ",
+            "EXIF"
+          ],
+          "rawCanary": true,
+          "sha256": "c6d7424fbcf534e70a2f82b4d5da859967b14f21b3493c9ab3f1d2b2ff919878"
+        },
+        "codingPayloadIdenticalToReencodedBase": true
+      }
+    ],
+    "badCopyCounterexample": {
+      "name": "bad-preserve.jpg",
+      "bytes": 3455,
+      "format": "JPEG",
+      "size": [
+        160,
+        256
+      ],
+      "orientedSize": [
+        256,
+        160
+      ],
+      "orientation": 6,
+      "exifTags": [
+        271,
+        272,
+        274,
+        306,
+        315,
+        33432,
+        34853
+      ],
+      "gps": "{1: 'N', 2: (1.0, 2.0, 3.0), 3: 'E', 4: (4.0, 5.0, 6.0)}",
+      "iccBytes": 456,
+      "iccSha256": "12afb4d9953adee0607d347daee5b78b18d6b3cab2d572b88970703f5edb37bc",
+      "xmpBytes": 0,
+      "texts": {},
+      "chunks": [
+        "0xe1",
+        "0xe0",
+        "0xe2",
+        "0xdb",
+        "0xdb",
+        "0xc0",
+        "0xc4",
+        "0xc4",
+        "0xc4",
+        "0xc4",
+        "0xda"
+      ],
+      "rawCanary": true,
+      "sha256": "096dddb292c5ef79c1a0c46ef0670a4dc3354ea1de84387bd711d3166e005f26"
+    }
+  },
+  "productionAccept": {
+    "environment": {
+      "date": "2026-10-30T07:38:01.386Z",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "hardwareConcurrency": 16,
+      "deviceMemory": 32,
+      "visibility": "visible",
+      "crossOriginIsolated": false,
+      "jsHeap": {
+        "used": 7229943,
+        "total": 14024915,
+        "limit": 4395630592
+      }
+    },
+    "results": [
+      {
+        "name": "meta.jpg",
+        "info": {
+          "format": "jpeg",
+          "width": 256,
+          "height": 160,
+          "orientation": 6
+        },
+        "accepted": {
+          "width": 160,
+          "height": 256,
+          "format": "jpeg",
+          "orientation": 6
+        },
+        "browserBitmap": [
+          160,
+          256
+        ],
+        "htmlImage": [
+          160,
+          256
+        ],
+        "resources": {
+          "created": 1,
+          "closed": 1
+        }
+      },
+      {
+        "name": "meta.png",
+        "info": {
+          "format": "png",
+          "width": 256,
+          "height": 160,
+          "orientation": 6
+        },
+        "accepted": {
+          "width": 160,
+          "height": 256,
+          "format": "png",
+          "orientation": 6
+        },
+        "browserBitmap": [
+          160,
+          256
+        ],
+        "htmlImage": [
+          160,
+          256
+        ],
+        "resources": {
+          "created": 1,
+          "closed": 1
+        }
+      },
+      {
+        "name": "meta.webp",
+        "info": {
+          "format": "webp",
+          "width": 256,
+          "height": 160,
+          "orientation": 6
+        },
+        "error": {
+          "message": "Error: decode",
+          "code": "decode"
+        },
+        "browserBitmap": [
+          256,
+          160
+        ],
+        "htmlImage": [
+          256,
+          160
+        ],
+        "resources": {
+          "created": 1,
+          "closed": 1
+        }
+      },
+      {
+        "name": "clean.jpg",
+        "info": {
+          "format": "jpeg",
+          "width": 256,
+          "height": 160,
+          "orientation": 6
+        },
+        "accepted": {
+          "width": 160,
+          "height": 256,
+          "format": "jpeg",
+          "orientation": 6
+        },
+        "browserBitmap": [
+          160,
+          256
+        ],
+        "htmlImage": [
+          160,
+          256
+        ],
+        "resources": {
+          "created": 1,
+          "closed": 1
+        }
+      },
+      {
+        "name": "clean.png",
+        "info": {
+          "format": "png",
+          "width": 256,
+          "height": 160,
+          "orientation": 6
+        },
+        "accepted": {
+          "width": 160,
+          "height": 256,
+          "format": "png",
+          "orientation": 6
+        },
+        "browserBitmap": [
+          160,
+          256
+        ],
+        "htmlImage": [
+          160,
+          256
+        ],
+        "resources": {
+          "created": 1,
+          "closed": 1
+        }
+      },
+      {
+        "name": "clean.webp",
+        "info": {
+          "format": "webp",
+          "width": 256,
+          "height": 160,
+          "orientation": 6
+        },
+        "error": {
+          "message": "Error: decode",
+          "code": "decode"
+        },
+        "browserBitmap": [
+          256,
+          160
+        ],
+        "htmlImage": [
+          256,
+          160
+        ],
+        "resources": {
+          "created": 1,
+          "closed": 1
+        }
+      },
+      {
+        "name": "meta-webp-rawtiff.webp",
+        "info": {
+          "format": "webp",
+          "width": 256,
+          "height": 160,
+          "orientation": 6
+        },
+        "error": {
+          "message": "Error: decode",
+          "code": "decode"
+        },
+        "browserBitmap": [
+          256,
+          160
+        ],
+        "htmlImage": [
+          256,
+          160
+        ],
+        "resources": {
+          "created": 1,
+          "closed": 1
+        }
+      },
+      {
+        "name": "bad-preserve.jpg",
+        "info": {
+          "format": "jpeg",
+          "width": 160,
+          "height": 256,
+          "orientation": 6
+        },
+        "accepted": {
+          "width": 256,
+          "height": 160,
+          "format": "jpeg",
+          "orientation": 6
+        },
+        "browserBitmap": [
+          256,
+          160
+        ],
+        "htmlImage": [
+          256,
+          160
+        ],
+        "resources": {
+          "created": 1,
+          "closed": 1
+        }
+      },
+      {
+        "name": "preserve.png",
+        "info": {
+          "format": "png",
+          "width": 160,
+          "height": 256,
+          "orientation": 1
+        },
+        "accepted": {
+          "width": 160,
+          "height": 256,
+          "format": "png",
+          "orientation": 1
+        },
+        "browserBitmap": [
+          160,
+          256
+        ],
+        "htmlImage": [
+          160,
+          256
+        ],
+        "resources": {
+          "created": 1,
+          "closed": 1
+        }
+      },
+      {
+        "name": "preserve.jpg",
+        "info": {
+          "format": "jpeg",
+          "width": 160,
+          "height": 256,
+          "orientation": 1
+        },
+        "accepted": {
+          "width": 160,
+          "height": 256,
+          "format": "jpeg",
+          "orientation": 1
+        },
+        "browserBitmap": [
+          160,
+          256
+        ],
+        "htmlImage": [
+          160,
+          256
+        ],
+        "resources": {
+          "created": 1,
+          "closed": 1
+        }
+      },
+      {
+        "name": "preserve.webp",
+        "info": {
+          "format": "webp",
+          "width": 160,
+          "height": 256,
+          "orientation": 1
+        },
+        "accepted": {
+          "width": 160,
+          "height": 256,
+          "format": "webp",
+          "orientation": 1
+        },
+        "browserBitmap": [
+          160,
+          256
+        ],
+        "htmlImage": [
+          160,
+          256
+        ],
+        "resources": {
+          "created": 1,
+          "closed": 1
+        }
+      }
+    ]
+  },
+  "sessionPrivacy": {
+    "environment": {
+      "date": "2026-10-30T07:44:26.212Z",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "hardwareConcurrency": 16,
+      "deviceMemory": 32,
+      "visibility": "visible",
+      "crossOriginIsolated": false,
+      "jsHeap": {
+        "used": 12369693,
+        "total": 16069293,
+        "limit": 4395630592
+      }
+    },
+    "results": [
+      {
+        "format": "jpeg",
+        "source": "meta.jpg",
+        "quickKind": "passthrough",
+        "quickByteIdentical": true,
+        "advancedKind": "encoded",
+        "sourceSize": 5102,
+        "advancedSize": 3157,
+        "resources": {
+          "bitmapsCreated": 6,
+          "bitmapsClosed": 6,
+          "canvasesCreated": 4,
+          "canvasesReleased": 4,
+          "urlsCreated": 0,
+          "urlsRevoked": 0
+        }
+      },
+      {
+        "format": "png",
+        "source": "meta.png",
+        "quickKind": "passthrough",
+        "quickByteIdentical": true,
+        "advancedKind": "encoded",
+        "sourceSize": 2394,
+        "advancedSize": 2916,
+        "resources": {
+          "bitmapsCreated": 6,
+          "bitmapsClosed": 6,
+          "canvasesCreated": 4,
+          "canvasesReleased": 4,
+          "urlsCreated": 0,
+          "urlsRevoked": 0
+        }
+      },
+      {
+        "format": "webp",
+        "source": "meta-normal.webp",
+        "quickKind": "passthrough",
+        "quickByteIdentical": true,
+        "advancedKind": "encoded",
+        "sourceSize": 2296,
+        "advancedSize": 1356,
+        "resources": {
+          "bitmapsCreated": 6,
+          "bitmapsClosed": 6,
+          "canvasesCreated": 4,
+          "canvasesReleased": 4,
+          "urlsCreated": 0,
+          "urlsRevoked": 0
+        }
+      }
+    ]
+  },
+  "sessionMetadataInventory": [
+    {
+      "quick": {
+        "name": "session-quick.jpg",
+        "bytes": 5102,
+        "format": "JPEG",
+        "size": [
+          256,
+          160
+        ],
+        "orientedSize": [
+          160,
+          256
+        ],
+        "orientation": 6,
+        "exifTags": [
+          271,
+          272,
+          274,
+          306,
+          315,
+          33432,
+          34853
+        ],
+        "gps": "{1: 'N', 2: (1.0, 2.0, 3.0), 3: 'E', 4: (4.0, 5.0, 6.0)}",
+        "iccBytes": 588,
+        "iccSha256": "d506c8c15c61f2c17d909435fb0ea6de7dd4633fe27719c7330a01e7d4b06654",
+        "xmpBytes": 224,
+        "texts": {},
+        "chunks": [
+          "0xe1",
+          "0xed",
+          "0xfe",
+          "0xe0",
+          "0xe1",
+          "0xe2",
+          "0xdb",
+          "0xdb",
+          "0xc0",
+          "0xc4",
+          "0xc4",
+          "0xc4",
+          "0xc4",
+          "0xda"
+        ],
+        "rawCanary": true,
+        "sha256": "a1616991b2ba7847016a10d5a8eebbc914c264f8fb353a748354eea2f3c5f4c2"
+      },
+      "advanced": {
+        "name": "session-advanced.jpg",
+        "bytes": 3157,
+        "format": "JPEG",
+        "size": [
+          160,
+          256
+        ],
+        "orientedSize": [
+          160,
+          256
+        ],
+        "orientation": 1,
+        "exifTags": [],
+        "gps": "{}",
+        "iccBytes": 456,
+        "iccSha256": "12afb4d9953adee0607d347daee5b78b18d6b3cab2d572b88970703f5edb37bc",
+        "xmpBytes": 0,
+        "texts": {},
+        "chunks": [
+          "0xe0",
+          "0xe2",
+          "0xdb",
+          "0xdb",
+          "0xc0",
+          "0xc4",
+          "0xc4",
+          "0xc4",
+          "0xc4",
+          "0xda"
+        ],
+        "rawCanary": false,
+        "sha256": "e75185c0a816bd6839463102e9de111913aa0fbb4670da5ca6bed2a0b1b04575"
+      }
+    },
+    {
+      "quick": {
+        "name": "session-quick.png",
+        "bytes": 2394,
+        "format": "PNG",
+        "size": [
+          256,
+          160
+        ],
+        "orientedSize": [
+          160,
+          256
+        ],
+        "orientation": 6,
+        "exifTags": [
+          271,
+          272,
+          274,
+          306,
+          315,
+          33432,
+          34853
+        ],
+        "gps": "{1: 'N', 2: (1.0, 2.0, 3.0), 3: 'E', 4: (4.0, 5.0, 6.0)}",
+        "iccBytes": 588,
+        "iccSha256": "d506c8c15c61f2c17d909435fb0ea6de7dd4633fe27719c7330a01e7d4b06654",
+        "xmpBytes": 224,
+        "texts": {
+          "Author": "C2A_TEST_PNG_AUTHOR",
+          "Comment": "C2A_TEST_PRIVATE_ZTXT",
+          "XML:com.adobe.xmp": "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"><rdf:Description xmlns:dc=\"http://purl.org/dc/elements/1.1/\" dc:description=\"C2A_TEST_PRIVATE_XMP\" /></rdf:RDF></x:xmpmeta>"
+        },
+        "chunks": [
+          "IHDR",
+          "iCCP",
+          "tEXt",
+          "zTXt",
+          "iTXt",
+          "eXIf",
+          "IDAT",
+          "IEND"
+        ],
+        "rawCanary": true,
+        "sha256": "f280ecedc36465123b463490067951d083d01c3ed253d3d1723d2274de742a08"
+      },
+      "advanced": {
+        "name": "session-advanced.png",
+        "bytes": 2916,
+        "format": "PNG",
+        "size": [
+          160,
+          256
+        ],
+        "orientedSize": [
+          160,
+          256
+        ],
+        "orientation": 1,
+        "exifTags": [],
+        "gps": "{}",
+        "iccBytes": 0,
+        "iccSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "xmpBytes": 0,
+        "texts": {},
+        "chunks": [
+          "IHDR",
+          "IDAT",
+          "IDAT",
+          "IEND"
+        ],
+        "rawCanary": false,
+        "sha256": "9becc5f5d4bb4440b135691cecdc8c8f1c1a86d05f0076127d267f12c5f73125"
+      }
+    },
+    {
+      "quick": {
+        "name": "session-quick.webp",
+        "bytes": 2296,
+        "format": "WEBP",
+        "size": [
+          256,
+          160
+        ],
+        "orientedSize": [
+          256,
+          160
+        ],
+        "orientation": 1,
+        "exifTags": [
+          271,
+          272,
+          274,
+          306,
+          315,
+          33432,
+          34853
+        ],
+        "gps": "{1: 'N', 2: (1.0, 2.0, 3.0), 3: 'E', 4: (4.0, 5.0, 6.0)}",
+        "iccBytes": 588,
+        "iccSha256": "d506c8c15c61f2c17d909435fb0ea6de7dd4633fe27719c7330a01e7d4b06654",
+        "xmpBytes": 224,
+        "texts": {},
+        "chunks": [
+          "VP8X",
+          "ICCP",
+          "VP8 ",
+          "EXIF",
+          "XMP "
+        ],
+        "rawCanary": true,
+        "sha256": "0a2f8ba78d01b4dc15e84b70f8b02240a28ccc0e2c3f9d598363d6c700e9b5d3"
+      },
+      "advanced": {
+        "name": "session-advanced.webp",
+        "bytes": 1356,
+        "format": "WEBP",
+        "size": [
+          256,
+          160
+        ],
+        "orientedSize": [
+          256,
+          160
+        ],
+        "orientation": 1,
+        "exifTags": [],
+        "gps": "{}",
+        "iccBytes": 456,
+        "iccSha256": "12afb4d9953adee0607d347daee5b78b18d6b3cab2d572b88970703f5edb37bc",
+        "xmpBytes": 0,
+        "texts": {},
+        "chunks": [
+          "VP8X",
+          "ICCP",
+          "VP8 "
+        ],
+        "rawCanary": false,
+        "sha256": "a3dcda419b16ec1f0c3fc6750cdbba49dae305ef7cc689ecec2bb72f9bb0ca2e"
+      }
+    }
+  ],
+  "independentDecodedOutputs": [
+    {
+      "file": "alpha-1mp-q50-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 12745,
+      "sha256": "1a34c3e6572a44468a97a00230bf19925838a48cf6ab2faa5458c32b14487cac"
+    },
+    {
+      "file": "alpha-1mp-q55-s6-a100.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 61544,
+      "sha256": "26fb99188907715238407253bfc22711db979996780cddd6e6a7fddda18a96e2"
+    },
+    {
+      "file": "alpha-1mp-q55-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 14097,
+      "sha256": "f7f3d06fed68e7b7b002b097a7c96c73fbd3fcc70676ce0c2c46f0c230063506"
+    },
+    {
+      "file": "alpha-1mp-q55-s8.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 39514,
+      "sha256": "d0b9c9a249afc0f01d163063c9033f9a37c6332d96a9c801fb7b8d71914e5cf7"
+    },
+    {
+      "file": "alpha-1mp-q60-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 15638,
+      "sha256": "35f56e00c1baf9dc3c7b6425498f8c6436a86c7b5ea68a7f00b864766c4f9178"
+    },
+    {
+      "file": "character-1mp-q50-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 5619,
+      "sha256": "c44303fd1128ebcc6cc5206d09e2f851b3ba500225fef6736dc27ad0c87b1ed1"
+    },
+    {
+      "file": "character-1mp-q55-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 5982,
+      "sha256": "9e1b52743f558bf262f1a4c933a5e0327a587641a6c7aca07ba6c5f495f4285f"
+    },
+    {
+      "file": "character-1mp-q60-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 6386,
+      "sha256": "28f3be6a11424c3f19667d6b811992a89f7a393c92d722cfa65373b7f45f56ed"
+    },
+    {
+      "file": "character-1mp-q75-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 7297,
+      "sha256": "44c314dc7ee4f874d12fd592b7a3db332d55422afd61af8639e33866a5922d8f"
+    },
+    {
+      "file": "character-4mp-q55-s6.avif",
+      "format": "AVIF",
+      "size": [
+        2048,
+        2048
+      ],
+      "bytes": 8775,
+      "sha256": "e944b831d27daf9d5614007d0e0d1eeebe808057df797d4ae3d6c6e3c31f3ab0"
+    },
+    {
+      "file": "character-4mp-q55-s8.avif",
+      "format": "AVIF",
+      "size": [
+        2048,
+        2048
+      ],
+      "bytes": 17997,
+      "sha256": "cd0d9207c5ce08dfa17383d6ffddfff00952656ce0a767e0bf87896339c42a8a"
+    },
+    {
+      "file": "detail-1mp-q50-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 31821,
+      "sha256": "bfd759c009aa636648de009a0da60126961fba4280c90a8deb9a6b6f749ae967"
+    },
+    {
+      "file": "detail-1mp-q55-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 33871,
+      "sha256": "9756b47ac87589efec87c1a96c8bc88d13b1785eed3eae1385dac24fcd148fc8"
+    },
+    {
+      "file": "detail-1mp-q60-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 35185,
+      "sha256": "2d6c0d19537b342ad065c05cd78a1165a1bb44ae791993564c6c4927b7d5fb29"
+    },
+    {
+      "file": "detail-4mp-q55-s6.avif",
+      "format": "AVIF",
+      "size": [
+        2048,
+        2048
+      ],
+      "bytes": 70230,
+      "sha256": "f9fac4be72539d83bb4deafd460dca72db4103c97b9be527eb72d415d85949b9"
+    },
+    {
+      "file": "detail-4mp-q55-s8.avif",
+      "format": "AVIF",
+      "size": [
+        2048,
+        2048
+      ],
+      "bytes": 135933,
+      "sha256": "7059e314cfc80d02ef438fb541b0fb9b5fc57861e721e9309636cf91d6e8fe3b"
+    },
+    {
+      "file": "detail-8mp-q55-s6.avif",
+      "format": "AVIF",
+      "size": [
+        2830,
+        2830
+      ],
+      "bytes": 80570,
+      "sha256": "0adf90ac78b76c34cf4c44e28ffb9d0106ed011f03745da77fb287cd81415217"
+    },
+    {
+      "file": "detail-8mp-q55-s8.avif",
+      "format": "AVIF",
+      "size": [
+        2830,
+        2830
+      ],
+      "bytes": 141089,
+      "sha256": "87c65d0202127aa5ede471a7a1291980357efe2bafc3850d6daa93eb355f5ff1"
+    },
+    {
+      "file": "fresh-4mp-s6.avif",
+      "format": "AVIF",
+      "size": [
+        2048,
+        2048
+      ],
+      "bytes": 70230,
+      "sha256": "f9fac4be72539d83bb4deafd460dca72db4103c97b9be527eb72d415d85949b9"
+    },
+    {
+      "file": "fresh-4mp-s8.avif",
+      "format": "AVIF",
+      "size": [
+        2048,
+        2048
+      ],
+      "bytes": 135933,
+      "sha256": "7059e314cfc80d02ef438fb541b0fb9b5fc57861e721e9309636cf91d6e8fe3b"
+    },
+    {
+      "file": "fresh-8mp-s6.avif",
+      "format": "AVIF",
+      "size": [
+        2830,
+        2830
+      ],
+      "bytes": 80570,
+      "sha256": "0adf90ac78b76c34cf4c44e28ffb9d0106ed011f03745da77fb287cd81415217"
+    },
+    {
+      "file": "fresh-8mp-s8.avif",
+      "format": "AVIF",
+      "size": [
+        2830,
+        2830
+      ],
+      "bytes": 141089,
+      "sha256": "87c65d0202127aa5ede471a7a1291980357efe2bafc3850d6daa93eb355f5ff1"
+    },
+    {
+      "file": "manga-1mp-q50-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 15296,
+      "sha256": "b3adac0add997054dea36f267821ed6e3cbb33417cdcd74ded31081285ce24f1"
+    },
+    {
+      "file": "manga-1mp-q55-s6-444.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 16589,
+      "sha256": "cb5d05acc7977f94d3981bd98cb5d17ad252099b8264deaca8299fcd2b3a9013"
+    },
+    {
+      "file": "manga-1mp-q55-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 15944,
+      "sha256": "650e22ddb6f7d6831dd7582375f404390e7f873b88b3a4f2129a93fb07eadc0f"
+    },
+    {
+      "file": "manga-1mp-q55-s8.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 24566,
+      "sha256": "83a5df1d7d9eca2370186463612b6c6d7bb4eed0eae023a0ca8b56a3f2a712d5"
+    },
+    {
+      "file": "manga-1mp-q60-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 16260,
+      "sha256": "b078ee227c3ef6a8c6c8678df5955221f977d35138ebbd81bb5fa913e47faf8e"
+    },
+    {
+      "file": "manga-1mp-q75-s6-444.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 19525,
+      "sha256": "af29848c451b82f44ca98cce72202e4534ee993bb83b263c44f03f8c5b3e301f"
+    },
+    {
+      "file": "manga-1mp-q75-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 17505,
+      "sha256": "15aeabd66ef6632f2f9e1003eb41406266f970d0fa8dfb4f2aa75b8f3932cc18"
+    },
+    {
+      "file": "meta-avif-to-avif.avif",
+      "format": "AVIF",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 632,
+      "sha256": "ebca0a7c4bfc3d7ca27295fe7ab4628b12e881333c3662c1fccd2ea04bc81e5f"
+    },
+    {
+      "file": "meta-jpg-to-avif.avif",
+      "format": "AVIF",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 634,
+      "sha256": "0499a816347735ba9ad7796120e7585adbff6f725013a0c695f0e0602e66c895"
+    },
+    {
+      "file": "meta-png-to-avif.avif",
+      "format": "AVIF",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 627,
+      "sha256": "ff98e17b2aa3e6b685ba20ef31ac129bbc0f72d2df5b06f0fdf614753053b250"
+    },
+    {
+      "file": "meta-webp-to-avif.avif",
+      "format": "AVIF",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 670,
+      "sha256": "16bc1ed9a96964a29a98d2e244a93be3ff33e088482961e937615122444c1acb"
+    },
+    {
+      "file": "photo-q50-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        768
+      ],
+      "bytes": 63252,
+      "sha256": "02a0d329a617f707186fa0b82460fb8dc1289d8483d26c48a839158052b49a33"
+    },
+    {
+      "file": "photo-q55-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        768
+      ],
+      "bytes": 79263,
+      "sha256": "f52563657334b7fe4e201bd5c944a7c0254d5604205050aef647c778aa67fc0d"
+    },
+    {
+      "file": "photo-q55-s8.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        768
+      ],
+      "bytes": 80161,
+      "sha256": "6f8e5c703a3fe5da375ed8f74afebde3dc23a88ad27c664259902aa003e47038"
+    },
+    {
+      "file": "photo-q60-s6.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        768
+      ],
+      "bytes": 92842,
+      "sha256": "0c8da9aaeba5b3d1bf73f00196688bed18188e90d9da1aa14510e3e2fa40d749"
+    },
+    {
+      "file": "recovery.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 5982,
+      "sha256": "9e1b52743f558bf262f1a4c933a5e0327a587641a6c7aca07ba6c5f495f4285f"
+    },
+    {
+      "file": "repeat4mp-0.avif",
+      "format": "AVIF",
+      "size": [
+        2048,
+        2048
+      ],
+      "bytes": 70230,
+      "sha256": "f9fac4be72539d83bb4deafd460dca72db4103c97b9be527eb72d415d85949b9"
+    },
+    {
+      "file": "repeat4mp-1.avif",
+      "format": "AVIF",
+      "size": [
+        2048,
+        2048
+      ],
+      "bytes": 70230,
+      "sha256": "f9fac4be72539d83bb4deafd460dca72db4103c97b9be527eb72d415d85949b9"
+    },
+    {
+      "file": "repeat4mp-2.avif",
+      "format": "AVIF",
+      "size": [
+        2048,
+        2048
+      ],
+      "bytes": 70230,
+      "sha256": "f9fac4be72539d83bb4deafd460dca72db4103c97b9be527eb72d415d85949b9"
+    },
+    {
+      "file": "alpha-1mp-webp85.webp",
+      "format": "WEBP",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 80792,
+      "sha256": "f51f318207ae7ca59d09dd2ba3473e72bdc07f57fda0d8fb4d6421ac67c70140"
+    },
+    {
+      "file": "character-1mp-webp85.webp",
+      "format": "WEBP",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 30292,
+      "sha256": "09f229674af5524663e917e3230f0212a398505d1a14da5b74c0fa5ac5a82f5e"
+    },
+    {
+      "file": "character-4mp-webp85.webp",
+      "format": "WEBP",
+      "size": [
+        2048,
+        2048
+      ],
+      "bytes": 64488,
+      "sha256": "9038b7ad7722ff4bd1a2ca5f44d28c64fc09c758557e26cb896562f6ae5542b4"
+    },
+    {
+      "file": "detail-1mp-webp85.webp",
+      "format": "WEBP",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 113594,
+      "sha256": "657d2df02b350210d7a4c923014de6fa1a53314ccc40e18135d9c65428e142f7"
+    },
+    {
+      "file": "detail-4mp-webp85.webp",
+      "format": "WEBP",
+      "size": [
+        2048,
+        2048
+      ],
+      "bytes": 278680,
+      "sha256": "a70800467b3580cf51e0db05de1c488a1e02b3db9e1ab6e186c5aa6e40297510"
+    },
+    {
+      "file": "manga-1mp-webp85.webp",
+      "format": "WEBP",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 68732,
+      "sha256": "4fb6039b9aefbc1c4957d56c1c18fc4739ab937fc82a5b783575a5a1fcb2298a"
+    },
+    {
+      "file": "meta-avif-to-webp.webp",
+      "format": "WEBP",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 1386,
+      "sha256": "ab50f336c26e3d86427c4c7abe45105094629407610756168b361d50acac5332"
+    },
+    {
+      "file": "meta-jpg-to-webp.webp",
+      "format": "WEBP",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 1446,
+      "sha256": "710bd01488ddbce536f65818ffc7afe107995a6b1a6b535206a9d8fc3bb9fb7f"
+    },
+    {
+      "file": "meta-png-to-webp.webp",
+      "format": "WEBP",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 1364,
+      "sha256": "88e99f87b1947704fffbe493ac9f63a68d807b7f0496dc717db66c627d5d76ec"
+    },
+    {
+      "file": "meta-webp-to-webp.webp",
+      "format": "WEBP",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 1368,
+      "sha256": "79aac9740141f62f51df0d141aa1d65b8dcc4c4f482c5b72541d5b75a76cc330"
+    },
+    {
+      "file": "photo-webp85.webp",
+      "format": "WEBP",
+      "size": [
+        1024,
+        768
+      ],
+      "bytes": 142312,
+      "sha256": "7cdd5e7132ed2cdac50df55b215db6b9141d524345309974e5527ba4f98aba90"
+    },
+    {
+      "file": "session-advanced.webp",
+      "format": "WEBP",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 1356,
+      "sha256": "a3dcda419b16ec1f0c3fc6750cdbba49dae305ef7cc689ecec2bb72f9bb0ca2e"
+    },
+    {
+      "file": "session-quick.webp",
+      "format": "WEBP",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 2296,
+      "sha256": "0a2f8ba78d01b4dc15e84b70f8b02240a28ccc0e2c3f9d598363d6c700e9b5d3"
+    },
+    {
+      "file": "meta-avif-to-png.png",
+      "format": "PNG",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 4426,
+      "sha256": "5f99261ec99948dc7b4e9d2f3617e9a7735beb63babd8bc1bf6d25741fdc139a"
+    },
+    {
+      "file": "meta-jpg-to-png.png",
+      "format": "PNG",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 9503,
+      "sha256": "3d9c696edcc3566314de0914572f78b0ee83657c5fff65d6908307c7a62d1a67"
+    },
+    {
+      "file": "meta-png-to-png.png",
+      "format": "PNG",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 2916,
+      "sha256": "9becc5f5d4bb4440b135691cecdc8c8f1c1a86d05f0076127d267f12c5f73125"
+    },
+    {
+      "file": "meta-webp-to-png.png",
+      "format": "PNG",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 7028,
+      "sha256": "f82664c737d1ffe5c168bbdb5e2a376caab0b21db0df1a9c46d90a8d1f41d294"
+    },
+    {
+      "file": "session-advanced.png",
+      "format": "PNG",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 2916,
+      "sha256": "9becc5f5d4bb4440b135691cecdc8c8f1c1a86d05f0076127d267f12c5f73125"
+    },
+    {
+      "file": "session-quick.png",
+      "format": "PNG",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 2394,
+      "sha256": "f280ecedc36465123b463490067951d083d01c3ed253d3d1723d2274de742a08"
+    },
+    {
+      "file": "meta-avif-to-jpeg.jpg",
+      "format": "JPEG",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 3080,
+      "sha256": "287983ca971e106d20f7c59af6e8c4679743faa8d0cad3cb837de68c6ec9fd8a"
+    },
+    {
+      "file": "meta-jpg-to-jpeg.jpg",
+      "format": "JPEG",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 3157,
+      "sha256": "e75185c0a816bd6839463102e9de111913aa0fbb4670da5ca6bed2a0b1b04575"
+    },
+    {
+      "file": "meta-png-to-jpeg.jpg",
+      "format": "JPEG",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 3127,
+      "sha256": "d09a07e401efe770f8053c08f36b1390b6ebb15bb20c211e1b08630cf37a5624"
+    },
+    {
+      "file": "meta-webp-to-jpeg.jpg",
+      "format": "JPEG",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 3086,
+      "sha256": "485f81206b668797297eeef11091223b787fe76cd6e6ca6423c8f4cfbc331378"
+    },
+    {
+      "file": "session-advanced.jpg",
+      "format": "JPEG",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 3157,
+      "sha256": "e75185c0a816bd6839463102e9de111913aa0fbb4670da5ca6bed2a0b1b04575"
+    },
+    {
+      "file": "session-quick.jpg",
+      "format": "JPEG",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 5102,
+      "sha256": "a1616991b2ba7847016a10d5a8eebbc914c264f8fb353a748354eea2f3c5f4c2"
+    }
+  ],
+  "unverified": [
+    "mobile devices",
+    "16MP new Q55 workload",
+    "wide-gamut/HDR/CMYK fidelity",
+    "signed C2PA validation or resigning",
+    "production-grade generalized container sanitizer",
+    "real artists complex finished illustrations aesthetic acceptance"
+  ]
+}
