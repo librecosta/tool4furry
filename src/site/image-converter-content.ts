@@ -2,12 +2,12 @@ import type { ToolContentMap } from './tool-content';
 // Astro-only editorial content. Never imported by the React implementation.
 export const imageConverterContent: ToolContentMap[string] = {
   zh: {
-    title: '在线图片格式转换器 - PNG、JPG、WebP 转换 | Tool4Furry',
+    title: '在线图片格式转换器 - PNG、JPG、WebP、AVIF 互转 | Tool4Furry',
     h1: '在线图片格式转换器',
     description:
-      '在浏览器本地转换静态 PNG、JPG 与 WebP 图片。支持快速推荐设置与高级质量调整，输出格式以浏览器实际支持为准。',
+      '在浏览器本地批量转换 PNG、JPG、WebP 和 AVIF 图片，无需上传。支持常见格式互转、编码质量调整、图片预览和 ZIP 打包下载，默认清理常见隐私元数据。',
     intro:
-      '添加多张图片或文件夹，使用推荐设置转换格式，或调整质量和 JPEG 背景。可用输出格式由浏览器实测决定。',
+      '在浏览器中批量转换 PNG、JPG、WebP 和 AVIF 图片，无需上传。使用推荐设置快速转换，或调整编码质量、背景颜色等选项，再预览和下载结果。',
     steps: [
       '**添加图片**：选择或拖入 PNG、JPEG、WebP、AVIF 图片，也可以直接添加文件夹。支持批量处理，后续添加的图片会继续加入列表。',
       '**选择输出格式**：快速模式使用推荐设置自动转换；高级模式可以调整编码质量、JPEG 背景色和 AVIF 彩色边缘保真等选项。',
@@ -54,12 +54,12 @@ export const imageConverterContent: ToolContentMap[string] = {
     ],
   },
   en: {
-    title: 'Online Image Converter - PNG, JPG & WebP | Tool4Furry',
+    title: 'Online Image Converter - PNG, JPG, WebP & AVIF | Tool4Furry',
     h1: 'Online Image Converter',
     description:
-      'Convert static PNG, JPG and WebP images locally in your browser. Quick presets and advanced quality controls; output formats depend on browser support.',
+      'Batch convert PNG, JPG, WebP and AVIF images in your browser without uploading files. Adjust quality, preview results and download ZIPs. Common private metadata is removed by default.',
     intro:
-      'Add images or a folder for quick conversion, or adjust quality and JPEG background. Available export formats are checked in your browser.',
+      'Convert between PNG, JPEG, WebP and supported AVIF images directly in your browser. Use quick presets or advanced quality settings, then preview and download each result or a ZIP.',
     steps: [
       '**Add images**: Select or drag in PNG, JPEG, WebP or AVIF images, or add a folder. Batch processing is supported, and any images added later are appended to the list.',
       '**Choose an output format**: Quick mode converts automatically using recommended settings. Advanced mode lets you adjust encoding quality, the JPEG background color and options such as AVIF colored-edge preservation.',

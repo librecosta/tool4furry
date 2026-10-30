@@ -1,3 +1,19 @@
+# V0.6-D1 — 静态 SEO 收尾（2026-10-30）
+
+此节覆盖下方历史 SEO 摘要及“暂不引入 JSON-LD”的约定；不改变首页可见文案、布局、Hero 或动效。首页与工具目录的双语 Meta Description 采用长期有效的工具箱定位，Title 不变，OG 继续复用同一份页面 Title/Description。
+
+`SiteLayout` 仅在地区默认语言根首页静态输出一个 `WebSite`：`@context=https://schema.org`、`@type=WebSite`、`name=Tool4Furry`，`url` 从 Region 配置解析为 `https://tool4furry.cn/` 或 `https://tool4furry.com/`。JSON 序列化后转义 `<`；其他语言首页、工具页、信息页、404 不输出该标记。无浏览器执行、依赖或客户端请求。构建审计将此唯一 `application/ld+json` 与执行脚本分开，仍逐字检查既有执行脚本数量、顺序和内容，禁止 Island/JS preload 及其他结构化数据。
+
+首页描述：
+
+- 中文：Tool4Furry 是面向 Furry 创作者的浏览器工具箱，围绕图片处理、素材转换、创作辅助与日常效率，持续打磨轻巧实用的工具。
+- English: Tool4Furry is a browser-based toolbox for furry creators, with thoughtful tools for image processing, asset conversion, creative work and everyday productivity.
+
+目录描述：
+
+- 中文：浏览 Tool4Furry 的创作工具，按功能分类或创作身份查找适合自己的浏览器工具，探索图片处理、素材转换与更多创作能力。
+- English: Explore Tool4Furry's browser-based creative tools. Browse by function or creator role to find tools for image processing, asset conversion and more.
+
 # C7 收尾 — 真实工具与素材（2026-10-29）
 
 首页精选仅展示现有 Registry 可访问条目，最多四项，不再补充开发演示工具；零项使用现有真实空状态，DEV 仍可展示 draft。精选左侧原创插画、角色 3:4 插画与身份 Icon 的真实素材配置和替换能力保留，但未提供素材时不生成几何占位、不预留空列。已交付的 Wavefield、Luminous 图、社群素材及角色 Phosphor 身份图标保持不变。此约定覆盖下方历史 DEV 演示/插画占位说明。目录显式测试夹具见 `site-tools.md`，不影响首页或导航。

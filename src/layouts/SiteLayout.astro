@@ -28,6 +28,10 @@ const t = messages[locale];
 const canonical = new URL(Astro.url.pathname, regionConfig.site);
 const resolvedTitle = fullTitle ?? `${title} · Tool4Furry`;
 const resolvedDescription = description ?? t.intro;
+// Static data on the default-locale root only; never an executable enhancement.
+const website = !noindex && Astro.url.pathname === '/' && locale === regionConfig.defaultLocale
+  ? JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Tool4Furry', url: new URL('/', regionConfig.site).href }).replace(/</g, '\\u003c')
+  : undefined;
 const socialImage = new URL('/brand/tool4furry-og.png', regionConfig.site).href;
 const socialImageAlt = locale === 'zh'
   ? 'Tool4Furry 双兽首图形标与字标，深灰色背景'
@@ -47,6 +51,7 @@ const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function
     <script is:inline id="t4f-appearance" data-dark={darkClass} data-light={lightClass} data-default={theme.appearance} data-region-origins={regionOrigins} set:html={appearanceSource} />
     <meta name="description" content={resolvedDescription} />
     <title>{resolvedTitle}</title>
+    {website && <script is:inline type="application/ld+json" id="t4f-website" set:html={website} />}
     <link rel="icon" type="image/vnd.microsoft.icon" sizes="16x16 24x24 32x32 48x48 64x64 128x128 256x256" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="96x96" href="/brand/tool4furry-favicon.png" />
     {!noindex && <>

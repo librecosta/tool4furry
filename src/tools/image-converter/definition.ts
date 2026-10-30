@@ -14,15 +14,15 @@ export const imageConverterDefinition: ToolDefinition = {
   copy: {
     zh: {
       title: '图片格式转换',
-      summary: '在本地转换 PNG、JPEG 和 WebP。',
+      summary: '在浏览器本地转换 PNG、JPEG、WebP 和 AVIF 图片。',
       description:
-        '在浏览器本地转换静态 PNG、JPEG、WebP，保持分辨率，按实际编码能力输出。',
+        '批量转换 PNG、JPEG、WebP 和受支持的 AVIF 静态图片，支持质量调整、预览与下载，默认清理常见隐私元数据。',
     },
     en: {
       title: 'Image Converter',
-      summary: 'Convert PNG, JPEG and WebP locally.',
+      summary: 'Convert PNG, JPEG, WebP and AVIF images locally.',
       description:
-        'Convert static PNG, JPEG and WebP locally, keeping resolution and using verified browser export support.',
+        'Batch-convert PNG, JPEG, WebP and supported AVIF images in your browser. Adjust quality, preview and download results, with common private metadata removed by default.',
     },
   },
 };

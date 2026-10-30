@@ -10,6 +10,40 @@
 
 新政策取代旧合同中冲突的强制跨浏览器发布要求；以下 B0–B5 历史实测记录不变，不因政策调整补记任何测试通过。日常修改按 L1 定向验证，完整 CI 优先由 GitHub Actions 执行。
 
+## V0.6-D1 — SEO 架构与发布前验证
+
+仅更新 Astro-only SEO 元数据、Registry 短简介和首页/目录摘要，保留已审定的双语 4 项步骤、4 条限制及 6 组 FAQ，正文/强调和原生 details 不变。未修改 Image Core、Session、Worker、资源预算、隐私策略或布局。真实定义仍为 `draft`、`regions: ['cn', 'global']`。
+
+最终中文元数据：
+
+- Title：在线图片格式转换器 - PNG、JPG、WebP、AVIF 互转 | Tool4Furry
+- Description：在浏览器本地批量转换 PNG、JPG、WebP 和 AVIF 图片，无需上传。支持常见格式互转、编码质量调整、图片预览和 ZIP 打包下载，默认清理常见隐私元数据。
+- H1：在线图片格式转换器
+- Intro：在浏览器中批量转换 PNG、JPG、WebP 和 AVIF 图片，无需上传。使用推荐设置快速转换，或调整编码质量、背景颜色等选项，再预览和下载结果。
+
+最终英文元数据：
+
+- Title: Online Image Converter - PNG, JPG, WebP & AVIF | Tool4Furry
+- Description: Batch convert PNG, JPG, WebP and AVIF images in your browser without uploading files. Adjust quality, preview results and download ZIPs. Common private metadata is removed by default.
+- H1: Online Image Converter
+- Intro: Convert between PNG, JPEG, WebP and supported AVIF images directly in your browser. Use quick presets or advanced quality settings, then preview and download each result or a ZIP.
+
+首页/目录摘要与根首页 WebSite 静态数据合同见 [首页规范](site-homepage.md)。OG Title/Description/URL 继续复用页面元数据及 Canonical；品牌 PNG、Twitter 大图卡片和地区内双语 hreflang 不变。关键词仅代表搜索意图候选，不是已验证的搜索量或排名结论；不增加格式组合落地页、keywords、FAQPage/HowTo/软件/评分等结构化数据。
+
+发布夹具命令仍为 `node scripts/verify-converter-fixture.mjs cn` / `global`：现在两者均在仓库外源码副本中模拟 **Published + CN-only**，CN 验证真实工具发布，Global 验证排除。真实 definition、Registry、loaders 逐字保持不变；目录仍为 `../.validation/converter-v04b/ssg/{region}`，仅供测试、绝不部署。此节替代下方历史“仅改 status、两地区均发布”的夹具说明。夹具逐项比较最终静态 HTML 的 Title/Description/H1/Intro、4/4/6 正文、FAQ 原生结构与首页/目录入口，扫描全部客户端 JS 防止长正文泄漏，并执行统一产物守卫。
+
+尚未进行正式部署、搜索平台验证/提交、收录或真实查询量观察。D2 仍需维护者独立批准 CN-only 发布并完成 Beta 条件审计。正式 CN HTTPS 可访问后，由维护者向 Google Search Console 与 Bing Webmaster Tools 提交 `https://tool4furry.cn/sitemap-index.xml`；百度搜索资源平台优先使用实际 URL 列表 `https://tool4furry.cn/sitemap-0.xml`，按届时平台要求验证。不实现 IndexNow 或自动推送。
+
+CN-only 对照发现并修复地区校验不一致：Vite 已按地区移除不可用 loader，Registry 校验却要求所有地区的 published loader。`assertValidRegistry` 仅为 loader 存在性增加当前 Region 参数，其他地区的元数据、双语文案、重复 ID 等仍完整校验，默认全地区调用不变；没有第二个发布开关或修改真实 loader。定向测试覆盖此边界。
+
+2026-10-30 实际验证：
+
+- 5 个相关 Vitest 文件共 **69 项通过**，`pnpm check` 231 文件零错误/警告。冻结的双语 4/4/6 正文与上一提交逐项一致。
+- `pnpm build:cn` / `pnpm build:global` 及最终产物审计通过：每地区 11 个 HTML、10 个可索引 URL，无 Converter 路由/发现入口、专用 JS、AVIF Worker/WASM/Notice 或 Lab 资源；无新增执行脚本、Island、JS preload。默认根首页的 WebSite JSON 可解析，另一语言首页及其他页均无该标记。
+- CN-only 发布夹具：CN 13 个 HTML、12 个可索引 URL，中文 `/tools/image-converter/` 与英文 `/en/tools/image-converter/` 自指 Canonical，绝对 hreflang 相互对称；首页、目录、Sitemap、llms 包含对应入口，所需单线程 AVIF 资源正确输出。Global 对照仍为 11 个 HTML/10 个公开 URL，无该工具及编码资源。实际 HTML 的唯一元标签、OG/Twitter、1200×630 品牌 PNG、Sitemap/robots/security/llms 与原生 FAQ/strong 语义审计通过，长正文未进入客户端 JS。
+- DEV 两端口、四个地区/语言组合返回真实 Draft 工具 HTML，均为 `noindex, nofollow`，唯一静态 H1 与六 FAQ 完整，无 Canonical/OG/WebSite 推广标记。
+- Chromium 1440px 中文、390px 英文，Light/Dark：工作区正常水合、无控制台错误或横向溢出，说明双栏/单栏和 FAQ 左对齐、整行点击、右 Chevron、Space 开合及焦点正常。未重复编解码实验或跨浏览器/真机矩阵；发布、搜索平台、实际收录和排名仍未验证。
+
 ## V0.6-C2-D — 宽幅 AVIF 与作者/版权白名单
 
 AVIF 桌面额度现为 **4,194,304 像素、单边4096px、30秒、串行1任务**，不缩放。共享 limits 同时约束编码前、Worker、输出检查与中英文提示。2048²、4096×1024、3840×1080、3000×1000可用；3840×2160、超像素或超长边仍拒绝。移动/未知设备策略和原生三格式额度不变。

@@ -15,7 +15,7 @@ const zh = {
   skip: '跳到主要内容',
   homeTitle: 'Tool4Furry — Furry 创作者的浏览器工具箱',
   homeDescription:
-    'Tool4Furry 正在为 Furry 创作者打造轻巧的浏览器工具箱，涵盖创作、素材处理与日常效率。首批工具开发中。',
+    'Tool4Furry 是面向 Furry 创作者的浏览器工具箱，围绕图片处理、素材转换、创作辅助与日常效率，持续打磨轻巧实用的工具。',
   headerNav: '主要导航',
   switchLanguage: '切换为英文',
   appearanceControl: '切换亮暗外观',
@@ -50,7 +50,7 @@ const zh = {
   browseAll: '浏览全部工具',
   catalogTitle: '工具箱 — Tool4Furry',
   catalogDescription:
-    '按功能分类与创作身份查找 Tool4Furry 已发布的浏览器工具。首批工具正在准备中。',
+    '浏览 Tool4Furry 的创作工具，按功能分类或创作身份查找适合自己的浏览器工具，探索图片处理、素材转换与更多创作能力。',
   catalogIntro: '从你想完成的事情出发，找到合适的浏览器工具。',
   discover: '适合谁，在哪里用',
   categories: '按任务浏览',
@@ -84,7 +84,7 @@ const en: Messages = {
   skip: 'Skip to content',
   homeTitle: 'Tool4Furry — Browser Tools for Furry Creators',
   homeDescription:
-    'Tool4Furry is building browser-based tools for furry creators, focused on creative tasks, assets and everyday productivity. Tools are on the way.',
+    'Tool4Furry is a browser-based toolbox for furry creators, with thoughtful tools for image processing, asset conversion, creative work and everyday productivity.',
   headerNav: 'Main navigation',
   switchLanguage: 'Switch to Chinese',
   appearanceControl: 'Toggle light/dark appearance',
@@ -119,7 +119,7 @@ const en: Messages = {
   browseAll: 'Browse all tools',
   catalogTitle: 'Toolbox — Tool4Furry',
   catalogDescription:
-    'Find published Tool4Furry browser tools by function and creative role. Our first tools are on the way.',
+    "Explore Tool4Furry's browser-based creative tools. Browse by function or creator role to find tools for image processing, asset conversion and more.",
   catalogIntro:
     'Start with what you want to do. Find a browser tool that fits.',
   discover: 'Who it is for, where it fits',

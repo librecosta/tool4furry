@@ -1,13 +1,14 @@
 import { domains, groups, audiences, contexts } from '../site/taxonomy';
 import { roles } from '../site/roles';
 import { locales } from '../i18n/locale';
-import { regions } from '../config/region';
+import { regions, type Region } from '../config/region';
 import type { ToolDefinition } from './types';
 
 // Pure validation: the caller supplies loader presence; metadata never imports implementations.
 export function registryIssues(
   registry: readonly ToolDefinition[],
   loaders: Readonly<Record<string, unknown>>,
+  region?: Region,
 ) {
   const issues: string[] = [];
   const ids = new Set<string>();
@@ -52,8 +53,9 @@ export function registryIssues(
       issues.push(`${tool.id}: invalid workspace mode`);
     if (tool.status === 'published') {
       if (
-        !Object.hasOwn(loaders, tool.id) ||
-        typeof loaders[tool.id] !== 'function'
+        // Production loaders are projected to the current deployment region.
+        (!region || tool.regions.includes(region)) &&
+        (!Object.hasOwn(loaders, tool.id) || typeof loaders[tool.id] !== 'function')
       )
         issues.push(`${tool.id}: missing loader`);
       for (const locale of Object.keys(locales) as (keyof typeof locales)[]) {
@@ -68,8 +70,9 @@ export function registryIssues(
 export function assertValidRegistry(
   registry: readonly ToolDefinition[],
   loaders: Readonly<Record<string, unknown>>,
+  region?: Region,
 ) {
-  const issues = registryIssues(registry, loaders);
+  const issues = registryIssues(registry, loaders, region);
   if (issues.length)
     throw new Error(`Invalid tool registry:\n${issues.join('\n')}`);
 }

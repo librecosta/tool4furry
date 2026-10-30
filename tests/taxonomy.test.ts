@@ -100,4 +100,13 @@ describe('publication metadata gate', () => {
       registryIssues([fixtureTool('draft', { status: 'draft' })], {}),
     ).toEqual([]);
   });
+  it('requires only regional loaders while still validating all publication metadata', () => {
+    const tool = fixtureTool('cn-only', { regions: ['cn'] });
+    expect(registryIssues([tool], {}, 'cn')).toContain('cn-only: missing loader');
+    expect(registryIssues([tool], {}, 'global')).toEqual([]);
+    expect(registryIssues([tool], {})).toContain('cn-only: missing loader');
+    expect(registryIssues([{ ...tool, copy: { ...tool.copy, en: { title: '', description: '' } } }], {}, 'global'))
+      .toContain('cn-only: missing en copy');
+    expect(registryIssues([tool, { ...tool }], {}, 'global')).toContain('cn-only: duplicate id');
+  });
 });

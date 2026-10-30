@@ -59,7 +59,7 @@ function assertStaticNavigation(dom, homepage = false) {
   assertNavigationScript(dom);
   assertDocumentScroll(dom);
   assert.equal(dom.querySelectorAll('astro-island').length, 0);
-  const scripts = [...dom.querySelectorAll('script')];
+  const scripts = [...dom.querySelectorAll('script')].filter(script => script.type !== 'application/ld+json');
   assert.deepEqual(scripts.filter(script => !script.hasAttribute('src')).map(script => script.id),
     homepage ? ['t4f-appearance', 't4f-home-pillars', 't4f-home-stories', 't4f-home-principles', 't4f-navigation', 't4f-document-scroll'] : workbench ? ['t4f-appearance', 't4f-navigation'] : ['t4f-appearance', 't4f-navigation', 't4f-document-scroll'], 'Audited inline scripts retain their content and order');
   assert.equal(scripts.length, homepage ? 7 : 3, 'Only explicitly owned route enhancements are allowed');
@@ -228,8 +228,8 @@ const expectedTitle =
     : 'Tool4Furry — Browser Tools for Furry Creators';
 const expectedDescription =
   locale === 'zh'
-    ? 'Tool4Furry 正在为 Furry 创作者打造轻巧的浏览器工具箱，涵盖创作、素材处理与日常效率。首批工具开发中。'
-    : 'Tool4Furry is building browser-based tools for furry creators, focused on creative tasks, assets and everyday productivity. Tools are on the way.';
+    ? 'Tool4Furry 是面向 Furry 创作者的浏览器工具箱，围绕图片处理、素材转换、创作辅助与日常效率，持续打磨轻巧实用的工具。'
+    : 'Tool4Furry is a browser-based toolbox for furry creators, with thoughtful tools for image processing, asset conversion, creative work and everyday productivity.';
 assert.equal(
   document.title,
   expectedTitle,
@@ -498,6 +498,9 @@ if (locale === 'en')
   );
 const fullHTML = await readHTML('tools/index.html');
 const fullCatalog = new JSDOM(fullHTML).window.document;
+assert.equal(fullCatalog.querySelector('meta[name="description"]')?.content, locale === 'zh'
+  ? '浏览 Tool4Furry 的创作工具，按功能分类或创作身份查找适合自己的浏览器工具，探索图片处理、素材转换与更多创作能力。'
+  : "Explore Tool4Furry's browser-based creative tools. Browse by function or creator role to find tools for image processing, asset conversion and more.");
 assert.equal(
   fullCatalog.title,
   locale === 'zh' ? '工具箱 — Tool4Furry' : 'Toolbox — Tool4Furry',
@@ -678,6 +681,19 @@ for (const page of htmlFiles) {
     `Dev StyleX refresh shim in ${page}`,
   );
   const dom = new JSDOM(content).window.document;
+  const dataScripts = [...dom.querySelectorAll('script[type="application/ld+json"]')];
+  assert.equal(dataScripts.length, page === 'index.html' && !prefix ? 1 : 0, 'WebSite data belongs only to the default-locale root homepage');
+  for (const data of dataScripts) {
+    assert.equal(data.parentElement, dom.head);
+    assert.deepEqual([...data.attributes].map(attribute => attribute.name).sort(), ['id', 'type']);
+    assert.equal(data.id, 't4f-website');
+    assert.deepEqual(JSON.parse(data.textContent), { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Tool4Furry', url: origin + '/' });
+  }
+  assert.equal(dom.querySelectorAll('title').length, 1, `Exactly one title in ${page}`);
+  assert.equal(dom.querySelectorAll('meta[name="description"]').length, 1, `Exactly one description in ${page}`);
+  assert.equal(dom.querySelectorAll('meta[name="robots"]').length, page === '404.html' ? 1 : 0, 'Only the 404 is noindex in public static output');
+  assert.equal(dom.querySelectorAll('meta[name="keywords"]').length, 0, 'No keyword metadata');
+  assert.equal(dom.querySelectorAll('link[rel="canonical"]').length, page === '404.html' ? 0 : 1, `Exactly one indexable canonical in ${page}`);
   assert.equal(dom.documentElement.hasAttribute('data-catalog-workbench'), page === 'tools/index.html', 'Fixed catalog shell is route-specific');
   const footers = dom.querySelectorAll('[data-site-footer]');
   if (page === 'tools/index.html') {

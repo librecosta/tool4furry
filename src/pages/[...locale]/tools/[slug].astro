@@ -12,7 +12,7 @@ import { assertPublishedContent, getToolPageContent, getRelatedTools } from '../
 import ToolIntro from '../../../components/site/ToolIntro.astro';
 import ToolGuide from '../../../components/site/ToolGuide.astro';
 export function getStaticPaths() {
-  assertValidRegistry(tools, toolLoaders);
+  assertValidRegistry(tools, toolLoaders, region);
   assertPublishedContent();
   return localePaths(region).flatMap(route => getAvailableTools(region, import.meta.env.DEV).map(tool => ({ params: { ...route.params, slug: tool.slug }, props: { ...route.props, tool } })));
 }
