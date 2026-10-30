@@ -3,6 +3,44 @@ import { readFile, readdir, stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { JSDOM } from 'jsdom';
 import { createHash } from 'node:crypto';
+import ts from 'typescript';
+
+// Standalone, type-only-import metadata/content, used only by this build audit.
+async function staticData(path) {
+  const source = await readFile(path, 'utf8');
+  const js = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext } }).outputText;
+  return import('data:text/javascript;base64,' + Buffer.from(js).toString('base64'));
+}
+const { imageConverterContent } = await staticData('src/site/image-converter-content.ts');
+const { imageConverterDefinition } = await staticData('src/tools/image-converter/definition.ts');
+const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
+const converterLongCopy = Object.values(imageConverterContent).flatMap(content => [
+  ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
+]);
+function assertConverterContent(dom, locale) {
+  const expected = imageConverterContent[locale];
+  assert.equal(dom.title, expected.title);
+  assert.equal(dom.querySelector('meta[name="description"]')?.content, expected.description);
+  assert.deepEqual([...dom.querySelectorAll('h1')].map(node => node.textContent), [expected.h1]);
+  assert.equal(dom.querySelector('[data-tool-intro] p')?.textContent, expected.intro);
+  const guide = dom.querySelector('[data-tool-guide]');
+  assert(guide && !guide.closest('astro-island'), 'The full guide is static Astro HTML outside hydration');
+  for (const [key, selector] of [['steps', '#tool-steps + ol > li'], ['limitations', '#tool-limitations + ul > li']]) {
+    assert.equal(expected[key].length, 4);
+    assert.deepEqual([...guide.querySelectorAll(selector)].map(node => plain(node.textContent)), expected[key].map(plain));
+    assert.deepEqual([...guide.querySelectorAll(`${selector} strong`)].map(node => node.textContent),
+      expected[key].flatMap(text => [...text.matchAll(/\*\*([^*]+)\*\*/g)].map(match => match[1])), 'Limited Markdown emphasis stays semantic HTML');
+  }
+  assert.equal(expected.faq.length, 6);
+  const faq = [...guide.querySelectorAll('[aria-labelledby="tool-faq"] > details')];
+  assert.equal(faq.length, 6);
+  for (const [index, item] of faq.entries()) {
+    assert.equal(item.firstElementChild.tagName, 'SUMMARY');
+    assert.equal(item.querySelector('summary span')?.textContent, expected.faq[index].question);
+    assert.equal(item.querySelector('summary svg')?.getAttribute('aria-hidden'), 'true');
+    assert.equal(item.querySelector('p')?.textContent, expected.faq[index].answer);
+  }
+}
 
 const appearanceSource = (await readFile('src/styles/appearance-controller.js', 'utf8')).replace(/\r\n?/g, '\n');
 const navigationSource = (await readFile('src/styles/navigation-disclosure.js', 'utf8')).replace(/\r\n?/g, '\n');
@@ -114,6 +152,11 @@ if (fixtureMode)
 const files = (await readdir(root, { recursive: true })).map((file) =>
   file.replaceAll('\\', '/'),
 );
+if (!fixtureMode) {
+  const available = imageConverterDefinition.status === 'published' && imageConverterDefinition.regions.includes(region);
+  for (const prefix of ['', region === 'cn' ? 'en/' : 'zh/'])
+    assert.equal(files.includes(`${prefix}tools/image-converter/index.html`), available, 'Real regional metadata controls both Converter routes');
+}
 const avifWasm = files.filter(file => /avif_(?:enc|dec).*\.wasm$/.test(file));
 if (files.includes('tools/image-converter/index.html')) {
   assert.equal(avifWasm.length, 1, 'Exactly one ST AVIF encoder, no decoder/threaded binary');
@@ -125,8 +168,8 @@ if (files.includes('tools/image-converter/index.html')) {
   assert.equal(notices.length, 1, 'Optional encoder ships its third-party notices');
   assert((await readFile(resolve(root, notices[0]), 'utf8')).includes('libaom v3.7.0'));
 } else {
-  assert.equal(avifWasm.length, 0, 'Draft AVIF resources must not enter the public site');
-  assert(!files.some(file => /avif\.worker|avif\.NOTICE/.test(file)), 'Draft worker/notices must not leak');
+  assert.equal(avifWasm.length, 0, 'Unavailable Converter AVIF resources must not enter the public site');
+  assert(!files.some(file => /avif\.worker|avif\.NOTICE/.test(file)), 'Unavailable worker/notices must not leak');
 }
 const catalogModules = files.filter(file => /^_astro\/ToolsCatalog\.astro_astro_type_script_index_0_lang\.[\w-]+\.js$/.test(file));
 assert.equal(catalogModules.length, 1, 'One traceable catalog module');
@@ -777,6 +820,7 @@ for (const page of htmlFiles) {
   }
   }
   if (toolPages.includes(page)) {
+    if (page === 'tools/image-converter/index.html') assertConverterContent(dom, locale);
     if (page === 'tools/image-converter/index.html')
       assert(!/开发保护值|全设备兼容承诺|development (?:resource )?guardrails/i.test(dom.body.textContent),
         'Converter public copy must describe current limits, not internal guardrails');
@@ -1090,6 +1134,7 @@ for (const font of ['dm-sans', 'noto-sans-sc']) {
 }
 for (const file of files.filter((file) => file.endsWith('.js'))) {
   const js = await readFile(resolve(root, file), 'utf8');
+  assert(!converterLongCopy.some(text => js.includes(plain(text))), `Long Astro Converter guide leaked into JS: ${file}`);
   assert(
     !js.includes('ownership diagnostics'),
     `DEV diagnostics leaked: ${file}`,

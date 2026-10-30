@@ -1,14 +1,39 @@
-# V0.4-B — Image Converter 实施与验收记录
+# Image Converter — 实施与验收记录
 
 本页是代码交接记录，不是用户提供的完整实施合同副本。合同从附件 `image-converter.md` 全文读取；用户明确不要求导入仓库。验收日期：2026-10-10（Asia/Shanghai，JSON 时间为 UTC）。
 
 ## 当前状态与入口
 
-**draft，未公开发布。** 开发运行 `pnpm install && pnpm dev` 后访问 CN `http://127.0.0.1:54321/tools/image-converter/` 或 EN `http://127.0.0.1:54322/tools/image-converter/`，可直接通过中/EN 往返。开发与生产仅有这一工具路径；目前两地区正式构建不生成 draft 路由、专用实现或目录入口。Ctrl+C 或 `pnpm dev stop` 同时停止两端。
+**V0.6-D2：源码 Published，构建就绪，CN/Global 均未部署。** Image Converter 是首个且目前唯一的正式工具；保留 `regions: ['cn', 'global']`。状态仅表示可以进入生产静态构建，不意味着已经对公网开放。`pnpm dev` 的 CN/Global 两端均支持中英文；真实发布产物来自 `pnpm build:cn` / `pnpm build:global`，不使用发布模拟副本。
 
-这是可真实处理图片的工具预览，不是 Lab 的模拟算法。按 2026-10-10 的 [L1/L2/L3 发布政策](../AGENTS.md#mvp-beta-release-policy-2026-10-10)，Firefox、Safari/WebKit、iOS/Android 真机及全设备资源上限的验证缺口不再自动阻断 Beta，转为后续兼容性待办，仍须如实披露。当前保持 draft，等待视觉打磨及维护者按 L2 最终确认，再单独决定是否提升 published。五个既有 `/lab/*` 保留原职责。
+| 地区 | 默认语言工具路径 | 另一语言工具路径 |
+| --- | --- | --- |
+| CN | `/tools/image-converter/`（中文） | `/en/tools/image-converter/` |
+| Global | `/tools/image-converter/`（English） | `/zh/tools/image-converter/` |
 
-新政策取代旧合同中冲突的强制跨浏览器发布要求；以下 B0–B5 历史实测记录不变，不因政策调整补记任何测试通过。日常修改按 L1 定向验证，完整 CI 优先由 GitHub Actions 执行。
+依据维护者此次明确授权与现有 L2 政策执行资格审计；未做部署、DNS/备案/CDN操作、Sitemap提交、Release/Tag或发布分支合并。Firefox、Safari/WebKit、iOS/Android 真机及设备峰值内存继续作为 L3 待办，不假称完成。下方 V0.4–D1 的 Draft、零 Published、CN-only 夹具等记录是历史证据，不能当作当前配置。
+
+## V0.6-D2 — Beta 资格审计
+
+**结论：源码 Beta Go；构建就绪，未部署。** 维护者本轮明确批准状态提升。D1 基线为 `6c603f797280c8b98f90595165d514eef06fd256`（其 CI 已通过）；本轮推送后的 CI 以对应提交的 Checks 为准。未新增功能、依赖或发布开关；Image Core、Session、Worker、参数与 SEO 文案均未修改。
+
+2026-10-30 本机 Windows / Chromium 的发布形态验收使用真实 `dist/cn`、`dist/global` 和仅监听 localhost 的普通 HTTP 服务，不使用旧发布模拟副本。结构化下载与资源证据见 [image-converter-d2.json](evidence/image-converter-d2.json)；原始下载、截图、网络日志和临时验证程序位于仓库外 `../.validation/image-converter-d2/`。
+
+- **工程检查**：`pnpm check` 230 文件零错误/警告；`pnpm test` 55 文件 **581 项通过**。首次完整测试发现的 6 处旧零 Published 假设已修正，随后完整重跑通过。提升前的 AVIF/容器/元数据/作者/批次 9 文件 94 项也通过；复用 C2-C 的 16 组格式实测及 C2-D 宽幅、方向、超时证据，不重复历史压力矩阵。
+- **双地区真实构建**：`pnpm build:cn`、`pnpm build:global` 及各自守卫通过，每地区 13 个 HTML / 12 个可索引 URL。上表四条正式工具路径均生成；默认语言不重复前缀，同地区 Canonical 自指、绝对 hreflang 对称。工具不再带 Draft noindex，Title/Description/H1/Intro、完整静态 4 步骤 / 4 限制 / 6 FAQ 与 D1 逐项匹配，长文不进客户端 JS。OG/Twitter、robots、两份 Sitemap、security/llms 通过；仅各地区默认根首页保留最小 WebSite JSON-LD。
+- **真实工具发现**：首页精选、导航和目录均只有 Image Converter，入口采用本地区/语言路径及 Registry 文案；身份只匹配画家、开发者、动画师、运营。中英文搜索、分类/身份筛选和移动抽屉可用，真实数量为 1，无填充卡片、DEV 样本或 Lab。未来空目录、多工具、Draft、地区过滤与非法元数据测试保留，未把“当前唯一”做成平台容量上限。
+- **实际浏览器路径**：CN 中文 1440px、CN 英文 390px、Global 英文 1440px、Global 中文 390px，均完成首页 → 目录 → 工具页与同地区语言切换/返回；补看 1200px 完整桌面画面和 320px 溢出。Light/Dark、FAQ 整行点击 / Space 开合、预览原图/输出、Escape 返回预览触发按钮正常；无观测到的水平溢出、Hydration 错误或控制台错误/警告。手机宽度仅为 Chromium 视口模拟，不代表移动真机或移动 AVIF 输出验收。
+- **真实交付**：PNG→WebP、PNG→AVIF、AVIF→PNG、JPEG→JPEG 默认清理、高级 JPEG 作者/版权保留、两文件批量和 ZIP，另在 Global 完成 AVIF→WebP。Pillow 12.3 独立完整解码 8 个单项下载；AVIF Alpha100 及回转 PNG 的 Alpha 逐像素一致。默认 JPEG 只余必要 Orientation=6，显示像素、压缩载荷与 ICC 与来源一致；重新编码保留结果只含 Artist/Copyright，不复制旧方向、GPS、设备或时间。ZIP 两条根目录条目按稳定序号排列，字节与对应单项下载一致。
+- **失败及资源**：未知 PNG 附加块在 Quick 明确失败、单项重试不绕过清理，用户主动 Advanced 后可恢复；策略切换立即撤下旧下载，切回 Quick 重新生成默认隐私结果。清空确认、移除和重新导入正常。实际取消一个处于处理中、预算内 3000×1000 的 AVIF 任务，随后两个小 AVIF 正常完成，无删除任务晚到恢复。取消/超时终止、FIFO、URL/Bitmap 释放和 ZIP 快照隔离仍由现有测试及 C2-C/D 实测覆盖；本轮未注入生产诊断或宣称测得浏览器总峰值内存。
+- **AVIF 合同未变**：Q55 / Speed6 / 4:2:0 / Alpha100，高级可选 4:4:4；桌面 4,194,304 像素、单边 4096px、30 秒、串行1，8MP 与移动/未知设备输出继续不开放。两个产物各只有一个 ST WASM（3,485,872 B，摘要仍为 `d9f2a95164362af48558d176e619becfd49dd97b50b86c679b47100860522b3d`）、Worker 与 NOTICE，无 decoder/多线程资源。浏览器进入页面和普通格式/AVIF输入均不下载编码器，选择 AVIF 输出才请求；CN 后续重建/批次复用期间未重复网络传输 WASM。独立本地 HTTP 校验两地区资源 MIME、原文件字节、哈希 URL、缓存头及 ETag/304 正常；这不是实际 EdgeOne/CDN 缓存或公网 HTTPS 验收。
+
+依赖/安全复核（2026-10-30）：固定 `@jsquash/avif@2.1.1`、ST 二进制与第三方 NOTICE 保持原样。复核固定 wrapper 和 Makefile：只暴露单帧、8-bit、受控参数输入，每次新建 encoder；ST 不启用多线程，也不分发包内 decoder。按 [CVE-2023-6879](https://nvd.nist.gov/vuln/detail/CVE-2023-6879)、[libaom 3.7.1 修复说明](https://aomedia.googlesource.com/aom/+/refs/tags/v3.7.1)、[LAP 风险 GHSA-mgv2-4j37-m3x6](https://github.com/advisories/GHSA-mgv2-4j37-m3x6) 及 [SVC 风险 GHSA-8vmr-q5h8-3vc5](https://github.com/advisories/GHSA-8vmr-q5h8-3vc5) 的公开触发条件，未确认当前入口具备可达的严重阻断路径；不等于旧 libaom/libavif 二进制没有漏洞或完成形式化证明。旧底层版本与未来新通告继续列为维护风险。作者版权仅保留已验证 JPEG→JPEG/PNG/WebP 白名单；默认 privacy-v1、AVIF 同格式重编码及不可靠结构拒绝均不放宽，不承诺清除像素水印或所有未知隐私信息。
+
+另用官方 npm registry 执行 `pnpm audit --prod`：**9 项（5 high / 4 moderate）**，为 Astro→unifont→undici 和 Astro→zod 的构建依赖通告，非新增 jSquash JS 告警；npm audit 不覆盖 WASM 内 C++。当前部署产物是纯静态站，无 Node SSR 服务；这些通告没有被当成浏览器编码路径漏洞，也未被称为“已全部修复”。保留到独立工程治理处理，不在本轮升级无关依赖。
+
+退役 `scripts/verify-converter-fixture.mjs`：真实双地区 Published 构建已替代其 CN-only 模拟用途。其中完整静态正文/有限强调/FAQ 原生语义与长文不进客户端 JS 断言移入 `verify-build.mjs`，同样验证两地区两语言。通用 `verify-tool-fixture.mjs` 与 Registry 的 0/多工具、Draft、地区过滤等 Fixture 保留，不增加发布开关或额外构建流程。
+
+README、AGENTS、目录/首页当前状态同步更新；历史 Draft 与 CN-only 记录保留并标明时效。构建守卫继续按真实地区/状态及实际路由校验，未来不可用 Converter 仍须同时排除其 Worker/WASM；未删除 Lab/Fixture、执行脚本与资源隔离约束。**未完成**：CN/Global 实际部署、备案/DNS/CDN/HTTPS、公网可访问性、搜索平台提交及收录、Firefox/Safari 和 iOS/Android 真机兼容性。完成本轮后停止功能扩展，转入独立工程治理。
 
 ## V0.6-D1 — SEO 架构与发布前验证
 

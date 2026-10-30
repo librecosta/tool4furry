@@ -6,10 +6,10 @@ import { roles } from '../src/site/roles';
 import { tools } from '../src/tools/registry';
 
 describe('catalog-only DEV samples', () => {
-  it.each(['cn', 'global'] as const)('defaults to real zero/one-tool %s views in both locales', region => {
+  it.each(['cn', 'global'] as const)('defaults to the real published tool in %s in both locales', region => {
     for (const locale of ['zh', 'en'] as const) for (const dev of [false, true]) {
       const real = getCatalogEntries(region, tools, dev, locale), sections = getCatalogSections(region, tools, dev, locale);
-      expect(real).toHaveLength(dev ? 1 : 0);
+      expect(real.map(entry => entry.id)).toEqual(['image-converter']);
       expect(addCatalogFixture(real, sections, locale)).toEqual({ entries: real, sections, fixtureCount: 0 });
       expect(addCatalogFixture(real, sections, locale, 'off')).toEqual({ entries: real, sections, fixtureCount: 0 });
     }
@@ -29,7 +29,7 @@ describe('catalog-only DEV samples', () => {
     expect(result.sections.flatMap(section => section.groups.flatMap(group => group.entries))).toHaveLength(49);
     expect({ real, sections, tools }).toEqual(snapshot);
     expect(getHomepageEntries('cn', tools, undefined, true, locale)).toEqual(real);
-    expect(getCatalogEntries('cn', tools, false, locale)).toEqual([]);
+    expect(getCatalogEntries('cn', tools, false, locale)).toEqual(real);
   });
   it('can disable samples or extend only the catalog QA data beyond seven pages', () => {
     const real = getCatalogEntries('global', tools, true, 'en'), sections = getCatalogSections('global', tools, true, 'en');

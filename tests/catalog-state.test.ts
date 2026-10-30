@@ -48,10 +48,10 @@ describe('catalog state, filtering and pagination', () => {
   });
   it.each(['cn', 'global'] as const)('keeps %s locales and Registry gates independent', region => {
     for (const locale of ['zh', 'en'] as const) {
-      expect(getCatalogEntries(region, tools, false, locale)).toEqual([]);
-      const draft = getCatalogEntries(region, tools, true, locale);
-      expect(draft.map(entry => entry.id)).toEqual(['image-converter']);
-      expect(draft[0].roles).toEqual(['painter', 'developer', 'animator', 'operations']);
+      const published = getCatalogEntries(region, tools, false, locale);
+      expect(published.map(entry => entry.id)).toEqual(['image-converter']);
+      expect(getCatalogEntries(region, tools, true, locale)).toEqual(published);
+      expect(published[0].roles).toEqual(['painter', 'developer', 'animator', 'operations']);
       const fixture = fixtureTool('foreign', { regions: [region === 'cn' ? 'global' : 'cn'] });
       expect(getCatalogEntries(region, [fixture], true, locale)).toEqual([]);
       const target = locale === 'en' ? '/zh/tools/' : '/en/tools/';

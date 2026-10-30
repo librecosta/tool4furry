@@ -1,3 +1,7 @@
+# V0.6-D2 — 首个正式工具（2026-10-30）
+
+Image Converter 已经维护者授权成为当前唯一 Published 工具，CN/Global 均生成本地区双语工具页、首页精选、匹配的四个角色入口和精选导航；两个地区均未部署。Registry 仍是唯一发布来源，不填充虚构工具或素材。D1 的 SEO 文案与 WebSite 合同不变；以下零工具/Draft/CN-only 验收描述属于当时的历史状态。最新资格与浏览器证据见 [实施记录](image-converter-implementation.md)。
+
 # V0.6-D1 — 静态 SEO 收尾（2026-10-30）
 
 此节覆盖下方历史 SEO 摘要及“暂不引入 JSON-LD”的约定；不改变首页可见文案、布局、Hero 或动效。首页与工具目录的双语 Meta Description 采用长期有效的工具箱定位，Title 不变，OG 继续复用同一份页面 Title/Description。

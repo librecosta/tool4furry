@@ -1,6 +1,6 @@
 # Tool4Furry
 
-为 Furry 创作者准备的开源浏览器工具站。当前为 **V0.4-B — Image Converter**：首款真实单图 PNG/JPEG/WebP 转换器已提供开发预览，仍为 **draft**，待视觉打磨和维护者最终验收后另行决定是否进入 Beta，正式目录仍为空。采用 [L1/L2/L3 发布政策](AGENTS.md#mvp-beta-release-policy-2026-10-10)：全面跨浏览器/真机验证不再是 Beta 前置条件，未测平台如实记录。既有品牌首页、Creative Studio 控件与 Workbench 保持不变。
+为 Furry 创作者准备的开源浏览器工具站。当前为 **V0.6-D2 — Image Converter Beta**：图片转换器是第一个且目前唯一的 **Published** 工具，支持 PNG/JPEG/WebP/AVIF 静态图片互转、批量与文件夹导入、预览、单项和 ZIP 下载、默认隐私元数据清理及受限作者/版权保留。CN/Global 均可生成双语静态产物，**两个地区均未线上部署**。源码 Published 与构建就绪不代表已经对公网提供服务。采用 [L1/L2/L3 发布政策](AGENTS.md#mvp-beta-release-policy-2026-10-10)，未测浏览器与真机能力继续如实记录。
 
 前端及未来浏览器本地工具使用现有 [BSD-3-Clause](LICENSE) 协议。当前没有后端；未来 SaaS 后端将放在独立仓库。
 
@@ -15,13 +15,13 @@ pnpm install
 pnpm dev
 ```
 
-不需要 `.env`、云账号、数据库或密钥。一次 `pnpm dev` 启动 CN `http://127.0.0.1:54321/` 与 EN `http://127.0.0.1:54322/`；导航语言链接在两端本地切换并保留可用路径。端口占用会明确失败，不自动换端口。Ctrl+C 或 `pnpm dev stop` 同时停止两端。
+不需要 `.env`、云账号、数据库或密钥。一次 `pnpm dev` 启动 CN `http://127.0.0.1:54321/` 与 Global `http://127.0.0.1:54322/`；导航语言链接在两端本地切换并保留可用路径。端口占用会明确失败，不自动换端口。Ctrl+C 或 `pnpm dev stop` 同时停止两端。
 
 | 路径 | 内容 |
 | --- | --- |
-| `/`、`/#tools` | 品牌首页与最多 9 项真实精选；无工具时显示准备中的空状态 |
-| `/tools/` | 当前地区完整目录：DEV 显示 draft + published，生产仅 published（当前为空）；按任务/身份/场景发现 |
-| `/tools/image-converter/` | 真实图片转换：开发可访问 draft，生产仅在 Registry published 后生成 |
+| `/`、`/#tools` | 品牌首页与最多 4 项真实精选；当前展示 Image Converter |
+| `/tools/` | 当前地区完整目录：DEV 显示 draft + published，生产仅 published（当前 1 项）；按功能分类/创作身份发现 |
+| `/tools/image-converter/` | 正式图片转换器：CN/Global 的两种语言均可构建 |
 | `/about/`、`/privacy/`、`/terms/` | 双语静态网站信息页 |
 | `/lab/canvas` | 完整视口画布、浮动 Dock、默认关闭的 Inspector、手机参数 Sheet |
 | `/lab/form` | 输入、参数、校验、模拟输出 |
@@ -31,11 +31,11 @@ pnpm dev
 | `/lab/hero-effects/` | Canvas 2D 参数化波浪网格；质量、文案叠加、暂停/恢复、重置与 RAF / 实际重绘观察 |
 | `/404` | 404 页面预览 |
 
-**Lab 只在 dev 可访问。** 页面明确标为 Demo；文件页仅持有本地文件引用并展示元信息，不读取内容、生成对象 URL、上传或持久存储。生产无 Lab 页面、入口或 demo 实现；首页仅有受控外观脚本，无 React Island 或 JS preload。
+**Lab 只在 dev 可访问。** 页面明确标为 Demo；文件页仅持有本地文件引用并展示元信息，不读取内容、生成对象 URL、上传或持久存储。生产无 Lab 页面、入口或 demo 实现；首页保留受控主题、导航、滚动、Reveal 与 Wavefield 增强，无 React Island 或 JS preload。
 
 Hero 实验在两个开发端口均可访问，仅保留 Canvas 2D HSN-1 Waves。Far/Main 两层使用固定水平投影 `X=W*u`、`He=min(H,0.5W)`；三组低频谱波与固定种子连续梯度噪声共用解析导数，以法线、曲率、景深形成局部亮脊与暗谷。频率/振幅/艺术色散速度沿用 #20 基线，深度相位固定为 beta=[0.85,-1.2,1.4]、phi=[3.15,0.9,2.4]，不模拟真实流体。主线预算 36/42/46，远景最多 16 条低亮排线，横切线最多 12/15/18；品质主要增加采样，渲染 DPR 上限 1/2/2。两层与主/横切线按实际投影邻距衰减：≤1.5 device px 隐去，约 1.5–3px 渐显，亮线要求更宽间距；不使用整体模糊。低档最多 12、中/高档最多 24 次实际重绘/秒，真实时间独立推进；暂停、离屏、后台停绘，Reduced Motion 静态显示。支持现有 Hero 文案叠加、指针弱幅局部扰动、重置和 Canvas 失败提示。统计分别展示 RAF 回调率、实际重绘率、同步 JS draw 平均/P95、两层数组及单 RGBA 缓冲估算，不代表 GPU 计时、总内存或帧率保证。Motion 保留 14.6.0 供现有工作台使用；实验不使用 WebGL、付费源码或图像纹理，也不接入正式首页。
 
-**Converter 当前为 draft**，开发和生产共用 `/tools/image-converter/`，仅运行环境与 Registry 状态决定是否生成页面与加载实现。首页、完整目录、工具箱菜单及相关推荐沿用同一可见性规则：DEV 包含当前地区 draft + published，生产仅 published。它在浏览器内读取、解码、编码并管理预览 URL，文件不上传或持久保存。生产排除 draft 的路由、目录入口及专用 JS；发布时只需经授权调整 Registry status，不再另改 loader 开关。操作与验收记录见 [Image Converter 实施记录](docs/image-converter-implementation.md)。
+**Converter 已为 Published，尚未部署。** 开发和生产共用 `/tools/image-converter/`；CN 中文/英文路径为 `/tools/image-converter/`、`/en/tools/image-converter/`，Global 英文/中文为 `/tools/image-converter/`、`/zh/tools/image-converter/`。首页、完整目录、精选导航及相关推荐沿用同一 Registry 地区/状态规则，未来 Draft 仍仅限 DEV。文件读取、解码、编码和预览在浏览器中完成，不上传或持久保存；AVIF 单线程编码组件按需加载。操作、发布审计和兼容性待办见 [Image Converter 实施记录](docs/image-converter-implementation.md)。
 
 ## 检查与构建
 
@@ -71,7 +71,7 @@ python -m http.server 8081 --directory dist/global
 
 静态服务应支持目录下的 `index.html`；未来部署时由主机设置 `404.html` 的错误页映射。不要使用 SPA 全路由回退来伪造 Lab 页面。
 
-无需单独启动英文服务器或配置语言目标环境变量。正式 CN/Global 产物的语言链接仍使用对应公网域名；未发布或地区不可用的工具安全回退目标工具目录。
+无需单独启动英文服务器或配置语言目标环境变量。正式 CN/Global 产物的语言链接仍留在当前来源；Footer 地区外链使用对应正式域名，未发布或地区不可用的工具安全回退目标工具目录。
 
 ## 目录
 
@@ -98,7 +98,7 @@ docs/workbench-appearance.md V0.3-B 完整合同、布局所有权、浏览器�
 docs/site-homepage.md V0.3-C 完整合同、首页/目录/SEO 与验收记录
 docs/tool-platform-image-foundation.md V0.4-A 完整合同与 P0–P6 实施记录
 docs/image-processing-capabilities.md 原生编解码证据与 B/C/D 待验发布门禁
-docs/image-converter-implementation.md V0.4-B 草稿功能、复现、证据与发布阻断项
+docs/image-converter-implementation.md V0.6-D2 正式工具状态、发布审计及历史证据
 public/brand/     可替换单一 Mark、静态 Creative Fragments SVG
 ```
 
@@ -114,11 +114,11 @@ public/brand/     可替换单一 Mark、静态 Creative Fragments SVG
 
 在 `/lab/files` 选择或拖入 PNG/JPEG/WebP，每次最多 3 个、单文件最多 2 MiB。混入错误类型、超大或第 4 个文件，检查合法部分进入列表、拒绝原因留在选择区；重复选择同一文件应新增记录。Tab → Enter/Space 打开系统选择器；可禁用、移除或确认清空。宽度至少 900px 且精确指针下滚动长页，右下球显示进度，点击向上移动总可滚动距离的 25%；手机继续原生滚动。详细步骤及未完成的真机检查见文件交互文档。
 
-工作台入口与响应式合同见 [Workbench Appearance](docs/workbench-appearance.md)。品牌链接返回首页，独立工具箱按钮只展示当前地区已发布工具（目前为空）；烧瓶按钮收纳五个 DEV ONLY 预览。Canvas 的选择/标记属于当前 Demo 的局部操作；点击未被浮层覆盖的画布同样生效。
+工作台入口与响应式合同见 [Workbench Appearance](docs/workbench-appearance.md)。品牌链接返回首页，独立工具箱按钮只展示当前地区已发布工具（当前为 Image Converter）；烧瓶按钮收纳五个 DEV ONLY 预览。Canvas 的选择/标记属于当前 Demo 的局部操作；点击未被浮层覆盖的画布同样生效。
 
 人工重点复核 `/lab/canvas` 在 901/900px 切换、390px 竖屏及 812×375 横屏：打开参数前后画布不缩小，名称/大小/颜色/计数保留，Select → Sheet 两次 Escape 依次关闭且返回焦点。Form/Batch 手机依次阅读输入/执行/结果或队列/设置。内置 Chromium 验收属于视口模拟；真实 iOS/Android 的软键盘、触摸、安全区与辅助技术仍需人工检查。
 
-首页历史合同与验收见 [Site Homepage](docs/site-homepage.md)。V0.4-A 将 Header/Footer/404 的「工具箱」入口更新为 `/tools/` 完整目录，保留首页 `#tools` 兼容锚点；导航仍无吸顶或汉堡菜单。首页不加载 React 或动画运行时，品牌采用已审核双兽首 SVG Master，Favicon 提供 ICO/PNG，Hero 美术未改。当前没有探索主 CTA、搜索框或假工具卡。真实 `published` 工具按地区进入完整目录，首页精选最多 9 项；未知/错误分类在发布构建阶段拒绝。可索引页面共用正式 `public/brand/tool4furry-og.png`，图片 URL 使用本地区正式 HTTPS 域名；OG Locale 按内容语言解析，并提供 X/Twitter 大图卡片。404、Lab 和 draft 的 noindex 页面不输出社交 Meta。
+首页历史合同与验收见 [Site Homepage](docs/site-homepage.md)。V0.4-A 将 Header/Footer/404 的「工具箱」入口更新为 `/tools/` 完整目录，保留首页 `#tools` 兼容锚点；导航仍无吸顶或汉堡菜单。首页不加载 React 或动画运行时，品牌采用已审核双兽首 SVG Master，Favicon 提供 ICO/PNG，Hero 美术未改。Hero CTA 指向本地区/语言工具目录，目录有搜索与筛选，不展示假工具卡。真实 `published` 工具按地区进入完整目录，首页精选最多 4 项；未知/错误分类在发布构建阶段拒绝。可索引页面共用正式 `public/brand/tool4furry-og.png`，图片 URL 使用本地区正式 HTTPS 域名；OG Locale 按内容语言解析，并提供 X/Twitter 大图卡片。404、Lab 和 draft 的 noindex 页面不输出社交 Meta。
 
 人工审查首页及 `/tools/` 时重点看中英文、320px 导航、Tab 焦点、Footer 和真实空态；404 的「工具箱」应进入 `/tools/`，旧 `/#tools` 仍可用。真实移动设备与屏幕阅读器验收仍待维护者完成。
 
@@ -126,7 +126,7 @@ public/brand/     可替换单一 Mark、静态 Creative Fragments SVG
 
 完整边界见 [Tool Platform & Image Foundation](docs/tool-platform-image-foundation.md)。先为真实需求确认 Taxonomy 的领域/方向与有依据的身份/场景标签，在 Registry 中以 draft 开始；添加独立 lazy loader 和各已发布地区的静态 SEO 内容，再完成实际功能与浏览器验证后发布。分类变化不改变 `/tools/<slug>/`。发布构建会拒绝重复 ID/Slug、非法分类关系、地区/标签、缺失 loader 或文案。首页精选 ID 顺序仅决定展示优先级，不能绕过发布门。
 
-正式工具页使用单一 ToolRuntime：导航身份 → Astro 静态 H1/简介插槽 → 工具操作 → Island 外静态指南/相关工具。Lab 保留自己的 H1 和 Canvas 浮层。Quick/Advanced 共用工具自有 Settings；只有当前 sourceRevision/settingsRevision/requestId 的 ready 输出可下载。B 已实现转换草稿；尺寸调整、裁剪仍留在 C/D。
+正式工具页使用单一 ToolRuntime：导航身份 → Astro 静态 H1/简介插槽 → 工具操作 → Island 外静态指南/相关工具。Lab 保留自己的 H1 和 Canvas 浮层。Quick/Advanced 共用工具自有 Settings；只有当前 sourceRevision/settingsRevision/requestId 的 ready 输出可下载。Image Converter 已完成源码 Beta 验收；尺寸调整、裁剪仍未实现。
 
 停止 dev 后可额外运行 `node scripts/verify-tool-fixture.mjs cn` 和 `node scripts/verify-tool-fixture.mjs global`：它们只在测试构建期间替换内存模块，输出到仓库外 `../.validation/platform-v04a/<region>/`，复用生产守卫验证非空页面及长文不进客户端 JS；不修改生产 Registry。**这些测试产物不可部署。**
 

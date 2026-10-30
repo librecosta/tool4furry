@@ -38,7 +38,7 @@ describe('static tool discovery', () => {
   });
 
   it.each(['cn', 'global'] as const)(
-    'discovers the real draft Converter in DEV %s even with no featured IDs, but not in production',
+    'discovers the real Published Converter in DEV and production %s without filler entries',
     (region) => {
       const entries = getCatalogEntries(region, undefined, true);
       expect(entries.map((entry) => [entry.id, entry.href, entry.title])).toEqual([
@@ -48,10 +48,10 @@ describe('static tool discovery', () => {
       expect(getCatalogSections(region, undefined, true).flatMap((section) =>
         section.groups.flatMap((group) => group.entries),
       )).toEqual(entries);
-      expect(getCatalogEntries(region)).toEqual([]);
-      expect(getHomepageEntries(region)).toEqual([]);
-      expect(getCatalogSections(region)).toEqual([]);
-      expect(imageConverterDefinition.status).toBe('draft');
+      expect(getCatalogEntries(region)).toEqual(entries);
+      expect(getHomepageEntries(region)).toEqual(entries);
+      expect(getCatalogSections(region).flatMap(section => section.groups.flatMap(group => group.entries))).toEqual(entries);
+      expect(imageConverterDefinition.status).toBe('published');
     },
   );
 

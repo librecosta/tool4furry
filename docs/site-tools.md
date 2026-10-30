@@ -12,7 +12,7 @@ use up to 1600px; narrower viewports retain the existing three/two/one columns.
 Registry `getAvailableTools(region, dev)` is still the sole publication gate.
 `taxonomy.ts` owns two-level category/group relationships; `roles.ts` owns six
 identity IDs, labels and icon semantics. `ToolDefinition.roles` is a many-to-many
-match, independent of homepage manual editorial order. Converter remains draft,
+match, independent of homepage manual editorial order. Converter is the first and currently only Published tool in both regions (not deployed),
 associated with painter/developer/animator/operations. Legacy audiences/contexts
 remain metadata-compatible, but the catalog never reads those dimensions.
 The unused `getDiscoverySections` projection, its legacy assertions and the old
@@ -74,12 +74,12 @@ Only `ToolsCatalog.astro`, inside `import.meta.env.DEV`, dynamically imports
 only current-region real draft/published tools, with no sample note or cards.
 Explicit `$env:T4F_CATALOG_FIXTURE='compact'; pnpm dev` appends 48 clearly labeled,
 noninteractive samples (no href/loader/route), in six groups across five parent
-categories and all six roles. With the current real draft this gives 49 entries,
+categories and all six roles. With the current real tool this gives 49 entries,
 five pages. The Registry, homepage and Header discovery never receive samples.
 
 For ellipses/jump QA (>7 pages), start DEV in PowerShell with
 `$env:T4F_CATALOG_FIXTURE='pagination'; pnpm dev`: 180 samples in the six groups
-with counts `[108,24,12,12,12,12]`. With the real draft: all 181 entries/16 pages,
+with counts `[108,24,12,12,12,12]`. With the real tool: all 181 entries/16 pages,
 Images & Assets 133/12, Image Processing 109/10. Check first/middle/last at
 1/8/16, 1/6/12 and 1/5/10 respectively, plus both ellipses, invalid input,
 cancel/Escape, filter resets and browser Back. `off` restores only real tools.

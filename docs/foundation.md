@@ -48,7 +48,7 @@ V0.5-B2.2（2026-10-20）修正 B2.1 的推测：冷启动 Converter 首次虚�
 
 开发 Layout 保留原有阻塞 CSS link，以 `src/styles/stylex-dev-css.ts` 替代 0.19.1 的 css-only 客户端 shim：收到同一 `stylex:css-update` 时创建替代 link，load 成功才移除旧表；失败保留旧表，连续请求仅接受最新响应。没有隐藏页面、水合等待或固定延迟，StyleX 配置和生产 CSS 提取不变。上游提供不撤下活动样式表的刷新实现后，可删除该兼容模块并恢复官方 shim。临时首帧/请求探针已移除；修复后首页和 Converter 各三次加载的前 120 帧均未采到无样式帧，16→24→16px 与 Token 热改均自动应用。Astro 对共享 TS 样式改动的原有 React 根重挂载行为已与旧 shim 对照，未改变其 HMR 策略。
 
-定向验证：4 项兼容模块测试与 `pnpm check` 通过；`node scripts/verify-converter-fixture.mjs cn` 的真实工具静态装配及产物守卫通过，磁盘 draft/loader 未变。Chromium 两次加载静态 Converter 的前 60 帧均有完整样式，head 的提取 CSS 为 131,548 B；首页零 script / Island，生产页面及 JS 不含开发 shim。测试装配中的临时首帧探针也已还原，不部署该 fixture。
+定向验证：4 项兼容模块测试与 `pnpm check` 通过；当时的 `node scripts/verify-converter-fixture.mjs cn` 真实工具静态装配及产物守卫通过，磁盘 draft/loader 未变（该历史脚本已在 D2 退役，有效断言迁入正式构建守卫）。Chromium 两次加载静态 Converter 的前 60 帧均有完整样式，head 的提取 CSS 为 131,548 B；首页零 script / Island，生产页面及 JS 不含开发 shim。测试装配中的临时首帧探针也已还原，不部署该 fixture。
 
 参考：[StyleX Vite](https://stylexjs.com/docs/learn/installation/vite/)、[unplugin 配置](https://stylexjs.com/docs/api/configuration/unplugin/)、[Astro React](https://docs.astro.build/en/guides/integrations-guide/react/)、[Hydration 指令](https://docs.astro.build/en/reference/directives-reference/)、[Base UI Dialog](https://base-ui.com/react/components/dialog)。
 

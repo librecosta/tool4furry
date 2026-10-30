@@ -29,7 +29,8 @@ describe.each(['cn', 'global'])('%s discovery', region => {
     }
     const changed = registry.map(tool => tool.id === 'shared' ? { ...tool, status: 'draft' } : tool);
     expect(publicPages(region, changed).map(page => page.url)).not.toContain(`${origin}/tools/shared/`);
-    expect(publicPages(region).some(page => page.url.includes('image-converter'))).toBe(false);
+    expect(publicPages(region).filter(page => page.url.includes('/tools/image-converter/')).map(page => page.url))
+      .toEqual([`${origin}/${region === 'cn' ? '' : 'zh/'}tools/image-converter/`, `${origin}/${region === 'cn' ? 'en/' : ''}tools/image-converter/`]);
   });
   it('generates parseable Sitemap XML and reciprocal local alternates without invented dates', () => {
     const index = parseXML(sitemapIndex(region));

@@ -16,7 +16,7 @@ describe('four-slot featured presentation', () => {
       const navigation = getHomepageEntries(region, list, ['missing', 'other-region', 'fixture-8', 'fixture-8'], false, locale);
       const cards = getFeaturedShowcase(navigation);
       expect(navigation).toHaveLength(9);
-      expect(cards.map(card => card.id)).toEqual(['fixture-8', 'fixture-1', 'fixture-2', 'fixture-3']);
+      expect(cards.map(card => card.id)).toEqual(['fixture-8', 'image-converter', 'fixture-1', 'fixture-2']);
       expect(cards[0].title).toBe(list.find(tool => tool.id === 'fixture-8')!.copy[locale].title);
       expect(cards[0]).toMatchObject({ href: navigation[0].href });
     }
@@ -27,7 +27,7 @@ describe('four-slot featured presentation', () => {
     expect(cards).toHaveLength(Math.min(count, 4));
   });
 
-  it.each(['cn', 'global'] as const)('shows only the real draft in %s DEV and no examples in either locale', region => {
+  it.each(['cn', 'global'] as const)('shows only the real Published tool in %s DEV and production in either locale', region => {
     for (const locale of ['zh', 'en'] as const) {
       const entries = getHomepageEntries(region, undefined, undefined, true, locale);
       const cards = getFeaturedShowcase(entries);
@@ -35,9 +35,9 @@ describe('four-slot featured presentation', () => {
       expect(cards[0].description).toBe(imageConverterDefinition.copy[locale].summary);
       expect(entries[0].description).toBe(imageConverterDefinition.copy[locale].description);
       expect(cards[0].href).toBe(entries[0].href);
-      expect(getFeaturedShowcase(getHomepageEntries(region, undefined, undefined, false, locale))).toEqual([]);
+      expect(getFeaturedShowcase(getHomepageEntries(region, undefined, undefined, false, locale))).toEqual(cards);
     }
-    expect(imageConverterDefinition.status).toBe('draft');
+    expect(imageConverterDefinition.status).toBe('published');
   });
 });
 
@@ -46,8 +46,11 @@ describe('homepage editorial role projection', () => {
     for (const locale of ['zh', 'en'] as const) {
       const production = getRoleShowcases(region, locale);
       expect(production).toHaveLength(6);
-      expect(production.flatMap(role => role.entries)).toEqual([]);
+      expect(production.filter(role => role.entries.length).map(role => role.id)).toEqual(['painter', 'developer', 'animator', 'operations']);
+      expect(production.flatMap(role => role.entries).every(entry => entry.id === 'image-converter')).toBe(true);
       const dev = getRoleShowcases(region, locale, true);
+      expect(dev).toEqual(production);
+      expect(getRoleShowcases(region, locale, false, [{ ...imageConverterDefinition, status: 'draft' }]).flatMap(role => role.entries)).toEqual([]);
       expect(dev.find(role => role.id === 'painter')?.entries[0].title).toBe(imageConverterDefinition.copy[locale].title);
       const expectedPrefix = (region === 'cn' ? locale === 'en' : locale === 'zh') ? `/${locale}` : '';
       expect(dev.find(role => role.id === 'painter')?.entries[0].href).toBe(`${expectedPrefix}/tools/image-converter/`);
@@ -55,7 +58,7 @@ describe('homepage editorial role projection', () => {
       const list: ToolDefinition[] = [{ ...imageConverterDefinition, status: 'published', regions: [otherRegion] }];
       expect(getRoleShowcases(region, locale, true, list).flatMap(role => role.entries)).toEqual([]);
     }
-    expect(imageConverterDefinition.status).toBe('draft');
+    expect(imageConverterDefinition.status).toBe('published');
   });
 
   it('deduplicates editorial IDs, ignores unknown/unavailable IDs, and caps each role at twelve', () => {

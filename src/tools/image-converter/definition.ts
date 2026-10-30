@@ -1,5 +1,5 @@
 import type { ToolDefinition } from '../types';
-// Firefox/WebKit/mobile and resource release gates have not passed.
+// Source-level Beta accepted; both regional static builds are ready, not deployed.
 export const imageConverterDefinition: ToolDefinition = {
   id: 'image-converter',
   slug: 'image-converter',
@@ -9,7 +9,7 @@ export const imageConverterDefinition: ToolDefinition = {
   audiences: ['creator', 'developer'],
   contexts: ['studio'],
   mode: 'form',
-  status: 'draft',
+  status: 'published',
   regions: ['cn', 'global'],
   copy: {
     zh: {

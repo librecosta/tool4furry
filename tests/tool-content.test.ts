@@ -28,14 +28,14 @@ describe('Astro-only content boundary', () => {
       'Batch convert PNG, JPG, WebP and AVIF images in your browser without uploading files. Adjust quality, preview results and download ZIPs. Common private metadata is removed by default.',
       'Online Image Converter',
       'Convert between PNG, JPEG, WebP and supported AVIF images directly in your browser. Use quick presets or advanced quality settings, then preview and download each result or a ZIP.'],
-  ] as const)('retains the frozen %s SEO with the full four-format guide, without publishing', (locale, title, description, h1, intro) => {
+  ] as const)('retains the frozen %s SEO and full four-format guide for the accepted tool', (locale, title, description, h1, intro) => {
     expect(imageConverterContent[locale]).toMatchObject({ title, description, h1, intro });
     expect(imageConverterContent[locale]?.steps).toHaveLength(4);
     expect(imageConverterContent[locale]?.limitations).toHaveLength(4);
     expect(imageConverterContent[locale]?.faq).toHaveLength(6);
     expect(imageConverterDefinition.copy[locale].summary).toContain('AVIF');
     expect(imageConverterDefinition.copy[locale].description).toContain('AVIF');
-    expect(imageConverterDefinition.status).toBe('draft');
+    expect(imageConverterDefinition.status).toBe('published');
     expect(imageConverterDefinition.regions).toEqual(['cn', 'global']);
   });
   it('requires localized content only for published region routes', () => {

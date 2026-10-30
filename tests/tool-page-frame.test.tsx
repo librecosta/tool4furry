@@ -153,6 +153,7 @@ describe('product navigation', () => {
     'keeps the native empty production toolbox and ordinary catalog link in %s',
     async (region) => {
       vi.stubEnv('DEV', false);
+      vi.spyOn(registry, 'getAvailableTools').mockReturnValue([]);
       const user = userEvent.setup();
       const t = messages[defaultLocale(region)];
       const { container } = render(
@@ -247,13 +248,13 @@ describe('product navigation', () => {
     expect(available).toHaveBeenCalledWith('cn', dev, registry.tools);
     expect([...document.querySelectorAll('[data-tool-panel] a[aria-current], [data-tool-panel] a[href$="draft-slug/"]')].map(link => link.getAttribute('href'))).toEqual(dev ? ['/tools/draft-slug/', '/tools/current-slug/'] : ['/tools/current-slug/']);
     expect(registry.tools).toEqual([imageConverterDefinition]); // Fixtures never populate the real registry.
-    expect(imageConverterDefinition.status).toBe('draft');
-    expect(original('cn', false)).toEqual([]);
-    expect(original('global', false)).toEqual([]);
+    expect(imageConverterDefinition.status).toBe('published');
+    expect(original('cn', false)).toEqual([imageConverterDefinition]);
+    expect(original('global', false)).toEqual([imageConverterDefinition]);
   });
 
-  it.each(['cn', 'global'] as const)('links the real draft Converter in the DEV %s toolbox', async (region) => {
-    vi.stubEnv('DEV', true);
+  it.each([{ region: 'cn', dev: false }, { region: 'global', dev: false }, { region: 'cn', dev: true }, { region: 'global', dev: true }] as const)('links the real Published Converter in the $region toolbox (DEV=$dev)', async ({ region, dev }) => {
+    vi.stubEnv('DEV', dev);
     const user = userEvent.setup();
     render(<ToolPageFrame region={region} locale={defaultLocale(region)} mode="form" currentToolId="image-converter" title="Converter">Workspace</ToolPageFrame>);
     await user.click(screen.getByLabelText(messages[defaultLocale(region)].featuredTools, { selector: 'summary' }));
@@ -261,7 +262,7 @@ describe('product navigation', () => {
     expect(item.getAttribute('href')).toBe('/tools/image-converter/');
     expect(item.getAttribute('aria-current')).toBe('page');
     expect(screen.queryByText(messages[defaultLocale(region)].empty)).toBeNull();
-    expect(imageConverterDefinition.status).toBe('draft');
+    expect(imageConverterDefinition.status).toBe('published');
   });
 
   it('separates DEV navigation from the toolbox and local canvas actions', async () => {

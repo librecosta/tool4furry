@@ -1,0 +1,377 @@
+{
+  "date": "2026-10-30",
+  "scope": "Source-level Beta / real regional static builds; neither region deployed",
+  "baseline": "6c603f797280c8b98f90595165d514eef06fd256",
+  "checks": {
+    "astro": {
+      "files": 230,
+      "errors": 0,
+      "warnings": 0
+    },
+    "vitest": {
+      "files": 55,
+      "passed": 581
+    },
+    "builds": [
+      "cn",
+      "global"
+    ],
+    "prePromotionTargetedTests": 94
+  },
+  "builds": [
+    {
+      "region": "cn",
+      "htmlPages": 13,
+      "indexableUrls": 12,
+      "routes": [
+        {
+          "path": "/tools/image-converter/",
+          "lang": "zh-CN",
+          "title": "在线图片格式转换器 - PNG、JPG、WebP、AVIF 互转 | Tool4Furry",
+          "description": "在浏览器本地批量转换 PNG、JPG、WebP 和 AVIF 图片，无需上传。支持常见格式互转、编码质量调整、图片预览和 ZIP 打包下载，默认清理常见隐私元数据。",
+          "canonical": "https://tool4furry.cn/tools/image-converter/",
+          "hreflang": [
+            {
+              "lang": "zh-CN",
+              "href": "https://tool4furry.cn/tools/image-converter/"
+            },
+            {
+              "lang": "en",
+              "href": "https://tool4furry.cn/en/tools/image-converter/"
+            }
+          ],
+          "robots": null,
+          "h1s": [
+            "在线图片格式转换器"
+          ],
+          "steps": 4,
+          "limitations": 4,
+          "faq": 6
+        },
+        {
+          "path": "/en/tools/image-converter/",
+          "lang": "en",
+          "title": "Online Image Converter - PNG, JPG, WebP & AVIF | Tool4Furry",
+          "description": "Batch convert PNG, JPG, WebP and AVIF images in your browser without uploading files. Adjust quality, preview results and download ZIPs. Common private metadata is removed by default.",
+          "canonical": "https://tool4furry.cn/en/tools/image-converter/",
+          "hreflang": [
+            {
+              "lang": "en",
+              "href": "https://tool4furry.cn/en/tools/image-converter/"
+            },
+            {
+              "lang": "zh-CN",
+              "href": "https://tool4furry.cn/tools/image-converter/"
+            }
+          ],
+          "robots": null,
+          "h1s": [
+            "Online Image Converter"
+          ],
+          "steps": 4,
+          "limitations": 4,
+          "faq": 6
+        }
+      ]
+    },
+    {
+      "region": "global",
+      "htmlPages": 13,
+      "indexableUrls": 12,
+      "routes": [
+        {
+          "path": "/tools/image-converter/",
+          "lang": "en",
+          "title": "Online Image Converter - PNG, JPG, WebP & AVIF | Tool4Furry",
+          "description": "Batch convert PNG, JPG, WebP and AVIF images in your browser without uploading files. Adjust quality, preview results and download ZIPs. Common private metadata is removed by default.",
+          "canonical": "https://tool4furry.com/tools/image-converter/",
+          "hreflang": [
+            {
+              "lang": "en",
+              "href": "https://tool4furry.com/tools/image-converter/"
+            },
+            {
+              "lang": "zh-CN",
+              "href": "https://tool4furry.com/zh/tools/image-converter/"
+            }
+          ],
+          "robots": null,
+          "h1s": [
+            "Online Image Converter"
+          ],
+          "steps": 4,
+          "limitations": 4,
+          "faq": 6
+        },
+        {
+          "path": "/zh/tools/image-converter/",
+          "lang": "zh-CN",
+          "title": "在线图片格式转换器 - PNG、JPG、WebP、AVIF 互转 | Tool4Furry",
+          "description": "在浏览器本地批量转换 PNG、JPG、WebP 和 AVIF 图片，无需上传。支持常见格式互转、编码质量调整、图片预览和 ZIP 打包下载，默认清理常见隐私元数据。",
+          "canonical": "https://tool4furry.com/zh/tools/image-converter/",
+          "hreflang": [
+            {
+              "lang": "zh-CN",
+              "href": "https://tool4furry.com/zh/tools/image-converter/"
+            },
+            {
+              "lang": "en",
+              "href": "https://tool4furry.com/tools/image-converter/"
+            }
+          ],
+          "robots": null,
+          "h1s": [
+            "在线图片格式转换器"
+          ],
+          "steps": 4,
+          "limitations": 4,
+          "faq": 6
+        }
+      ]
+    }
+  ],
+  "browser": {
+    "environment": "Local Windows Chromium; desktop and phone viewport simulation, not mobile hardware",
+    "paths": [
+      {
+        "region": "cn",
+        "locale": "zh",
+        "width": 1440
+      },
+      {
+        "region": "cn",
+        "locale": "en",
+        "width": 390
+      },
+      {
+        "region": "global",
+        "locale": "en",
+        "width": 1440
+      },
+      {
+        "region": "global",
+        "locale": "zh",
+        "width": 390
+      }
+    ],
+    "additionalWidths": [
+      1200,
+      320
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "horizontalOverflow": false,
+    "consoleErrorsOrWarnings": [],
+    "previewOriginalOutputEscapeFocusReturn": true,
+    "faqClickAndSpace": true,
+    "retryAndAdvancedRecovery": true,
+    "clearAndRemove": true,
+    "cancelledAvif": {
+      "source": "3000x1000.png",
+      "wasProcessing": true,
+      "removedTaskDidNotReturn": true,
+      "subsequentAvifTasksReady": 2
+    },
+    "networkBeforeExplicitResourceChecks": [
+      {
+        "region": "cn",
+        "wasmRequests": 1,
+        "postRequests": 0,
+        "httpErrors": 0
+      },
+      {
+        "region": "global",
+        "wasmRequests": 0,
+        "postRequests": 0,
+        "httpErrors": 0
+      }
+    ]
+  },
+  "pillow": "12.3.0",
+  "downloads": [
+    {
+      "file": "t4f-20261030-203139907-0001-transparent.webp",
+      "format": "WEBP",
+      "size": [
+        80,
+        48
+      ],
+      "bytes": 660,
+      "sha256": "e40c4b889dd1cb5181cfce0164a23e36e4da6330d13158dc6e74dad6379ac40d",
+      "exif": {}
+    },
+    {
+      "file": "t4f-20261030-203139907-0001-transparent.avif",
+      "format": "AVIF",
+      "size": [
+        80,
+        48
+      ],
+      "bytes": 542,
+      "sha256": "4496d0c32781f0df8e2c9b3a98098fce9553bb704e76604bf6ae90026823dbc8",
+      "exif": {}
+    },
+    {
+      "file": "t4f-20261030-203318790-0001-t4f-20261030-203139907-0001-transparent.png",
+      "format": "PNG",
+      "size": [
+        80,
+        48
+      ],
+      "bytes": 332,
+      "sha256": "453c29d2e30e8260563f656873294da935d1e9f813f4b4d5ec6e5b97d10d2012",
+      "exif": {}
+    },
+    {
+      "file": "t4f-20261030-203330126-0001-private.jpg",
+      "format": "JPEG",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 4499,
+      "sha256": "c29f81222101f9d04fc71d4669b73352993741ba12f5d368f9aadd56842db22d",
+      "exif": {
+        "274": 6
+      }
+    },
+    {
+      "file": "t4f-20261030-203330126-0001-private (1).jpg",
+      "format": "JPEG",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 3240,
+      "sha256": "dbb558603b0e691407e00543fb0c9e71fb35e3ed4202316933a6915928939e5e",
+      "exif": {
+        "315": "C2A_TEST_AUTHOR",
+        "33432": "C2A_TEST_COPYRIGHT"
+      }
+    },
+    {
+      "file": "t4f-20261030-203433582-0001-transparent.webp",
+      "format": "WEBP",
+      "size": [
+        80,
+        48
+      ],
+      "bytes": 660,
+      "sha256": "e40c4b889dd1cb5181cfce0164a23e36e4da6330d13158dc6e74dad6379ac40d",
+      "exif": {}
+    },
+    {
+      "file": "t4f-20261030-203433582-0002-private.webp",
+      "format": "WEBP",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 1446,
+      "sha256": "710bd01488ddbce536f65818ffc7afe107995a6b1a6b535206a9d8fc3bb9fb7f",
+      "exif": {}
+    },
+    {
+      "file": "t4f-20261030-203928943-0001-private.webp",
+      "format": "WEBP",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 1384,
+      "sha256": "97ad6a70da44aa209f9f0ba65d086644b5f7b91011357d95a7daf8836aa85c27",
+      "exif": {}
+    }
+  ],
+  "quickJpegPixelsPayloadICCEqual": true,
+  "avifAlphaExact": true,
+  "roundtripPngAlphaExact": true,
+  "zip": {
+    "name": "t4f-20261030-203433582.zip",
+    "entries": [
+      "t4f-20261030-203433582-0001-transparent.webp",
+      "t4f-20261030-203433582-0002-private.webp"
+    ],
+    "bytesMatchIndividualDownloads": true
+  },
+  "localHttp": {
+    "note": "Local ordinary HTTP only; not EdgeOne/CDN/HTTPS deployment evidence.",
+    "resources": [
+      {
+        "region": "cn",
+        "file": "avif.NOTICE-BuA7IlLM.txt",
+        "bytes": 44554,
+        "sha256": "577a52a62f2581f85fa6a047eefb47649c0ebb159215c1543e871180ba76c606",
+        "type": "text/plain; charset=utf-8",
+        "localHttpCacheControl": "public, max-age=31536000, immutable",
+        "conditionalStatus": 304
+      },
+      {
+        "region": "cn",
+        "file": "avif.worker-Bdk1mcVA.js",
+        "bytes": 20703,
+        "sha256": "61a5f9d1da60c217470a11c1381171733b2a3e8ab3b2513f70b4297109564a4e",
+        "type": "text/javascript",
+        "localHttpCacheControl": "public, max-age=31536000, immutable",
+        "conditionalStatus": 304
+      },
+      {
+        "region": "cn",
+        "file": "avif_enc-Co4TcJko.wasm",
+        "bytes": 3485872,
+        "sha256": "d9f2a95164362af48558d176e619becfd49dd97b50b86c679b47100860522b3d",
+        "type": "application/wasm",
+        "localHttpCacheControl": "public, max-age=31536000, immutable",
+        "conditionalStatus": 304
+      },
+      {
+        "region": "global",
+        "file": "avif.NOTICE-BuA7IlLM.txt",
+        "bytes": 44554,
+        "sha256": "577a52a62f2581f85fa6a047eefb47649c0ebb159215c1543e871180ba76c606",
+        "type": "text/plain; charset=utf-8",
+        "localHttpCacheControl": "public, max-age=31536000, immutable",
+        "conditionalStatus": 304
+      },
+      {
+        "region": "global",
+        "file": "avif.worker-Bdk1mcVA.js",
+        "bytes": 20703,
+        "sha256": "61a5f9d1da60c217470a11c1381171733b2a3e8ab3b2513f70b4297109564a4e",
+        "type": "text/javascript",
+        "localHttpCacheControl": "public, max-age=31536000, immutable",
+        "conditionalStatus": 304
+      },
+      {
+        "region": "global",
+        "file": "avif_enc-Co4TcJko.wasm",
+        "bytes": 3485872,
+        "sha256": "d9f2a95164362af48558d176e619becfd49dd97b50b86c679b47100860522b3d",
+        "type": "application/wasm",
+        "localHttpCacheControl": "public, max-age=31536000, immutable",
+        "conditionalStatus": 304
+      }
+    ]
+  },
+  "security": {
+    "npmAudit": {
+      "registry": "https://registry.npmjs.org",
+      "high": 5,
+      "moderate": 4,
+      "critical": 0,
+      "paths": [
+        "astro > unifont > undici",
+        "astro > zod"
+      ]
+    },
+    "fixedAvifPackage": "@jsquash/avif@2.1.1",
+    "binarySafety": "No identified blocking trigger in the current restricted ST 8-bit single-frame encode path; old native dependencies remain a maintenance risk, not a proof of absence of vulnerabilities."
+  },
+  "unverified": [
+    "Deployment, public HTTPS, EdgeOne/CDN behavior and DNS",
+    "Search engine submission and indexing",
+    "Firefox/Safari, physical iOS/Android and per-device peak memory"
+  ]
+}

@@ -988,13 +988,13 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
       window.history.replaceState({}, '', original);
     }
   });
-  it('uses the same content and tool route for regional development drafts', () => {
+  it('uses the accepted content and tool route in both regional builds and DEV', () => {
     for (const region of ['cn', 'global'] as const) {
-      expect(getAvailableTools(region, false)).toEqual([]);
+      expect(getAvailableTools(region, false)).toEqual(getAvailableTools(region, true));
       expect(getAvailableTools(region, true).map((tool) => tool.slug)).toEqual([
         'image-converter',
       ]);
-      expect(getPublishedTools(region)).toEqual([]);
+      expect(getPublishedTools(region).map(tool => tool.id)).toEqual(['image-converter']);
       const content = toolPageContents['image-converter'][defaultLocale(region)]!;
       expect(content.h1).toBeTruthy();
       expect(content.steps?.length).toBe(4);
