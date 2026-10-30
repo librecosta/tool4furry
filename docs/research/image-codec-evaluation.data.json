@@ -1,0 +1,1186 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-30",
+  "baseline": "14564024d8dd44b672ea6991ff0c030ed299df2d",
+  "environment": {
+    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+    "cores": 16,
+    "deviceMemory": 32,
+    "isolated": false,
+    "SAB": "undefined",
+    "visibility": "visible"
+  },
+  "hardware": "AMD Ryzen 7 5800H; 33719382016 bytes system RAM; Windows",
+  "method": "One observed sequential run per configuration; warm engine, deterministic synthetic opaque RGBA; encode API timing excludes source generation, output validation and disk saving.",
+  "versions": {
+    "jsquash": "2.1.1",
+    "magick": "0.0.45",
+    "vips": "0.0.19"
+  },
+  "parameters": {
+    "native": {
+      "jpegQuality": 0.88,
+      "webpQuality": 0.85
+    },
+    "jsquash": {
+      "quality": 50,
+      "speed": 6,
+      "threads": false
+    },
+    "magick": {
+      "quality": 50,
+      "heic:speed": 6
+    },
+    "vips": {
+      "Q": 50,
+      "effort": 3,
+      "concurrency": 1,
+      "operationCache": 0,
+      "dynamicLibraries": [
+        "vips-heif.wasm"
+      ]
+    }
+  },
+  "encodes": [
+    {
+      "kind": "native-output",
+      "width": 96,
+      "height": 64,
+      "requested": "png",
+      "mime": "image/png",
+      "magic": "png",
+      "valid": true,
+      "bytes": 9334,
+      "psnr": 55.99797855082365,
+      "mae": 0.16341145833333334,
+      "alphaMax": 0
+    },
+    {
+      "kind": "native-output",
+      "width": 96,
+      "height": 64,
+      "requested": "jpeg",
+      "mime": "image/jpeg",
+      "magic": "jpeg",
+      "valid": true,
+      "bytes": 1873,
+      "psnr": 16.117879493387804,
+      "mae": 24.77003761574074,
+      "alphaMax": 255
+    },
+    {
+      "kind": "native-output",
+      "width": 96,
+      "height": 64,
+      "requested": "webp",
+      "mime": "image/webp",
+      "magic": "webp",
+      "valid": true,
+      "bytes": 1740,
+      "psnr": 35.029447520298206,
+      "mae": 3.1536458333333335,
+      "alphaMax": 0
+    },
+    {
+      "kind": "native-output",
+      "width": 96,
+      "height": 64,
+      "requested": "avif",
+      "mime": "image/png",
+      "magic": "png",
+      "valid": false,
+      "bytes": 9334,
+      "psnr": 55.99797855082365,
+      "mae": 0.16341145833333334,
+      "alphaMax": 0
+    },
+    {
+      "kind": "native-bench",
+      "edge": 1000,
+      "width": 1000,
+      "height": 1000,
+      "requested": "png",
+      "mime": "image/png",
+      "magic": "png",
+      "valid": true,
+      "ms": 49.100000001490116,
+      "bytes": 1894314,
+      "psnr": "Infinity",
+      "mae": 0,
+      "alphaMax": 0
+    },
+    {
+      "kind": "native-bench",
+      "edge": 1000,
+      "width": 1000,
+      "height": 1000,
+      "requested": "jpeg",
+      "mime": "image/jpeg",
+      "magic": "jpeg",
+      "valid": true,
+      "ms": 16.30000000447035,
+      "bytes": 285864,
+      "psnr": 30.530260175805374,
+      "mae": 4.725294,
+      "alphaMax": 0
+    },
+    {
+      "kind": "native-bench",
+      "edge": 1000,
+      "width": 1000,
+      "height": 1000,
+      "requested": "webp",
+      "mime": "image/webp",
+      "magic": "webp",
+      "valid": true,
+      "ms": 114.39999999850988,
+      "bytes": 240680,
+      "psnr": 31.31207199422246,
+      "mae": 3.7975216666666665,
+      "alphaMax": 0
+    },
+    {
+      "kind": "native-bench",
+      "edge": 1000,
+      "width": 1000,
+      "height": 1000,
+      "requested": "avif",
+      "mime": "image/png",
+      "magic": "png",
+      "valid": false,
+      "ms": 37.600000001490116,
+      "bytes": 1894314,
+      "psnr": "Infinity",
+      "mae": 0,
+      "alphaMax": 0
+    },
+    {
+      "kind": "native-bench",
+      "edge": 2000,
+      "width": 2000,
+      "height": 2000,
+      "requested": "png",
+      "mime": "image/png",
+      "magic": "png",
+      "valid": true,
+      "ms": 251.70000000298023,
+      "bytes": 7377673,
+      "psnr": "Infinity",
+      "mae": 0,
+      "alphaMax": 0
+    },
+    {
+      "kind": "native-bench",
+      "edge": 2000,
+      "width": 2000,
+      "height": 2000,
+      "requested": "jpeg",
+      "mime": "image/jpeg",
+      "magic": "jpeg",
+      "valid": true,
+      "ms": 49.900000005960464,
+      "bytes": 1133988,
+      "psnr": 30.41174939373619,
+      "mae": 4.77046775,
+      "alphaMax": 0
+    },
+    {
+      "kind": "native-bench",
+      "edge": 2000,
+      "width": 2000,
+      "height": 2000,
+      "requested": "webp",
+      "mime": "image/webp",
+      "magic": "webp",
+      "valid": true,
+      "ms": 440.5,
+      "bytes": 935292,
+      "psnr": 31.20913272815383,
+      "mae": 3.840835,
+      "alphaMax": 0
+    },
+    {
+      "kind": "native-bench",
+      "edge": 2000,
+      "width": 2000,
+      "height": 2000,
+      "requested": "avif",
+      "mime": "image/png",
+      "magic": "png",
+      "valid": false,
+      "ms": 158.39999999850988,
+      "bytes": 7377673,
+      "psnr": "Infinity",
+      "mae": 0,
+      "alphaMax": 0
+    },
+    {
+      "kind": "native-bench",
+      "edge": 4000,
+      "width": 4000,
+      "height": 4000,
+      "requested": "png",
+      "mime": "image/png",
+      "magic": "png",
+      "valid": true,
+      "ms": 862.5,
+      "bytes": 28853090,
+      "psnr": "Infinity",
+      "mae": 0,
+      "alphaMax": 0
+    },
+    {
+      "kind": "native-bench",
+      "edge": 4000,
+      "width": 4000,
+      "height": 4000,
+      "requested": "jpeg",
+      "mime": "image/jpeg",
+      "magic": "jpeg",
+      "valid": true,
+      "ms": 360.8999999985099,
+      "bytes": 4532432,
+      "psnr": 30.39310052042137,
+      "mae": 4.782547458333333,
+      "alphaMax": 0
+    },
+    {
+      "kind": "native-bench",
+      "edge": 4000,
+      "width": 4000,
+      "height": 4000,
+      "requested": "webp",
+      "mime": "image/webp",
+      "magic": "webp",
+      "valid": true,
+      "ms": 1906.7000000029802,
+      "bytes": 3747086,
+      "psnr": 31.19063940869081,
+      "mae": 3.8431708958333335,
+      "alphaMax": 0
+    },
+    {
+      "kind": "native-bench",
+      "edge": 4000,
+      "width": 4000,
+      "height": 4000,
+      "requested": "avif",
+      "mime": "image/png",
+      "magic": "png",
+      "valid": false,
+      "ms": 662.3999999985099,
+      "bytes": 28853090,
+      "psnr": "Infinity",
+      "mae": 0,
+      "alphaMax": 0
+    },
+    {
+      "kind": "wasm-bench",
+      "engine": "jsquash",
+      "edge": 1000,
+      "width": 1000,
+      "height": 1000,
+      "requested": "avif",
+      "mime": "image/avif",
+      "magic": "avif",
+      "valid": true,
+      "ms": 1217.1000000014901,
+      "readMs": 0,
+      "bytes": 43247,
+      "psnr": 28.93340176100967,
+      "mae": 6.551415333333333,
+      "alphaMax": 0,
+      "heap": 50331648
+    },
+    {
+      "kind": "wasm-bench",
+      "engine": "jsquash",
+      "edge": 2000,
+      "width": 2000,
+      "height": 2000,
+      "requested": "avif",
+      "mime": "image/avif",
+      "magic": "avif",
+      "valid": true,
+      "ms": 4187.30000000447,
+      "readMs": 0,
+      "bytes": 171422,
+      "psnr": 28.842016748590048,
+      "mae": 6.602666666666667,
+      "alphaMax": 0,
+      "heap": 129564672
+    },
+    {
+      "kind": "wasm-bench",
+      "engine": "jsquash",
+      "edge": 4000,
+      "width": 4000,
+      "height": 4000,
+      "requested": "avif",
+      "mime": "image/avif",
+      "magic": "avif",
+      "valid": true,
+      "ms": 17177,
+      "readMs": 0,
+      "bytes": 688509,
+      "psnr": 28.831987920820062,
+      "mae": 6.6090915,
+      "alphaMax": 0,
+      "heap": 481165312
+    },
+    {
+      "kind": "quality",
+      "engine": "jsquash",
+      "options": {
+        "quality": 75,
+        "speed": 6
+      },
+      "width": 1000,
+      "height": 1000,
+      "requested": "avif",
+      "mime": "image/avif",
+      "magic": "avif",
+      "valid": true,
+      "ms": 1282.3999999985099,
+      "readMs": 0,
+      "bytes": 230752,
+      "psnr": 31.498686423343504,
+      "mae": 3.6140403333333335,
+      "alphaMax": 0,
+      "heap": 481165312
+    },
+    {
+      "kind": "quality",
+      "engine": "jsquash",
+      "options": {
+        "lossless": true,
+        "speed": 6
+      },
+      "width": 1000,
+      "height": 1000,
+      "requested": "avif",
+      "mime": "image/avif",
+      "magic": "avif",
+      "valid": true,
+      "ms": 2172.89999999851,
+      "readMs": 0,
+      "bytes": 1728133,
+      "psnr": "Infinity",
+      "mae": 0,
+      "alphaMax": 0,
+      "heap": 481165312
+    },
+    {
+      "kind": "wasm-alpha",
+      "engine": "jsquash",
+      "width": 96,
+      "height": 64,
+      "requested": "avif",
+      "mime": "image/avif",
+      "magic": "avif",
+      "valid": true,
+      "ms": 25.600000001490116,
+      "readMs": 0,
+      "bytes": 2099,
+      "psnr": 36.219083387215704,
+      "mae": 2.6625434027777777,
+      "alphaMax": 0,
+      "heap": 481165312
+    },
+    {
+      "kind": "wasm-bench",
+      "engine": "magick",
+      "edge": 1000,
+      "width": 1000,
+      "height": 1000,
+      "requested": "avif",
+      "mime": "image/avif",
+      "magic": "avif",
+      "valid": true,
+      "ms": 1566.8999999985099,
+      "readMs": 29,
+      "bytes": 69606,
+      "psnr": 29.04072353609554,
+      "mae": 6.380445,
+      "alphaMax": 0,
+      "heap": 88866816,
+      "vipsTracked": null
+    },
+    {
+      "kind": "wasm-bench",
+      "engine": "magick",
+      "edge": 2000,
+      "width": 2000,
+      "height": 2000,
+      "requested": "avif",
+      "mime": "image/avif",
+      "magic": "avif",
+      "valid": true,
+      "ms": 5478.29999999702,
+      "readMs": 60.5,
+      "bytes": 274980,
+      "psnr": 28.97263645669389,
+      "mae": 6.413804333333333,
+      "alphaMax": 0,
+      "heap": 221315072,
+      "vipsTracked": null
+    },
+    {
+      "kind": "wasm-bench",
+      "engine": "magick",
+      "edge": 4000,
+      "width": 4000,
+      "height": 4000,
+      "requested": "avif",
+      "mime": "image/avif",
+      "magic": "avif",
+      "valid": true,
+      "ms": 21405.29999999702,
+      "readMs": 245.59999999403954,
+      "bytes": 1094165,
+      "psnr": 28.956280370470836,
+      "mae": 6.4283409166666665,
+      "alphaMax": 0,
+      "heap": 830668800,
+      "vipsTracked": null
+    },
+    {
+      "kind": "wasm-alpha",
+      "engine": "magick",
+      "width": 96,
+      "height": 64,
+      "requested": "avif",
+      "mime": "image/avif",
+      "magic": "avif",
+      "valid": true,
+      "ms": 19.399999998509884,
+      "readMs": 0.5,
+      "bytes": 2063,
+      "psnr": 35.697067396943105,
+      "mae": 2.8937355324074074,
+      "alphaMax": 0,
+      "heap": 830668800,
+      "vipsTracked": null
+    },
+    {
+      "kind": "wasm-bench",
+      "engine": "vips",
+      "edge": 1000,
+      "width": 1000,
+      "height": 1000,
+      "requested": "avif",
+      "mime": "image/avif",
+      "magic": "avif",
+      "valid": true,
+      "ms": 1439.3299999982119,
+      "readMs": 3.685000002384186,
+      "bytes": 69849,
+      "psnr": 29.04072353609554,
+      "mae": 6.380445,
+      "alphaMax": 0,
+      "heap": 322174976,
+      "vipsTracked": {
+        "live": 0,
+        "highwater": 5280418,
+        "allocations": 0,
+        "cache": 0
+      }
+    },
+    {
+      "kind": "wasm-bench",
+      "engine": "vips",
+      "edge": 2000,
+      "width": 2000,
+      "height": 2000,
+      "requested": "avif",
+      "mime": "image/avif",
+      "magic": "avif",
+      "valid": true,
+      "ms": 5467.759999997914,
+      "readMs": 14.660000003874302,
+      "bytes": 275223,
+      "psnr": 28.97263645669389,
+      "mae": 6.413804333333333,
+      "alphaMax": 0,
+      "heap": 668205056,
+      "vipsTracked": {
+        "live": 0,
+        "highwater": 18560418,
+        "allocations": 0,
+        "cache": 0
+      }
+    },
+    {
+      "kind": "wasm-bench",
+      "engine": "vips",
+      "edge": 4000,
+      "width": 4000,
+      "height": 4000,
+      "requested": "avif",
+      "mime": "image/avif",
+      "magic": "avif",
+      "valid": true,
+      "ms": 21670.210000000894,
+      "readMs": 45.1600000038743,
+      "bytes": 1094408,
+      "psnr": 28.956280370470836,
+      "mae": 6.4283409166666665,
+      "alphaMax": 0,
+      "heap": 1642987520,
+      "vipsTracked": {
+        "live": 0,
+        "highwater": 69120418,
+        "allocations": 0,
+        "cache": 0
+      }
+    },
+    {
+      "kind": "wasm-alpha",
+      "engine": "vips",
+      "width": 96,
+      "height": 64,
+      "requested": "avif",
+      "mime": "image/avif",
+      "magic": "avif",
+      "valid": true,
+      "ms": 17.320000000298023,
+      "readMs": 0.3449999988079071,
+      "bytes": 2306,
+      "psnr": 35.697067396943105,
+      "mae": 2.8937355324074074,
+      "alphaMax": 0,
+      "heap": 1642987520,
+      "vipsTracked": {
+        "live": 0,
+        "highwater": 69120418,
+        "allocations": 0,
+        "cache": 0
+      }
+    }
+  ],
+  "assets": [
+    {
+      "key": "avifST",
+      "file": "node_modules/@jsquash/avif/codec/enc/avif_enc.wasm",
+      "url": "/assets/avifST-avif_enc.d9f2a9516436.wasm",
+      "raw": 3485872,
+      "gzip": 1125519,
+      "brotli": 842416,
+      "sha256": "d9f2a95164362af48558d176e619becfd49dd97b50b86c679b47100860522b3d"
+    },
+    {
+      "key": "avifMT",
+      "file": "node_modules/@jsquash/avif/codec/enc/avif_enc_mt.wasm",
+      "url": "/assets/avifMT-avif_enc_mt.202d7ec9fb7d.wasm",
+      "raw": 3534665,
+      "gzip": 1139552,
+      "brotli": 852879,
+      "sha256": "202d7ec9fb7d658df7cbf17fd85d83da724ac9551818c2d5161c858353a683a4"
+    },
+    {
+      "key": "avifDecode",
+      "file": "node_modules/@jsquash/avif/codec/dec/avif_dec.wasm",
+      "url": "/assets/avifDecode-avif_dec.5c35dde23dfd.wasm",
+      "raw": 1170930,
+      "gzip": 340845,
+      "brotli": 267341,
+      "sha256": "5c35dde23dfd862088a49a6b8a9fe81f9f9a1a46aaa27de7efd7baa7611c4b47"
+    },
+    {
+      "key": "magick",
+      "file": "node_modules/@imagemagick/magick-wasm/dist/x86/magick.wasm",
+      "url": "/assets/magick-magick.54629cbcf06d.wasm",
+      "raw": 15425791,
+      "gzip": 5428719,
+      "brotli": 4091338,
+      "sha256": "54629cbcf06dd10db38b4d87fa6ab241b248c09c94f2d9689506e5f994ac5f0c"
+    },
+    {
+      "key": "vips",
+      "file": "node_modules/wasm-vips/lib/vips.wasm",
+      "url": "/assets/vips-vips.36c25e290570.wasm",
+      "raw": 5154052,
+      "gzip": 2023395,
+      "brotli": 1610227,
+      "sha256": "36c25e290570757f911b45d67947e8262b01261028db438dadc09990ad978ff6"
+    },
+    {
+      "key": "vipsHeif",
+      "file": "node_modules/wasm-vips/lib/vips-heif.wasm",
+      "url": "/assets/vipsHeif-vips-heif.f8f94224977c.wasm",
+      "raw": 3802681,
+      "gzip": 1261044,
+      "brotli": 994923,
+      "sha256": "f8f94224977c9de22118274e09adc4d4a4e6dd81a55e261406d69d7fd3021667"
+    },
+    {
+      "key": "vipsJxl",
+      "file": "node_modules/wasm-vips/lib/vips-jxl.wasm",
+      "url": "/assets/vipsJxl-vips-jxl.ffdd01c8dbd6.wasm",
+      "raw": 2224543,
+      "gzip": 798402,
+      "brotli": 613990,
+      "sha256": "ffdd01c8dbd6a8fc616f1a023cbf2b526d12df770f5adca96e44cdf8c20c8afe"
+    },
+    {
+      "key": "vipsResvg",
+      "file": "node_modules/wasm-vips/lib/vips-resvg.wasm",
+      "url": "/assets/vipsResvg-vips-resvg.9c7c1c782602.wasm",
+      "raw": 1176530,
+      "gzip": 445638,
+      "brotli": 358978,
+      "sha256": "9c7c1c78260240c454cce7ff875dc8026985c433f27ea90e849f02d50cea8917"
+    },
+    {
+      "key": "vipsJS",
+      "file": "node_modules/wasm-vips/lib/vips-es6.js",
+      "url": "/assets/vipsJS-vips-es6.4de6113dc809.js",
+      "raw": 83765,
+      "gzip": 31813,
+      "brotli": 28224,
+      "sha256": "4de6113dc80958b2acc7d45af95086277bab670af474125fdbd179e62dae96af"
+    },
+    {
+      "key": "jsquashGlue",
+      "file": "node_modules/@jsquash/avif/codec/enc/avif_enc.js",
+      "raw": 39621,
+      "gzip": 10931,
+      "brotli": 9851
+    },
+    {
+      "key": "jsquashMTGlue",
+      "file": "node_modules/@jsquash/avif/codec/enc/avif_enc_mt.js",
+      "raw": 54909,
+      "gzip": 14661,
+      "brotli": 13127
+    },
+    {
+      "key": "magickESM",
+      "file": "node_modules/@imagemagick/magick-wasm/dist/index.js",
+      "raw": 409295,
+      "gzip": 99274,
+      "brotli": 60542
+    }
+  ],
+  "coldInitialization": [
+    {
+      "engine": "jsquash",
+      "initMs": 37.100000001490116,
+      "roundTripMs": 53.5,
+      "heap": 16777216,
+      "resources": [
+        {
+          "url": "http://127.0.0.1:4439/worker/encode-7CY2WNPN.js",
+          "duration": 2,
+          "transfer": 3686,
+          "encoded": 3386,
+          "decoded": 3386,
+          "initiator": "script"
+        },
+        {
+          "url": "http://127.0.0.1:4439/worker/chunk-X5536H7G.js",
+          "duration": 1.7000000029802322,
+          "transfer": 867,
+          "encoded": 567,
+          "decoded": 567,
+          "initiator": "script"
+        },
+        {
+          "url": "http://127.0.0.1:4439/worker/avif_enc-FGAY3FAL.js",
+          "duration": 2.2999999970197678,
+          "transfer": 55249,
+          "encoded": 54949,
+          "decoded": 54949,
+          "initiator": "script"
+        },
+        {
+          "url": "http://127.0.0.1:4439/assets/avifST-avif_enc.d9f2a9516436.wasm",
+          "duration": 21.600000001490116,
+          "transfer": 842716,
+          "encoded": 842416,
+          "decoded": 3485872,
+          "initiator": "fetch"
+        }
+      ]
+    },
+    {
+      "engine": "magick",
+      "initMs": 145.60000000149012,
+      "roundTripMs": 154,
+      "heap": 16777216,
+      "resources": [
+        {
+          "url": "http://127.0.0.1:4439/worker/dist-B7IA2BYG.js",
+          "duration": 4.5,
+          "transfer": 472178,
+          "encoded": 471878,
+          "decoded": 471878,
+          "initiator": "script"
+        },
+        {
+          "url": "http://127.0.0.1:4439/assets/magick-magick.54629cbcf06d.wasm",
+          "duration": 98.60000000149012,
+          "transfer": 4091638,
+          "encoded": 4091338,
+          "decoded": 15425791,
+          "initiator": "fetch"
+        }
+      ]
+    },
+    {
+      "engine": "vips",
+      "initMs": 211.14000000059605,
+      "roundTripMs": 220.2449999973178,
+      "heap": 268435456,
+      "resources": [
+        {
+          "url": "http://127.0.0.1:4439/assets/vipsJS-vips-es6.4de6113dc809.js",
+          "duration": 3.719999998807907,
+          "transfer": 28524,
+          "encoded": 28224,
+          "decoded": 83765,
+          "initiator": "script"
+        },
+        {
+          "url": "http://127.0.0.1:4439/assets/vips-vips.36c25e290570.wasm",
+          "duration": 64.93500000238419,
+          "transfer": 1610527,
+          "encoded": 1610227,
+          "decoded": 5154052,
+          "initiator": "fetch"
+        },
+        {
+          "url": "http://127.0.0.1:4439/assets/vipsHeif-vips-heif.f8f94224977c.wasm",
+          "duration": 23.179999999701977,
+          "transfer": 995223,
+          "encoded": 994923,
+          "decoded": 3802681,
+          "initiator": "fetch"
+        }
+      ]
+    }
+  ],
+  "cache": {
+    "initialNoWasm": true,
+    "hashVersions": [
+      {
+        "version": "2.0.0",
+        "url": "/assets/cache-avif-2.0.0.8f2342e147fa.wasm",
+        "sha256": "8f2342e147fa29cde5904fe2b9cb125b8ace05711dcfe99b00d11d3adfe2e2de",
+        "actualSha256": "8f2342e147fa29cde5904fe2b9cb125b8ace05711dcfe99b00d11d3adfe2e2de",
+        "bytes": 2818172,
+        "correctHash": true,
+        "cacheControl": "public, max-age=31536000, immutable",
+        "type": "application/wasm"
+      },
+      {
+        "version": "2.1.1",
+        "url": "/assets/cache-avif-2.1.1.d9f2a9516436.wasm",
+        "sha256": "d9f2a95164362af48558d176e619becfd49dd97b50b86c679b47100860522b3d",
+        "actualSha256": "d9f2a95164362af48558d176e619becfd49dd97b50b86c679b47100860522b3d",
+        "bytes": 3485872,
+        "correctHash": true,
+        "cacheControl": "public, max-age=31536000, immutable",
+        "type": "application/wasm"
+      }
+    ],
+    "refreshJsquash": {
+      "engine": "jsquash",
+      "initMs": 35,
+      "roundTripMs": 46.599999994039536,
+      "heap": 16777216,
+      "resources": [
+        {
+          "url": "http://127.0.0.1:4439/worker/encode-K2YQVCIV.js",
+          "duration": 2.2999999970197678,
+          "transfer": 3686,
+          "encoded": 3386,
+          "decoded": 3386,
+          "initiator": "script"
+        },
+        {
+          "url": "http://127.0.0.1:4439/worker/chunk-X5536H7G.js",
+          "duration": 0.7999999970197678,
+          "transfer": 0,
+          "encoded": 567,
+          "decoded": 567,
+          "initiator": "script"
+        },
+        {
+          "url": "http://127.0.0.1:4439/worker/avif_enc-OXDXRHP7.js",
+          "duration": 2.0999999940395355,
+          "transfer": 55249,
+          "encoded": 54949,
+          "decoded": 54949,
+          "initiator": "script"
+        },
+        {
+          "url": "http://127.0.0.1:4439/assets/avifST-avif_enc.d9f2a9516436.wasm",
+          "duration": 16.299999997019768,
+          "transfer": 0,
+          "encoded": 842416,
+          "decoded": 3485872,
+          "initiator": "fetch"
+        }
+      ]
+    }
+  },
+  "cancellation": [
+    {
+      "engine": "jsquash",
+      "ms": 287,
+      "error": "Error: Worker terminated by explicit cancellation",
+      "workersRemaining": 0
+    },
+    {
+      "engine": "magick",
+      "ms": 117,
+      "error": "Error: Worker terminated by explicit cancellation",
+      "workersRemaining": 1
+    },
+    {
+      "engine": "vips",
+      "ms": 118.81000000238419,
+      "error": "Error: Worker terminated by explicit cancellation",
+      "workersRemaining": 0
+    }
+  ],
+  "independentValidation": {
+    "outputs": [
+      {
+        "file": "jsquash-1000.avif",
+        "format": "AVIF",
+        "width": 1000,
+        "height": 1000,
+        "frames": 1,
+        "bytes": 43247,
+        "sha256": "2178c65a29928b3252563f1945dcdc355f7372d4b89eb56f1833fd0e9235c8af",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "jsquash-2000.avif",
+        "format": "AVIF",
+        "width": 2000,
+        "height": 2000,
+        "frames": 1,
+        "bytes": 171422,
+        "sha256": "b1564d55c46f1ef816c2e554c8bf614e7495209bde2ef95c752ee6c4bd3f4ff9",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "jsquash-4000.avif",
+        "format": "AVIF",
+        "width": 4000,
+        "height": 4000,
+        "frames": 1,
+        "bytes": 688509,
+        "sha256": "7055b17762c302b8fd108ecd4686c962cb4d88c1ed6a785e60b0faf1bb8b885e",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "jsquash-alpha.avif",
+        "format": "AVIF",
+        "width": 96,
+        "height": 64,
+        "frames": 1,
+        "bytes": 2099,
+        "sha256": "7448c8aaaa75e4adf017bab343a7297a829eabb7184f23cacf15d0c30afbce5f",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "jsquash-lossless.avif",
+        "format": "AVIF",
+        "width": 1000,
+        "height": 1000,
+        "frames": 1,
+        "bytes": 1728133,
+        "sha256": "47f8249f98f67466949be508f27d0b6ad2f3e2f943bf1b0e4c417fd1f9cb41d2",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "jsquash-q75.avif",
+        "format": "AVIF",
+        "width": 1000,
+        "height": 1000,
+        "frames": 1,
+        "bytes": 230752,
+        "sha256": "0e7460df7a1f88667830fb73448b1faa1106beb4b4c6e0ec9bf60c72f38406a3",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "magick-1000.avif",
+        "format": "AVIF",
+        "width": 1000,
+        "height": 1000,
+        "frames": 1,
+        "bytes": 69606,
+        "sha256": "c4236493379b311050c447c90ed70e38d72955f822fe8016bea5428706f5b4a6",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "magick-2000.avif",
+        "format": "AVIF",
+        "width": 2000,
+        "height": 2000,
+        "frames": 1,
+        "bytes": 274980,
+        "sha256": "cc74758a0389167e8d87a2cf811037baa6198f056d45a2c2057833a4415f622a",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "magick-4000.avif",
+        "format": "AVIF",
+        "width": 4000,
+        "height": 4000,
+        "frames": 1,
+        "bytes": 1094165,
+        "sha256": "0cd38165d2b7bd9f5a8c6381571c947714548cbc2d68c52a34c976957654e437",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "magick-alpha.avif",
+        "format": "AVIF",
+        "width": 96,
+        "height": 64,
+        "frames": 1,
+        "bytes": 2063,
+        "sha256": "d597686066e261d116cbe13bbfb9d270a7c7e683e2a259f04fdaf9a787152b5a",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "native-1000.avif",
+        "format": "PNG",
+        "width": 1000,
+        "height": 1000,
+        "frames": 1,
+        "bytes": 1894314,
+        "sha256": "7586e000ee905de80b45bea2b0067a7d6fbb438718e965e45864d47333d4c83f",
+        "canvasAvifFallback": true
+      },
+      {
+        "file": "native-1000.jpeg",
+        "format": "JPEG",
+        "width": 1000,
+        "height": 1000,
+        "frames": 1,
+        "bytes": 285864,
+        "sha256": "7a374bcec42bc4d02c62d705dfe4d05d52ff77e212aae2c4f314f18e11c6ffdf",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "native-1000.png",
+        "format": "PNG",
+        "width": 1000,
+        "height": 1000,
+        "frames": 1,
+        "bytes": 1894314,
+        "sha256": "7586e000ee905de80b45bea2b0067a7d6fbb438718e965e45864d47333d4c83f",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "native-1000.webp",
+        "format": "WEBP",
+        "width": 1000,
+        "height": 1000,
+        "frames": 1,
+        "bytes": 240680,
+        "sha256": "426254a51a50df0fee09f4c1930c1c590399a360b565420a04ed5b05dcd742f6",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "native-2000.avif",
+        "format": "PNG",
+        "width": 2000,
+        "height": 2000,
+        "frames": 1,
+        "bytes": 7377673,
+        "sha256": "d10733285a7d9acdbb4a96a5a89ec7b130a41f0d330f9970ff27f9e9a190d02a",
+        "canvasAvifFallback": true
+      },
+      {
+        "file": "native-2000.jpeg",
+        "format": "JPEG",
+        "width": 2000,
+        "height": 2000,
+        "frames": 1,
+        "bytes": 1133988,
+        "sha256": "1707cb8d4f3af8656ce49e14b73cbe42978538ff12203693ade4253363975610",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "native-2000.png",
+        "format": "PNG",
+        "width": 2000,
+        "height": 2000,
+        "frames": 1,
+        "bytes": 7377673,
+        "sha256": "d10733285a7d9acdbb4a96a5a89ec7b130a41f0d330f9970ff27f9e9a190d02a",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "native-2000.webp",
+        "format": "WEBP",
+        "width": 2000,
+        "height": 2000,
+        "frames": 1,
+        "bytes": 935292,
+        "sha256": "bc9a54a9afdbee9f7a0ed4a1f5511d0341e46f252799500126b095f3c1791f86",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "native-4000.avif",
+        "format": "PNG",
+        "width": 4000,
+        "height": 4000,
+        "frames": 1,
+        "bytes": 28853090,
+        "sha256": "9debd4dc9795c693a38915d7d1d4e31b744a2839dce115ab2473e5e9bf1efae2",
+        "canvasAvifFallback": true
+      },
+      {
+        "file": "native-4000.jpeg",
+        "format": "JPEG",
+        "width": 4000,
+        "height": 4000,
+        "frames": 1,
+        "bytes": 4532432,
+        "sha256": "4ac0fff9061e83546365e1d465970015b8809e88f89ca4a75efa0fec853665fe",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "native-4000.png",
+        "format": "PNG",
+        "width": 4000,
+        "height": 4000,
+        "frames": 1,
+        "bytes": 28853090,
+        "sha256": "9debd4dc9795c693a38915d7d1d4e31b744a2839dce115ab2473e5e9bf1efae2",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "native-4000.webp",
+        "format": "WEBP",
+        "width": 4000,
+        "height": 4000,
+        "frames": 1,
+        "bytes": 3747086,
+        "sha256": "87e0b02c1ac268a2d2286383bcf47c0de6fa18f548c4424acd6286add8ba657f",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "native-alpha.avif",
+        "format": "PNG",
+        "width": 96,
+        "height": 64,
+        "frames": 1,
+        "bytes": 9334,
+        "sha256": "b8a958211211a77595d0c76272bcc1fa3e2ac667695d37cc01e0c0e525a6a2d5",
+        "canvasAvifFallback": true
+      },
+      {
+        "file": "native-alpha.jpeg",
+        "format": "JPEG",
+        "width": 96,
+        "height": 64,
+        "frames": 1,
+        "bytes": 1873,
+        "sha256": "005a4875b7576a04c550db56bd83b3c615cdb6b26d9091c7a4c6bd1493fa179b",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "native-alpha.png",
+        "format": "PNG",
+        "width": 96,
+        "height": 64,
+        "frames": 1,
+        "bytes": 9334,
+        "sha256": "b8a958211211a77595d0c76272bcc1fa3e2ac667695d37cc01e0c0e525a6a2d5",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "native-alpha.webp",
+        "format": "WEBP",
+        "width": 96,
+        "height": 64,
+        "frames": 1,
+        "bytes": 1740,
+        "sha256": "7f36bb2348d9c2c37d0d0e586058aa2c50587959d6d58f9530c58a8495770705",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "vips-1000.avif",
+        "format": "AVIF",
+        "width": 1000,
+        "height": 1000,
+        "frames": 1,
+        "bytes": 69849,
+        "sha256": "b5f1ffeadc32e2f42e77278663ce7c45a7335cec19924f07ced4d0581f0c148a",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "vips-2000.avif",
+        "format": "AVIF",
+        "width": 2000,
+        "height": 2000,
+        "frames": 1,
+        "bytes": 275223,
+        "sha256": "d1c019d775138f9219a81db46a9126ed0fafb4b44d8b6a7836d28ffac24d7e6f",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "vips-4000.avif",
+        "format": "AVIF",
+        "width": 4000,
+        "height": 4000,
+        "frames": 1,
+        "bytes": 1094408,
+        "sha256": "a39b44d3d3839cadd34078f63591e864670a0ce4419eaae2a46e70c971dc8dc3",
+        "canvasAvifFallback": false
+      },
+      {
+        "file": "vips-alpha.avif",
+        "format": "AVIF",
+        "width": 96,
+        "height": 64,
+        "frames": 1,
+        "bytes": 2306,
+        "sha256": "6d2b45168999bf2c5ffb39e9305e060603a59f4b95cc5f0bdcdf2d7524dc6966",
+        "canvasAvifFallback": false
+      }
+    ],
+    "exif": [
+      {
+        "file": "orientation-1.jpg",
+        "maxCornerDelta": 0
+      },
+      {
+        "file": "orientation-2.jpg",
+        "maxCornerDelta": 0
+      },
+      {
+        "file": "orientation-3.jpg",
+        "maxCornerDelta": 0
+      },
+      {
+        "file": "orientation-4.jpg",
+        "maxCornerDelta": 0
+      },
+      {
+        "file": "orientation-5.jpg",
+        "maxCornerDelta": 0
+      },
+      {
+        "file": "orientation-6.jpg",
+        "maxCornerDelta": 0
+      },
+      {
+        "file": "orientation-7.jpg",
+        "maxCornerDelta": 0
+      },
+      {
+        "file": "orientation-8.jpg",
+        "maxCornerDelta": 0
+      }
+    ]
+  }
+}
