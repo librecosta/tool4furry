@@ -1,5 +1,7 @@
 # V0.6-C1 — Native-first Codec Strategy & WASM Evaluation
 
+> **Research / 历史实验**：本文保留 C1 基线、测量和当时结论，不是当前产品状态。AVIF 和隐私处理后续已落地，D2 源码 Published，CN/Global 均未部署；当前实现见 [Converter 说明](../image-converter-implementation.md)，稳定边界见 [图片契约](../../contracts/image-processing.md) / [上游契约](../../contracts/upstream.md)。候选参数与桌面实测不能覆盖当前限制或推定移动安全。
+
 日期：2026-10-30（Asia/Shanghai）。审计基线：`develop` / `14564024d8dd44b672ea6991ff0c030ed299df2d`。
 
 这是研究记录，不是格式支持或发布承诺。没有修改生产源码、依赖、Registry、资源额度或 Converter 的 draft 状态。

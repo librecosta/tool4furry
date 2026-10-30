@@ -1,286 +1,61 @@
-# Image Converter — 实施与验收记录
+# Image Converter · 当前实现
 
-本页是代码交接记录，不是用户提供的完整实施合同副本。合同从附件 `image-converter.md` 全文读取；用户明确不要求导入仓库。验收日期：2026-10-10（Asia/Shanghai，JSON 时间为 UTC）。
+**V0.6-D2：首个且目前唯一的 Published 工具。CN/Global 均构建就绪，两个地区均未部署。** 真实状态见 [definition.ts](../src/tools/image-converter/definition.ts)；源码资格不等于部署授权。
 
-## 当前状态与入口
-
-**V0.6-D2：源码 Published，构建就绪，CN/Global 均未部署。** Image Converter 是首个且目前唯一的正式工具；保留 `regions: ['cn', 'global']`。状态仅表示可以进入生产静态构建，不意味着已经对公网开放。`pnpm dev` 的 CN/Global 两端均支持中英文；真实发布产物来自 `pnpm build:cn` / `pnpm build:global`，不使用发布模拟副本。
-
-| 地区 | 默认语言工具路径 | 另一语言工具路径 |
+| 地区 | 默认语言 | 另一语言 |
 | --- | --- | --- |
 | CN | `/tools/image-converter/`（中文） | `/en/tools/image-converter/` |
 | Global | `/tools/image-converter/`（English） | `/zh/tools/image-converter/` |
 
-依据维护者此次明确授权与现有 L2 政策执行资格审计；未做部署、DNS/备案/CDN操作、Sitemap提交、Release/Tag或发布分支合并。Firefox、Safari/WebKit、iOS/Android 真机及设备峰值内存继续作为 L3 待办，不假称完成。下方 V0.4–D1 的 Draft、零 Published、CN-only 夹具等记录是历史证据，不能当作当前配置。
+## 已实现能力与边界
 
-## V0.6-D2 — Beta 资格审计
+PNG/JPEG/WebP/受限静态 AVIF 双向转换；Quick 推荐自动执行与 Advanced 手动执行；多图/文件夹追加、独立预览/重试/移除/下载、稳定命名及 ZIP。用户文件在浏览器本地处理，不上传或持久保存。
 
-**结论：源码 Beta Go；构建就绪，未部署。** 维护者本轮明确批准状态提升。D1 基线为 `6c603f797280c8b98f90595165d514eef06fd256`（其 CI 已通过）；本轮推送后的 CI 以对应提交的 Checks 为准。未新增功能、依赖或发布开关；Image Core、Session、Worker、参数与 SEO 文案均未修改。
+不支持动画、GIF/BMP/HEIC/TIFF/SVG、裁剪缩放、专业色彩或完整元数据保全。AVIF 为经验证静态 8-bit SDR 子集，拒绝不能可靠判断的结构/方向/HDR/高位深；输出仅受支持桌面 profile，不以视口宽度判定设备。当前限额与参数引用下面源码，不从旧研究候选数值推定。
 
-2026-10-30 本机 Windows / Chromium 的发布形态验收使用真实 `dist/cn`、`dist/global` 和仅监听 localhost 的普通 HTTP 服务，不使用旧发布模拟副本。结构化下载与资源证据见 [image-converter-d2.json](evidence/image-converter-d2.json)；原始下载、截图、网络日志和临时验证程序位于仓库外 `../.validation/image-converter-d2/`。
+## 模块、参数与资源权威来源
 
-- **工程检查**：`pnpm check` 230 文件零错误/警告；`pnpm test` 55 文件 **581 项通过**。首次完整测试发现的 6 处旧零 Published 假设已修正，随后完整重跑通过。提升前的 AVIF/容器/元数据/作者/批次 9 文件 94 项也通过；复用 C2-C 的 16 组格式实测及 C2-D 宽幅、方向、超时证据，不重复历史压力矩阵。
-- **双地区真实构建**：`pnpm build:cn`、`pnpm build:global` 及各自守卫通过，每地区 13 个 HTML / 12 个可索引 URL。上表四条正式工具路径均生成；默认语言不重复前缀，同地区 Canonical 自指、绝对 hreflang 对称。工具不再带 Draft noindex，Title/Description/H1/Intro、完整静态 4 步骤 / 4 限制 / 6 FAQ 与 D1 逐项匹配，长文不进客户端 JS。OG/Twitter、robots、两份 Sitemap、security/llms 通过；仅各地区默认根首页保留最小 WebSite JSON-LD。
-- **真实工具发现**：首页精选、导航和目录均只有 Image Converter，入口采用本地区/语言路径及 Registry 文案；身份只匹配画家、开发者、动画师、运营。中英文搜索、分类/身份筛选和移动抽屉可用，真实数量为 1，无填充卡片、DEV 样本或 Lab。未来空目录、多工具、Draft、地区过滤与非法元数据测试保留，未把“当前唯一”做成平台容量上限。
-- **实际浏览器路径**：CN 中文 1440px、CN 英文 390px、Global 英文 1440px、Global 中文 390px，均完成首页 → 目录 → 工具页与同地区语言切换/返回；补看 1200px 完整桌面画面和 320px 溢出。Light/Dark、FAQ 整行点击 / Space 开合、预览原图/输出、Escape 返回预览触发按钮正常；无观测到的水平溢出、Hydration 错误或控制台错误/警告。手机宽度仅为 Chromium 视口模拟，不代表移动真机或移动 AVIF 输出验收。
-- **真实交付**：PNG→WebP、PNG→AVIF、AVIF→PNG、JPEG→JPEG 默认清理、高级 JPEG 作者/版权保留、两文件批量和 ZIP，另在 Global 完成 AVIF→WebP。Pillow 12.3 独立完整解码 8 个单项下载；AVIF Alpha100 及回转 PNG 的 Alpha 逐像素一致。默认 JPEG 只余必要 Orientation=6，显示像素、压缩载荷与 ICC 与来源一致；重新编码保留结果只含 Artist/Copyright，不复制旧方向、GPS、设备或时间。ZIP 两条根目录条目按稳定序号排列，字节与对应单项下载一致。
-- **失败及资源**：未知 PNG 附加块在 Quick 明确失败、单项重试不绕过清理，用户主动 Advanced 后可恢复；策略切换立即撤下旧下载，切回 Quick 重新生成默认隐私结果。清空确认、移除和重新导入正常。实际取消一个处于处理中、预算内 3000×1000 的 AVIF 任务，随后两个小 AVIF 正常完成，无删除任务晚到恢复。取消/超时终止、FIFO、URL/Bitmap 释放和 ZIP 快照隔离仍由现有测试及 C2-C/D 实测覆盖；本轮未注入生产诊断或宣称测得浏览器总峰值内存。
-- **AVIF 合同未变**：Q55 / Speed6 / 4:2:0 / Alpha100，高级可选 4:4:4；桌面 4,194,304 像素、单边 4096px、30 秒、串行1，8MP 与移动/未知设备输出继续不开放。两个产物各只有一个 ST WASM（3,485,872 B，摘要仍为 `d9f2a95164362af48558d176e619becfd49dd97b50b86c679b47100860522b3d`）、Worker 与 NOTICE，无 decoder/多线程资源。浏览器进入页面和普通格式/AVIF输入均不下载编码器，选择 AVIF 输出才请求；CN 后续重建/批次复用期间未重复网络传输 WASM。独立本地 HTTP 校验两地区资源 MIME、原文件字节、哈希 URL、缓存头及 ETag/304 正常；这不是实际 EdgeOne/CDN 缓存或公网 HTTPS 验收。
-
-依赖/安全复核（2026-10-30）：固定 `@jsquash/avif@2.1.1`、ST 二进制与第三方 NOTICE 保持原样。复核固定 wrapper 和 Makefile：只暴露单帧、8-bit、受控参数输入，每次新建 encoder；ST 不启用多线程，也不分发包内 decoder。按 [CVE-2023-6879](https://nvd.nist.gov/vuln/detail/CVE-2023-6879)、[libaom 3.7.1 修复说明](https://aomedia.googlesource.com/aom/+/refs/tags/v3.7.1)、[LAP 风险 GHSA-mgv2-4j37-m3x6](https://github.com/advisories/GHSA-mgv2-4j37-m3x6) 及 [SVC 风险 GHSA-8vmr-q5h8-3vc5](https://github.com/advisories/GHSA-8vmr-q5h8-3vc5) 的公开触发条件，未确认当前入口具备可达的严重阻断路径；不等于旧 libaom/libavif 二进制没有漏洞或完成形式化证明。旧底层版本与未来新通告继续列为维护风险。作者版权仅保留已验证 JPEG→JPEG/PNG/WebP 白名单；默认 privacy-v1、AVIF 同格式重编码及不可靠结构拒绝均不放宽，不承诺清除像素水印或所有未知隐私信息。
-
-另用官方 npm registry 执行 `pnpm audit --prod`：**9 项（5 high / 4 moderate）**，为 Astro→unifont→undici 和 Astro→zod 的构建依赖通告，非新增 jSquash JS 告警；npm audit 不覆盖 WASM 内 C++。当前部署产物是纯静态站，无 Node SSR 服务；这些通告没有被当成浏览器编码路径漏洞，也未被称为“已全部修复”。保留到独立工程治理处理，不在本轮升级无关依赖。
-
-退役 `scripts/verify-converter-fixture.mjs`：真实双地区 Published 构建已替代其 CN-only 模拟用途。其中完整静态正文/有限强调/FAQ 原生语义与长文不进客户端 JS 断言移入 `verify-build.mjs`，同样验证两地区两语言。通用 `verify-tool-fixture.mjs` 与 Registry 的 0/多工具、Draft、地区过滤等 Fixture 保留，不增加发布开关或额外构建流程。
-
-README、AGENTS、目录/首页当前状态同步更新；历史 Draft 与 CN-only 记录保留并标明时效。构建守卫继续按真实地区/状态及实际路由校验，未来不可用 Converter 仍须同时排除其 Worker/WASM；未删除 Lab/Fixture、执行脚本与资源隔离约束。**未完成**：CN/Global 实际部署、备案/DNS/CDN/HTTPS、公网可访问性、搜索平台提交及收录、Firefox/Safari 和 iOS/Android 真机兼容性。完成本轮后停止功能扩展，转入独立工程治理。
-
-## V0.6-D1 — SEO 架构与发布前验证
-
-仅更新 Astro-only SEO 元数据、Registry 短简介和首页/目录摘要，保留已审定的双语 4 项步骤、4 条限制及 6 组 FAQ，正文/强调和原生 details 不变。未修改 Image Core、Session、Worker、资源预算、隐私策略或布局。真实定义仍为 `draft`、`regions: ['cn', 'global']`。
-
-最终中文元数据：
-
-- Title：在线图片格式转换器 - PNG、JPG、WebP、AVIF 互转 | Tool4Furry
-- Description：在浏览器本地批量转换 PNG、JPG、WebP 和 AVIF 图片，无需上传。支持常见格式互转、编码质量调整、图片预览和 ZIP 打包下载，默认清理常见隐私元数据。
-- H1：在线图片格式转换器
-- Intro：在浏览器中批量转换 PNG、JPG、WebP 和 AVIF 图片，无需上传。使用推荐设置快速转换，或调整编码质量、背景颜色等选项，再预览和下载结果。
-
-最终英文元数据：
-
-- Title: Online Image Converter - PNG, JPG, WebP & AVIF | Tool4Furry
-- Description: Batch convert PNG, JPG, WebP and AVIF images in your browser without uploading files. Adjust quality, preview results and download ZIPs. Common private metadata is removed by default.
-- H1: Online Image Converter
-- Intro: Convert between PNG, JPEG, WebP and supported AVIF images directly in your browser. Use quick presets or advanced quality settings, then preview and download each result or a ZIP.
-
-首页/目录摘要与根首页 WebSite 静态数据合同见 [首页规范](site-homepage.md)。OG Title/Description/URL 继续复用页面元数据及 Canonical；品牌 PNG、Twitter 大图卡片和地区内双语 hreflang 不变。关键词仅代表搜索意图候选，不是已验证的搜索量或排名结论；不增加格式组合落地页、keywords、FAQPage/HowTo/软件/评分等结构化数据。
-
-发布夹具命令仍为 `node scripts/verify-converter-fixture.mjs cn` / `global`：现在两者均在仓库外源码副本中模拟 **Published + CN-only**，CN 验证真实工具发布，Global 验证排除。真实 definition、Registry、loaders 逐字保持不变；目录仍为 `../.validation/converter-v04b/ssg/{region}`，仅供测试、绝不部署。此节替代下方历史“仅改 status、两地区均发布”的夹具说明。夹具逐项比较最终静态 HTML 的 Title/Description/H1/Intro、4/4/6 正文、FAQ 原生结构与首页/目录入口，扫描全部客户端 JS 防止长正文泄漏，并执行统一产物守卫。
-
-尚未进行正式部署、搜索平台验证/提交、收录或真实查询量观察。D2 仍需维护者独立批准 CN-only 发布并完成 Beta 条件审计。正式 CN HTTPS 可访问后，由维护者向 Google Search Console 与 Bing Webmaster Tools 提交 `https://tool4furry.cn/sitemap-index.xml`；百度搜索资源平台优先使用实际 URL 列表 `https://tool4furry.cn/sitemap-0.xml`，按届时平台要求验证。不实现 IndexNow 或自动推送。
-
-CN-only 对照发现并修复地区校验不一致：Vite 已按地区移除不可用 loader，Registry 校验却要求所有地区的 published loader。`assertValidRegistry` 仅为 loader 存在性增加当前 Region 参数，其他地区的元数据、双语文案、重复 ID 等仍完整校验，默认全地区调用不变；没有第二个发布开关或修改真实 loader。定向测试覆盖此边界。
-
-2026-10-30 实际验证：
-
-- 5 个相关 Vitest 文件共 **69 项通过**，`pnpm check` 231 文件零错误/警告。冻结的双语 4/4/6 正文与上一提交逐项一致。
-- `pnpm build:cn` / `pnpm build:global` 及最终产物审计通过：每地区 11 个 HTML、10 个可索引 URL，无 Converter 路由/发现入口、专用 JS、AVIF Worker/WASM/Notice 或 Lab 资源；无新增执行脚本、Island、JS preload。默认根首页的 WebSite JSON 可解析，另一语言首页及其他页均无该标记。
-- CN-only 发布夹具：CN 13 个 HTML、12 个可索引 URL，中文 `/tools/image-converter/` 与英文 `/en/tools/image-converter/` 自指 Canonical，绝对 hreflang 相互对称；首页、目录、Sitemap、llms 包含对应入口，所需单线程 AVIF 资源正确输出。Global 对照仍为 11 个 HTML/10 个公开 URL，无该工具及编码资源。实际 HTML 的唯一元标签、OG/Twitter、1200×630 品牌 PNG、Sitemap/robots/security/llms 与原生 FAQ/strong 语义审计通过，长正文未进入客户端 JS。
-- DEV 两端口、四个地区/语言组合返回真实 Draft 工具 HTML，均为 `noindex, nofollow`，唯一静态 H1 与六 FAQ 完整，无 Canonical/OG/WebSite 推广标记。
-- Chromium 1440px 中文、390px 英文，Light/Dark：工作区正常水合、无控制台错误或横向溢出，说明双栏/单栏和 FAQ 左对齐、整行点击、右 Chevron、Space 开合及焦点正常。未重复编解码实验或跨浏览器/真机矩阵；发布、搜索平台、实际收录和排名仍未验证。
-
-## V0.6-C2-D — 宽幅 AVIF 与作者/版权白名单
-
-AVIF 桌面额度现为 **4,194,304 像素、单边4096px、30秒、串行1任务**，不缩放。共享 limits 同时约束编码前、Worker、输出检查与中英文提示。2048²、4096×1024、3840×1080、3000×1000可用；3840×2160、超像素或超长边仍拒绝。移动/未知设备策略和原生三格式额度不变。
-
-Advanced 新增默认关闭的「保留作者与版权信息」：仅 JPEG 来源→JPEG/PNG/WebP，受限 EXIF IFD0 Artist(315)/Copyright(33432)，每项最多1023字节标准ASCII；Copyright允许标准摄影者/编辑者双字段。非标准编码、坏偏移、重复白名单等明确失败，不猜测中文/Unicode编码。不支持的来源逐项报错，AVIF输出禁用并说明。无来源白名单时不虚构字段。
-
-`authorship.ts` 复用有界容器检查，只读取上述字段，不跟随GPS/Exif/缩略图目录。原质量参数正常重新编码并执行默认清理后，写入全新最小TIFF，不复制旧方向或EXIF段。最终再经默认清理器独立审计CRC/RIFF/容器，并逐块比较白名单规范重建结果；保留输出返回经过该策略验证的原Blob，不返回审计过程中剥离作者的副本。仍需真实完整解码及尺寸/方向检查。GPS、设备、时间、XMP/IPTC/C2PA不写回；色彩处理继续沿用原生路径，不承诺ICC/广色域跨格式保真或清除所有未知隐私。
-
-有效策略为 `privacy-v1` / `author-rights-v1`，进入settings equality、推荐恢复、任务快照和结果标记，单项下载/预览/ZIP复用资格校验。改策略立即失效并隔离晚到结果；Advanced→Quick关闭保留并自动生成隐私结果，回Advanced可恢复该格式偏好。无策略变化的模式切换、改文件名不额外编码；恢复推荐关闭保留。没有新增依赖、上传或持久化。
-
-2026-10-30 Win10/Chromium156、16逻辑核、浏览器报告32GiB实测：四种额度内尺寸真实AVIF编码/回解码，约11.63/5.19/4.90/3.98秒；WASM线性容量约376/196/153/147MiB，任务结束均回收。取消4096×1024后重建编码成功。JPEG方向1–8×三种输出共24个，Pillow12.3.0独立确认只有Artist/Copyright且PNG像素等于应用方向后的原图。实际工具页混合JPEG/PNG批次、保留与默认下载、部分成功ZIP、旧快照失效、预览和清空经定向验证；不重跑历史完整格式矩阵。
-
-隔离8MP透明样本Q55/420/Alpha100：S6编码10.83秒/521,680B，S7为6.88秒/514,250B，两者WASM容量约286MiB、Alpha逐像素一致，白底合成RGB PSNR为41.34/40.23dB。S7值得继续研究但存在质量代价；仅一个合成样本，不能推出复杂插画、低内存桌面或移动端安全。本轮**不开放8MP，不更换S6**。真实8MP Worker取消、注入10ms期限终止与重建通过；30秒契约由定向计时测试覆盖，未声称本轮出现自然30秒编码超时。WASM容量不等于进程RSS/峰值，当前浏览器API无法可靠归属进程内存。
-
-相关149项Vitest、`pnpm check`及一次CN生产形态Converter夹具构建/静态资源守卫通过（含两种语言，真实Registry未修改）；未重复本地双地区完整构建。数据见 [image-avif-c2d.json](evidence/image-avif-c2d.json)；样本/实验程序在仓库外 `.validation/image-avif-c2d/`，不进入生产资源。未验收移动真机、Firefox/Safari、非ASCII EXIF及完整来源元数据保留。Converter继续draft。
-
-## V0.6-C2-C — AVIF 输入与按需输出
-
-四格式 PNG/JPEG/WebP/AVIF 可相互转换；AVIF 只接受有界验证的静态 8-bit SDR 子集，实际 native decode 仍为必需。BMFF 限制 256 个 box/OBU、4 个 item、24 个 property、1 MiB meta、64 KiB 单次读取；只允许主图和可选 Alpha、输入 EXIF/XMP。验证 AV1 reduced-still 序列、单帧、尺寸/色深/色度一致性及完整 mdat extent。动画、多帧、grid、ICC/HDR、高位深、未知颜色/属性/布局明确拒绝，不代表支持整个 HEIF 生态。输入 irot 交给原生解码应用一次；EXIF 非1、imir 和不可靠方向组合不接受。
-
-- PNG/JPEG/WebP 保持原生编解码与 C2-B 无损隐私清理。AVIF 输入不加载编码器；AVIF 同格式 Quick 必须重新编码，不能调用三格式清理器直通。输出只允许固定编码器结构，验证真实格式、帧数、尺寸、方向、附加字段及完整回解码，再授予 `privacy-v1` 结果资格；预览、单项下载和 ZIP 共用此资格。
-- 固定 `@jsquash/avif@2.1.1` 的 ST encoder，直接导入 ST factory，不使用自动多线程 wrapper 或 WASM decoder。原生 Canvas 无法表达本轮固定 Speed/色度/Alpha 参数，不作为未经验证的替代。Quick Q55/S6/420/Alpha100；Advanced 质量1–100，可选444。色度参数进入设置 equality/版本及任务快照；改标签不编码，能力重试不覆盖主动选择。
-- 仅真正执行 AVIF 输出时创建 Worker/下载 WASM；小任务复用 engine Promise。RGBA Transferable 交付前释放 Canvas/Bitmap。30秒超时、取消、卸载真实终止 Worker；晚到结果隔离，后续任务可重建。WASM heap 达256 MiB 或任务达2 Mi pixels后立即回收，其他实例空闲30秒释放。仍由原 SerialJobs 单通道调度；原生不可硬取消操作继续占用通道至实际结束。
-- C2-C首版 AVIF 输出仅固定桌面 profile：4,194,304像素、单边2048px（C2-D已调整为4096px）、30秒，不缩小图片；移动/未知设备禁用输出，输入仍按原设备预算和解码能力判断。原生三格式原额度不变。并非所有4MP内容都能在30秒内完成，超时会明确失败。
-- 固定 ST WASM 3,485,872 B，SHA-256 `d9f2a95164362af48558d176e619becfd49dd97b50b86c679b47100860522b3d`，加载时检查 MIME/大小/摘要；Vite 输出独立哈希资源。失败不无限重试或偷偷切格式。冷启动 DEV 将两个纯 ESM 包入口排除预优化，避免首次发现 Worker 依赖导致全页重载及文件丢失。
-- Canvas 明确产出 sRGB RGBA；固定 libavif wrapper 原来将 nclx primaries/transfer 留为 unspecified。仅对这条已知输出设置为 BT.709 primaries / sRGB transfer，保留 BT.601 matrix、AV1 载荷和所有像素数据。输入未知配置绝不套用此标记。不承诺 ICC/HDR/广色域保真。
-
-### 许可证与安全维护边界
-
-新增直接依赖仅 jSquash，锁定包带来的 wasm-feature-detect 不导入生产编码路径。`src/tools/image/avif.NOTICE.txt` 随 Worker 作为静态资源输出，包含 jSquash Apache-2.0、libavif v1.0.1、libaom v3.7.0 LICENSE/PATENTS、固定 libwebp SharpYUV 许可。包的 JS audit 没有这两个新增包的告警，但不能代替 C++ 二进制审计。
-
-固定包的底层 libaom 较旧，不能宣称没有已知漏洞。[CVE-2023-6879](https://nvd.nist.gov/vuln/detail/CVE-2023-6879) 的多线程、视频分辨率变化条件不属于本次 ST、8-bit、每次新建单帧 avifEncoderWrite 路径；[libaom 3.7.1](https://aomedia.googlesource.com/aom/+/refs/tags/v3.7.1) 还修复高位深/尺寸切换问题，本入口不开放这些配置。[CVE-2026-56208](https://github.com/advisories/GHSA-mgv2-4j37-m3x6) 涉及 LAP 第二帧统计，[CVE-2026-56209](https://github.com/advisories/GHSA-8vmr-q5h8-3vc5) 等涉及 SVC 控制；本 wrapper 不提供视频多帧/SVC 接口，也未编入 decoder。这是按已披露触发条件与固定源码判断的范围限制，不是完整漏洞证明或未来安全保证；正式发布前仍须重新核对上游维护与新增通告，不放宽当前输入和预算检查。
-
-### 定向实测
-
-2026-10-30 Windows 10 / Chromium156 /16逻辑核/浏览器报告32 GiB：四输入×四输出共16组真实转换、AVIF irot6→PNG、原三格式 Quick 清理、Alpha100 420/444及2048²边界。Pillow12.3.0独立解码输出；1MP透明样本两种色度的Alpha逐像素一致，旋转PNG与独立方向应用后像素一致。1MP透明420/444约4.54/4.89秒、61,544/64,952 B；2048²约10.05秒、70,230 B，WASM heap约432 MiB后立即终止。这不是浏览器总内存/峰值保证，也不推定移动端安全。
-
-取消真实编码后可恢复；不响应的真实 Worker 在30.004秒被超时终止，随后编码恢复（这是受控超时，不是声称所有图片30秒内完成）。Session FIFO、改参数失效、清理资源及异常恢复由定向测试和实际工具页验证。结构化结果见 `docs/evidence/image-avif-c2c.json`；原始样本/隔离程序在仓库外 `.validation/image-avif-c2c/`。未重复C1/C2-A全矩阵；Safari/Firefox/真机移动端、专业色彩仍未验收。保持 draft。
-
-## V0.6-C2-B — 默认隐私元数据管线
-
-`src/tools/image/metadata.ts` 复用现有有界容器扫描（64 KiB/次、格式/尺寸/段数/PNG CRC/RIFF 预算），以 Blob 切片重封装，不重新编码压缩图像数据。默认策略固定为 `privacy-v1`，写入结果并在 `session.download()` 校验；预览及 ZIP 都复用这个资格入口。没有新增运行依赖或策略 UI。
-
-- Quick 同格式先审计：无可清理信息则原字节直通；支持的 EXIF 隐私/GPS、XMP、JPEG Photoshop IPTC/COM/缩略图、PNG 文本/时间被清理，返回 `cleaned`。JPEG/PNG 只保留必要的最小 Orientation；无损结果按存储尺寸及原方向复检，不能套用重编码的 Orientation=1 规则。原 File 不修改。
-- ICC 是色彩描述，不是 GPS：保留经长度、签名、版本、色彩空间及标签偏移校验的 RGB/GRAY ICC，最多 1 MiB / 128 标签；JPEG 验证分段序号，PNG 有界解压并保留原 iCCP 字节，WebP 保留 ICCP。PNG 的调色板、透明度及支持的颜色块保留。这不是广色域转换或 ICC 内任意私有字段清除承诺。
-- 普通与渐进/多扫描 JPEG 可清理；不支持的 APP/编码扩展、CMYK/YCCK、未知 PNG/WebP 块、异常 ICC/冲突颜色块等拒绝不可靠的无损处理。PNG caBX 删除；JPEG APP11/WebP 未支持凭证载体拒绝，不宣称 C2PA 签名保留。WebP 所有非1 EXIF 方向均明确拒绝，包括尺寸不能发现的镜像。
-- 不会失败后静默返回原图或自动再次有损编码。Quick 清理失败后，主动切到 Advanced 将相关源任务置为待生成，仍需手动转换。Advanced 维持原编码路径，输出再执行隐私及格式/尺寸/方向/实际解码检查。不自动改变目标格式。
-- 文件名和模式切换不令有效结果重新编码；FIFO、watchdog、取消/删除晚到结果隔离、URL 所有权及 ZIP 快照规则保留。保留元数据 UI、C2PA 重签、广色域转换仍未实施，Converter 保持 draft。
-
-定向夹具位于 `tests/fixtures/images/metadata/`，来源和虚构隐私字段见其 README。相关测试为 image-metadata、converter-metadata-delivery，以及既有 inspector、Session/batch、delivery、UI/ZIP UI 和 limits；本轮 9 个相关测试文件共 142 条通过，`pnpm check` 无错误/警告。
-
-2026-10-30 Windows 10 / Chromium 156 定向验收见 [结构化证据](evidence/image-metadata-c2b.json)：21 个普通/渐进 JPEG（方向 1–8）、PNG/调色板、透明有损/无损 WebP 样本，浏览器显示像素及 Pillow 独立解码一致，压缩载荷和 ICC 字节保留。三格式重新编码输出通过复检；正式页面实际完成单项下载、ZIP 解压逐条字节比对、原图/输出预览、Escape 焦点恢复、未知 PNG 块拒绝及主动 Advanced 恢复。清空/移除后的 Bitmap 10/10、Canvas 4/4、URL 7/7 配对释放；390px 英文暗色视口无横向溢出，无控制台错误/警告。原始证据及隔离浏览器程序在仓库外 `../.validation/image-metadata-c2b/`，不进入生产。
-
-这不是大图性能复测或移动真机验收；Firefox/Safari、iOS/Android、广色域/CMYK、未知私有字段及 C2PA 保全未验证/未支持。下文历史测试记录不代表新策略。
-
-## C5-A — 资源限制与大图定向证据（2026-10-26）
-
-- `src/tools/image/limits.ts` 是当前额度来源。桌面：100 张、单张 50 MiB / 40MP / 单边 10000px、总输入 100 MiB；移动与信号不确定时：50 张、20 MiB / 16MP / 8192px、总输入 60 MiB。ZIP 仍为 128 MiB。100/50 数量采用维护者本轮指示，取代 Issue #9 原候选数量。
-- 每个 Session 固定并冻结一份额度；浏览器 mobile/coarse pointer 等提示只用于保守选择，不代表性能评估，不跟随视口变化。文件选择与文件夹共用 Session intake，结构解析、解码、Canvas、输出复检及中英文提示继续传递同一额度。64 KiB 读取、结构/动画/方向检查、单通道与 45 秒 watchdog 保留；输出字节上限独立于输入上限。
-- 先在仓库外隔离副本探测，再接通产品额度。Windows Chromium 156，Pillow 自有高纹理 RGB、透明 PNG、噪声 JPEG，逐张执行；每个输出均检查实际格式、MIME、尺寸、回解码并加载预览：
-
-| 输入 | 尺寸 | 三格式编码与复检耗时 | 结果 |
-| --- | --- | --- | --- |
-| 24MP 噪声 JPEG / 48.9 MiB | 6000×4000 | 3.3–23.0s | WebP/JPEG/PNG；PNG 78.7 MiB，大于输入限额仍有效 |
-| 36MP 纹理 PNG / 31.7 MiB | 7200×5000 | 3.7–19.8s | 两轮三格式通过 |
-| 40MP 透明 PNG / 43.7 MiB | 10000×4000 | 4.0–28.9s | 两轮三格式通过，PNG 64.7 MiB |
-| 48MP 纹理 PNG / 42.3 MiB | 8000×6000 | 5.4–30.9s | 仅隔离探测通过，产品仍拒绝超过 40MP |
-
-- 隔离探针共 18 个真实输出，42/42 位图关闭、18/18 Canvas 归零、18/18 URL 撤销。计数仅证明代码所有权配对，未测浏览器进程内存峰值、GC 回收时点或 GPU 峰值。
-- 实际工作台另测精确 50 MiB JPEG 接收与转换、+1 字节拒绝、重复追加达到 100 MiB 后的部分接收；48MP 与损坏输入失败不影响有效项下载。40MP 下载的 WebP 已用 Pillow 独立完整解码为 10000×4000 RGBA。两次大图导入/清空后计数配对，`maxActive=1`。
-- 两个 40MP PNG 输出各 67,830,461 字节，ZIP 合计超 128 MiB 时正确拒绝并允许重试/逐项下载；下载 PNG 独立解码为 10000×4000 RGBA，Alpha 范围 0–255。101 张小 PNG 部分接收 100 张并真实 Quick 编码完成，100 个有效下载，桌面行高 64px；390px 无横向溢出，预览关闭焦点返回对应行。
-- 清空最终工作区后：309/309 位图、105/105 Canvas、204/204 URL，原生通道峰值 1。相关 9 个 Vitest 文件共 121 项通过，`pnpm check` 无诊断；CN/Global 生产静态守卫与隔离 CN Converter SSG 通过，正式产物仍排除 draft。
-- 可重复生成单张样本：`python scripts/generate-image-fixtures.py --megapixels 40 --variant alpha --wide --output ../.validation/converter-c5a/samples/alpha-40.png`；可选 24/36/40/48 与 texture/alpha/noise。需要 Pillow，生成器拒绝向仓库内写入大样本；不参与构建/CI。
-- 移动端真实 iOS/Android 未测试，390px 仅验证布局。此次证据来自一台桌面 Chromium，不能承诺所有桌面设备均能完成上限任务；能力探测、失败反馈与较小图片/单项下载回退仍保留。Converter 保持 draft。
-
-## B0 — 基线及接口增量
-
-- 开始时工作区干净，`dev` 与 `origin/dev` 均为 `d9e99b15819fcb78b414c025f470046624ac84e6`，fetch 后未发现更晚提交；没有覆盖用户未知工作。
-- A 基线：13 个 Vitest 文件、117 项通过。原 CI 成功：[37953700597](https://github.com/librecosta/tool4furry/actions/runs/37953700597)。当时 Registry 为空，已具备分类、全目录、静态唯一 H1、双地区与五 Lab 隔离。
-- 未升级依赖、修改 Astro/StyleX 集成、Provider、Canvas 浮层或状态所有权。
-- 最小扩展：`setRecommendedPreset()` 只更换当前格式的推荐基线；`WorkbenchShell.formWidth='wide'` 仅扩大 opt-in Form 内容宽度；FileDropzone 可选 compact 外观及完整选择结果回调。ToolRuntime 统一按环境与 Registry 状态选择工具，不另设预览入口。详情见源码与文件交互文档。
-
-## B1 — 图片核心
-
-`src/tools/image/` 独立承担真实图片结构与原生编解码，不处理 UI 状态。
-
-- `inspectImage(blob)`：单次读取不超过 64 KiB，检查 PNG CRC/块次序与结束、JPEG 段/扫描/EOI、WebP RIFF 长度及图片块。PNG/WebP 的动画结构必须拒绝，文本中的相似字符串不误判。MIME 和后缀不作真实性依据；不支持的格式拒绝。
-- EXIF 只读有界 IFD0；`createImageBitmap(..., {imageOrientation:'from-image'})` 是唯一方向变换负责人。按方向交换预期尺寸，避免又手工旋转一遍。
-- `acceptImage()` 完成结构和真实解码后才交付 source，立即关闭检查位图。工具持有 File/Blob，无上传/持久存储。
-- `detectCapabilities()` 分别实际编码 PNG/JPEG/WebP，再检查非空、MIME、结构、尺寸和回解码；输入解码能力与输出编码能力不混同。不支持 WebP 时保守选可用 PNG；失败格式禁用并可重试。
-- `encodeImage()` 保持原尺寸，JPEG 默认白底并支持合法 #RRGGBB。每次真实导出重新验证 MIME、实际结构、回解码和尺寸。PNG fallback 不作为 WebP 成功，不能改后缀伪装。
-- `ImageResources` 仅是实例内所有权计数与释放入口；没有全局 Store。位图 close，Canvas 归零；Converter 持有原图缩略图 URL 并供预览复用，关闭 Dialog 不撤销它；替换/移除/卸载时释放原图 URL，结果变更时释放输出 URL，同 Blob 的直通输出共用原图 URL。计数平衡不是操作系统堆内存回落的证明。
-
-原生 API 不能硬取消正在进行的 `toBlob()`。实例内 `SerialJobs` 至多一个重型操作，同 key 仅替换等待任务；B3-B1 为每个文件使用独立 accept/encode key，避免不同文件相互覆盖。45 秒 watchdog 只让当前任务失败，保留后续 FIFO；原生调用真正结束前不释放运行槽、不并发重试。未采用 Worker/WASM 或通用任务池。
-
-## V0.5-B3-B1 — 批次核心与命名
-
-`ConverterSession.add(files)` 创建独立任务；批次持有共享参数，任务持有稳定 ID/加入时序号、File、校验源、请求版本、结果及错误。`generate(id?)`、`retry(id)`、`cancel(id)`、`remove(id?)` 按任务工作。`snapshot.processing/source` 仅为现有单文件 UI 的首个有效任务投影；正式 Dropzone 仍只接 `select(file)` 的两阶段替换，不开放多文件导入。Quick 自动排队，Advanced 主动处理；模式切换不编码。参数变化立即撤下过期 Blob，任务版本及存在性共同隔离晚到结果。解码/Canvas 的 finally 释放继续属于 Image Core，URL 仍由挂载的工具视图通过 useOwnedUrl 管理。
-
-`src/tools/file-naming.ts` 是无副作用的共享命名函数：本地毫秒时间、批内单调序号、清理后的原名称与实际输出扩展名，最终最多 180 UTF-8 字节。Session 创建时固定批次时间并生成独立 UUID；删除、失败、重试和替换不复用序号。Advanced 标签最多 40 UTF-8 字节，Quick 忽略标签，切回 Advanced 恢复最近合法偏好。`session.filename(id)` 是当前下载名入口；ImageResult.suggestedFilename 只保留不带标签的标准建议，不用于替代实时命名。没有 ZIP、批量 UI 或新的资源缓存。
-
-## V0.5-B3-B2 — 多文件与文件夹导入
-
-V0.5-B3-B2 当前入口已改为多文件追加及原生文件夹选择（不支持时回退普通选图），取代上文 B3-B1 的单文件 UI。`session.add()` 统一用 metadata 检查 20 文件、100 MiB 总量、20 MiB 单项预算；已有 validating/error 任务同样占额度，部分接收并按原因汇总。文件夹按完整相对路径稳定排序，真实格式、尺寸和解码仍由串行 Image Core 验证。`controls` 是统一参数快照；`processing/source/select` 仅保留旧核心契约兼容，正式 UI 不再依赖首项投影或替换路径。
-
-每个 `ConverterTaskRow` 用 useOwnedUrl 独立持有原图/有效输出 URL，关闭预览复用、结果过期及移除/清空/卸载释放；直通输出仍共用该行原图 URL。预览按任务 ID 装配并恢复焦点，任务删除后回到添加入口。Advanced“转换全部”只启动当前待处理任务（包含点击时正在验证的文件），已有 ready 结果不重复编码。清空或移除最后一项后，下次合法导入创建新的 UUID/本地毫秒时间/序号，旧批次原生操作仍须真正结束才释放串行通道。未实现 ZIP 或目录写入。
-
-## V0.5-B3-B3 — ZIP 交付与初始化
-
-多任务结束后，设置区提供当前成功结果的 ZIP（单项失败不阻断，未完成/过期/零有效结果禁止）。点击才动态加载 `zip.ts` / fflate 0.8.3 的 Zip + ZipPassThrough；按稳定序号、实时安全名称放在根目录，逐 1 MiB 读取 Blob，无重复压缩。预检包含 UTF-8 文件名、头、数据描述符和目录，输出时再次限制实际 ZIP 字节为 128 MiB。输入分块不代表零内存：输出块和最终 Blob 仍需浏览器内存，失败保留单项下载。临时 URL 在交付后撤销，卸载清理计时器、URL 和打包取消状态。
-
-不可变 Session view 本身作为一致性标识，包含批次、任务/结果请求版本、Blob、统一参数和标签；任何发布的新快照（包括改动后改回）都会取消旧打包，并在真正触发下载前再次核对。无需改动串行转换调度。正常能力检测不再插入提示段落，格式选项禁用后以 150ms 颜色/透明度过渡恢复；不支持原因放在 title/ARIA，失败或无可用格式才显示错误及重试。减少动态效果时关闭过渡。
-
-### 大图实测发现并修复的问题
-
-16MP 复杂 JPEG 初次转 PNG 被过小的固定 4096 块预算误拒绝；JPEG 扫描还重复读取了大量缓冲。改为随文件字节有界增长的块预算、复用未扫描缓冲后，同样本三格式均通过。新增回归测试保护大量合法 IDAT、极端空块拒绝与 JPEG 总读取量。初次失败记录保存在本地 artifacts，最终成功数据已入库。输出字节可以大于输入 20 MiB，不能用输入上限误判合法输出。
-
-规范依据：[PNG 规范](https://www.w3.org/TR/png-3/)、[WebP RIFF](https://developers.google.com/speed/webp/docs/riff_container)、[createImageBitmap](https://developer.mozilla.org/en-US/docs/Web/API/Window/createImageBitmap)。规范描述不代表所有目标浏览器都实测通过。
-
-## B2 — 一份参数与两阶段换源
-
-`src/tools/image-converter/session.ts` 复用既有 `processing-state.ts` 的 sourceRevision/settingsRevision/requestId。不是第二套全站状态框架。
-
-| 行为 | 实现合同 |
+| 模块 | 职责 / 权威代码 |
 | --- | --- |
-| 格式推荐 | WebP 85；JPEG 88 + #FFFFFF；PNG 无质量设置 |
-| Quick 导入 | 最新候选验证通过后自动生成；能力稍后到达时补一次 |
-| Quick 格式操作 | 有图时主动选新推荐自动生成；相同 pending/ready 不重复；同格式原字节 passthrough 并明确说明未重新编码 |
-| Advanced | 按格式记忆最后编辑参数，改参数变 stale，主动生成；同格式仍真实重编码 |
-| 模式/宽度 | 只改变显示，不重置参数、不产生编码 |
-| 恢复推荐 | 恢复当前格式，不强制回 WebP |
-| 文件名 | 独立状态；不使 Blob 过期、不触发编码；实际扩展名由输出 MIME 决定，编码默认 `-converted` |
-| 换源 | 独立 candidate token；检查时暂停旧下载，失败保留旧源/结果并恢复下载，最新成功才 replaceSource |
-| 旧异步结果 | 不得覆盖新版本；移除/卸载使候选与请求失效；原生任务结束后释放临时资源 |
+| 导入与设备预算 | [intake.ts](../src/tools/image-converter/intake.ts)、[limits.ts](../src/tools/image/limits.ts)；现有任务和本批均计入，不整批预解码 |
+| 格式与方向检查 | [inspect-image.ts](../src/tools/image/inspect-image.ts)、[inspect-avif.ts](../src/tools/image/inspect-avif.ts)、[avif-sequence.ts](../src/tools/image/avif-sequence.ts)、[types.ts](../src/tools/image/types.ts) |
+| 原生与输出复检 | [browser-codec.ts](../src/tools/image/browser-codec.ts)；真实能力检测、JPEG 背景、格式/尺寸/完整回解码 |
+| 隐私与白名单 | [metadata.ts](../src/tools/image/metadata.ts)、[authorship.ts](../src/tools/image/authorship.ts)；有界无损清理与受控字段写回 |
+| AVIF | [avif-encoder.ts](../src/tools/image/avif-encoder.ts)、[avif.worker.ts](../src/tools/image/avif.worker.ts)；固定 ST encoder、独立哈希资源、Transferable、超时/取消/空闲/高水位回收 |
+| 任务与推荐 | [session.ts](../src/tools/image-converter/session.ts)、[serial-jobs.ts](../src/tools/image-converter/serial-jobs.ts)、[presets.ts](../src/tools/image-converter/presets.ts)；FIFO、任务/设置/请求版本及模式偏好 |
+| 交付 | [delivery.ts](../src/tools/image-converter/delivery.ts)、[zip.ts](../src/tools/image-converter/zip.ts)、[file-naming.ts](../src/tools/file-naming.ts)；有效结果、快照、命名、打包预算 |
+| 资源与预览 | [resources.ts](../src/tools/image/resources.ts)、[use-owned-url.ts](../src/tools/image-converter/use-owned-url.ts)、[ConverterTaskRow](../src/tools/image-converter/ConverterTaskRow.tsx)；每任务 URL/Bitmap/Canvas 所有权 |
+| UI 与文案 | [ImageConverter](../src/tools/image-converter/ImageConverter.tsx)、[messages.ts](../src/tools/image-converter/messages.ts)、[静态 SEO 内容](../src/site/image-converter-content.ts)；不将长文导入客户端 |
 
-V0.5-B3-A：`ImageConverter.tsx` 的 DOM 顺序为 file → settings → tasks；<=900px 自然单列，桌面 Grid 将紧凑文件列表置左、唯一设置实例置右。仍只接收单个文件；下载和重试在文件行内，原图/当前有效输出仅按需在 Dialog 展示。公共 `FileTaskList` 接收展示数据与操作回调，不持有媒体资源或调度任务。质量、背景色、命名和 Session 规则不变；无虚构百分比、无自动下载。
+`limits.ts` 是桌面/移动、原生/AVIF、输入累计预算的数值来源；`presets.ts`、Worker 固定设置与测试是质量/速度/色度/Alpha 的来源。UI、编码前、Worker 和输出检查共享这些约束，不复制另一份数字配置，不自动缩小/换格式凑成功。
 
-B3-A.1：列表采用真实原图缩略图；`FilePreviewDialog` 提供可复用外壳，`ImagePreviewViewport` 只显示单画面，原图/有效输出切换时重置视图。适应窗口、100% CSS 像素、锚点缩放、受限平移及双指手势均只改变预览；关闭时卸载查看器并清理 Pointer/Wheel/ResizeObserver，Fullscreen 由外壳清理，不影响列表或编码资源。
+## 核心不变量
 
-## B3 — Registry、SSG、SEO 与隔离
+- [图片处理契约](../contracts/image-processing.md) 定义真实输出、方向一次、默认 `privacy-v1`、受限 `author-rights-v1` 及不支持边界。
+- PNG/JPEG/WebP Quick 同格式经验证后直通或无损清理，无法安全理解则拒绝，允许主动 Advanced；AVIF 同格式仍重编码。默认移除常见来源隐私信息，不承诺全部隐私或像素信息清除。
+- 作者/版权仅 JPEG 来源到 JPEG/PNG/WebP 的 Artist/Copyright 白名单，标准编码与长度受限；保留时仍按实际质量编码、清理、写回、最终复检，不复制 GPS/设备/时间/旧 Orientation。
+- 实际元数据策略、AVIF 色度、质量/背景等参与有效设置与结果契约；切换策略或编码设置立即失效，名称编辑不编码。无有效策略变化的普通模式切换不产生多余编码。
+- 单通道串行；原生操作不可硬取消时保持占用至结束，Worker 超时/取消真实终止并重建。删除/清空/跨批次晚到结果只清理，不能复活任务。
+- 每项 ready 下载独立，不被其他任务导入/处理中暂时禁用；ZIP 只包含全部任务已终结时的有效成功结果，允许明确部分失败，不空打包、不混入旧版本。打包中修改批次/参数/标签使快照失效。
+- 缩略图只反映原图，按需打开预览；关闭不能撤销仍被列表使用的源 URL。移除/清空/卸载及时释放，公共列表和预览外壳不管理资源业务。
 
-- metadata：`images → image-processing → image-converter`，form，CN/Global，status draft。
-- Issue #3：Vite 在跨模块 status 检查折叠前发现动态 import，会留下草稿 chunk；配置将 Registry 的 status/regions 投影为编译期常量，让加载器在依赖发现前排除不可用实现。唯一人工发布标记仍是 Registry status，不另改 loader 开关。
-- `/tools/[slug].astro` 在 DEV 包含地区可用草稿、生产只包含 published；统一 ToolIntro、ToolGuide、ToolRuntime + Provider + lazy + Error Boundary，draft 页面 noindex。
-- Astro-only `image-converter-content.ts` 提供双语 title/description、唯一静态 H1、简介、步骤、限制、FAQ。React 不导入长文；正式路由仍按本地区 published 过滤。
-- `verify-build.mjs` 保留全部 A 守卫，并排除旧工具路径、DEV diagnostics 与未发布 Converter JS。
-- `node scripts/verify-converter-fixture.mjs cn/global` 在仓库外隔离源码副本中只将 status 改为 published，保留真实配置与 loader，验证发布单一开关及正式静态页；输出 `../.validation/converter-v04b/ssg/`。工作区 Registry/status/loader 不变，**仅测试、绝不部署，不算公开发布门禁通过**。
-- 原 A 的 `verify-tool-fixture.mjs` 继续验证 20+ 工具、地区与首页最多 9 项；仅调整测试模块替换接缝以容纳真实 draft 元数据，没有删断言。
+布局入口见 [工作区说明](workbench-appearance.md)：未导入紧凑 Form，导入后显式 wide；只切换 class，不重置任务/参数/结果。静态 4 步骤、4 限制、6 FAQ 与 SEO 为已审核内容，不在普通重构中重新拟稿。
 
-## B4 — 真实证据与限制
+## 验证与安全维护
 
-环境：Windows 桌面、内置 Chromium 155，AMD Ryzen 7 5800H、16 logical processors、约 32 GiB RAM；Node 24.15.0 / pnpm 12.8.1。下面的浏览器均为同一桌面 Chromium，窄视口不是真机。
+- 容器/方向/限额：[image-inspector](../tests/image-inspector.test.ts)、[avif-inspector](../tests/avif-inspector.test.ts)、[image-limits](../tests/image-limits.test.ts)。
+- 默认清理与作者：[image-metadata](../tests/image-metadata.test.ts)、[image-authorship](../tests/image-authorship.test.ts)、[converter-authorship](../tests/converter-authorship.test.ts)、[metadata-delivery](../tests/converter-metadata-delivery.test.ts)。
+- 编码/任务/交付：browser-codec、avif-worker/encoder/session、converter-session/batch/intake/delivery、ZIP/UI/预览等现有测试。
+- 静态发布形态：[verify-build.mjs](../scripts/verify-build.mjs) 检查两地区本地化页面、完整静态 4/4/6、Canonical/hreflang/OG/Sitemap、客户端长文隔离、唯一 ST 资源与 NOTICE。旧 Converter CN-only 发布模拟脚本已退役，通用 Registry/工具夹具仍保留。
 
-入库原始记录：[小样本核心](evidence/converter-v04b/core-chromium.json)、[大样本](evidence/converter-v04b/large-chromium.json)、[中文尺寸](evidence/converter-v04b/cn-layout.json)、[英文尺寸](evidence/converter-v04b/global-layout.json)、[清理计数](evidence/converter-v04b/cn-cleanup.json)、[连续换源](evidence/converter-v04b/cn-race.json)。
+固定 jSquash 及旧底层二进制的安全/许可边界见 [upstream](../contracts/upstream.md)。D2 没有确认当前编码路径的严重阻断，不等于全量安全证明；构建依赖告警的原结论保留在历史审计，本轮不升级依赖或重测编码器。
 
-| 项目 | 本次实测 |
-| --- | --- |
-| PNG/JPEG/progressive JPEG/WebP/错后缀 PNG | 5 种输入各转 3 格式，共 15 次 MIME、结构、尺寸、像素与回解码检查通过 |
-| EXIF 1–8 | 含镜像 2/4/5/7；像素象限与方向正确，5–8 从 80×48 到 48×80 |
-| 透明度 | PNG/WebP 保留 alpha 128 与 0；JPEG 白底正确；自定义 #204060 背景下载 JPEG 的透明区约为 [31,64,95]（有损差异） |
-| 拒绝 | 真实 APNG/动画 WebP、损坏、空文件、不支持格式、超边长/像素；旧有效下载能保留 |
-| 浏览器下载 | 660B WebP 80×48；PNG passthrough 210B 与原文件 SHA256 相同；自定义 JPEG 与英文 1024×772 JPEG 均落盘并由 Pillow 独立识别 |
-| Quick/Advanced/命名 | 改名和模式切换不增加编码或换 Blob URL；滑块方向键令旧结果失效，恢复/手动生成正常；格式方向键可操作 |
-| 生命周期 | 12 次三格式切换后移除：24/24 位图、13/13 Canvas、15/15 URL，DOM 无 Blob 引用；重型操作 maxActive=1 |
-| 连续换源 | 复杂大图 → WebP → PNG，最终为最新 PNG 的 WebP 输出，无旧结果覆盖，maxActive=1 |
-| 文件交互 | 真实系统选择（含 Enter）、替换、移除与同文件；拖放事件覆盖于组件测试，未冒充 OS 实际拖拽 |
+## 已入库证据与待验事项
 
-候选开发保护：输入 20 MiB、16,000,000 像素、单边 8192px。以下是该桌面的单次样本，并非最大能力或内存峰值测量：
+- [D2 资格审计全文](history/image-converter-v0.4-v0.6.md#v06-d2--beta-资格审计) / [结构化证据](evidence/image-converter-d2.json)：真实两地区静态站及 Chromium 导航、格式转换、隐私、预览、下载与 ZIP；非公网验收。
+- [C2-C](evidence/image-avif-c2c.json) / [C2-D](evidence/image-avif-c2d.json)：四格式组合、宽幅预算、方向、作者/版权、Worker 取消和受控高分辨率研究；高额度候选不自动获准。
+- [C2-B](evidence/image-metadata-c2b.json)、[C2-A 研究](research/image-codec-c2a.md)、[C1 研究](research/image-codec-evaluation.md)：默认清理及原始选型事实，不改写当时结论。
 
-| 输入 | WebP 输出/耗时 | JPEG 输出/耗时 | PNG 输出/耗时 |
-| --- | --- | --- | --- |
-| 1024×772 照片，257,056B | 261,150B / 113ms | 289,585B / 24ms | 1,948,726B / 261ms |
-| 4000² 纯色 PNG，56,255B | 29,010B / 732ms | 94,511B / 202ms | 316,991B / 227ms |
-| 8192×64 PNG，1,779B | 1,496B / 26ms | 3,833B / 9ms | 10,172B / 10ms |
-| 4000² 复杂 JPEG，10,679,706B | 11,285,262B / 3265ms | 11,030,543B / 611ms | 54,523,000B / 7058ms |
+未完成实际部署、备案/DNS/CDN/HTTPS、搜索平台提交/收录、Firefox/Safari 与 iOS/Android 真机完整兼容性及可靠进程总峰值内存评估。本地 HTTP 缓存不等于真实 CDN 缓存；Chromium 手机视口不等于移动 AVIF 安全。按 [L3](../AGENTS.md#mvp-beta-release-policy-2026-10-10) 跟进，不借文档治理扩展格式或提升额度。
 
-时间包含编码及输出验证；噪声图输入检查约 200ms。大样本运行创建/关闭 28 个位图、创建/释放 12 个 Canvas。**没有成功导入恰好 20 MiB 的代表性照片、没有真实手机内存或热状态数据，因此这些阈值不能冻结为发布承诺。**
-
-照片为 Google WebP Gallery 样本 4：Benjamin Gimmel 的 “A Wild Cherry (Prunus avium) in flower”，CC BY-SA 3.0，来源 [官方 Gallery](https://developers.google.com/speed/webp/gallery1)，文件只在仓库外用于本地验证，不纳入生产或 git。其他二十一项小图片为本仓库生成的合成数据，见 fixtures README；大噪声图固定 random seed 44。
-
-### 布局与原有 Lab
-
-CN 和 Global 均检查：1440×900、1024×768、901×600、900×600、768×1024、390×844、375×812、320×568、812×375。全部 scrollWidth <= clientWidth；设置实例数 1，阅读顺序正确，九次宽度切换 requestId 和下载 URL 保持一致。检查手机/桌面截图，英文 320px 高级输入、横屏结果与长中英文文件名可用。截图在工作区外 `../artifacts/converter-v04b/`（不将图片证据作为网站资源）。内置浏览器桌面截图受宿主面板可见宽度裁切，DOM 几何记录仍为指定完整视口。
-
-浏览器回归：Form 空值错误及大写输出；Batch 添加/推进两次/移除/清空；UI Toast/确认框；Files 元信息选择及 ScrollDock 100%→75%；Canvas 在 390×844 和 1440×900 开关 Inspector 几何不变，参数只有一份，窄屏嵌套 Select、Escape、焦点返回与跨宽度值保持，未覆盖区可增加标记。
-
-开发时格式化文件后曾遇 StyleX `data-style-src` 行号的 dev Hydration 警告；未通过更改配置掩盖。最终停止并冷启动 dev 后无新增 Hydration 错误；普通 HTTP Server 提供的 CN 隔离静态装配也实际完成 PNG→WebP（660B），唯一 H1/Island、无 DEV diagnostics、无该页控制台错误。这不代表未测浏览器已通过。
-
-### 复现与待验
-
-1. `pnpm dev` → `/tools/image-converter/`：导入透明 PNG，等 WebP ready，下载并独立确认格式；点 PNG 检查“未重新编码”。
-2. Advanced 调质量、JPEG 背景和文件名，检查无效参数不能生成；改名不重新编码。切模式、901/900px 宽度不丢值。
-3. 替换损坏/动画/超限输入，检查期间暂停下载、失败后旧图旧结果恢复；快速连续选择两个有效源，最后一次选择获胜。
-4. 连续处理并移除，展开 DEV diagnostics 检查位图/Canvas/URL 释放；离开页面不能留下工具-owned URL。
-5. 停止 Astro dev 后，`node scripts/serve-converter-probe.mjs` → `http://127.0.0.1:4388/scripts/spikes/converter-core.html`，点击真实 codec 检查。可用 Pillow 再生成 `--large` 样本，外部照片须按上方来源自行准备，运行可选大样本。probe 无生产路由。
-
-Firefox、Safari/WebKit、iOS Safari、Android Chrome、真实触摸/软键盘/安全区/下载体验、屏幕阅读器、reduced-motion 系统设置、设备峰值内存/持续温升、ICC/广色域照片主观质量仍待人工验证，按 L3 根据反馈和需求推进，不再要求全部先于 Beta 或 C/D 复用完成。没有引入新的运动效果；继续复用既有 reduced-motion 样式。各环境兼容性声明必须有对应实测依据，不自动引入 WASM；已知数据损坏、严重崩溃或其他阻断问题仍须在 L2 前解决。
-
-## B5 — 最终验证
-
-停止 dev 后按顺序执行，最终结果：
-
-| 命令 | 真实结果 |
-| --- | --- |
-| `pnpm install --frozen-lockfile` | 通过，锁文件未改，pnpm 12.8.1 |
-| `pnpm check` | 103 个文件，0 errors / 0 warnings / 0 hints |
-| `pnpm test` | 17 个文件、167 项全部通过 |
-| `pnpm build:cn` | 通过，3 静态页，0 已发布工具 |
-| `pnpm build:global` | 通过，3 静态页，0 已发布工具，未覆盖 CN |
-
-两套正式产物的零首页脚本/Island/JS preload、canonical/OG/唯一 H1、真实目录/路由、StyleX 提取、100 本地 WOFF2 + 3 内嵌子集及许可证、Lab/fixtures/spikes/preview/草稿实现隔离守卫均通过。原 A fixture 双地区各 24 页，以及真实 Converter 隔离装配双地区各 4 页，额外验证通过。生产仍只有首页、目录和 404。
-
-全量检查最初发现测试调用误用了浏览器 API 的 `exact` 选项，以及旧测试把真实 Registry 断言为完全空数组。已按 Testing Library 类型和真实 draft 状态修复，保留并增加了无 fixture 污染、两个地区 published 列表为空的断言；未删除旧过滤测试。随后完整门禁通过。
-
-CI 配置未改：dev/main push 与 PR 使用 Node 22 顺序运行 frozen install、check、test、build:cn、build:global，仅 CI 无 CD。本次提交的远端结果以 GitHub Actions 与最终交接链接为准；本地通过不冒充远端通过。LICENSE 哈希与基线一致，未修改 main、未部署、未引入任何生产服务或密钥。
+[完整 V0.4–V0.6 历史](history/image-converter-v0.4-v0.6.md) 保留各阶段设计、数值、失败、证据和验收记录；新工作不以旧 Draft/CN-only/三格式描述覆盖当前源码。

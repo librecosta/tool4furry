@@ -1,5 +1,7 @@
 # Tools Catalog Workbench — V0.5-C7
 
+> **Current · E1 索引说明**：本页描述当前目录行为与显式 DEV 夹具，不作大规模迁移。发布状态见 [publication](../contracts/publication.md)，地区语言见 [compatibility](../contracts/compatibility.md)；下文注明环境的测量仍是当时证据，不能推定其他浏览器已实测。当前 Converter 为唯一 Published，CN/Global 均未部署。
+
 Only localized `/tools/` uses `SiteLayout.catalogWorkbench`: the existing Header,
 100dvh shell, 256px sidebar and independent native scrollports. No Footer,
 compliance row or document scroll dock. Other pages retain their shell.

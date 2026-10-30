@@ -2,6 +2,8 @@
 
 # V0.2-B — File Interactions & ScrollDock
 
+> **当前接口 + 历史验收**：本页原语接口及后续增量仍可参考，V0.2 的开发命令、零脚本/零工具和逐轮测试数量为历史事实。实际 API 以 `src/ui/` / 对应测试为准；公共静态 DocumentScrollDock 与 Lab React ScrollDock 的当前隔离见 [站点说明](site-homepage.md)。现在普通 `pnpm dev` 同时提供两个地区及各自双语，无需按旧步骤重启英文环境。FileDropzone 不读取文件内容的规则只约束原语/Lab，不代表真实工具不能在本地解码。
+
 本轮只提供文件交互与文档滚动原语。`/lab/files` 通过既有 `routes.ts`、WorkbenchLab、LabRuntime 和 UiProvider 接入；队列与确认弹窗状态属于 FilesLab。没有修改 WorkbenchShell、Astro 配置、主要依赖或全局 CSS。没有真实工具、文件内容读取、后端、SSR 或部署。
 
 ## FileDropzone API

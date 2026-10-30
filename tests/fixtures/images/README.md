@@ -12,4 +12,4 @@ Generated for this repository by `scripts/generate-image-fixtures.py` with Pillo
 
 Run `python scripts/generate-image-fixtures.py --large` in a Python environment with Pillow to also create deterministic 16MP noise JPEG and solid/long-edge images outside the repository under `../.validation/converter-v04b/samples`. Do not copy those large files into production or git.
 
-The optional photographic browser sample is separately attributed in `docs/image-converter-implementation.md`; it is not stored here.
+The optional photographic browser sample is separately attributed in the [historical implementation record](../../../docs/history/image-converter-v0.4-v0.6.md#b4--真实证据与限制); it is not stored here.

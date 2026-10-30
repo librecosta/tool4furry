@@ -1,5 +1,7 @@
 # Image processing capability evidence — V0.4-A
 
+> **历史能力证据**：以下是原生三格式的早期环境与当时发布判断，不是当前格式/状态矩阵。Image Converter 已在 D2 成为唯一 Published，支持受限 AVIF，CN/Global 均未部署；当前能力、默认隐私和证据入口见 [Converter 当前说明](image-converter-implementation.md)。本页保留原测量与待验项，现行门禁采用 [L1/L2/L3](../AGENTS.md#mvp-beta-release-policy-2026-10-10)。
+
 ## 当前 MVP Beta 政策（2026-10-10）
 
 按 [AGENTS.md 的 L1/L2/L3 政策](../AGENTS.md#mvp-beta-release-policy-2026-10-10) 验收：日常按改动风险定向验证，完整 CI 优先交给 GitHub Actions；Beta 必须满足 CI、真实 Chromium 完整流程、输出真实性、桌面/常见手机视口、能力检测安全失败、无已知阻断问题及维护者最终确认。

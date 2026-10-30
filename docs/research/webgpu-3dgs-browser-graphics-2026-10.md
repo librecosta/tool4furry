@@ -1,5 +1,7 @@
 # WebGPU、3D Gaussian Splatting 与浏览器图形技术路线调研
 
+> **Research / 历史技术储备**：保留 2026-10-20 的研究判断，不代表本轮批准新图形功能。后续正式首页的 Wavefield 移植与 DEV-only HSN-1 是不同实现，当前边界见 [站点说明](../site-homepage.md)；本文不取代源码、测试或现行契约。
+
 > 调研日期：2026-10-20  
 > 项目：Tool4Furry  
 > 状态：技术储备 / 尚未立项  

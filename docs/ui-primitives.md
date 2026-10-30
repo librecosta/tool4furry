@@ -1,5 +1,7 @@
 # V0.2-A — UI Primitives Foundation
 
+> **当前接口 + 历史验收**：本页保留已补充的公共组件接口和 V0.2 起的原始记录；具体 Props/行为以 `src/ui/` 与组件测试为准。旧零脚本、零工具或版本/颜色描述仅属于当时阶段。当前布局/Provider 见 [工作区说明](workbench-appearance.md)，主题/脚本见 [站点说明](site-homepage.md)，验证采用 [L1/L2/L3](../AGENTS.md#mvp-beta-release-policy-2026-10-10)，不将早期真机待办写成已通过。
+
 `src/ui/` 提供 Tool4Furry 的公共视觉和交互原语，不持有工具参数、结果或算法。`UiProvider` 只在 `LabRuntime` / `ToolRuntime` 内挂载，Toast 队列属于该 React 树。首页仍是纯 Astro；多个 Island 不共享 Context。
 
 ## API

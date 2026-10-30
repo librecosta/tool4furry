@@ -1,43 +1,61 @@
-# Tool4Furry
+# Tool4Furry — Agent Entry
 
-V0.6-D2: Image Converter is the first and currently only Published tool, available to both CN/Global static builds in zh/en. Neither region is deployed. Source publication is not deployment authorization. Read [docs/image-converter-implementation.md](docs/image-converter-implementation.md) for the Beta audit, ownership and compatibility follow-ups; older draft/CN-only records are historical.
+## Repository Purpose
 
-- Read [docs/foundation.md](docs/foundation.md) for boundaries and verified integration decisions.
-- `src/pages` + `src/layouts`: Astro SSG, site copy and published routes.
-- Read [docs/site-homepage.md](docs/site-homepage.md) for the site contract. Production static pages retain three audited inline scripts: `src/styles/appearance-controller.js` in head (`#t4f-appearance`) for pre-paint theme restoration, one-shot regional relay and native click reveal, `src/styles/navigation-disclosure.js` at body end (`#t4f-navigation`) for native featured-navigation hover/click, outside dismissal and Escape, and `src/styles/document-scroll.js` with shared `src/ui/scroll-metrics.js` at body end (`#t4f-document-scroll`) for static document scrolling. Both Astro and React navigation use this disclosure enhancement; without JS the native summary/catalog links still work. No React Island, unrelated bundle or JS preload. The homepage alone also loads the audited HomeHero Wavefield module entry (Issue #21), exact #t4f-home-pillars inline observer (Issue #26), independent #t4f-home-stories observer (Issue #28 E3-r1) and #t4f-home-principles observer (Issue #29); other static pages remain exactly three scripts. `section#tools` always exists; current-region available entries enable cards: DEV includes draft + published, production only published. Homepage, catalog, featured navigation and related tools share `getAvailableTools(region, dev)` with routes. No placeholder tools in the production registry. Hero CTA always navigates to the regional localized catalog.
-- `/tools/` uses the static catalog workbench in [docs/site-tools.md](docs/site-tools.md): Header, no Footer/compliance/document dock, fixed viewport, native independent scrollports, one audited catalog-only module. `roles.ts` owns six shared identities; category/group, role and search intersect before 12-item pagination. Locale links preserve sanitized catalog query only on this route. Other static pages retain their script/Footer contracts.
-- Read [docs/tool-platform-image-foundation.md](docs/tool-platform-image-foundation.md) for V0.4-A. Taxonomy is owned by `src/site/taxonomy.ts`; Registry remains the publication gate. Homepage featured grid has <=4 curated tools, `/tools/` covers all, Featured navigation reuses getHomepageEntries (<=9, featuredToolIds then available Registry order) plus the full catalog; do not create a second navigation list. Header/Footer/404 toolbox links now use `/tools/`; keep the historical home `#tools` anchor.
-- Published metadata must pass `assertValidRegistry` and have localized Astro-only content in `src/site/tool-content.ts`. ToolRuntime accepts a static intro slot: formal pages have one Astro H1; Lab keeps its heading and Canvas overlay behavior. Never import long tool content into React.
-- `processing-state.ts` is a pure per-tool version contract, not a scheduler/store. Callers own settings validation, equality, real output verification and disposal of rejected/obsolete resources. Converter owns a bounded serial lane and per-file batch intake; naming and mode-only changes never re-encode, while effective metadata-policy changes invalidate results. Resizer/Cropper remain out of scope.
-- Capability evidence, Beta policy and compatibility backlog: [docs/image-processing-capabilities.md](docs/image-processing-capabilities.md). `scripts/spikes` and `tests/fixtures` are never production resources; isolated fixture builds go outside the repository dist.
-- Approved brand Master: `public/brand/tool4furry-symbol.svg` (two unchanged paths/eyes). Header/Footer and ToolPageFrame use a decorative CSS mask in currentColor plus one live DM Sans 700 wordmark. `tool4furry-horizontal.svg` is the A lockup with real outlined DM Sans glyphs; no text/font dependency. Favicon is `/favicon.ico` + `/brand/tool4furry-favicon.png`, never SVG. Do not redraw the Master or recolor the brand. Static decorative artwork stays local. `SiteLayout.fullTitle` overrides the default brand suffix only when supplied.
-- `src/workbench`: optional slots, responsive layout and panel visibility only.
-- Read [docs/workbench-appearance.md](docs/workbench-appearance.md) for the V0.3-B contract and verification. `ToolPageFrame` owns product entry/identity; Shell header is tool-local. Registry stays metadata-only; draft metadata must not enter published discovery.
-- Canvas viewport geometry is independent of overlays; empty overlay layers use pointer-events:none. Inspector defaults closed; keep one stable Portal/parameter tree across the shared <=900px breakpoint. Form/Batch remain in document flow.
-- `src/ui`: controlled primitives; read [docs/ui-primitives.md](docs/ui-primitives.md). Providers belong in fixed Lab/Tool React roots, never the static SiteLayout.
-- FileDropzone delivers File references and metadata validation only; no reads, uploads, object URLs or persistence. Queues belong to callers. See [docs/file-interactions.md](docs/file-interactions.md).
-- The React ScrollDock remains opt-in in FilesLab. The static DocumentScrollDock is shared by public document pages and non-Canvas tools; explicitly exclude all Lab and Canvas pages via SiteLayout.documentScroll. Both use scroll-metrics.js. Never control Canvas/internal panels; preserve native document scrolling and internal scrollbar discovery.
-- `src/tools/registry.ts`: metadata only; `loaders.ts`: separate lazy implementations.
-- `src/lab`: development demos; never register them as published tools.
-- `src/lab/hero-effects`: isolated Canvas 2D HSN-1 horizontal spectral/seeded-gradient-noise surfaces. Far/Main use X=W*u; both main mesh directions share projected vertices and screen-space spacing attenuation; do not restore the removed Orb/WebGL experiment. Cap actual redraws at 12 Hz on Low, 24 Hz on Medium/High, distinct from measured RAF callback rate. Stop on pause/hidden/offscreen/reduced motion and release listeners/observers/arrays on unmount. Never import the experiment into the public homepage without a separate request.
-- Real tools use only `/tools/[slug]`: DEV includes regional drafts, production only regional published tools. Registry status is the single publication setting; Vite projects availability to a compile-time loader constant so draft chunks are not emitted. Converter is accepted Published in both regions; future drafts must remain excluded from production. Do not deploy without an explicit request. `pnpm dev` runs isolated CN/Global services on 54321/54322; `pnpm dev stop` stops both.
-- `src/config/region.ts`: deployment/domain/availability contract (`cn | global`); `src/i18n/locale.ts`: independent `zh | en` content and static paths. CN defaults to zh with `/en/`; Global defaults to en with `/zh/`. Both locales share the regional Registry gate. `src/pages/[...locale]` is the single static template set. Language links stay same-origin; explicit Footer region links preserve locale and only published target routes (otherwise the localized catalog). The appearance relay applies only to region links. Keep two dev services, two builds and two dist roots.
-- `src/site/discovery.ts` + Astro static endpoints generate same-region robots/Sitemap/security/llms files from public routes and published Registry only. Extend `verify-build.mjs` against actual canonical HTML; never list Lab/drafts. Refresh security.txt before its build-relative 180-day expiry; Footer Support owns the private report mailto.
-- Indexable pages share the approved 1200×630 `public/brand/tool4furry-og.png`; OG/Twitter URLs use the region's production HTTPS origin, locales/alt use content Locale. No social metadata on noindex pages. The optional OG SVG is source artwork only; preserve the supplied PNG bytes.
-- Only each region's default-locale root homepage emits one static `#t4f-website` application/ld+json WebSite object, using the regional HTTPS root. It is data, not an executable-script allowance: keep all exact existing script/order/content, Island and preload guards. No other structured-data types. The real regional builds now audit the Published Converter, including its full static 4/4/6 guide and lazy AVIF resources. The old Converter/CN-only simulation script is retired; keep generic publication/region/draft fixtures for future tools.
-- Homepage C6 uses static Astro blocks in `components/home`; `homepage-showcase.ts` owns local media slots, the four-slot featured presentation and six editorial roles, not availability. FeaturedTools caps the existing ordered entries at four without reducing navigation's nine-item limit; use static Phosphor Regular monochrome icons and tool-owned optional copy.summary, never cover images or a filmstrip. SiteLayout owns one shared fixed viewport dot background; preserve its responsive fades and the shell's base/dots/content painter order. Hero/chrome conceal it, workspace + no documentScroll excludes Canvas/immersive Lab. Optional featuredDecor is the first normal Grid column alongside the complete featured content; no missing-asset column in production or absolute negative offsets. Homepage text underlines shrink to 62% on hover in 180ms. DEV and production show only real available featured tools without fillers; absent editorial artwork renders no placeholder or empty column. Role lists use manual toolIds, the shared Registry gate and a 12-item cap without fillers; production only projects regional published Registry entries (or honest empty states). Featured and roles share `section#tools` with one H2, page background and a 30px gap. Role artwork stays 3:4 and bottom-aligns across each paired row while tool lists start at the top, hides at <=600px and leaves no missing-media column in production; studio replaces finance. RoleShowcase.icon can replace each static Phosphor heading icon with a supplied local asset. Hero supersedes the old wolf/CSS-window slot: approved `public/visuals/wavefield/wavefield.avif` is the static first frame; only HomeHero dynamically imports the fixed Wavefield v1.0.0 native WebGPU core from `src/visuals/wavefield`. Preserve its Gaussian optics, notices, shared-node/ribbon topology, same poster/projection crop, one document seed, 24/12 submit caps, quiet fallback and cleanup. Never import the old Lab renderer. The narrow homepage module exception must remain audited in verify-build; all other static pages retain three exact inline scripts.
-- CommunitySupport statically precedes ThreePillars inside WorkflowStory. Region selects CN QQ/Afdian (explicitly GoFurry) or Global Discord/GoFurry Ko-fi; Locale only selects copy. Preserve the approved QQ AVIF bytes, exact Telegram/Discord invites and supplied Afdian/Ko-fi destinations, with native external links and truthful account labels. Cards add no script or Island.
-- ThreePillars is only the upper part of WorkflowStory: transparent columns, a shared split 2px cap with one visible About H2, desktop 6px diagonals (hidden at <=840px), wrapping number/title rows and text flowing around three semantic Phosphor icons. The lower part contains two static editorial stories (Issue #28 E3-r1): unmodified 500x400 blue/purple AVIFs, rectangular feathered edges, no native image dragging, text-first reading order, wide-screen paired row with shared subgrid title/body/link tracks / medium alternating rows / mobile single column. Story copy follows the maintainer-supplied bilingual revision during E3-r1; do not independently rewrite it. Keep the upper part unchanged; PrinciplesStory has its own isolated contract below. The pillars observer/timeline remains unchanged (1300ms, 80ms column staggering). An independent stories observer arms only below-viewport groups after successful registration; each reveals once in 1150ms, with 100ms extra for the purple story only on wide screens. Both enhancements leave static/no-JS/Reduced Motion content visible and settle on keyboard focus, failure and pagehide. No animation framework or scroll listener.
-- PrinciplesStory is the text-only Technology & Engineering finale (Issue #29): exact bilingual title/two paragraphs and one external source link. No media slot, caption or old three-link group. Use the existing page/dots, top-aligned 42:58 editorial columns within 1240px, single column below 1024px and shared h.link interaction. Its short independent observer/CSS timeline ends at 1050ms; static/no-JS/Reduced Motion/restored/anchored content is readable, focus/failure/pagehide settle immediately. Do not couple it to Pillars/Stories lifecycles.
-- Preserve LICENSE. Work on develop; integrate through PRs into pre-master, then release through PRs into master. Do not deploy without a request. Historical dev/main references in design and acceptance records describe the pre-migration branches.
-- Use StyleX, with global CSS limited to reset and HTML basics. No old React Babel configuration.
-- Read [docs/visual-foundation.md](docs/visual-foundation.md) for font delivery and visual tokens. Use action for primary controls, brand/sage for decoration, independent feedback colors; preserve primitive APIs. Font stacks have one owner in global.css; only normal Fontsource wght.css is loaded.
-- No backend, database, SSR adapter, global business store, universal canvas engine or monorepo.
-- Keep tool state outside WorkbenchShell; panel visibility and resizing must preserve it.
-- Hydrate only directly imported fixed React roots in Astro.
-- Choose local verification by L1 below; leave full CI primarily to existing GitHub Actions. When a full local run is warranted, use `pnpm check`, `pnpm test`, `pnpm build:cn`, `pnpm build:global` sequentially.
-- Stop both dev services with `pnpm dev stop` before check/build. Astro and Vite caches are isolated by region; do not mix a build and dev for the same region.
-- See README for browser acceptance paths. Do not claim real-device testing from jsdom.
+开源浏览器工具箱，Astro SSG + 按需 React + TypeScript + StyleX。保持工具业务独立，以实际源码、测试和最小可复现验证协作。
+
+## Current State
+
+- Image Converter 是首个且目前唯一的 Published 工具；CN/Global 双语静态构建可用，**两个地区均未部署**。源码 Published 不代表部署授权。
+- 当前没有后端、数据库、SSR 服务或用户系统。Lab 仅供 DEV，不能进入生产路由/资源图。
+- 当前能力与 D2 证据见 [Converter 说明](docs/image-converter-implementation.md)；旧阶段的 Draft、零工具、三格式和 CN-only 结论属于历史。
+
+## Start Here
+
+1. 核对当前分支、工作区、任务范围和禁止事项。
+2. 按需阅读 [.agents/architecture.md](.agents/architecture.md)、[.agents/playbook.md](.agents/playbook.md)。
+3. 阅读相关契约：[兼容性](contracts/compatibility.md)、[发布](contracts/publication.md)、[图片处理](contracts/image-processing.md)、[上游](contracts/upstream.md)。
+4. 从 [docs 索引](docs/README.md) 找当前模块说明，再检查对应源码和测试；重要架构变化另查 [ADRs](docs/decisions/README.md)。无需每次通读所有 History/Research/Evidence。
+
+## Repository Map
+
+| 位置 | 所有者 / 职责 |
+| --- | --- |
+| `src/pages/`、`src/layouts/`、`src/components/` | 静态路由、SEO、站点/首页 UI |
+| `src/site/`、`src/config/`、`src/i18n/` | 内容/发现投影、地区与语言 |
+| `src/tools/` | 元数据 Registry、Loader、ToolRuntime 及工具业务 |
+| `src/ui/`、`src/workbench/` | 受控原语、可选工作区布局 |
+| `src/styles/`、`src/visuals/`、`src/lab/` | 样式、正式视觉增强、隔离的 DEV 演示 |
+| `tests/`、`scripts/`、`.github/workflows/ci.yml` | 行为测试、静态守卫和既有 CI |
+| `.agents/`、`contracts/`、`docs/` | 执行上下文、稳定约束、当前说明与历史证据 |
+
+## Sources of Truth
+
+优先级从高到低：
+
+1. 当前源码与实际行为测试。
+2. 类型、配置、Schema、构建契约及机器可读约束。
+3. 当前 `contracts/` 与已接受 ADR。
+4. 当前模块说明。
+5. 历史设计、研究及验收记录。
+
+发现冲突先核实代码与测试，标记过时说明并在当前入口记录真实状态；不能静默改写旧结果，也不能为了文档一致而改变已验收行为。
+
+## Critical Rules
+
+- **可用性**：Registry 的 `status` + `regions` 是唯一发布来源；DEV 为本地区 Draft + Published，生产仅 Published。Loader/Vite 只投影该状态，不新增发布开关、路径或 Store，不泄漏 Draft/Lab/Fixture 及其专用资源。
+- **地区/语言**：CN/Global 独立产物，各有中英文；语言切换同源，地区外链才跨来源。Canonical/hreflang/发现文件与实际页面一致，规则由配置与测试控制。
+- **静态与交互**：页面正文、唯一 H1、指南/FAQ 保留 Astro 静态输出；固定 ToolRuntime/LabRuntime 才挂必要 React，工具实现懒加载。无全站 React Provider/业务 Store；静态页面受精确脚本审计，不随意加 JS 或 preload。
+- **所有权**：WorkbenchShell 只管布局/插槽/面板，UI 原语受控；文件、设置、任务和释放归工具。不得因断点切换或开关面板重建业务状态。具体 Canvas/预览合同见 [工作区说明](docs/workbench-appearance.md)。
+- **样式**：继续 StyleX 与统一语义 Token，global.css 限于 reset/基础桥接；保留静态主题、Portal 继承及现有 DEV FOUC 兼容补丁，不另建主题系统或恢复旧 Babel 配置。
+- **本地文件与隐私**：不上传/持久存储用户文件；真实输出、默认隐私、版本隔离、取消和资源预算不可放宽。名称不触发编码，失效结果不得下载或进入 ZIP。详见图片处理契约。
+- **范围与授权**：最小完整修改，不顺带依赖升级、重构或伪造工具。保留 BSD 和第三方授权。未经授权不合并发布分支、创建 Release/Tag 或部署；当前流程为 `develop → PR → pre-master → PR → master`。
+
+## Verification
+
+按下面政策选最小充分验证；实际命令及适用场景见 [playbook](.agents/playbook.md#验证选择)。完整工程命令仍为 `pnpm check`、`pnpm test`、`pnpm build:cn`、`pnpm build:global`，不替换为模板命令。
+
+check/build 前停止两个 DEV 服务，不混用同地区缓存；日常定向验证，完整 CI 优先由既有 GitHub Actions 执行。报告未测平台，不以 jsdom 或手机视口模拟代替真实浏览器/移动设备证据。
 
 ## MVP Beta release policy (2026-10-10)
 
