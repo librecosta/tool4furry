@@ -10,6 +10,22 @@
 
 新政策取代旧合同中冲突的强制跨浏览器发布要求；以下 B0–B5 历史实测记录不变，不因政策调整补记任何测试通过。日常修改按 L1 定向验证，完整 CI 优先由 GitHub Actions 执行。
 
+## V0.6-C2-D — 宽幅 AVIF 与作者/版权白名单
+
+AVIF 桌面额度现为 **4,194,304 像素、单边4096px、30秒、串行1任务**，不缩放。共享 limits 同时约束编码前、Worker、输出检查与中英文提示。2048²、4096×1024、3840×1080、3000×1000可用；3840×2160、超像素或超长边仍拒绝。移动/未知设备策略和原生三格式额度不变。
+
+Advanced 新增默认关闭的「保留作者与版权信息」：仅 JPEG 来源→JPEG/PNG/WebP，受限 EXIF IFD0 Artist(315)/Copyright(33432)，每项最多1023字节标准ASCII；Copyright允许标准摄影者/编辑者双字段。非标准编码、坏偏移、重复白名单等明确失败，不猜测中文/Unicode编码。不支持的来源逐项报错，AVIF输出禁用并说明。无来源白名单时不虚构字段。
+
+`authorship.ts` 复用有界容器检查，只读取上述字段，不跟随GPS/Exif/缩略图目录。原质量参数正常重新编码并执行默认清理后，写入全新最小TIFF，不复制旧方向或EXIF段。最终再经默认清理器独立审计CRC/RIFF/容器，并逐块比较白名单规范重建结果；保留输出返回经过该策略验证的原Blob，不返回审计过程中剥离作者的副本。仍需真实完整解码及尺寸/方向检查。GPS、设备、时间、XMP/IPTC/C2PA不写回；色彩处理继续沿用原生路径，不承诺ICC/广色域跨格式保真或清除所有未知隐私。
+
+有效策略为 `privacy-v1` / `author-rights-v1`，进入settings equality、推荐恢复、任务快照和结果标记，单项下载/预览/ZIP复用资格校验。改策略立即失效并隔离晚到结果；Advanced→Quick关闭保留并自动生成隐私结果，回Advanced可恢复该格式偏好。无策略变化的模式切换、改文件名不额外编码；恢复推荐关闭保留。没有新增依赖、上传或持久化。
+
+2026-10-30 Win10/Chromium156、16逻辑核、浏览器报告32GiB实测：四种额度内尺寸真实AVIF编码/回解码，约11.63/5.19/4.90/3.98秒；WASM线性容量约376/196/153/147MiB，任务结束均回收。取消4096×1024后重建编码成功。JPEG方向1–8×三种输出共24个，Pillow12.3.0独立确认只有Artist/Copyright且PNG像素等于应用方向后的原图。实际工具页混合JPEG/PNG批次、保留与默认下载、部分成功ZIP、旧快照失效、预览和清空经定向验证；不重跑历史完整格式矩阵。
+
+隔离8MP透明样本Q55/420/Alpha100：S6编码10.83秒/521,680B，S7为6.88秒/514,250B，两者WASM容量约286MiB、Alpha逐像素一致，白底合成RGB PSNR为41.34/40.23dB。S7值得继续研究但存在质量代价；仅一个合成样本，不能推出复杂插画、低内存桌面或移动端安全。本轮**不开放8MP，不更换S6**。真实8MP Worker取消、注入10ms期限终止与重建通过；30秒契约由定向计时测试覆盖，未声称本轮出现自然30秒编码超时。WASM容量不等于进程RSS/峰值，当前浏览器API无法可靠归属进程内存。
+
+相关149项Vitest、`pnpm check`及一次CN生产形态Converter夹具构建/静态资源守卫通过（含两种语言，真实Registry未修改）；未重复本地双地区完整构建。数据见 [image-avif-c2d.json](evidence/image-avif-c2d.json)；样本/实验程序在仓库外 `.validation/image-avif-c2d/`，不进入生产资源。未验收移动真机、Firefox/Safari、非ASCII EXIF及完整来源元数据保留。Converter继续draft。
+
 ## V0.6-C2-C — AVIF 输入与按需输出
 
 四格式 PNG/JPEG/WebP/AVIF 可相互转换；AVIF 只接受有界验证的静态 8-bit SDR 子集，实际 native decode 仍为必需。BMFF 限制 256 个 box/OBU、4 个 item、24 个 property、1 MiB meta、64 KiB 单次读取；只允许主图和可选 Alpha、输入 EXIF/XMP。验证 AV1 reduced-still 序列、单帧、尺寸/色深/色度一致性及完整 mdat extent。动画、多帧、grid、ICC/HDR、高位深、未知颜色/属性/布局明确拒绝，不代表支持整个 HEIF 生态。输入 irot 交给原生解码应用一次；EXIF 非1、imir 和不可靠方向组合不接受。
@@ -17,7 +33,7 @@
 - PNG/JPEG/WebP 保持原生编解码与 C2-B 无损隐私清理。AVIF 输入不加载编码器；AVIF 同格式 Quick 必须重新编码，不能调用三格式清理器直通。输出只允许固定编码器结构，验证真实格式、帧数、尺寸、方向、附加字段及完整回解码，再授予 `privacy-v1` 结果资格；预览、单项下载和 ZIP 共用此资格。
 - 固定 `@jsquash/avif@2.1.1` 的 ST encoder，直接导入 ST factory，不使用自动多线程 wrapper 或 WASM decoder。原生 Canvas 无法表达本轮固定 Speed/色度/Alpha 参数，不作为未经验证的替代。Quick Q55/S6/420/Alpha100；Advanced 质量1–100，可选444。色度参数进入设置 equality/版本及任务快照；改标签不编码，能力重试不覆盖主动选择。
 - 仅真正执行 AVIF 输出时创建 Worker/下载 WASM；小任务复用 engine Promise。RGBA Transferable 交付前释放 Canvas/Bitmap。30秒超时、取消、卸载真实终止 Worker；晚到结果隔离，后续任务可重建。WASM heap 达256 MiB 或任务达2 Mi pixels后立即回收，其他实例空闲30秒释放。仍由原 SerialJobs 单通道调度；原生不可硬取消操作继续占用通道至实际结束。
-- AVIF 输出仅固定桌面 profile：4,194,304像素、单边2048px、30秒，不缩小图片；移动/未知设备禁用输出，输入仍按原设备预算和解码能力判断。原生三格式原额度不变。并非所有4MP内容都能在30秒内完成，超时会明确失败。
+- C2-C首版 AVIF 输出仅固定桌面 profile：4,194,304像素、单边2048px（C2-D已调整为4096px）、30秒，不缩小图片；移动/未知设备禁用输出，输入仍按原设备预算和解码能力判断。原生三格式原额度不变。并非所有4MP内容都能在30秒内完成，超时会明确失败。
 - 固定 ST WASM 3,485,872 B，SHA-256 `d9f2a95164362af48558d176e619becfd49dd97b50b86c679b47100860522b3d`，加载时检查 MIME/大小/摘要；Vite 输出独立哈希资源。失败不无限重试或偷偷切格式。冷启动 DEV 将两个纯 ESM 包入口排除预优化，避免首次发现 Worker 依赖导致全页重载及文件丢失。
 - Canvas 明确产出 sRGB RGBA；固定 libavif wrapper 原来将 nclx primaries/transfer 留为 unspecified。仅对这条已知输出设置为 BT.709 primaries / sRGB transfer，保留 BT.601 matrix、AV1 载荷和所有像素数据。输入未知配置绝不套用此标记。不承诺 ICC/HDR/广色域保真。
 

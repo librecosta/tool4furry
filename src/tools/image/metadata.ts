@@ -2,9 +2,11 @@ import { exifOrientation, inspectImage, type ImagePart, type Reader } from './in
 import { imageBudget, ImageFailure, mime, type ImageInfo } from './types';
 import type { ImageLimits } from './limits';
 
-// One fixed policy, no preferences/store. Results carry this revision through
-// download/ZIP eligibility. Bump it if the accepted metadata contract changes.
+// Explicit output contracts; no store here. Results carry the effective revision
+// through download/ZIP eligibility. The default privacy contract is unchanged.
 export const metadataPolicy = 'privacy-v1' as const;
+export const authorshipPolicy = 'author-rights-v1' as const;
+export type MetadataPolicy = typeof metadataPolicy | typeof authorshipPolicy;
 const unsupported = (): never => { throw new ImageFailure('metadata'); };
 const assert = (ok: unknown): void => { if (!ok) unsupported(); };
 const text = (a: Uint8Array, at = 0, length = a.length - at) =>
@@ -65,7 +67,7 @@ function orientationTIFF(orientation: number) {
   v.setUint32(14, 1, true); v.setUint16(18, orientation, true);
   return a;
 }
-function pngChunk(type: string, data: Uint8Array) {
+export function pngChunk(type: string, data: Uint8Array) {
   const a = new Uint8Array(data.length + 12), v = view(a);
   v.setUint32(0, data.length); a.set([...type].map(c => c.charCodeAt(0)), 4); a.set(data, 8);
   let crc = 0xffffffff;
@@ -76,7 +78,7 @@ function pngChunk(type: string, data: Uint8Array) {
   v.setUint32(a.length - 4, (crc ^ 0xffffffff) >>> 0);
   return a;
 }
-function jpegSegment(marker: number, data: Uint8Array) {
+export function jpegSegment(marker: number, data: Uint8Array) {
   const a = new Uint8Array(data.length + 4);
   a.set([255, marker]); view(a).setUint16(2, data.length + 2); a.set(data, 4);
   return a;

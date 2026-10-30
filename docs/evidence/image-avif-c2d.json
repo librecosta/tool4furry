@@ -1,0 +1,188 @@
+{
+  "date": "2026-10-30",
+  "environment": {
+    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+    "cores": 16,
+    "memory": 32,
+    "at": "2026-10-30T11:00:19.758Z",
+    "processMemory": "Not attributable from this browser API",
+    "jsHeap": 11692991
+  },
+  "measurement": "Wall time includes encode, output inspection/decode and local save; WASM capacity is not process RSS or peak. Synthetic C2A samples resized in an isolated directory; 8MP additionally uses the self-generated Alpha ramp.",
+  "productionWide": [
+    {
+      "name": "2048x2048.avif",
+      "format": "avif",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 70230,
+      "ms": 11634.10000000149,
+      "mime": "image/avif",
+      "wasmLinearCapacityBytes": 394395648,
+      "workerRecycled": true
+    },
+    {
+      "name": "4096x1024.avif",
+      "format": "avif",
+      "width": 4096,
+      "height": 1024,
+      "bytes": 107298,
+      "ms": 5190,
+      "mime": "image/avif",
+      "wasmLinearCapacityBytes": 205193216,
+      "workerRecycled": true
+    },
+    {
+      "name": "3840x1080.avif",
+      "format": "avif",
+      "width": 3840,
+      "height": 1080,
+      "bytes": 115360,
+      "ms": 4903.89999999851,
+      "mime": "image/avif",
+      "wasmLinearCapacityBytes": 160301056,
+      "workerRecycled": true
+    },
+    {
+      "name": "3000x1000.avif",
+      "format": "avif",
+      "width": 3000,
+      "height": 1000,
+      "bytes": 94030,
+      "ms": 3981.800000000745,
+      "mime": "image/avif",
+      "wasmLinearCapacityBytes": 153747456,
+      "workerRecycled": true
+    }
+  ],
+  "limits": {
+    "pixels": 4194304,
+    "edge": 4096,
+    "timeoutMs": 30000,
+    "concurrency": 1,
+    "mobileOutput": false
+  },
+  "isolated8MP": [
+    {
+      "experimental8MP": true,
+      "speed": 6,
+      "bytes": 521680,
+      "totalMs": 11000.5,
+      "heap": 299827200,
+      "encodeMs": 10829.5,
+      "initMs": 18.399999998509884,
+      "info": {
+        "format": "avif",
+        "width": 3840,
+        "height": 2160,
+        "orientation": 1
+      }
+    },
+    {
+      "experimental8MP": true,
+      "speed": 7,
+      "bytes": 514250,
+      "totalMs": 7050.800000000745,
+      "heap": 299827200,
+      "encodeMs": 6880.599999997765,
+      "initMs": 15.400000002235174,
+      "info": {
+        "format": "avif",
+        "width": 3840,
+        "height": 2160,
+        "orientation": 1
+      }
+    }
+  ],
+  "independent8MPQuality": [
+    {
+      "speed": 6,
+      "alphaExact": true,
+      "whiteCompositePSNR": 41.34102719413945
+    },
+    {
+      "speed": 7,
+      "alphaExact": true,
+      "whiteCompositePSNR": 40.2291890956341
+    }
+  ],
+  "lifecycle": [
+    {
+      "wideCancel": "cancelled"
+    },
+    {
+      "experimentalLifecycle": "cancel",
+      "error": "Error: experiment-cancelled",
+      "ms": 755.3000000007451
+    },
+    {
+      "experimentalLifecycle": "timeout",
+      "error": "Error: experiment-timeout",
+      "ms": 296.19999999925494
+    }
+  ],
+  "timeoutEvidence": "8MP experiment injects a 10ms deadline to terminate a real Worker; production 30s deadline is covered by existing directed Worker/Session timer tests. C2C already measured a stalled real Worker at 30.004s. No new natural 30s timeout claim.",
+  "metadata": {
+    "browserOutputs": 24,
+    "directions": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "source": "JPEG",
+    "outputs": [
+      "JPEG",
+      "PNG",
+      "WebP"
+    ],
+    "whitelistTags": [
+      315,
+      33432
+    ],
+    "textBoundary": "EXIF ASCII, <=1023 bytes each; Copyright may contain its two standard NUL-separated components",
+    "independentDecoder": "Pillow 12.3.0",
+    "pngPixelsMatchOrientedSource": true,
+    "zipEntries": 2,
+    "defaultPrivacyAfterQuick": true,
+    "unsupportedPNGSourceFailsIndividually": true,
+    "oldDownloadAndZipInvalidated": true,
+    "realUIDownloadAndPartialZipChecked": true
+  },
+  "cleanup": {
+    "codec": {
+      "bitmapsCreated": 111,
+      "bitmapsClosed": 111,
+      "canvasesCreated": 35,
+      "canvasesReleased": 35,
+      "urlsCreated": 0,
+      "urlsRevoked": 0
+    },
+    "session": {
+      "bitmapsCreated": 16,
+      "bitmapsClosed": 16,
+      "canvasesCreated": 6,
+      "canvasesReleased": 6,
+      "urlsCreated": 0,
+      "urlsRevoked": 0
+    }
+  },
+  "limitations": [
+    "One 8MP synthetic transparency sample, not a production budget validation",
+    "No mobile hardware or Firefox/Safari testing",
+    "Process RSS/peak unavailable per isolated browser tab; WASM linear capacity excludes JS and native decode allocations",
+    "S6/420/Alpha100 unchanged; Speed 7 remains experimental",
+    "No full EXIF/XMP/IPTC/C2PA preservation, no non-JPEG source or AVIF output preservation",
+    "No wide-gamut/ICC preservation promise across native re-encoding"
+  ],
+  "checks": {
+    "directedVitest": 149,
+    "astroCheck": "231 files; 0 errors, warnings or hints",
+    "isolatedCNConverterSSG": "Passed including both locales and existing static/resource guards; actual Registry draft unchanged",
+    "twoRegionFullBuilds": "Not repeated; publication/config/dependencies unchanged"
+  }
+}

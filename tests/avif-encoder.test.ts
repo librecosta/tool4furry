@@ -57,10 +57,17 @@ describe('one lazy AVIF worker within the existing FIFO', () => {
   });
   it('rejects mobile/unknown and oversized output before decoding; other formats retain their budgets', async () => {
     const resources = new ImageResources(), bitmap = vi.spyOn(resources, 'bitmap');
-    const source = { width: 2049, height: 10 } as ImageSource;
+    const source = { width: 4097, height: 10 } as ImageSource;
     const settings = { format: 'avif' as const, quality: 55, jpegBackground: '#FFFFFF' };
     await expect(encodeImage(source, settings, resources, mobileImageLimits)).rejects.toMatchObject({ code: 'avifDevice' });
     await expect(encodeImage(source, settings, resources, desktopImageLimits)).rejects.toMatchObject({ code: 'avifBudget' });
     expect(bitmap).not.toHaveBeenCalled(); expect(desktopImageLimits.pixels).toBe(40_000_000);
+  });
+  it.each([[2048, 2048, true], [4096, 1024, true], [3840, 1080, true], [3000, 1000, true], [4097, 1, false], [2048, 2049, false], [3840, 2160, false]])('checks both AVIF pixel and edge budgets: %ix%i', async (width, height, allowed) => {
+    const resources = new ImageResources(), bitmap = vi.spyOn(resources, 'bitmap');
+    // No operation deliberately stops valid requests immediately after budget checks.
+    await expect(encodeImage({ width, height } as ImageSource, { format: 'avif', quality: 55, jpegBackground: '#FFFFFF' }, resources, desktopImageLimits))
+      .rejects.toMatchObject({ code: allowed ? 'avifLoad' : 'avifBudget' });
+    expect(bitmap).not.toHaveBeenCalled();
   });
 });

@@ -14,6 +14,7 @@ import { allowsAvifOutput, avifOutputLimits, type ImageLimits } from './limits';
 import { cleanImageMetadata } from './metadata';
 import { inspectAvif, qualifyCanvasAvif } from './inspect-avif';
 import { AvifEncoder } from './avif-encoder';
+import { sourceAuthorship, attachAuthorship, verifyAuthorshipOutput, type Authorship } from './authorship';
 
 export function orientedSize(info: ImageInfo) {
   return info.orientation >= 5
@@ -81,15 +82,17 @@ export async function validateOutput(
   height: number,
   resources: ImageResources,
   limits: ImageLimits = imageBudget,
+  authorship?: Authorship,
 ) {
   if (!blob.size || blob.size > limits.pixels * 5 + 1024 ** 2 || blob.type !== mime[format])
     throw new ImageFailure('output');
   try {
+    if (format === 'avif' && authorship) throw new ImageFailure('metadataSource');
     // Source byte guard is not an output size promise: a JPEG can become a larger PNG.
     const cleaned = format === 'avif' ? {
       blob,
       info: await inspectAvif(blob, { ...limits, ...avifOutputLimits }, true),
-    } : await cleanImageMetadata(
+    } : authorship ? await verifyAuthorshipOutput(blob, format, authorship, limits) : await cleanImageMetadata(
       blob,
       limits.pixels * 5 + 1024 * 1024,
       limits,
@@ -137,12 +140,16 @@ export async function encodeImage(
     quality: number | null;
     jpegBackground: string;
     avif444?: boolean;
+    preserveAuthorship?: boolean;
   },
   resources: ImageResources,
   limits: ImageLimits = imageBudget,
   operation?: { signal?: AbortSignal; avif: AvifEncoder },
 ) {
   const { format, quality, jpegBackground } = settings;
+  if (settings.preserveAuthorship && (source.info.format !== 'jpeg' || format === 'avif'))
+    throw new ImageFailure('metadataSource');
+  const authorship = settings.preserveAuthorship ? await sourceAuthorship(source.blob, limits) : undefined;
   if (format === 'avif') {
     if (!allowsAvifOutput(limits)) throw new ImageFailure('avifDevice');
     if (source.width > avifOutputLimits.edge || source.height > avifOutputLimits.edge || source.width * source.height > avifOutputLimits.pixels)
@@ -203,7 +210,7 @@ export async function encodeImage(
     );
     resources.release(canvas!);
     canvas = undefined;
-    return await validateOutput(
+    const cleaned = await validateOutput(
       blob,
       format,
       source.width,
@@ -211,6 +218,9 @@ export async function encodeImage(
       resources,
       limits,
     );
+    if (!authorship) return cleaned;
+    const tagged = await attachAuthorship(cleaned, format, authorship, source.width, source.height);
+    return await validateOutput(tagged, format, source.width, source.height, resources, limits, authorship);
   } finally {
     if (canvas) resources.release(canvas);
   }

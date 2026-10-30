@@ -2,6 +2,7 @@ import factory from '@jsquash/avif/codec/enc/avif_enc.js';
 import { defaultOptions } from '@jsquash/avif/meta.js';
 import wasmURL from '@jsquash/avif/codec/enc/avif_enc.wasm?url';
 import notices from './avif.NOTICE.txt?url';
+import { avifOutputLimits } from './limits';
 
 const scope = self as unknown as {
   onmessage: (event: MessageEvent) => void;
@@ -24,7 +25,7 @@ scope.onmessage = async ({ data }) => {
   let loaded = false;
   try {
     const { id, rgba, width, height, quality, avif444 } = data;
-    if (!(rgba instanceof ArrayBuffer) || !Number.isInteger(width) || !Number.isInteger(height) || width < 1 || height < 1 || width > 2048 || height > 2048 || rgba.byteLength !== width * height * 4 || !Number.isInteger(quality) || quality < 1 || quality > 100 || typeof avif444 !== 'boolean') throw new Error('invalid request');
+    if (!(rgba instanceof ArrayBuffer) || !Number.isInteger(width) || !Number.isInteger(height) || width < 1 || height < 1 || width > avifOutputLimits.edge || height > avifOutputLimits.edge || width * height > avifOutputLimits.pixels || rgba.byteLength !== width * height * 4 || !Number.isInteger(quality) || quality < 1 || quality > 100 || typeof avif444 !== 'boolean') throw new Error('invalid request');
     const module = await initialize(); loaded = true;
     const out = module.encode(new Uint8Array(rgba), width, height, {
       ...defaultOptions, quality, speed: 6, subsample: avif444 ? 3 : 1, qualityAlpha: 100, bitDepth: 8,

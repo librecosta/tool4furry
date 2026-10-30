@@ -1,5 +1,5 @@
 import { mobileImageLimits, type ImageLimits } from './limits';
-import type { metadataPolicy } from './metadata';
+import type { MetadataPolicy } from './metadata';
 export const nativeFormats = ['webp', 'jpeg', 'png'] as const;
 export type NativeImageFormat = (typeof nativeFormats)[number];
 export const formats = [...nativeFormats, 'avif'] as const;
@@ -27,6 +27,8 @@ export type ImageErrorCode =
   | 'encode'
   | 'output'
   | 'metadata'
+  | 'metadataSource'
+  | 'metadataFields'
   | 'orientation'
   | 'avifVariant'
   | 'avifBudget'
@@ -60,7 +62,7 @@ export type ImageSource = Readonly<{
 }>;
 export type ImageResult = Readonly<{
   kind: 'encoded' | 'passthrough' | 'cleaned';
-  metadataPolicy: typeof metadataPolicy;
+  metadataPolicy: MetadataPolicy;
   blob: Blob;
   mime: string;
   width: number;

@@ -1,10 +1,12 @@
 import type { Preset } from '../processing-state';
 import type { ImageFormat } from '../image/types';
+import { metadataPolicy, authorshipPolicy } from '../image/metadata';
 export type EncodeSettings = Readonly<{
   format: ImageFormat;
   quality: number | null;
   jpegBackground: string;
   avif444?: boolean;
+  preserveAuthorship?: boolean;
 }>;
 export const recommendations: Record<ImageFormat, Preset<EncodeSettings>> = {
   avif: {
@@ -34,6 +36,7 @@ export function sameSettings(
 ) {
   return (
     a.format === b.format &&
+    !!a.preserveAuthorship === !!b.preserveAuthorship &&
     (a.format !== 'avif' || !!a.avif444 === !!b.avif444) &&
     (a.format === 'png' || Object.is(a.quality, b.quality)) &&
     (a.format !== 'jpeg' ||
@@ -42,9 +45,13 @@ export function sameSettings(
 }
 export function validSettings(s: EncodeSettings) {
   return (
+    (s.preserveAuthorship === undefined || typeof s.preserveAuthorship === 'boolean') &&
+    !(s.format === 'avif' && s.preserveAuthorship) &&
     (s.format !== 'avif' || s.avif444 === undefined || typeof s.avif444 === 'boolean') &&
     (s.format === 'png' ||
       (Number.isInteger(s.quality) && s.quality! >= 1 && s.quality! <= 100)) &&
     (s.format !== 'jpeg' || /^#[0-9a-f]{6}$/i.test(s.jpegBackground))
   );
 }
+export const settingsMetadataPolicy = (s: EncodeSettings) =>
+  s.preserveAuthorship ? authorshipPolicy : metadataPolicy;

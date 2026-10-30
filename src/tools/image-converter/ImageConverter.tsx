@@ -452,6 +452,13 @@ export default function ImageConverter({ locale }: ToolProps) {
                   </div>
                 </FieldFrame>
               )}
+              <CheckboxField
+                label={t.preserveAuthorship}
+                hint={settings.format === 'avif' ? t.authorshipUnavailable : t.authorshipHint}
+                checked={!!settings.preserveAuthorship}
+                disabled={view.checkingCapabilities || settings.format === 'avif'}
+                onCheckedChange={(preserveAuthorship) => session?.settings({ ...settings, preserveAuthorship })}
+              />
               <TextField
                 label={t.filename}
                 value={view.label}

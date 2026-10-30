@@ -38,12 +38,12 @@ import {
   recommendations,
   sameSettings,
   validSettings,
+  settingsMetadataPolicy,
   type EncodeSettings,
 } from './presets';
 import { batchTime, taskFilename, validFilenameLabel } from '../file-naming';
 import { SerialJobs } from './serial-jobs';
 import { planIntake, type IntakeSummary } from './intake';
-import { metadataPolicy } from '../image/metadata';
 import { AvifEncoder } from '../image/avif-encoder';
 
 export type ConverterServices = {
@@ -398,7 +398,13 @@ export class ConverterSession {
     if (mode === this.shared.mode) return;
     this.auto.clear();
     this.manual.clear();
-    this.applyControls(setToolMode(this.shared, mode));
+    const settings = {
+      ...this.shared.settings,
+      preserveAuthorship: mode === 'advanced'
+        ? !!this.preferences[this.shared.settings.format].preserveAuthorship : false,
+    };
+    const changed = !sameSettings(this.shared.settings, settings);
+    this.applyControls(updateSettings(setToolMode(this.shared, mode), settings, sameSettings, validSettings(settings)));
     if (mode === 'advanced') {
       this.patch({
         label: this.labelPreference,
@@ -414,6 +420,11 @@ export class ConverterSession {
             : task,
         ),
       });
+    }
+    if (mode === 'quick' && changed) {
+      this.view.tasks.filter(task => task.source && ['queued', 'stale', 'error'].includes(task.status))
+        .forEach(task => this.auto.add(task.id));
+      this.consumeAuto();
     }
   }
   format(format: ImageFormat) {
@@ -446,6 +457,7 @@ export class ConverterSession {
     }
   }
   settings(settings: EncodeSettings) {
+    if (this.shared.mode === 'quick') settings = { ...settings, preserveAuthorship: false };
     this.preferences[settings.format] = settings;
     this.applyControls(
       updateSettings(
@@ -564,7 +576,7 @@ export class ConverterSession {
           if (!this.current(task.id, snapshot)) return;
           const result: ImageResult = {
             kind: quick?.kind ?? 'encoded',
-            metadataPolicy: quick?.metadataPolicy ?? metadataPolicy,
+            metadataPolicy: quick?.metadataPolicy ?? settingsMetadataPolicy(snapshot.settings),
             blob,
             mime: mime[snapshot.settings.format],
             width: source.width,
@@ -629,7 +641,7 @@ export class ConverterSession {
     const result = this.view.candidate || !task
       ? undefined
       : downloadableResult(task.processing);
-    return result?.metadataPolicy === metadataPolicy ? result : undefined;
+    return task && result?.metadataPolicy === settingsMetadataPolicy(task.processing.settings) ? result : undefined;
   }
   retry(id: string) {
     const task = this.task(id);
