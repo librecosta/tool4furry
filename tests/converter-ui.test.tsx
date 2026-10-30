@@ -21,7 +21,8 @@ import { toolPageContents } from '../src/site/tool-content';
 import { ConverterSession } from '../src/tools/image-converter/session';
 const render = (ui: ReactElement) =>
   renderUi(<UiProvider labels={messages.en}>{ui}</UiProvider>);
-const { encode, capabilities } = vi.hoisted(() => ({
+const { encode, capabilities, quick } = vi.hoisted(() => ({
+  quick: vi.fn(),
   capabilities: vi.fn(),
   encode: vi.fn(
     async () => new Blob(['unit-test-output'], { type: 'image/webp' }),
@@ -40,10 +41,12 @@ vi.mock('../src/tools/image/browser-codec', () => ({
     };
   },
   encodeImage: encode,
+  prepareQuickOutput: quick,
 }));
 beforeEach(() => {
   setViewport(true);
   encode.mockClear();
+  quick.mockReset().mockImplementation(async (source) => ({ blob: source.blob, info: source.info, changed: false, kind: 'passthrough', metadataPolicy: 'privacy-v1' }));
   capabilities.mockReset().mockResolvedValue({
     webp: { supported: true },
     png: { supported: true },
@@ -59,6 +62,19 @@ beforeEach(() => {
   );
 });
 describe('real workspace interaction contract (codec mocked; not browser evidence)', () => {
+  it('labels cleaned downloads accurately and releases their distinct output URL on removal', async () => {
+    quick.mockImplementation(async (source) => ({ blob: new Blob(['clean']), info: source.info, changed: true, kind: 'cleaned', metadataPolicy: 'privacy-v1' }));
+    const user = userEvent.setup();
+    const { container } = render(<ImageConverter region="global" locale="en" />);
+    await waitFor(() => expect(screen.getByRole('radio', { name: /PNG/ }).hasAttribute('disabled')).toBe(false));
+    await user.click(screen.getByRole('radio', { name: /PNG/ }));
+    fireEvent.change(container.querySelector('input[type=file]')!, { target: { files: [new File(['private'], 'private.png', { type: 'image/png' })] } });
+    const download = await screen.findByRole('link', { name: 'Download cleaned result' });
+    expect(screen.queryByRole('link', { name: 'Download original' })).toBeNull();
+    const href = download.getAttribute('href');
+    await user.click(screen.getByRole('button', { name: 'Remove image' }));
+    await waitFor(() => expect(URL.revokeObjectURL).toHaveBeenCalledWith(href));
+  });
   it('switches stack/split layouts without resetting settings or a ready result', async () => {
     const resize = setViewport(false), user = userEvent.setup();
     const { container } = render(<ImageConverter region="global" locale="en" />);

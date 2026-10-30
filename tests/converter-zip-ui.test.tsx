@@ -29,6 +29,7 @@ beforeEach(() => {
 async function setup() {
   let emit = (_: ConverterSession['snapshot']) => {};
   const session = new ConverterSession((view) => emit(view), {
+    quick: async (source) => ({ blob: source.blob, info: source.info, changed: false, kind: 'passthrough', metadataPolicy: 'privacy-v1' }),
     capabilities: async () => ({
       webp: { supported: true },
       jpeg: { supported: true },

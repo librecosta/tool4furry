@@ -32,6 +32,7 @@ async function setup(overrides: Partial<ConverterServices> = {}) {
   const session = new ConverterSession(() => {}, {
     accept: async (file) => source(file),
     encode,
+    quick: async (source) => ({ blob: source.blob, info: source.info, changed: false, kind: 'passthrough', metadataPolicy: 'privacy-v1' }),
     capabilities: async () => ({
       png: { supported: true },
       jpeg: { supported: true },

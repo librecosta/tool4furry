@@ -1,4 +1,5 @@
 import { mobileImageLimits, type ImageLimits } from './limits';
+import type { metadataPolicy } from './metadata';
 export const formats = ['webp', 'jpeg', 'png'] as const;
 export type ImageFormat = (typeof formats)[number];
 export const mime = {
@@ -19,6 +20,8 @@ export type ImageErrorCode =
   | 'decode'
   | 'encode'
   | 'output'
+  | 'metadata'
+  | 'orientation'
   | 'timeout'
   | 'cancelled';
 export class ImageFailure extends Error {
@@ -45,7 +48,8 @@ export type ImageSource = Readonly<{
   blob: Blob;
 }>;
 export type ImageResult = Readonly<{
-  kind: 'encoded' | 'passthrough';
+  kind: 'encoded' | 'passthrough' | 'cleaned';
+  metadataPolicy: typeof metadataPolicy;
   blob: Blob;
   mime: string;
   width: number;

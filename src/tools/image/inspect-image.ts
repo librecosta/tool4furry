@@ -22,7 +22,7 @@ const u24 = (a: Uint8Array, at: number) =>
 
 // At most 64 KiB per IO; skip compressed PNG/WebP payloads. JPEG scan data is read
 // incrementally to detect actual markers (never search arbitrary text for animation).
-class Reader {
+export class Reader {
   private start = -1;
   private cache: Uint8Array = new Uint8Array();
   constructor(readonly blob: Blob) {}
@@ -64,6 +64,18 @@ class Reader {
     return bad();
   }
 }
+
+// The metadata pipeline visits only length/CRC-checked container records. Entropy
+// scans stay in this parser; callers never search compressed bytes for metadata.
+export type ImagePart = Readonly<{
+  format: ImageInfo['format'];
+  type: string | number;
+  start: number;
+  end: number;
+  data: number;
+  length: number;
+}>;
+type Visitor = (reader: Reader, part: ImagePart) => Promise<void>;
 
 const crcTable = Uint32Array.from({ length: 256 }, (_, n) => {
   let c = n;
@@ -107,7 +119,7 @@ export function exifOrientation(bytes: Uint8Array): number {
   return found ?? 1;
 }
 
-async function png(r: Reader, limits: ImageLimits): Promise<ImageInfo> {
+async function png(r: Reader, limits: ImageLimits, visit?: Visitor): Promise<ImageInfo> {
   let p = 8,
     count = 0,
     width = 0,
@@ -134,6 +146,7 @@ async function png(r: Reader, limits: ImageLimits): Promise<ImageInfo> {
       bad();
     if (count === 1 && type !== 'IHDR') bad();
     await pngCRC(r, p + 4, length + 4);
+    await visit?.(r, { format: 'png', type, start: p, end: p + length + 12, data: p + 8, length });
     if (type === 'IHDR') {
       if (count !== 1 || length !== 13) bad();
       const a = await r.read(p + 8, 13);
@@ -180,7 +193,7 @@ async function png(r: Reader, limits: ImageLimits): Promise<ImageInfo> {
   return bad();
 }
 
-async function jpeg(r: Reader, limits: ImageLimits): Promise<ImageInfo> {
+async function jpeg(r: Reader, limits: ImageLimits, visit?: Visitor): Promise<ImageInfo> {
   let p = 2,
     width = 0,
     height = 0,
@@ -189,6 +202,7 @@ async function jpeg(r: Reader, limits: ImageLimits): Promise<ImageInfo> {
     scan = false,
     count = 0;
   while (p < r.blob.size && ++count <= 8192) {
+    const start = p;
     if ((await r.byte(p++)) !== 0xff) bad();
     while ((await r.byte(p)) === 0xff) p++;
     const marker = await r.byte(p++);
@@ -205,6 +219,7 @@ async function jpeg(r: Reader, limits: ImageLimits): Promise<ImageInfo> {
       bad();
     const length = u16(await r.read(p, 2));
     if (length < 2 || p + length > r.blob.size) bad();
+    await visit?.(r, { format: 'jpeg', type: marker, start, end: p + length, data: p + 2, length: length - 2 });
     if ([0xc0, 0xc1, 0xc2].includes(marker)) {
       if (width || length < 8) bad();
       const a = await r.read(p + 2, length - 2);
@@ -255,7 +270,7 @@ async function jpeg(r: Reader, limits: ImageLimits): Promise<ImageInfo> {
   return bad();
 }
 
-async function webp(r: Reader, limits: ImageLimits): Promise<ImageInfo> {
+async function webp(r: Reader, limits: ImageLimits, visit?: Visitor): Promise<ImageInfo> {
   if (u32(await r.read(4, 4), 0, true) + 8 !== r.blob.size) bad();
   let p = 12,
     count = 0,
@@ -274,6 +289,7 @@ async function webp(r: Reader, limits: ImageLimits): Promise<ImageInfo> {
     const end = p + 8 + length + (length % 2);
     if (end > r.blob.size || (length % 2 && (await r.byte(end - 1)) !== 0))
       bad();
+    await visit?.(r, { format: 'webp', type, start: p, end, data: p + 8, length });
     if (count === 1 && !['VP8X', 'VP8 ', 'VP8L'].includes(type)) bad();
     if (type === 'VP8X') {
       if (count !== 1 || length !== 10) bad();
@@ -319,6 +335,7 @@ export async function inspectImage(
   blob: Blob,
   maxBytes: number = imageBudget.bytes,
   limits: ImageLimits = imageBudget,
+  visit?: Visitor,
 ): Promise<ImageInfo> {
   if (!blob.size) throw new ImageFailure('empty');
   if (blob.size > maxBytes) throw new ImageFailure('bytes');
@@ -328,13 +345,13 @@ export async function inspectImage(
     header.length >= 8 &&
     [137, 80, 78, 71, 13, 10, 26, 10].every((b, i) => header[i] === b)
   )
-    return png(r, limits);
-  if (header[0] === 255 && header[1] === 216) return jpeg(r, limits);
+    return png(r, limits, visit);
+  if (header[0] === 255 && header[1] === 216) return jpeg(r, limits, visit);
   if (
     header.length === 12 &&
     text(header, 0, 4) === 'RIFF' &&
     text(header, 8, 4) === 'WEBP'
   )
-    return webp(r, limits);
+    return webp(r, limits, visit);
   throw new ImageFailure('unsupported');
 }

@@ -139,7 +139,7 @@ describe('one image limit contract', () => {
       );
       const session = new ConverterSession(
         () => {},
-        { accept, encode, capabilities },
+        { accept, encode, capabilities, quick: async (source) => ({ blob: source.blob, info: source.info, changed: false, kind: 'passthrough', metadataPolicy: 'privacy-v1' }) },
         limits,
       );
       limits.pixels = 1;

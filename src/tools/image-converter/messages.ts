@@ -90,12 +90,13 @@ const zhMessages = {
   none: '暂无可用的默认输出格式，请重试检测或选择可用格式。',
   retry: '重试当前设置',
   download: '下载结果',
+  cleanedDownload: '下载清理结果',
   originalDownload: '下载原图',
   original: '原图',
   output: '输出',
   previewError: '预览加载失败。请重新选择图片或生成结果。',
   limitations:
-    '仅静态 PNG/JPEG/WebP。转换不改变分辨率；文件可能变大，重新编码可能改变色彩并丢失元数据。',
+    '仅静态 PNG/JPEG/WebP，分辨率不变。默认移除常见隐私元数据，可能保留必要的方向与色彩信息；不清除像素水印或隐写内容。重新编码可能改变色彩或使文件变大。',
   budget: '',
   disabledCount: '',
   disabledSize: '',
@@ -110,6 +111,8 @@ const zhMessages = {
     decode: '浏览器无法正确解码这张图片或其方向，请换图或换浏览器。',
     encode: '浏览器未能完成编码，请重试或选择另一输出格式。',
     output: '输出的真实格式、尺寸或可解码性不符，已阻止下载。',
+    metadata: '无法可靠地无损清理此文件的元数据。可主动切换到高级模式重新编码；画质、色彩和大小可能变化。',
+    orientation: '暂不支持带非默认 EXIF 方向的 WebP，无法保证方向正确；请使用其他来源图片。',
     timeout: '处理超时，请稍候再试或重新加载页面。大图片可能需要更长时间。',
     cancelled: '操作已取消。',
   } satisfies Record<ImageErrorCode, string>,
@@ -202,13 +205,14 @@ const en: typeof zhMessages = {
   none: 'No default export format is available. Retry detection or select a supported format.',
   retry: 'Retry current settings',
   download: 'Download result',
+  cleanedDownload: 'Download cleaned result',
   originalDownload: 'Download original',
   original: 'Original',
   output: 'Output',
   previewError:
     'The preview could not load. Choose the image again or generate a new result.',
   limitations:
-    'Static PNG/JPEG/WebP only. Resolution is unchanged. Files may grow; re-encoding can change colors and remove metadata.',
+    'Static PNG/JPEG/WebP, with unchanged resolution. Common private metadata is removed by default; necessary orientation and color information may remain. Pixel watermarks and steganography are not removed. Re-encoding may change colors or increase file size.',
   budget: '',
   disabledCount: '',
   disabledSize: '',
@@ -229,6 +233,10 @@ const en: typeof zhMessages = {
       'The browser could not encode the image. Retry or choose another output format.',
     output:
       'Actual output format, dimensions or decoding did not match. Download was blocked.',
+    metadata:
+      'This file cannot be cleaned reliably without re-encoding. You can explicitly use Advanced to re-encode; quality, colors and size may change.',
+    orientation:
+      'WebP with non-default EXIF orientation is not supported reliably. Use another source image.',
     timeout:
       'Processing timed out. Wait and retry, or reload this page. Large images may take longer.',
     cancelled: 'The operation was cancelled.',

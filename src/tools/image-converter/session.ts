@@ -19,6 +19,7 @@ import {
   acceptImage,
   encodeImage,
   detectCapabilities,
+  prepareQuickOutput,
   type Capabilities,
 } from '../image/browser-codec';
 import { ImageResources } from '../image/resources';
@@ -42,11 +43,13 @@ import {
 import { batchTime, taskFilename, validFilenameLabel } from '../file-naming';
 import { SerialJobs } from './serial-jobs';
 import { planIntake, type IntakeSummary } from './intake';
+import { metadataPolicy } from '../image/metadata';
 
 export type ConverterServices = {
   accept: typeof acceptImage;
   encode: typeof encodeImage;
   capabilities: typeof detectCapabilities;
+  quick: typeof prepareQuickOutput;
 };
 type ImageState = ProcessingState<EncodeSettings, ImageResult>;
 export type ConverterTask = Readonly<{
@@ -81,6 +84,7 @@ const defaults: ConverterServices = {
   accept: acceptImage,
   encode: encodeImage,
   capabilities: detectCapabilities,
+  quick: prepareQuickOutput,
 };
 export class ConverterSession {
   readonly limits: ImageLimits;
@@ -389,7 +393,22 @@ export class ConverterSession {
     this.auto.clear();
     this.manual.clear();
     this.applyControls(setToolMode(this.shared, mode));
-    if (mode === 'advanced') this.patch({ label: this.labelPreference });
+    if (mode === 'advanced') {
+      this.patch({
+        label: this.labelPreference,
+        tasks: this.view.tasks.map(task =>
+          task.source && task.error === 'metadata'
+            ? {
+                ...task,
+                status: 'queued',
+                error: undefined,
+                errorDetail: undefined,
+                processing: { ...task.processing, status: 'idle', error: undefined },
+              }
+            : task,
+        ),
+      });
+    }
   }
   format(format: ImageFormat) {
     if (
@@ -512,8 +531,11 @@ export class ConverterSession {
           status: 'processing',
         }));
         try {
-          const blob = passthrough
-            ? source.blob
+          const quick = passthrough
+            ? await this.services.quick(source, this.resources, this.limits)
+            : undefined;
+          const blob = quick
+            ? quick.blob
             : await this.services.encode(
                 source,
                 snapshot.settings,
@@ -522,7 +544,8 @@ export class ConverterSession {
               );
           if (!this.current(task.id, snapshot)) return;
           const result: ImageResult = {
-            kind: passthrough ? 'passthrough' : 'encoded',
+            kind: quick?.kind ?? 'encoded',
+            metadataPolicy: quick?.metadataPolicy ?? metadataPolicy,
             blob,
             mime: mime[snapshot.settings.format],
             width: source.width,
@@ -579,9 +602,10 @@ export class ConverterSession {
   }
   download(id = this.view.tasks[0]?.id) {
     const task = this.task(id);
-    return this.view.candidate || !task
+    const result = this.view.candidate || !task
       ? undefined
       : downloadableResult(task.processing);
+    return result?.metadataPolicy === metadataPolicy ? result : undefined;
   }
   retry(id: string) {
     const task = this.task(id);

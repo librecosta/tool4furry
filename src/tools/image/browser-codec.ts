@@ -11,6 +11,7 @@ import {
   type ImageFormat,
 } from './types';
 import type { ImageLimits } from './limits';
+import { cleanImageMetadata } from './metadata';
 
 export function orientedSize(info: ImageInfo) {
   return info.orientation >= 5
@@ -24,6 +25,10 @@ export async function decodeChecked(
   limits: ImageLimits = imageBudget,
 ) {
   checkDimensions(info.width, info.height, limits);
+  // Chromium can ignore WebP EXIF mirrors as well as rotations; dimensions alone
+  // cannot detect orientations 2–4. Do not return a silently misoriented image.
+  if (info.format === 'webp' && info.orientation !== 1)
+    throw new ImageFailure('orientation');
   let bitmap: ImageBitmap;
   try {
     bitmap = await resources.bitmap(blob);
@@ -79,11 +84,12 @@ export async function validateOutput(
     throw new ImageFailure('output');
   try {
     // Source byte guard is not an output size promise: a JPEG can become a larger PNG.
-    const info = await inspectImage(
+    const cleaned = await cleanImageMetadata(
       blob,
       limits.pixels * 5 + 1024 * 1024,
       limits,
     );
+    const info = cleaned.info;
     if (
       info.format !== format ||
       info.orientation !== 1 ||
@@ -91,8 +97,9 @@ export async function validateOutput(
       info.height !== height
     )
       throw new ImageFailure('output');
-    const bitmap = await decodeChecked(blob, info, resources, limits);
+    const bitmap = await decodeChecked(cleaned.blob, info, resources, limits);
     resources.close(bitmap);
+    return cleaned.blob;
   } catch (error) {
     throw new ImageFailure(
       'output',
@@ -101,7 +108,22 @@ export async function validateOutput(
         : String(error),
     );
   }
-  return blob;
+}
+
+// Unlike re-encoding, lossless cleanup keeps the source's stored dimensions and
+// minimum EXIF direction. Both metadata policy and actual decode are rechecked.
+export async function prepareQuickOutput(
+  source: ImageSource,
+  resources: ImageResources,
+  limits: ImageLimits = imageBudget,
+) {
+  const cleaned = await cleanImageMetadata(source.blob, limits.bytes, limits);
+  if (['format', 'width', 'height', 'orientation'].some(
+    k => cleaned.info[k as keyof ImageInfo] !== source.info[k as keyof ImageInfo],
+  )) throw new ImageFailure('output');
+  const bitmap = await decodeChecked(cleaned.blob, cleaned.info, resources, limits);
+  resources.close(bitmap);
+  return { ...cleaned, kind: cleaned.changed ? 'cleaned' as const : 'passthrough' as const };
 }
 export async function encodeImage(
   source: ImageSource,

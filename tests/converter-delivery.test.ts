@@ -18,6 +18,7 @@ const tick = async () => {
 };
 async function setup(names = ['same.png', 'same.png', '中文🐾.png']) {
   const session = new ConverterSession(() => {}, {
+    quick: async (source) => ({ blob: source.blob, info: source.info, changed: false, kind: 'passthrough', metadataPolicy: 'privacy-v1' }),
     capabilities: async () => ({
       png: { supported: true },
       jpeg: { supported: true },

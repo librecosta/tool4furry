@@ -10,6 +10,22 @@
 
 新政策取代旧合同中冲突的强制跨浏览器发布要求；以下 B0–B5 历史实测记录不变，不因政策调整补记任何测试通过。日常修改按 L1 定向验证，完整 CI 优先由 GitHub Actions 执行。
 
+## V0.6-C2-B — 默认隐私元数据管线
+
+`src/tools/image/metadata.ts` 复用现有有界容器扫描（64 KiB/次、格式/尺寸/段数/PNG CRC/RIFF 预算），以 Blob 切片重封装，不重新编码压缩图像数据。默认策略固定为 `privacy-v1`，写入结果并在 `session.download()` 校验；预览及 ZIP 都复用这个资格入口。没有新增运行依赖或策略 UI。
+
+- Quick 同格式先审计：无可清理信息则原字节直通；支持的 EXIF 隐私/GPS、XMP、JPEG Photoshop IPTC/COM/缩略图、PNG 文本/时间被清理，返回 `cleaned`。JPEG/PNG 只保留必要的最小 Orientation；无损结果按存储尺寸及原方向复检，不能套用重编码的 Orientation=1 规则。原 File 不修改。
+- ICC 是色彩描述，不是 GPS：保留经长度、签名、版本、色彩空间及标签偏移校验的 RGB/GRAY ICC，最多 1 MiB / 128 标签；JPEG 验证分段序号，PNG 有界解压并保留原 iCCP 字节，WebP 保留 ICCP。PNG 的调色板、透明度及支持的颜色块保留。这不是广色域转换或 ICC 内任意私有字段清除承诺。
+- 普通与渐进/多扫描 JPEG 可清理；不支持的 APP/编码扩展、CMYK/YCCK、未知 PNG/WebP 块、异常 ICC/冲突颜色块等拒绝不可靠的无损处理。PNG caBX 删除；JPEG APP11/WebP 未支持凭证载体拒绝，不宣称 C2PA 签名保留。WebP 所有非1 EXIF 方向均明确拒绝，包括尺寸不能发现的镜像。
+- 不会失败后静默返回原图或自动再次有损编码。Quick 清理失败后，主动切到 Advanced 将相关源任务置为待生成，仍需手动转换。Advanced 维持原编码路径，输出再执行隐私及格式/尺寸/方向/实际解码检查。不自动改变目标格式。
+- 文件名和模式切换不令有效结果重新编码；FIFO、watchdog、取消/删除晚到结果隔离、URL 所有权及 ZIP 快照规则保留。保留元数据 UI、C2PA 重签、广色域转换仍未实施，Converter 保持 draft。
+
+定向夹具位于 `tests/fixtures/images/metadata/`，来源和虚构隐私字段见其 README。相关测试为 image-metadata、converter-metadata-delivery，以及既有 inspector、Session/batch、delivery、UI/ZIP UI 和 limits；本轮 9 个相关测试文件共 142 条通过，`pnpm check` 无错误/警告。
+
+2026-10-30 Windows 10 / Chromium 156 定向验收见 [结构化证据](evidence/image-metadata-c2b.json)：21 个普通/渐进 JPEG（方向 1–8）、PNG/调色板、透明有损/无损 WebP 样本，浏览器显示像素及 Pillow 独立解码一致，压缩载荷和 ICC 字节保留。三格式重新编码输出通过复检；正式页面实际完成单项下载、ZIP 解压逐条字节比对、原图/输出预览、Escape 焦点恢复、未知 PNG 块拒绝及主动 Advanced 恢复。清空/移除后的 Bitmap 10/10、Canvas 4/4、URL 7/7 配对释放；390px 英文暗色视口无横向溢出，无控制台错误/警告。原始证据及隔离浏览器程序在仓库外 `../.validation/image-metadata-c2b/`，不进入生产。
+
+这不是大图性能复测或移动真机验收；Firefox/Safari、iOS/Android、广色域/CMYK、未知私有字段及 C2PA 保全未验证/未支持。下文历史测试记录不代表新策略。
+
 ## C5-A — 资源限制与大图定向证据（2026-10-26）
 
 - `src/tools/image/limits.ts` 是当前额度来源。桌面：100 张、单张 50 MiB / 40MP / 单边 10000px、总输入 100 MiB；移动与信号不确定时：50 张、20 MiB / 16MP / 8192px、总输入 60 MiB。ZIP 仍为 128 MiB。100/50 数量采用维护者本轮指示，取代 Issue #9 原候选数量。

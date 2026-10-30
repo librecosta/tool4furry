@@ -80,7 +80,7 @@ export function ConverterTaskRow({
       },
       {
         kind: 'download',
-        label: result?.kind === 'passthrough' ? t.originalDownload : t.download,
+        label: result?.kind === 'passthrough' ? t.originalDownload : result?.kind === 'cleaned' ? t.cleanedDownload : t.download,
         href: downloadable ? resultUrl : undefined,
         download: name.name,
         disabled: !downloadable,

@@ -47,6 +47,7 @@ function setup(overrides: Partial<ConverterServices> = {}) {
   const session = new ConverterSession(() => {}, {
     accept: async (file) => source(file),
     encode,
+    quick: async (source) => ({ blob: source.blob, info: source.info, changed: false, kind: 'passthrough', metadataPolicy: 'privacy-v1' }),
     capabilities: async () => capabilities,
     ...overrides,
   });
@@ -61,6 +62,50 @@ async function ready() {
   return s;
 }
 describe('converter state and scheduling', () => {
+  it('distinguishes sanitized results, keeps naming outside policy, and rejects obsolete privacy proofs', async () => {
+    const clean = new Blob(['cleaned'], { type: 'image/png' });
+    const quick = vi.fn<ConverterServices['quick']>(async source => ({
+      blob: clean, info: source.info, changed: true, kind: 'cleaned', metadataPolicy: 'privacy-v1',
+    }));
+    const { session, encode } = setup({ quick });
+    await tick(); session.format('png'); session.add([source().file]); await tick();
+    expect(session.download()).toMatchObject({ kind: 'cleaned', metadataPolicy: 'privacy-v1', blob: clean });
+    expect(encode).not.toHaveBeenCalled();
+    session.label('test'); session.mode('advanced'); session.label('tag');
+    expect(quick).toHaveBeenCalledTimes(1); expect(session.download()?.blob).toBe(clean);
+    expect(quick.mock.calls[0][2]).toBe(session.limits);
+    // Simulate a result from an older/unproved policy; every consumer uses download().
+    const value = session.snapshot.tasks[0].processing.result!.value;
+    Object.assign(value, { metadataPolicy: 'unverified' });
+    expect(session.download()).toBeUndefined();
+    session.dispose();
+  });
+  it('never falls back to original bytes or encoding on unsafe Quick cleanup; Advanced is explicit', async () => {
+    const { session, encode } = setup({ quick: async () => { throw new ImageFailure('metadata'); } });
+    await tick(); session.format('png'); session.add([source().file]); await tick();
+    expect(session.snapshot.tasks[0]).toMatchObject({ status: 'error', error: 'metadata' });
+    expect(session.download()).toBeUndefined(); expect(encode).not.toHaveBeenCalled();
+    expect(session.snapshot.controls.settings.format).toBe('png');
+    session.mode('advanced'); await tick();
+    expect(encode).not.toHaveBeenCalled(); expect(session.snapshot.tasks[0].status).toBe('queued');
+    session.generateAll(); await tick();
+    expect(encode).toHaveBeenCalledTimes(1); expect(session.download()?.kind).toBe('encoded');
+    session.dispose();
+  });
+  it('keeps the serial lane occupied by removed in-flight cleanup and rejects its late result', async () => {
+    const pending = deferred<Awaited<ReturnType<ConverterServices['quick']>>>();
+    let calls = 0;
+    const quick: ConverterServices['quick'] = async s => ++calls === 1 ? pending.promise : ({ blob: s.blob, info: s.info, changed: false, kind: 'passthrough', metadataPolicy: 'privacy-v1' });
+    const { session } = setup({ quick }); await tick(); session.format('png');
+    const [id] = session.add([source().file]); await tick();
+    session.remove(id); const [next] = session.add([new File(['other'], 'b.png')]); await tick();
+    expect(calls).toBe(1); expect(session.jobs.active).toBe(true);
+    pending.resolve({ blob: new Blob(['private']), info: source().info, changed: true, kind: 'cleaned', metadataPolicy: 'privacy-v1' });
+    await tick(); await tick();
+    expect(session.snapshot.tasks.map(t => t.id)).toEqual([next]);
+    expect(await session.download(next)?.blob.text()).toBe('other');
+    expect(calls).toBe(2); session.dispose();
+  });
   it('auto generates once, keeps mode changes and naming outside encoding versions', async () => {
     const { session, encode } = await ready();
     expect(encode).toHaveBeenCalledTimes(1);

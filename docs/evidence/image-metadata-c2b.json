@@ -1,0 +1,532 @@
+{
+  "date": "2026-10-30T08:31:12.533Z",
+  "environment": {
+    "os": "Windows 10 Home",
+    "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+    "independentDecoder": "Pillow 12.3.0",
+    "scope": "Small self-authored metadata fixtures; not a large-image benchmark or real mobile device test"
+  },
+  "browserCases": [
+    {
+      "name": "jpeg-1-baseline.jpg",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 4782,
+      "output": 4456,
+      "orientation": 1,
+      "size": [
+        256,
+        160
+      ],
+      "different": 0
+    },
+    {
+      "name": "jpeg-2-baseline.jpg",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 4782,
+      "output": 4492,
+      "orientation": 2,
+      "size": [
+        256,
+        160
+      ],
+      "different": 0
+    },
+    {
+      "name": "jpeg-3-baseline.jpg",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 4782,
+      "output": 4492,
+      "orientation": 3,
+      "size": [
+        256,
+        160
+      ],
+      "different": 0
+    },
+    {
+      "name": "jpeg-4-baseline.jpg",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 4782,
+      "output": 4492,
+      "orientation": 4,
+      "size": [
+        256,
+        160
+      ],
+      "different": 0
+    },
+    {
+      "name": "jpeg-5-baseline.jpg",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 4782,
+      "output": 4492,
+      "orientation": 5,
+      "size": [
+        160,
+        256
+      ],
+      "different": 0
+    },
+    {
+      "name": "jpeg-6-baseline.jpg",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 4782,
+      "output": 4492,
+      "orientation": 6,
+      "size": [
+        160,
+        256
+      ],
+      "different": 0
+    },
+    {
+      "name": "jpeg-7-baseline.jpg",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 4782,
+      "output": 4492,
+      "orientation": 7,
+      "size": [
+        160,
+        256
+      ],
+      "different": 0
+    },
+    {
+      "name": "jpeg-8-baseline.jpg",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 4782,
+      "output": 4492,
+      "orientation": 8,
+      "size": [
+        160,
+        256
+      ],
+      "different": 0
+    },
+    {
+      "name": "jpeg-1-progressive.jpg",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 3991,
+      "output": 3665,
+      "orientation": 1,
+      "size": [
+        256,
+        160
+      ],
+      "different": 0
+    },
+    {
+      "name": "jpeg-2-progressive.jpg",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 3991,
+      "output": 3701,
+      "orientation": 2,
+      "size": [
+        256,
+        160
+      ],
+      "different": 0
+    },
+    {
+      "name": "jpeg-3-progressive.jpg",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 3991,
+      "output": 3701,
+      "orientation": 3,
+      "size": [
+        256,
+        160
+      ],
+      "different": 0
+    },
+    {
+      "name": "jpeg-4-progressive.jpg",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 3991,
+      "output": 3701,
+      "orientation": 4,
+      "size": [
+        256,
+        160
+      ],
+      "different": 0
+    },
+    {
+      "name": "jpeg-5-progressive.jpg",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 3991,
+      "output": 3701,
+      "orientation": 5,
+      "size": [
+        160,
+        256
+      ],
+      "different": 0
+    },
+    {
+      "name": "jpeg-6-progressive.jpg",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 3991,
+      "output": 3701,
+      "orientation": 6,
+      "size": [
+        160,
+        256
+      ],
+      "different": 0
+    },
+    {
+      "name": "jpeg-7-progressive.jpg",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 3991,
+      "output": 3701,
+      "orientation": 7,
+      "size": [
+        160,
+        256
+      ],
+      "different": 0
+    },
+    {
+      "name": "jpeg-8-progressive.jpg",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 3991,
+      "output": 3701,
+      "orientation": 8,
+      "size": [
+        160,
+        256
+      ],
+      "different": 0
+    },
+    {
+      "name": "private.png",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 2394,
+      "output": 1786,
+      "orientation": 6,
+      "size": [
+        160,
+        256
+      ],
+      "different": 0
+    },
+    {
+      "name": "private.webp",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 2296,
+      "output": 1768,
+      "orientation": 1,
+      "size": [
+        256,
+        160
+      ],
+      "different": 0
+    },
+    {
+      "name": "alpha-lossy.webp",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 2158,
+      "output": 1630,
+      "orientation": 1,
+      "size": [
+        256,
+        160
+      ],
+      "different": 0
+    },
+    {
+      "name": "alpha-lossless.webp",
+      "kind": "cleaned",
+      "metadataPolicy": "privacy-v1",
+      "input": 2860,
+      "output": 2332,
+      "orientation": 1,
+      "size": [
+        256,
+        160
+      ],
+      "different": 0
+    },
+    {
+      "name": "palette.png",
+      "kind": "passthrough",
+      "metadataPolicy": "privacy-v1",
+      "input": 921,
+      "output": 921,
+      "orientation": 1,
+      "size": [
+        80,
+        48
+      ],
+      "different": 0
+    },
+    {
+      "advanced": "private.jpg",
+      "bytes": 3157,
+      "size": [
+        160,
+        256
+      ]
+    },
+    {
+      "advanced": "private.png",
+      "bytes": 2916,
+      "size": [
+        160,
+        256
+      ]
+    },
+    {
+      "advanced": "private.webp",
+      "bytes": 1500,
+      "size": [
+        256,
+        160
+      ]
+    }
+  ],
+  "resources": {
+    "bitmapsCreated": 51,
+    "bitmapsClosed": 51,
+    "canvasesCreated": 3,
+    "canvasesReleased": 3,
+    "urlsCreated": 0,
+    "urlsRevoked": 0
+  },
+  "sessionResources": {
+    "bitmapsCreated": 7,
+    "bitmapsClosed": 7,
+    "canvasesCreated": 3,
+    "canvasesReleased": 3,
+    "urlsCreated": 0,
+    "urlsRevoked": 0
+  },
+  "maxActive": 1,
+  "independent": {
+    "pillow": "12.3.0",
+    "fixtures": [
+      {
+        "name": "jpeg-1-baseline.jpg",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "1c072d44238f98fc8ba580db9b11e010e4f24f6b0b676f29aec25b077da94e5c"
+      },
+      {
+        "name": "jpeg-2-baseline.jpg",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "eca25caad2264420f122e5a5fd08a59f5a491d14073fded65311477d0510d014"
+      },
+      {
+        "name": "jpeg-3-baseline.jpg",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "1d39a77c85dade957f67270cce8f0725211f9895ce59566a61b1b08f3e2c16e5"
+      },
+      {
+        "name": "jpeg-4-baseline.jpg",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "6bab3f939323681d29f26478cccdc6d950db7d35ec1c4b4a2ffa2463d2c8e621"
+      },
+      {
+        "name": "jpeg-5-baseline.jpg",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "6a9f96c9eede89ecf224831d9f046d392a0ef904fac877163b3ef5c5a4d401d1"
+      },
+      {
+        "name": "jpeg-6-baseline.jpg",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "a425a9c0de08c9d807d046758a1a12da2c230dc950a7b81c749efedd202adf76"
+      },
+      {
+        "name": "jpeg-7-baseline.jpg",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "919e981338effdeabdbd8c172fc8fa4cf13a24d5f5fcf303bb4b1f8d4d79c3ed"
+      },
+      {
+        "name": "jpeg-8-baseline.jpg",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "ab3d94ff56413a79a0771b9eec39b75ae92f87db9708893c9502f68fbb8311fd"
+      },
+      {
+        "name": "jpeg-1-progressive.jpg",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "7e0b343bfeb05d855d08256788d99d8be39fecd4579472c8eb5578898a15a6f2"
+      },
+      {
+        "name": "jpeg-2-progressive.jpg",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "32678896406bdc667fd45d807812e49ddc9d46db2c3636c9b5e427a09355b108"
+      },
+      {
+        "name": "jpeg-3-progressive.jpg",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "0f633118f7c5678284c228b07bf31752d8b481d2cbc845aed4f9c4bf1ba28036"
+      },
+      {
+        "name": "jpeg-4-progressive.jpg",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "ad59b8504713eb8d6faeb0c102bd349967b03311b3d0b4ca475c7cdd3418464f"
+      },
+      {
+        "name": "jpeg-5-progressive.jpg",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "facafd20a7433680116f3606246424a6cb7da26293277a9ac72e3e3802c3adb7"
+      },
+      {
+        "name": "jpeg-6-progressive.jpg",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "2c09f0f4124eda169990188dce7fc41b778142b7a5043f4f8f674d7b71fefd62"
+      },
+      {
+        "name": "jpeg-7-progressive.jpg",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "c8772c8c1f41d4084b54b3350ddd1a699801cb8bdcbed52d13750e89291579c6"
+      },
+      {
+        "name": "jpeg-8-progressive.jpg",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "a4f40fead6ce3498bef4ecb62744ab17b62d99fc164b9c2a76f5f537a3ec8c9c"
+      },
+      {
+        "name": "private.png",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "d505028661f37018c52b2d38b7368dc2540725f60435d5f79efb2e2e8fe8aefe"
+      },
+      {
+        "name": "private.webp",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "59804adb0d5f8ed2657210cc3e28e322ae4fad350094720018105dc6842c6f0a"
+      },
+      {
+        "name": "alpha-lossy.webp",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "b06c5915d106f03a22c530587c2220564fa1da110989609c26ef7ae0c29314f7"
+      },
+      {
+        "name": "alpha-lossless.webp",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "9fd0bfe1a37153fb6008c50113e0f98bec4028cb1f12d7d99f0e6d68b25e6091"
+      },
+      {
+        "name": "palette.png",
+        "pixelsEqual": true,
+        "codedPayloadEqual": true,
+        "iccEqual": true,
+        "sha256": "2c4c363c826db3eceec9e8ba7688100e6721ae875766f8d44108c6a0c54cb0ef"
+      }
+    ],
+    "advancedValidated": 3,
+    "actualSingleDownload": true,
+    "zip": [
+      {
+        "zip": "verified.zip",
+        "entries": [
+          "t4f-20261030-163112521-0001-重复.png",
+          "t4f-20261030-163112521-0002-重复.png"
+        ],
+        "bytesMatchCleanOutput": true
+      },
+      {
+        "zip": "t4f-20261030-163606184.zip",
+        "entries": [
+          "t4f-20261030-163606184-0001-private.png",
+          "t4f-20261030-163606184-0002-private.png"
+        ],
+        "bytesMatchCleanOutput": true
+      }
+    ]
+  },
+  "productFlow": {
+    "region": "CN",
+    "locales": [
+      "zh",
+      "en"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "phoneViewport": "390x844 desktop emulation",
+    "singleCleanedDownload": true,
+    "actualZipExtractedAndByteMatched": true,
+    "previewOriginalOutputOrientation": true,
+    "escapeFocusRestore": true,
+    "unsupportedQuickRefused": true,
+    "advancedRequiresExplicitClick": true,
+    "webpMirrorRefused": true,
+    "afterClearAndRemove": {
+      "bitmapsCreated": 10,
+      "bitmapsClosed": 10,
+      "canvasesCreated": 4,
+      "canvasesReleased": 4,
+      "urlsCreated": 7,
+      "urlsRevoked": 7
+    },
+    "consoleWarningsOrErrors": 0
+  },
+  "notVerified": [
+    "Firefox/Safari",
+    "iOS/Android devices",
+    "wide-gamut/CMYK preservation",
+    "all private/proprietary metadata",
+    "C2PA signature preservation"
+  ]
+}
