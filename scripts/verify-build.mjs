@@ -1,18 +1,34 @@
 import assert from 'node:assert/strict';
 import { readFile, readdir, stat } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { dirname, extname, resolve } from 'node:path';
 import { JSDOM } from 'jsdom';
 import { createHash } from 'node:crypto';
 import ts from 'typescript';
 
-// Standalone, type-only-import metadata/content, used only by this build audit.
+// Read the same pure metadata graph as Astro, without importing React/tool code.
+// Local TS imports are resolved for this Node audit only; no generated sources.
 async function staticData(path) {
-  const source = await readFile(path, 'utf8');
-  const js = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext } }).outputText;
-  return import('data:text/javascript;base64,' + Buffer.from(js).toString('base64'));
+  return import(await metadataURL(resolve(path)));
+}
+const metadataURLs = new Map();
+async function metadataURL(path) {
+  if (metadataURLs.has(path)) return metadataURLs.get(path);
+  let js = ts.transpileModule(await readFile(path, 'utf8'), { compilerOptions: { module: ts.ModuleKind.ESNext } }).outputText;
+  const parsed = ts.createSourceFile(path, js, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  for (const statement of [...parsed.statements].reverse()) {
+    if (!ts.isImportDeclaration(statement) && !ts.isExportDeclaration(statement)) continue;
+    const specifier = statement.moduleSpecifier;
+    if (!specifier) continue;
+    assert(ts.isStringLiteral(specifier) && specifier.text.startsWith('.'), 'Metadata must use pure local imports');
+    const dependency = resolve(dirname(path), specifier.text + (extname(specifier.text) ? '' : '.ts'));
+    js = js.slice(0, specifier.getStart(parsed)) + JSON.stringify(await metadataURL(dependency)) + js.slice(specifier.end);
+  }
+  const url = 'data:text/javascript;base64,' + Buffer.from(js).toString('base64');
+  metadataURLs.set(path, url);
+  return url;
 }
 const { imageConverterContent } = await staticData('src/site/image-converter-content.ts');
-const { imageConverterDefinition } = await staticData('src/tools/image-converter/definition.ts');
+const { tools } = await staticData('src/tools/registry.ts');
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
 const converterLongCopy = Object.values(imageConverterContent).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
@@ -152,11 +168,13 @@ if (fixtureMode)
 const files = (await readdir(root, { recursive: true })).map((file) =>
   file.replaceAll('\\', '/'),
 );
-if (!fixtureMode) {
-  const available = imageConverterDefinition.status === 'published' && imageConverterDefinition.regions.includes(region);
-  for (const prefix of ['', region === 'cn' ? 'en/' : 'zh/'])
-    assert.equal(files.includes(`${prefix}tools/image-converter/index.html`), available, 'Real regional metadata controls both Converter routes');
-}
+const published = tools.filter(tool => tool.status === 'published' && tool.regions.includes(region));
+for (const prefix of ['', region === 'cn' ? 'en/' : 'zh/'])
+  assert.deepEqual(
+    files.filter(file => new RegExp(`^${prefix}tools/[^/]+/index\\.html$`).test(file)).sort(),
+    published.map(tool => `${prefix}tools/${tool.slug}/index.html`).sort(),
+    'Registry controls exactly the regional published routes in both languages',
+  );
 const avifWasm = files.filter(file => /avif_(?:enc|dec).*\.wasm$/.test(file));
 if (files.includes('tools/image-converter/index.html')) {
   assert.equal(avifWasm.length, 1, 'Exactly one ST AVIF encoder, no decoder/threaded binary');
@@ -598,6 +616,7 @@ for (const source of document.querySelectorAll('main picture source')) {
 const allCards = [
   ...fullCatalog.querySelectorAll('ul > li > a[data-tool-card]'),
 ];
+assert.deepEqual(allCards.map(card => card.dataset.toolCard).sort(), published.map(tool => tool.id).sort(), 'Catalog IDs match the actual regional Registry');
 const toolLinks = new Set(allCards.map((card) => card.getAttribute('href')));
 for (const link of document.querySelectorAll(`main a[href^="${localPath('/tools/')}"]`)) {
   const href = link.getAttribute('href');

@@ -1,0 +1,6 @@
+import wasmURL from './cn.wasm?url';
+self.onmessage = async () => {
+  const { instance } = await WebAssembly.instantiateStreaming(fetch(wasmURL));
+  self.postMessage(`cn-private:${(instance.exports.answer as () => number)()}`);
+};
+export {};

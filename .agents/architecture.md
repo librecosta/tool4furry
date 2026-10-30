@@ -26,6 +26,7 @@ Astro 工具路由 + 静态 Intro / Guide
 ```
 
 - [registry.ts](../src/tools/registry.ts) 只组合元数据；[loaders.ts](../src/tools/loaders.ts) 独立维护字面量动态 import。不从元数据静态导入实现。
+- [build-availability.ts](../src/tools/build-availability.ts) 将 Registry 映射为逐工具 Vite 静态常量；Astro 配置不列举具体工具。Loader 入口直接引用常量，生产依赖发现前排除 Draft/非当前地区的实现及私有资源，保留合法共享依赖。详见 [发布契约](../contracts/publication.md)。
 - [ToolRuntime](../src/tools/ToolRuntime.tsx) 负责已知工具的加载边界、Provider 和导航装配；Astro 不能给动态组件标签临时附加 hydration 指令。
 - `src/ui/` 是受控 UI 原语，业务数据属于调用方；UiProvider 只放在固定 ToolRuntime / LabRuntime 根，不放进全站 SiteLayout。
 - `src/workbench/` 只负责可选插槽、布局、面板可见性和焦点，不导入具体工具编码器，不持有文件、参数、任务或全局业务 Store。
@@ -51,6 +52,8 @@ PNG/JPEG/WebP 原生优先；AVIF 输入使用原生解码，输出按实际任�
 - Registry 的 `status` + `regions` 是唯一发布门；路由、目录、首页和发现文件从它投影。Vite 常量只消除不可用 Loader，不是第二套发布配置。
 - DEV 可以访问本地区 Draft；生产只保留本地区 Published。Lab 和目录夹具不注册为工具，构建守卫检查资源也不泄漏。
 - Published 是源码资格，构建不执行部署；[发布契约](../contracts/publication.md) 与 [ADR-0001](../docs/decisions/0001-static-regions-publication.md) 说明原因。
+
+新增工具依次添加纯元数据定义与 Registry 条目、显式 Loader（`DEV || T4F_TOOL_<NORMALIZED_ID>_AVAILABLE` + 字面量 import）、`tool-content.ts` 对应的中英文 Astro 内容。无需再为工具修改 Astro 配置；状态与地区仍只来自 Registry。算法/Worker/WASM 从工具模块按需导入，不挂到 Registry 或公共 Workbench。平台发布机制修改另运行隔离的多工具构建夹具，不为每次业务小改增加重复构建。
 
 ## 非目标
 

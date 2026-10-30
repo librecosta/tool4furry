@@ -1,10 +1,14 @@
 import { defineConfig } from 'astro/config';
+import { readFileSync } from 'node:fs';
 import react from '@astrojs/react';
 import stylex from '@stylexjs/unplugin';
 import { parseRegion, regions } from './src/config/region.ts';
-import { imageConverterDefinition } from './src/tools/image-converter/definition.ts';
+import { tools } from './src/tools/registry.ts';
+import { assertToolLoaderContract, toolBuildDefines } from './src/tools/build-availability.ts';
 
 const region = parseRegion(process.env.SITE_REGION);
+const toolDefines = toolBuildDefines(tools, region);
+assertToolLoaderContract(tools, readFileSync(new URL('./src/tools/loaders.ts', import.meta.url), 'utf8'));
 
 export default defineConfig({
   output: 'static',
@@ -19,11 +23,7 @@ export default defineConfig({
     optimizeDeps: { exclude: ['@jsquash/avif/codec/enc/avif_enc.js', '@jsquash/avif/meta.js'] },
     // Vite discovers dynamic imports before cross-module status checks fold away.
     // This is a projection of Registry metadata, never a second release setting.
-    define: {
-      'import.meta.env.T4F_IMAGE_CONVERTER_AVAILABLE': JSON.stringify(
-        imageConverterDefinition.status === 'published' && imageConverterDefinition.regions.includes(region),
-      ),
-    },
+    define: toolDefines,
     cacheDir: `./node_modules/.vite/${region}`,
     server: { strictPort: true },
     plugins: [

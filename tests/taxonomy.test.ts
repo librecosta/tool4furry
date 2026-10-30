@@ -109,4 +109,8 @@ describe('publication metadata gate', () => {
       .toContain('cn-only: missing en copy');
     expect(registryIssues([tool, { ...tool }], {}, 'global')).toContain('cn-only: duplicate id');
   });
+  it('rejects implementation entries not registered as metadata', () => {
+    expect(registryIssues([], { unknown: () => Promise.resolve({ default: () => null }) }))
+      .toContain('unknown: unregistered loader');
+  });
 });

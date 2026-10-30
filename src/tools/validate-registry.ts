@@ -65,6 +65,8 @@ export function registryIssues(
       }
     }
   }
+  for (const id of Object.keys(loaders))
+    if (!ids.has(id)) issues.push(`${id}: unregistered loader`);
   return issues;
 }
 export function assertValidRegistry(
