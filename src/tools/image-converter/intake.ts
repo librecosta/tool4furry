@@ -2,7 +2,7 @@ import { validateFiles } from '../../ui/file-constraints';
 import { mobileImageLimits, type ImageLimits } from '../image/limits';
 
 export const imageAccept =
-  '.png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp';
+  '.png,.jpg,.jpeg,.webp,.avif,image/png,image/jpeg,image/webp,image/avif';
 export type IntakeReason = 'type' | 'size' | 'count' | 'total';
 export type IntakeSummary = Readonly<{
   accepted: number;

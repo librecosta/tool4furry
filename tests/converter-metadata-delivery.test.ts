@@ -14,7 +14,7 @@ describe('privacy-qualified Session delivery (real containers; decoding boundary
     const source = await readFile(new URL('./fixtures/images/metadata/private.png', import.meta.url));
     const session = new ConverterSession(() => {}, {
       accept: acceptImage, encode: encodeImage, quick: prepareQuickOutput,
-      capabilities: async () => ({ png: { supported: true }, jpeg: { supported: true }, webp: { supported: true } }),
+      capabilities: async () => ({ png: { supported: true }, jpeg: { supported: true }, webp: { supported: true }, avif: { supported: false } }),
     });
     session.start(); await vi.waitFor(() => expect(session.snapshot.checkingCapabilities).toBe(false));
     session.format('png');

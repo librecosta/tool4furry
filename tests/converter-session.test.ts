@@ -20,6 +20,7 @@ const capabilities = {
   png: { supported: true },
   jpeg: { supported: true },
   webp: { supported: true },
+  avif: { supported: false },
 };
 const tick = async () => {
   for (let i = 0; i < 16; i++) await Promise.resolve();

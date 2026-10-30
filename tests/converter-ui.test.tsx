@@ -49,6 +49,7 @@ beforeEach(() => {
   quick.mockReset().mockImplementation(async (source) => ({ blob: source.blob, info: source.info, changed: false, kind: 'passthrough', metadataPolicy: 'privacy-v1' }));
   capabilities.mockReset().mockResolvedValue({
     webp: { supported: true },
+    avif: { supported: false },
     png: { supported: true },
     jpeg: { supported: true },
   });
@@ -62,6 +63,27 @@ beforeEach(() => {
   );
 });
 describe('real workspace interaction contract (codec mocked; not browser evidence)', () => {
+  it('shows four formats and keeps AVIF-only chroma and quality preferences across modes', async () => {
+    capabilities.mockResolvedValue({ webp: { supported: true }, jpeg: { supported: true }, png: { supported: true }, avif: { supported: true } });
+    const user = userEvent.setup();
+    render(<ImageConverter region="global" locale="en" />);
+    const avif = screen.getByRole('radio', { name: /AVIF/ });
+    await waitFor(() => expect(avif.hasAttribute('disabled')).toBe(false));
+    expect(screen.getAllByRole('radio')).toHaveLength(4);
+    await user.click(avif);
+    expect(screen.queryByRole('checkbox')).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Advanced' }));
+    expect((screen.getByRole('textbox', { name: 'Exact quality (1–100)' }) as HTMLInputElement).value).toBe('55');
+    const chroma = screen.getByRole('checkbox', { name: 'Preserve colored edges' });
+    await user.click(chroma);
+    expect(chroma.getAttribute('aria-checked')).toBe('true');
+    await user.click(screen.getByRole('button', { name: 'Quick' }));
+    await user.click(screen.getByRole('button', { name: 'Advanced' }));
+    expect(screen.getByRole('checkbox').getAttribute('aria-checked')).toBe('true');
+    await user.click(screen.getByRole('radio', { name: /PNG/ }));
+    expect(screen.queryByRole('checkbox')).toBeNull();
+    expect(encode).not.toHaveBeenCalled();
+  });
   it('labels cleaned downloads accurately and releases their distinct output URL on removal', async () => {
     quick.mockImplementation(async (source) => ({ blob: new Blob(['clean']), info: source.info, changed: true, kind: 'cleaned', metadataPolicy: 'privacy-v1' }));
     const user = userEvent.setup();
@@ -146,6 +168,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     await act(async () =>
       finish({
         webp: { supported: false },
+        avif: { supported: false },
         png: { supported: true },
         jpeg: { supported: true },
       }),
@@ -170,6 +193,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
       else
         capabilities.mockResolvedValueOnce({
           webp: { supported: false },
+          avif: { supported: false },
           png: { supported: false },
           jpeg: { supported: false },
         });
@@ -204,7 +228,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
         screen.getByRole('radio', { name: /WEBP/ }).hasAttribute('disabled'),
       ).toBe(false),
     );
-    expect(screen.getAllByRole('radio')).toHaveLength(3);
+    expect(screen.getAllByRole('radio')).toHaveLength(4);
     expect(screen.queryByRole('region', { name: 'Image preview' })).toBeNull();
     expect(
       screen.queryByRole('region', { name: 'Result and download' }),
@@ -530,6 +554,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
         expect.objectContaining({ jpegBackground: '#456789' }),
         expect.anything(),
         expect.objectContaining({ files: 50, bytes: 20 * 1024 ** 2 }),
+        expect.objectContaining({ signal: expect.any(AbortSignal) }),
       );
       const filename = screen.getByRole('textbox', { name: t.filename });
       expect(

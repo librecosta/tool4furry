@@ -1,0 +1,703 @@
+{
+  "date": "2026-10-30",
+  "environment": {
+    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+    "cores": 16,
+    "memory": 32,
+    "viewport": [
+      1280,
+      720
+    ],
+    "at": "2026-10-30T09:43:12.591Z"
+  },
+  "scope": "Directed C2-C validation, synthetic fixtures; not a full codec or device matrix.",
+  "matrix": [
+    {
+      "name": "png-to-png",
+      "format": "png",
+      "width": 160,
+      "height": 256,
+      "bytes": 2916,
+      "ms": 8.199999999254942,
+      "mime": "image/png"
+    },
+    {
+      "name": "png-to-jpeg",
+      "format": "jpeg",
+      "width": 160,
+      "height": 256,
+      "bytes": 3127,
+      "ms": 8.199999999254942,
+      "mime": "image/jpeg"
+    },
+    {
+      "name": "png-to-webp",
+      "format": "webp",
+      "width": 160,
+      "height": 256,
+      "bytes": 1364,
+      "ms": 11.300000000745058,
+      "mime": "image/webp"
+    },
+    {
+      "name": "png-to-avif",
+      "format": "avif",
+      "width": 160,
+      "height": 256,
+      "bytes": 627,
+      "ms": 429,
+      "mime": "image/avif"
+    },
+    {
+      "name": "jpeg-to-png",
+      "format": "png",
+      "width": 160,
+      "height": 256,
+      "bytes": 9503,
+      "ms": 9.599999997764826,
+      "mime": "image/png"
+    },
+    {
+      "name": "jpeg-to-jpeg",
+      "format": "jpeg",
+      "width": 160,
+      "height": 256,
+      "bytes": 3157,
+      "ms": 9,
+      "mime": "image/jpeg"
+    },
+    {
+      "name": "jpeg-to-webp",
+      "format": "webp",
+      "width": 160,
+      "height": 256,
+      "bytes": 1446,
+      "ms": 8.800000000745058,
+      "mime": "image/webp"
+    },
+    {
+      "name": "jpeg-to-avif",
+      "format": "avif",
+      "width": 160,
+      "height": 256,
+      "bytes": 634,
+      "ms": 66.5,
+      "mime": "image/avif"
+    },
+    {
+      "name": "webp-to-png",
+      "format": "png",
+      "width": 256,
+      "height": 160,
+      "bytes": 8429,
+      "ms": 11,
+      "mime": "image/png"
+    },
+    {
+      "name": "webp-to-jpeg",
+      "format": "jpeg",
+      "width": 256,
+      "height": 160,
+      "bytes": 3092,
+      "ms": 9.299999997019768,
+      "mime": "image/jpeg"
+    },
+    {
+      "name": "webp-to-webp",
+      "format": "webp",
+      "width": 256,
+      "height": 160,
+      "bytes": 1356,
+      "ms": 12.100000001490116,
+      "mime": "image/webp"
+    },
+    {
+      "name": "webp-to-avif",
+      "format": "avif",
+      "width": 256,
+      "height": 160,
+      "bytes": 673,
+      "ms": 73.19999999925494,
+      "mime": "image/avif"
+    },
+    {
+      "name": "avif-to-png",
+      "format": "png",
+      "width": 256,
+      "height": 160,
+      "bytes": 4079,
+      "ms": 7.800000000745058,
+      "mime": "image/png"
+    },
+    {
+      "name": "avif-to-jpeg",
+      "format": "jpeg",
+      "width": 256,
+      "height": 160,
+      "bytes": 3042,
+      "ms": 9,
+      "mime": "image/jpeg"
+    },
+    {
+      "name": "avif-to-webp",
+      "format": "webp",
+      "width": 256,
+      "height": 160,
+      "bytes": 1384,
+      "ms": 10.300000000745058,
+      "mime": "image/webp"
+    },
+    {
+      "name": "avif-to-avif",
+      "format": "avif",
+      "width": 256,
+      "height": 160,
+      "bytes": 656,
+      "ms": 63.400000002235174,
+      "mime": "image/avif"
+    },
+    {
+      "name": "rotated-to-png",
+      "format": "png",
+      "width": 160,
+      "height": 256,
+      "bytes": 4465,
+      "ms": 8.399999998509884,
+      "mime": "image/png"
+    }
+  ],
+  "qualityAndBudget": [
+    {
+      "name": "alpha-420",
+      "format": "avif",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 61544,
+      "ms": 4541.800000000745,
+      "mime": "image/avif"
+    },
+    {
+      "name": "alpha-444",
+      "format": "avif",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 64952,
+      "ms": 4888.699999999255,
+      "mime": "image/avif"
+    },
+    {
+      "name": "boundary-2048",
+      "format": "avif",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 70230,
+      "ms": 10045.39999999851,
+      "mime": "image/avif"
+    },
+    {
+      "overRejected": "avifBudget"
+    },
+    {
+      "mobileRejected": "avifDevice"
+    }
+  ],
+  "nativeQuick": [
+    {
+      "quick": "png",
+      "kind": "cleaned"
+    },
+    {
+      "quick": "jpeg",
+      "kind": "cleaned"
+    },
+    {
+      "quick": "webp",
+      "kind": "cleaned"
+    },
+    {
+      "noWasm": true
+    }
+  ],
+  "workerHeaps": [
+    16777216,
+    16777216,
+    20185088,
+    20185088,
+    151650304,
+    181993472,
+    452984832
+  ],
+  "lifecycle": [
+    {
+      "cancelled": "cancelled"
+    },
+    {
+      "name": "after-cancel",
+      "format": "avif",
+      "width": 160,
+      "height": 256,
+      "bytes": 627,
+      "ms": 177.30000000074506,
+      "mime": "image/avif"
+    },
+    {
+      "timeout": "avifTimeout",
+      "elapsed": 30004.10000000149
+    },
+    {
+      "name": "after-timeout",
+      "format": "avif",
+      "width": 160,
+      "height": 256,
+      "bytes": 627,
+      "ms": 170.80000000074506,
+      "mime": "image/avif"
+    },
+    {
+      "name": "lifecycle",
+      "resources": {
+        "bitmapsCreated": 67,
+        "bitmapsClosed": 67,
+        "canvasesCreated": 26,
+        "canvasesReleased": 26,
+        "urlsCreated": 0,
+        "urlsRevoked": 0
+      }
+    }
+  ],
+  "session": [
+    {
+      "tasks": [
+        {
+          "id": "fdb8d805-afe9-40ce-ad5d-82b2ca30ce9e-1",
+          "status": "ready"
+        },
+        {
+          "id": "fdb8d805-afe9-40ce-ad5d-82b2ca30ce9e-2",
+          "status": "ready"
+        }
+      ]
+    },
+    {
+      "staleDownload": true
+    },
+    {
+      "disposed": {
+        "bitmapsCreated": 9,
+        "bitmapsClosed": 9,
+        "canvasesCreated": 5,
+        "canvasesReleased": 5,
+        "urlsCreated": 0,
+        "urlsRevoked": 0
+      }
+    }
+  ],
+  "independentDecode": [
+    {
+      "name": "after-cancel.avif",
+      "format": "AVIF",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 627,
+      "private": []
+    },
+    {
+      "name": "after-timeout.avif",
+      "format": "AVIF",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 627,
+      "private": []
+    },
+    {
+      "name": "alpha-420.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 61544,
+      "private": []
+    },
+    {
+      "name": "alpha-444.avif",
+      "format": "AVIF",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 64952,
+      "private": []
+    },
+    {
+      "name": "avif-to-avif.avif",
+      "format": "AVIF",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 656,
+      "private": []
+    },
+    {
+      "name": "avif-to-jpeg.jpg",
+      "format": "JPEG",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 3042,
+      "private": []
+    },
+    {
+      "name": "avif-to-png.png",
+      "format": "PNG",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 4079,
+      "private": []
+    },
+    {
+      "name": "avif-to-webp.webp",
+      "format": "WEBP",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 1384,
+      "private": []
+    },
+    {
+      "name": "boundary-2048.avif",
+      "format": "AVIF",
+      "size": [
+        2048,
+        2048
+      ],
+      "bytes": 70230,
+      "private": []
+    },
+    {
+      "name": "jpeg-to-avif.avif",
+      "format": "AVIF",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 634,
+      "private": []
+    },
+    {
+      "name": "jpeg-to-jpeg.jpg",
+      "format": "JPEG",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 3157,
+      "private": []
+    },
+    {
+      "name": "jpeg-to-png.png",
+      "format": "PNG",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 9503,
+      "private": []
+    },
+    {
+      "name": "jpeg-to-webp.webp",
+      "format": "WEBP",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 1446,
+      "private": []
+    },
+    {
+      "name": "native-jpeg.jpg",
+      "format": "JPEG",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 3157,
+      "private": []
+    },
+    {
+      "name": "native-png.png",
+      "format": "PNG",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 2916,
+      "private": []
+    },
+    {
+      "name": "native-webp.webp",
+      "format": "WEBP",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 1356,
+      "private": []
+    },
+    {
+      "name": "png-to-avif.avif",
+      "format": "AVIF",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 627,
+      "private": []
+    },
+    {
+      "name": "png-to-jpeg.jpg",
+      "format": "JPEG",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 3127,
+      "private": []
+    },
+    {
+      "name": "png-to-png.png",
+      "format": "PNG",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 2916,
+      "private": []
+    },
+    {
+      "name": "png-to-webp.webp",
+      "format": "WEBP",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 1364,
+      "private": []
+    },
+    {
+      "name": "quick-jpeg.jpg",
+      "format": "JPEG",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 4499,
+      "private": [
+        "exif"
+      ]
+    },
+    {
+      "name": "quick-png.png",
+      "format": "PNG",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 1786,
+      "private": [
+        "exif"
+      ]
+    },
+    {
+      "name": "quick-webp.webp",
+      "format": "WEBP",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 1768,
+      "private": []
+    },
+    {
+      "name": "rotated-to-png.png",
+      "format": "PNG",
+      "size": [
+        160,
+        256
+      ],
+      "bytes": 4465,
+      "private": []
+    },
+    {
+      "name": "webp-to-avif.avif",
+      "format": "AVIF",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 673,
+      "private": []
+    },
+    {
+      "name": "webp-to-jpeg.jpg",
+      "format": "JPEG",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 3092,
+      "private": []
+    },
+    {
+      "name": "webp-to-png.png",
+      "format": "PNG",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 8429,
+      "private": []
+    },
+    {
+      "name": "webp-to-webp.webp",
+      "format": "WEBP",
+      "size": [
+        256,
+        160
+      ],
+      "bytes": 1356,
+      "private": []
+    },
+    {
+      "alpha": "alpha-420",
+      "maxError": 0,
+      "meanError": 0.0
+    },
+    {
+      "alpha": "alpha-444",
+      "maxError": 0,
+      "meanError": 0.0
+    },
+    {
+      "rotationSize": [
+        160,
+        256
+      ],
+      "rotationMeanError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "canvasColorPSNR": 30.453258290622635,
+      "channelMeanAbsoluteError": [
+        1.7510986328125,
+        0.70205078125,
+        3.2819580078125
+      ]
+    }
+  ],
+  "actualDownloadedZip": [
+    {
+      "name": "t4f-20261030-175323357-0001-private.avif",
+      "bytes": 656,
+      "size": [
+        256,
+        160
+      ],
+      "sha256": "713edba85f788eba4e9cb364ca0836fbe913f8795baabf4b62b65dbcaf287795"
+    },
+    {
+      "name": "t4f-20261030-175323357-0002-transparent.avif",
+      "bytes": 542,
+      "size": [
+        80,
+        48
+      ],
+      "sha256": "4496d0c32781f0df8e2c9b3a98098fce9553bb704e76604bf6ae90026823dbc8"
+    }
+  ],
+  "actualTool": {
+    "quickAvifSameFormat": "encoded 656B from 1205B source; no original-download label",
+    "advanced444": "stale until explicit generation, 732B",
+    "overEdge": "real 2049x2 PNG rejected for AVIF; existing result remained downloadable; explicit PNG selection succeeded at unchanged dimensions",
+    "clearedResources": {
+      "bitmaps": [
+        13,
+        13
+      ],
+      "canvases": [
+        7,
+        7
+      ],
+      "urls": [
+        7,
+        7
+      ],
+      "maxActive": 1
+    },
+    "viewports": [
+      {
+        "locale": "zh",
+        "appearance": "light",
+        "clientWidth": 1440,
+        "scrollWidth": 1440
+      },
+      {
+        "locale": "zh",
+        "appearance": "light",
+        "clientWidth": 390,
+        "scrollWidth": 390
+      },
+      {
+        "locale": "en",
+        "appearance": "dark",
+        "clientWidth": 1280,
+        "scrollWidth": 1280
+      },
+      {
+        "locale": "en",
+        "appearance": "dark",
+        "clientWidth": 390,
+        "scrollWidth": 390
+      }
+    ]
+  },
+  "wasm": {
+    "bytes": 3485872,
+    "sha256": "d9f2a95164362af48558d176e619becfd49dd97b50b86c679b47100860522b3d",
+    "network": [
+      {
+        "url": "/_astro/avif_enc-Co4TcJko.wasm",
+        "status": 200,
+        "bytes": 3485872,
+        "type": "application/wasm",
+        "cache": "public, max-age=31536000, immutable"
+      }
+    ],
+    "cacheTest": "No request on first page/AVIF input to native WebP; first AVIF output requests once; refresh and AVIF output succeed with no additional server request. Local immutable static server only, not EdgeOne deployment."
+  },
+  "checks": {
+    "relatedVitestFiles": 14,
+    "distinctTests": 185,
+    "astroCheck": {
+      "files": 227,
+      "errors": 0,
+      "warnings": 0
+    },
+    "cn": "passed both locales; draft and encoder absent",
+    "global": "passed both locales; draft and encoder absent",
+    "publishedShapedFixture": "isolated CN source copy only; real Registry remains draft"
+  },
+  "limits": "No Firefox/Safari or physical mobile device acceptance; mobile/unknown AVIF export disabled. WASM linear heap is not total browser/peak resident memory. 30s real timeout used a deliberately unresponsive Worker, not an uncontrolled large-image stress test."
+}

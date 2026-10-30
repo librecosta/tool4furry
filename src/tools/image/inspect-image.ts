@@ -5,6 +5,7 @@ import {
   type ImageInfo,
 } from './types';
 import type { ImageLimits } from './limits';
+import { inspectAvif } from './inspect-avif';
 
 const bad = (): never => {
   throw new ImageFailure('corrupt');
@@ -341,6 +342,8 @@ export async function inspectImage(
   if (blob.size > maxBytes) throw new ImageFailure('bytes');
   const r = new Reader(blob),
     header = await r.read(0, Math.min(blob.size, 12));
+  if (header.length >= 8 && text(header, 4, 4) === 'ftyp')
+    return inspectAvif(blob, limits);
   if (
     header.length >= 8 &&
     [137, 80, 78, 71, 13, 10, 26, 10].every((b, i) => header[i] === b)

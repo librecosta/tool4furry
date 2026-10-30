@@ -1,13 +1,19 @@
 import { mobileImageLimits, type ImageLimits } from './limits';
 import type { metadataPolicy } from './metadata';
-export const formats = ['webp', 'jpeg', 'png'] as const;
-export type ImageFormat = (typeof formats)[number];
+export const nativeFormats = ['webp', 'jpeg', 'png'] as const;
+export type NativeImageFormat = (typeof nativeFormats)[number];
+export const formats = [...nativeFormats, 'avif'] as const;
+export type ImageOutputFormat = (typeof formats)[number];
+export type ImageInputFormat = NativeImageFormat | 'avif';
+// Compatibility alias for existing output controls; input metadata uses its own type.
+export type ImageFormat = ImageOutputFormat;
 export const mime = {
   png: 'image/png',
   jpeg: 'image/jpeg',
   webp: 'image/webp',
+  avif: 'image/avif',
 } as const;
-export const extension = { png: 'png', jpeg: 'jpg', webp: 'webp' } as const;
+export const extension = { png: 'png', jpeg: 'jpg', webp: 'webp', avif: 'avif' } as const;
 // Conservative default for isolated callers; Converter passes its fixed workspace limits.
 export const imageBudget = mobileImageLimits;
 export type ImageErrorCode =
@@ -22,6 +28,11 @@ export type ImageErrorCode =
   | 'output'
   | 'metadata'
   | 'orientation'
+  | 'avifVariant'
+  | 'avifBudget'
+  | 'avifDevice'
+  | 'avifLoad'
+  | 'avifTimeout'
   | 'timeout'
   | 'cancelled';
 export class ImageFailure extends Error {
@@ -35,7 +46,7 @@ export class ImageFailure extends Error {
 export const failureCode = (error: unknown): ImageErrorCode =>
   error instanceof ImageFailure ? error.code : 'decode';
 export type ImageInfo = Readonly<{
-  format: ImageFormat;
+  format: ImageInputFormat;
   width: number;
   height: number;
   orientation: number;

@@ -107,7 +107,7 @@ export const converterStyles = stylex.create({
   legend: { fontWeight: 600, marginBottom: t.space8 },
   choices: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
     gap: t.space8,
   },
   choice: {

@@ -9,16 +9,16 @@ export const imageConverterContent: ToolContentMap[string] = {
     intro:
       '添加多张图片或文件夹，使用推荐设置转换格式，或调整质量和 JPEG 背景。可用输出格式由浏览器实测决定。',
     steps: [
-      '选择或拖入多张静态 PNG、JPEG 或 WebP，也可添加文件夹，后续添加会追加到列表。每个文件独立检查真实结构、动画、尺寸和方向。',
+      '选择或拖入多张静态 PNG、JPEG、WebP 或受支持的 AVIF，也可添加文件夹，后续添加会追加到列表。每个文件独立检查真实结构、动画、尺寸和方向。',
       '快速模式默认 WebP 85；不支持 WebP 输出时选择 PNG。新增图片或点击格式推荐后按序自动转换；高级模式调整参数后点击“转换全部”。',
       '检查原图与输出的真实格式、分辨率和大小。修改编码参数会令旧结果过期，修改文件名不会重复编码。',
       '在文件行逐项预览和下载当前已验证结果，无需等待其他文件完成。多文件任务结束后可下载成功结果的 ZIP。快速模式同格式优先无损清理常见隐私元数据；无法可靠清理时会提示，可主动使用高级模式重新编码。',
     ],
     limitations: [
-      '批量静态图片转换，当前数量、大小和尺寸限制见工具内“支持格式与限制”。不缩放、不裁剪，不支持 APNG、动画 WebP、GIF、HEIC、AVIF、TIFF 或 SVG。',
-      'JPEG 使用指定的不透明背景，默认白色。PNG/WebP 支持透明；有损输出不保证像素或文件大小相同。',
+      '批量静态图片转换，当前数量、大小和尺寸限制见工具内“支持格式与限制”。AVIF 仅接受经过验证的 8-bit SDR 静态结构；输出仅桌面可用，最多 2048×2048。不会自动缩小，不支持 APNG、动画 WebP、多帧 AVIF、GIF、HEIC、TIFF 或 SVG。',
+      'JPEG 使用指定的不透明背景，默认白色。PNG/WebP/AVIF 支持透明；有损输出不保证像素或文件大小相同。',
       '默认移除常见隐私元数据，可能保留必要的方向与色彩信息；不清除像素水印或隐写内容。重新编码可能改变色彩，不提供专业色彩或来源凭证保全保证。',
-      '运行时验证 PNG/JPEG/WebP 输出能力；输入可解码不表示同格式一定可编码。大图处理可能较慢，请保留原文件。',
+      '运行时验证 PNG/JPEG/WebP 输出能力；AVIF 输出按需加载编码器，Quick 同格式也会重新编码以移除来源元数据。输入可解码不表示同格式一定可编码。大图处理可能较慢，请保留原文件。',
     ],
     faq: [
       {
@@ -51,16 +51,16 @@ export const imageConverterContent: ToolContentMap[string] = {
     intro:
       'Add images or a folder for quick conversion, or adjust quality and JPEG background. Available export formats are checked in your browser.',
     steps: [
-      'Choose or drop multiple static PNG, JPEG or WebP images, or add a folder. Later imports append to the list. Each file is checked for structure, animation, dimensions and orientation.',
+      'Choose or drop multiple static PNG, JPEG, WebP or supported AVIF images, or add a folder. Later imports append to the list. Each file is checked for structure, animation, dimensions and orientation.',
       'Quick starts with WebP quality 85, or PNG when WebP export is unavailable. New images and format presets convert automatically in order; in Advanced, adjust settings and click Convert all.',
       'Compare actual formats, resolution and sizes. Encoding changes make old results stale; renaming does not re-encode.',
       'Preview and download each current verified result from its file row without waiting for other files. Once all tasks finish, download successful results as a ZIP. For the same format, Quick prefers lossless removal of common private metadata. If reliable cleanup is unavailable, it reports an error; you can explicitly re-encode in Advanced.',
     ],
     limitations: [
-      'Static image batches; see Supported formats and limits in the tool for current count, size and dimension limits. No resizing, cropping, APNG, animated WebP, GIF, HEIC, AVIF, TIFF or SVG.',
-      'JPEG uses an opaque background, white by default. PNG/WebP can retain transparency; lossy output is not guaranteed pixel-identical or smaller.',
+      'Static image batches; see Supported formats and limits in the tool for current count, size and dimension limits. AVIF accepts verified static 8-bit SDR structures only; export is desktop-only, up to 2048×2048. No automatic resizing, APNG, animated WebP, multi-frame AVIF, GIF, HEIC, TIFF or SVG.',
+      'JPEG uses an opaque background, white by default. PNG/WebP/AVIF can retain transparency; lossy output is not guaranteed pixel-identical or smaller.',
       'Common private metadata is removed by default; necessary orientation and color information may remain. Pixel watermarks and steganography are not removed. Re-encoding may change colors; professional color or provenance preservation is not guaranteed.',
-      'PNG/JPEG/WebP export is tested at runtime. Input decoding does not imply encoding support. Large images may take longer. Keep your original files.',
+      'PNG/JPEG/WebP export is tested at runtime. AVIF export loads its encoder on demand; Quick re-encodes even same-format AVIF to remove source metadata. Input decoding does not imply encoding support. Large images may take longer. Keep your original files.',
     ],
     faq: [
       {

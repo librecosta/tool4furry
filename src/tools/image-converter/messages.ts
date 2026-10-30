@@ -3,6 +3,7 @@ import type { ImageErrorCode } from '../image/types';
 import {
   mobileImageLimits,
   zipOutputBytes,
+  avifOutputLimits,
   type ImageLimits,
 } from '../image/limits';
 const zhMessages = {
@@ -77,6 +78,9 @@ const zhMessages = {
   smallerFile: '较小文件',
   higherQuality: '较高质量',
   precise: '精确质量（1–100）',
+  avif444: '彩色边缘保真',
+  avif444Hint: '使用 4:4:4 色度采样，适合彩色文字与线条；文件可能变大。',
+  avifLimits: '',
   qualityError: '请输入 1–100 的整数。',
   background: 'JPEG 背景色',
   pickBackground: '选择 JPEG 背景色',
@@ -96,7 +100,7 @@ const zhMessages = {
   output: '输出',
   previewError: '预览加载失败。请重新选择图片或生成结果。',
   limitations:
-    '仅静态 PNG/JPEG/WebP，分辨率不变。默认移除常见隐私元数据，可能保留必要的方向与色彩信息；不清除像素水印或隐写内容。重新编码可能改变色彩或使文件变大。',
+    '仅静态 PNG/JPEG/WebP/AVIF，分辨率不变。AVIF 仅接受经验证的 8-bit SDR 结构，特殊变体可能不可用。默认移除常见隐私元数据，可能保留必要的方向与色彩信息；不清除像素水印或隐写内容。重新编码可能改变色彩或使文件变大。',
   budget: '',
   disabledCount: '',
   disabledSize: '',
@@ -105,14 +109,19 @@ const zhMessages = {
     empty: '文件为空，请重新选择。',
     bytes: '',
     dimensions: '',
-    unsupported: '仅接受静态 PNG、JPEG、WebP；此文件不属于支持范围。',
+    unsupported: '仅接受静态 PNG、JPEG、WebP、AVIF；此文件不属于支持范围。',
     corrupt: '图片结构损坏、截断或不符合支持范围，请换一张完整图片。',
-    animated: '不支持 APNG 或动画 WebP；不会把第一帧当作转换结果。',
+    animated: '不支持 APNG、动画 WebP 或多帧 AVIF；不会把第一帧当作转换结果。',
     decode: '浏览器无法正确解码这张图片或其方向，请换图或换浏览器。',
     encode: '浏览器未能完成编码，请重试或选择另一输出格式。',
     output: '输出的真实格式、尺寸或可解码性不符，已阻止下载。',
     metadata: '无法可靠地无损清理此文件的元数据。可主动切换到高级模式重新编码；画质、色彩和大小可能变化。',
-    orientation: '暂不支持带非默认 EXIF 方向的 WebP，无法保证方向正确；请使用其他来源图片。',
+    orientation: '此 WebP 或 AVIF 的方向组合暂不受支持，无法保证方向正确；请使用其他来源图片。',
+    avifVariant: '此 AVIF 的结构、色彩或位深暂不受支持。仅接受经验证的静态 8-bit SDR 图片。',
+    avifBudget: '图片超过 AVIF 输出上限，不会自动缩小；请主动选择其他输出格式。',
+    avifDevice: 'AVIF 输出暂仅开放给可识别的桌面设备；移动端及未知设备暂不可用。',
+    avifLoad: 'AVIF 编码器加载失败，请检查网络后重试。文件仍只在本地处理。',
+    avifTimeout: 'AVIF 编码超时，已停止处理并释放编码器。可重试或主动选择其他格式。',
     timeout: '处理超时，请稍候再试或重新加载页面。大图片可能需要更长时间。',
     cancelled: '操作已取消。',
   } satisfies Record<ImageErrorCode, string>,
@@ -192,6 +201,9 @@ const en: typeof zhMessages = {
   smallerFile: 'Smaller file',
   higherQuality: 'Higher quality',
   precise: 'Exact quality (1–100)',
+  avif444: 'Preserve colored edges',
+  avif444Hint: 'Use 4:4:4 chroma sampling for colored text and lines. Files may be larger.',
+  avifLimits: '',
   qualityError: 'Enter an integer from 1 to 100.',
   background: 'JPEG background',
   pickBackground: 'Choose JPEG background color',
@@ -212,7 +224,7 @@ const en: typeof zhMessages = {
   previewError:
     'The preview could not load. Choose the image again or generate a new result.',
   limitations:
-    'Static PNG/JPEG/WebP, with unchanged resolution. Common private metadata is removed by default; necessary orientation and color information may remain. Pixel watermarks and steganography are not removed. Re-encoding may change colors or increase file size.',
+    'Static PNG/JPEG/WebP/AVIF, with unchanged resolution. AVIF accepts verified 8-bit SDR structures only; special variants may be unavailable. Common private metadata is removed by default; necessary orientation and color information may remain. Pixel watermarks and steganography are not removed. Re-encoding may change colors or increase file size.',
   budget: '',
   disabledCount: '',
   disabledSize: '',
@@ -222,11 +234,11 @@ const en: typeof zhMessages = {
     bytes: '',
     dimensions: '',
     unsupported:
-      'Only static PNG, JPEG and WebP are accepted. This file is outside the supported scope.',
+      'Only static PNG, JPEG, WebP and AVIF are accepted. This file is outside the supported scope.',
     corrupt:
       'The image is truncated, damaged or outside the supported structure. Choose a complete image.',
     animated:
-      'APNG and animated WebP are not supported. The first frame will not be substituted.',
+      'APNG, animated WebP and multi-frame AVIF are unsupported. The first frame will not be substituted.',
     decode:
       'The browser could not decode this image or its orientation correctly. Try another image or browser.',
     encode:
@@ -236,7 +248,12 @@ const en: typeof zhMessages = {
     metadata:
       'This file cannot be cleaned reliably without re-encoding. You can explicitly use Advanced to re-encode; quality, colors and size may change.',
     orientation:
-      'WebP with non-default EXIF orientation is not supported reliably. Use another source image.',
+      'This WebP or AVIF orientation combination is not supported reliably. Use another source image.',
+    avifVariant: 'This AVIF structure, color profile or bit depth is unsupported. Only verified static 8-bit SDR images are accepted.',
+    avifBudget: 'The image exceeds AVIF export limits and will not be resized. Explicitly choose another output format.',
+    avifDevice: 'AVIF export is currently available only on recognized desktop devices, not mobile or unknown devices.',
+    avifLoad: 'The AVIF encoder could not load. Check your connection and retry. Files are still processed locally.',
+    avifTimeout: 'AVIF encoding timed out. The encoder was stopped and released. Retry or explicitly choose another format.',
     timeout:
       'Processing timed out. Wait and retry, or reload this page. Large images may take longer.',
     cancelled: 'The operation was cancelled.',
@@ -256,6 +273,9 @@ export function getConverterMessages(locale: Locale, limits: ImageLimits) {
     : `over ${perFile} MiB per file`;
   return {
     ...t,
+    avifLimits: zh
+      ? `AVIF 输出：仅桌面，最多 ${avifOutputLimits.pixels.toLocaleString('en-US')} 像素、单边 ${avifOutputLimits.edge}px；单任务 ${avifOutputLimits.timeout / 1000} 秒。`
+      : `AVIF export: desktop only, up to ${avifOutputLimits.pixels.toLocaleString('en-US')} pixels, ${avifOutputLimits.edge}px per edge and ${avifOutputLimits.timeout / 1000}s per task.`,
     budget: zh
       ? `最多 ${limits.files} 张，累计 ${total} MiB；单张 ${perFile} MiB、${pixels}、单边 ${limits.edge}px。大图处理可能较慢，请保留原文件。`
       : `Up to ${limits.files} images, ${total} MiB total; ${perFile} MiB, ${pixels} and ${limits.edge}px per image. Large images may take longer. Keep your originals.`,

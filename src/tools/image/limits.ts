@@ -21,6 +21,9 @@ export const desktopImageLimits: ImageLimits = Object.freeze({
   totalBytes: 100 * 1024 ** 2,
 });
 export const zipOutputBytes = 128 * 1024 ** 2;
+export const avifOutputLimits = Object.freeze({ pixels: 2048 ** 2, edge: 2048, timeout: 30000 });
+// Same conservative classification as the fixed workspace profile, never viewport size.
+export const allowsAvifOutput = (limits: ImageLimits) => limits.pixels === desktopImageLimits.pixels && limits.edge === desktopImageLimits.edge;
 
 /** Unknown/touch-only clients use the conservative profile; viewport changes do nothing. */
 export function resolveImageLimits(

@@ -5,13 +5,15 @@ import {
   checkDimensions,
   imageBudget,
   mime,
-  formats,
+  nativeFormats,
   type ImageInfo,
   type ImageSource,
   type ImageFormat,
 } from './types';
-import type { ImageLimits } from './limits';
+import { allowsAvifOutput, avifOutputLimits, type ImageLimits } from './limits';
 import { cleanImageMetadata } from './metadata';
+import { inspectAvif, qualifyCanvasAvif } from './inspect-avif';
+import { AvifEncoder } from './avif-encoder';
 
 export function orientedSize(info: ImageInfo) {
   return info.orientation >= 5
@@ -80,11 +82,14 @@ export async function validateOutput(
   resources: ImageResources,
   limits: ImageLimits = imageBudget,
 ) {
-  if (!blob.size || blob.type !== mime[format])
+  if (!blob.size || blob.size > limits.pixels * 5 + 1024 ** 2 || blob.type !== mime[format])
     throw new ImageFailure('output');
   try {
     // Source byte guard is not an output size promise: a JPEG can become a larger PNG.
-    const cleaned = await cleanImageMetadata(
+    const cleaned = format === 'avif' ? {
+      blob,
+      info: await inspectAvif(blob, { ...limits, ...avifOutputLimits }, true),
+    } : await cleanImageMetadata(
       blob,
       limits.pixels * 5 + 1024 * 1024,
       limits,
@@ -131,11 +136,35 @@ export async function encodeImage(
     format: ImageFormat;
     quality: number | null;
     jpegBackground: string;
+    avif444?: boolean;
   },
   resources: ImageResources,
   limits: ImageLimits = imageBudget,
+  operation?: { signal?: AbortSignal; avif: AvifEncoder },
 ) {
   const { format, quality, jpegBackground } = settings;
+  if (format === 'avif') {
+    if (!allowsAvifOutput(limits)) throw new ImageFailure('avifDevice');
+    if (source.width > avifOutputLimits.edge || source.height > avifOutputLimits.edge || source.width * source.height > avifOutputLimits.pixels)
+      throw new ImageFailure('avifBudget');
+    if (!Number.isInteger(quality) || quality! < 1 || quality! > 100) throw new ImageFailure('encode');
+    if (!operation) throw new ImageFailure('avifLoad');
+    const bitmap = await decodeChecked(source.blob, source.info, resources, limits);
+    let canvas: HTMLCanvasElement | undefined;
+    let pixels: ImageData;
+    try {
+      if (operation.signal?.aborted) throw new ImageFailure('cancelled');
+      canvas = resources.canvas(source.width, source.height);
+      const context = canvas.getContext('2d', { colorSpace: 'srgb', willReadFrequently: true });
+      if (!context) throw new ImageFailure('encode');
+      context.drawImage(bitmap, 0, 0);
+      pixels = context.getImageData(0, 0, source.width, source.height);
+    } finally { resources.close(bitmap); if (canvas) resources.release(canvas); }
+    const buffer = await operation.avif.encode(pixels.data.buffer as ArrayBuffer, source.width, source.height, quality!, !!settings.avif444, operation.signal);
+    if (operation.signal?.aborted) throw new ImageFailure('cancelled');
+    const blob = await qualifyCanvasAvif(new Blob([buffer], { type: mime.avif }), limits);
+    return validateOutput(blob, 'avif', source.width, source.height, resources, limits);
+  }
   if (
     format !== 'png' &&
     (!Number.isInteger(quality) || quality! < 1 || quality! > 100)
@@ -196,7 +225,7 @@ export async function detectCapabilities(
   limits: ImageLimits = imageBudget,
 ): Promise<Capabilities> {
   const result = {} as Capabilities;
-  for (const format of formats) {
+  for (const format of nativeFormats) {
     const canvas = resources.canvas(2, 2);
     try {
       const context = canvas.getContext('2d');
@@ -215,5 +244,8 @@ export async function detectCapabilities(
       resources.release(canvas);
     }
   }
+  // Canvas serialization cannot express fixed S6/420/444/Alpha100 semantics, so
+  // an unverified native AVIF encoder never silently substitutes for this preset.
+  result.avif = { supported: allowsAvifOutput(limits) && typeof Worker !== 'undefined' && typeof WebAssembly !== 'undefined', reason: 'avifDevice' };
   return result;
 }

@@ -191,6 +191,7 @@ async function plan(blob: Blob, maxBytes: number, limits: ImageLimits) {
       if (t === 'VP8L') alpha = !!((await r.byte(data + 4)) & 0x10);
     } else unsupported();
   });
+  if (info.format === 'avif') unsupported(); // AVIF is always re-encoded, never remuxed here.
   if (info.format === 'jpeg' && iccCount) {
     assert(iccParts.size === iccCount);
     const profile = new Uint8Array(iccBytes); let p = 0;

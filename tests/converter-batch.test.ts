@@ -37,6 +37,7 @@ async function setup(overrides: Partial<ConverterServices> = {}) {
       png: { supported: true },
       jpeg: { supported: true },
       webp: { supported: true },
+      avif: { supported: false },
     }),
     ...overrides,
   });

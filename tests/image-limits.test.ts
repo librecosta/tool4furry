@@ -135,6 +135,7 @@ describe('one image limit contract', () => {
           png: { supported: true },
           jpeg: { supported: true },
           webp: { supported: true },
+          avif: { supported: false },
         }),
       );
       const session = new ConverterSession(

@@ -10,6 +10,29 @@
 
 新政策取代旧合同中冲突的强制跨浏览器发布要求；以下 B0–B5 历史实测记录不变，不因政策调整补记任何测试通过。日常修改按 L1 定向验证，完整 CI 优先由 GitHub Actions 执行。
 
+## V0.6-C2-C — AVIF 输入与按需输出
+
+四格式 PNG/JPEG/WebP/AVIF 可相互转换；AVIF 只接受有界验证的静态 8-bit SDR 子集，实际 native decode 仍为必需。BMFF 限制 256 个 box/OBU、4 个 item、24 个 property、1 MiB meta、64 KiB 单次读取；只允许主图和可选 Alpha、输入 EXIF/XMP。验证 AV1 reduced-still 序列、单帧、尺寸/色深/色度一致性及完整 mdat extent。动画、多帧、grid、ICC/HDR、高位深、未知颜色/属性/布局明确拒绝，不代表支持整个 HEIF 生态。输入 irot 交给原生解码应用一次；EXIF 非1、imir 和不可靠方向组合不接受。
+
+- PNG/JPEG/WebP 保持原生编解码与 C2-B 无损隐私清理。AVIF 输入不加载编码器；AVIF 同格式 Quick 必须重新编码，不能调用三格式清理器直通。输出只允许固定编码器结构，验证真实格式、帧数、尺寸、方向、附加字段及完整回解码，再授予 `privacy-v1` 结果资格；预览、单项下载和 ZIP 共用此资格。
+- 固定 `@jsquash/avif@2.1.1` 的 ST encoder，直接导入 ST factory，不使用自动多线程 wrapper 或 WASM decoder。原生 Canvas 无法表达本轮固定 Speed/色度/Alpha 参数，不作为未经验证的替代。Quick Q55/S6/420/Alpha100；Advanced 质量1–100，可选444。色度参数进入设置 equality/版本及任务快照；改标签不编码，能力重试不覆盖主动选择。
+- 仅真正执行 AVIF 输出时创建 Worker/下载 WASM；小任务复用 engine Promise。RGBA Transferable 交付前释放 Canvas/Bitmap。30秒超时、取消、卸载真实终止 Worker；晚到结果隔离，后续任务可重建。WASM heap 达256 MiB 或任务达2 Mi pixels后立即回收，其他实例空闲30秒释放。仍由原 SerialJobs 单通道调度；原生不可硬取消操作继续占用通道至实际结束。
+- AVIF 输出仅固定桌面 profile：4,194,304像素、单边2048px、30秒，不缩小图片；移动/未知设备禁用输出，输入仍按原设备预算和解码能力判断。原生三格式原额度不变。并非所有4MP内容都能在30秒内完成，超时会明确失败。
+- 固定 ST WASM 3,485,872 B，SHA-256 `d9f2a95164362af48558d176e619becfd49dd97b50b86c679b47100860522b3d`，加载时检查 MIME/大小/摘要；Vite 输出独立哈希资源。失败不无限重试或偷偷切格式。冷启动 DEV 将两个纯 ESM 包入口排除预优化，避免首次发现 Worker 依赖导致全页重载及文件丢失。
+- Canvas 明确产出 sRGB RGBA；固定 libavif wrapper 原来将 nclx primaries/transfer 留为 unspecified。仅对这条已知输出设置为 BT.709 primaries / sRGB transfer，保留 BT.601 matrix、AV1 载荷和所有像素数据。输入未知配置绝不套用此标记。不承诺 ICC/HDR/广色域保真。
+
+### 许可证与安全维护边界
+
+新增直接依赖仅 jSquash，锁定包带来的 wasm-feature-detect 不导入生产编码路径。`src/tools/image/avif.NOTICE.txt` 随 Worker 作为静态资源输出，包含 jSquash Apache-2.0、libavif v1.0.1、libaom v3.7.0 LICENSE/PATENTS、固定 libwebp SharpYUV 许可。包的 JS audit 没有这两个新增包的告警，但不能代替 C++ 二进制审计。
+
+固定包的底层 libaom 较旧，不能宣称没有已知漏洞。[CVE-2023-6879](https://nvd.nist.gov/vuln/detail/CVE-2023-6879) 的多线程、视频分辨率变化条件不属于本次 ST、8-bit、每次新建单帧 avifEncoderWrite 路径；[libaom 3.7.1](https://aomedia.googlesource.com/aom/+/refs/tags/v3.7.1) 还修复高位深/尺寸切换问题，本入口不开放这些配置。[CVE-2026-56208](https://github.com/advisories/GHSA-mgv2-4j37-m3x6) 涉及 LAP 第二帧统计，[CVE-2026-56209](https://github.com/advisories/GHSA-8vmr-q5h8-3vc5) 等涉及 SVC 控制；本 wrapper 不提供视频多帧/SVC 接口，也未编入 decoder。这是按已披露触发条件与固定源码判断的范围限制，不是完整漏洞证明或未来安全保证；正式发布前仍须重新核对上游维护与新增通告，不放宽当前输入和预算检查。
+
+### 定向实测
+
+2026-10-30 Windows 10 / Chromium156 /16逻辑核/浏览器报告32 GiB：四输入×四输出共16组真实转换、AVIF irot6→PNG、原三格式 Quick 清理、Alpha100 420/444及2048²边界。Pillow12.3.0独立解码输出；1MP透明样本两种色度的Alpha逐像素一致，旋转PNG与独立方向应用后像素一致。1MP透明420/444约4.54/4.89秒、61,544/64,952 B；2048²约10.05秒、70,230 B，WASM heap约432 MiB后立即终止。这不是浏览器总内存/峰值保证，也不推定移动端安全。
+
+取消真实编码后可恢复；不响应的真实 Worker 在30.004秒被超时终止，随后编码恢复（这是受控超时，不是声称所有图片30秒内完成）。Session FIFO、改参数失效、清理资源及异常恢复由定向测试和实际工具页验证。结构化结果见 `docs/evidence/image-avif-c2c.json`；原始样本/隔离程序在仓库外 `.validation/image-avif-c2c/`。未重复C1/C2-A全矩阵；Safari/Firefox/真机移动端、专业色彩仍未验收。保持 draft。
+
 ## V0.6-C2-B — 默认隐私元数据管线
 
 `src/tools/image/metadata.ts` 复用现有有界容器扫描（64 KiB/次、格式/尺寸/段数/PNG CRC/RIFF 预算），以 Blob 切片重封装，不重新编码压缩图像数据。默认策略固定为 `privacy-v1`，写入结果并在 `session.download()` 校验；预览及 ZIP 都复用这个资格入口。没有新增运行依赖或策略 UI。

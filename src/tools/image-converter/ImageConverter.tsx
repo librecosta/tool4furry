@@ -6,6 +6,7 @@ import { formToolLayout as form } from '../../workbench/form-tool-layout';
 import { FileDropzone } from '../../ui/FileDropzone';
 import { Button } from '../../ui/Button';
 import { TextField } from '../../ui/TextField';
+import { CheckboxField } from '../../ui/CheckboxField';
 import { FieldFrame, useField } from '../../ui/Field';
 import { SliderField } from '../../ui/SliderField';
 import { controls as c } from '../../styles/controls';
@@ -158,7 +159,7 @@ export default function ImageConverter({ locale }: ToolProps) {
               id="converter-source"
               appearance={hasTasks ? 'compact' : 'expanded'}
               label={hasTasks ? t.addImages : t.pick}
-              hint={!hasTasks ? `PNG / JPEG / WebP · ${t.local}` : undefined}
+              hint={!hasTasks ? `PNG / JPEG / WebP / AVIF · ${t.local}` : undefined}
               multiple
               accept={imageAccept}
               disabled={!session}
@@ -294,7 +295,7 @@ export default function ImageConverter({ locale }: ToolProps) {
                     key={format}
                     title={
                       disabled && !view.checkingCapabilities
-                        ? t.unavailable
+                        ? format === 'avif' ? t.errors.avifDevice : t.unavailable
                         : undefined
                     }
                     {...stylex.props(
@@ -315,7 +316,7 @@ export default function ImageConverter({ locale }: ToolProps) {
                       }}
                       aria-description={
                         disabled && !view.checkingCapabilities
-                          ? t.unavailable
+                          ? format === 'avif' ? t.errors.avifDevice : t.unavailable
                           : undefined
                       }
                       {...stylex.props(s.radio)}
@@ -328,6 +329,7 @@ export default function ImageConverter({ locale }: ToolProps) {
               })}
             </div>
           </fieldset>
+          {settings.format === 'avif' && <p {...stylex.props(s.note)}>{t.avifLimits}</p>}
           {!view.checkingCapabilities &&
             (view.capabilityError ||
               !formats.some(
@@ -402,6 +404,15 @@ export default function ImageConverter({ locale }: ToolProps) {
                     <span>{t.higherQuality}</span>
                   </div>
                 </div>
+              )}
+              {settings.format === 'avif' && (
+                <CheckboxField
+                  label={t.avif444}
+                  hint={t.avif444Hint}
+                  checked={!!settings.avif444}
+                  disabled={view.checkingCapabilities}
+                  onCheckedChange={(avif444) => session?.settings({ ...settings, avif444 })}
+                />
               )}
               {settings.format === 'jpeg' && (
                 <FieldFrame {...backgroundField} ids={backgroundIds}>

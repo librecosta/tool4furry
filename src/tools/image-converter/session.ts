@@ -23,7 +23,7 @@ import {
   type Capabilities,
 } from '../image/browser-codec';
 import { ImageResources } from '../image/resources';
-import { mobileImageLimits, type ImageLimits } from '../image/limits';
+import { avifOutputLimits, mobileImageLimits, type ImageLimits } from '../image/limits';
 import {
   failureCode,
   ImageFailure,
@@ -44,6 +44,7 @@ import { batchTime, taskFilename, validFilenameLabel } from '../file-naming';
 import { SerialJobs } from './serial-jobs';
 import { planIntake, type IntakeSummary } from './intake';
 import { metadataPolicy } from '../image/metadata';
+import { AvifEncoder } from '../image/avif-encoder';
 
 export type ConverterServices = {
   accept: typeof acceptImage;
@@ -94,6 +95,9 @@ export class ConverterSession {
   private selection = 0;
   private sequence = 0;
   private capabilityRevision = 0;
+  private explicitFormat = false;
+  private avif = new AvifEncoder();
+  private operations = new Map<string, AbortController>();
   private auto = new Set<string>();
   private manual = new Set<string>();
   private newBatch = true;
@@ -102,6 +106,7 @@ export class ConverterSession {
     webp: recommendations.webp.settings,
     jpeg: recommendations.jpeg.settings,
     png: recommendations.png.settings,
+    avif: recommendations.avif.settings,
   };
   private labelPreference = '';
   private view: ConverterView;
@@ -173,7 +178,7 @@ export class ConverterSession {
           );
           if (!this.live || token !== this.capabilityRevision) return;
           if (
-            !capabilities[this.shared.settings.format].supported &&
+            !this.explicitFormat && !capabilities[this.shared.settings.format].supported &&
             capabilities.png.supported
           )
             this.applyControls(
@@ -368,6 +373,7 @@ export class ConverterSession {
         next.validSettings,
       );
       if (processing !== before) {
+        this.operations.get(task.id)?.abort();
         this.manual.delete(task.id);
         this.jobs.cancel(`encode:${task.id}`);
         // Release obsolete output Blobs rather than accumulating stale images per task.
@@ -416,6 +422,7 @@ export class ConverterSession {
       !this.view.capabilities?.[format].supported
     )
       return;
+    this.explicitFormat = true;
     const settings =
       this.shared.mode === 'quick'
         ? recommendations[format].settings
@@ -515,6 +522,7 @@ export class ConverterSession {
       snapshot = processing.active!;
     const passthrough =
       before.mode === 'quick' &&
+      snapshot.settings.format !== 'avif' &&
       source.info.format === snapshot.settings.format;
     this.update(task.id, (current) => ({
       ...current,
@@ -526,6 +534,16 @@ export class ConverterSession {
       `encode:${task.id}`,
       async () => {
         if (!this.current(task.id, snapshot)) return;
+        const controller = new AbortController();
+        this.operations.set(task.id, controller);
+        // Include native RGBA preparation/output verification in the AVIF budget.
+        // An uninterruptible native promise still owns the lane until it settles.
+        const avifDeadline = snapshot.settings.format === 'avif' ? setTimeout(() => {
+          if (this.current(task.id, snapshot)) {
+            controller.abort();
+            this.fail(task.id, snapshot, 'avifTimeout');
+          }
+        }, avifOutputLimits.timeout) : undefined;
         this.update(task.id, (current) => ({
           ...current,
           status: 'processing',
@@ -541,6 +559,7 @@ export class ConverterSession {
                 snapshot.settings,
                 this.resources,
                 this.limits,
+                { signal: controller.signal, avif: this.avif },
               );
           if (!this.current(task.id, snapshot)) return;
           const result: ImageResult = {
@@ -566,11 +585,16 @@ export class ConverterSession {
         } catch (error) {
           if (this.current(task.id, snapshot))
             this.fail(task.id, snapshot, failureCode(error));
+        } finally {
+          clearTimeout(avifDeadline);
+          if (this.operations.get(task.id) === controller) this.operations.delete(task.id);
         }
       },
       () => {
-        if (this.current(task.id, snapshot))
+        if (this.current(task.id, snapshot)) {
+          this.operations.get(task.id)?.abort();
           this.fail(task.id, snapshot, 'timeout');
+        }
       },
     );
   }
@@ -631,6 +655,7 @@ export class ConverterSession {
     }));
   }
   private cancelJobs(id: string) {
+    this.operations.get(id)?.abort();
     this.auto.delete(id);
     this.manual.delete(id);
     this.jobs.cancel(`accept:${id}`);
@@ -666,6 +691,9 @@ export class ConverterSession {
   }
   dispose() {
     this.live = false;
+    this.operations.forEach(controller => controller.abort());
+    this.operations.clear();
+    this.avif.dispose();
     ++this.selection;
     ++this.capabilityRevision;
     this.auto.clear();

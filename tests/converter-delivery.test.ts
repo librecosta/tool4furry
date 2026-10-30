@@ -23,6 +23,7 @@ async function setup(names = ['same.png', 'same.png', '中文🐾.png']) {
       png: { supported: true },
       jpeg: { supported: true },
       webp: { supported: true },
+      avif: { supported: false },
     }),
     accept: async (file) => {
       if (file.name === 'broken.png') throw new Error('corrupt');

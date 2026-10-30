@@ -114,6 +114,20 @@ if (fixtureMode)
 const files = (await readdir(root, { recursive: true })).map((file) =>
   file.replaceAll('\\', '/'),
 );
+const avifWasm = files.filter(file => /avif_(?:enc|dec).*\.wasm$/.test(file));
+if (files.includes('tools/image-converter/index.html')) {
+  assert.equal(avifWasm.length, 1, 'Exactly one ST AVIF encoder, no decoder/threaded binary');
+  assert(/avif_enc-[\w-]+\.wasm$/.test(avifWasm[0]), 'AVIF resource has a build content hash');
+  const binary = await readFile(resolve(root, avifWasm[0]));
+  assert.equal(binary.length, 3485872);
+  assert.equal(createHash('sha256').update(binary).digest('hex'), 'd9f2a95164362af48558d176e619becfd49dd97b50b86c679b47100860522b3d');
+  const notices = files.filter(file => /avif\.NOTICE-[\w-]+\.txt$/.test(file));
+  assert.equal(notices.length, 1, 'Optional encoder ships its third-party notices');
+  assert((await readFile(resolve(root, notices[0]), 'utf8')).includes('libaom v3.7.0'));
+} else {
+  assert.equal(avifWasm.length, 0, 'Draft AVIF resources must not enter the public site');
+  assert(!files.some(file => /avif\.worker|avif\.NOTICE/.test(file)), 'Draft worker/notices must not leak');
+}
 const catalogModules = files.filter(file => /^_astro\/ToolsCatalog\.astro_astro_type_script_index_0_lang\.[\w-]+\.js$/.test(file));
 assert.equal(catalogModules.length, 1, 'One traceable catalog module');
 const catalogEntry = '/' + catalogModules[0];

@@ -32,6 +32,7 @@ async function setup() {
     quick: async (source) => ({ blob: source.blob, info: source.info, changed: false, kind: 'passthrough', metadataPolicy: 'privacy-v1' }),
     capabilities: async () => ({
       webp: { supported: true },
+      avif: { supported: false },
       jpeg: { supported: true },
       png: { supported: true },
     }),

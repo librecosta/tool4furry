@@ -18,6 +18,11 @@ const file = (name = 'image.png', size = 1, path = '') => {
   return value;
 };
 describe('bounded image intake (metadata only)', () => {
+  it('accepts the four intended formats without admitting additional image types', () => {
+    const result = planIntake(['a.png', 'b.jpg', 'c.webp', 'd.avif', 'e.gif', 'f.bmp', 'g.heic', 'h.svg'].map(name => file(name)), []);
+    expect(result.accepted.map(value => value.name)).toEqual(['a.png', 'b.jpg', 'c.webp', 'd.avif']);
+    expect(result.summary.rejected.type).toBe(4);
+  });
   it.each([desktopImageLimits, mobileImageLimits])(
     'partially accepts at the $files-file boundary, counting existing tasks',
     (limits) => {
