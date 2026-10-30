@@ -30,6 +30,15 @@
 
 模拟手机视口不是 iOS/Android 真机；jsdom 不证明布局、原生编解码或浏览器文件选择器。L3 按真实反馈跟进，未验证范围必须披露。已知严重缺陷仍阻止 L2。
 
+### 测试职责（不是新的风险等级）
+
+| 职责 | 现有入口与证明范围 |
+| --- | --- |
+| Contract | Vitest 的 Registry、编译资格、Loader、地区/语言与静态内容测试；验证元数据及路由资格，不用它代替产物隔离证据 |
+| Unit / Component | Vitest 中对应工具的算法、任务/取消、资源和 React 交互测试；按实际工具选择，不要求统一文件结构或覆盖率比例 |
+| Build Artifact | 两地区 build 内置的 `verify-build.mjs` 检查实际 HTML/发现文件/脚本与资源；平台机制实质变更另运行多工具夹具检查真实依赖归属及反例 |
+| Browser Smoke | 真实浏览器核心用户路径，按既有 L2 与受影响范围验收；不纳入日常 CI，不将构建图当作浏览器执行证明 |
+
 ## 实际命令
 
 版本以 [package.json](../package.json) 的 engines / packageManager 和锁文件为准；使用 `pnpm install --frozen-lockfile`，不更换工程入口。
@@ -43,7 +52,9 @@
 
 先停止两个 DEV 服务，再做 check/build；同地区不要把 dev 与 check/build 混跑。需要完整验证时顺序执行 `pnpm check` → `pnpm test` → `pnpm build:cn` → `pnpm build:global`，不为小改动反复运行全量矩阵。现有 [GitHub Actions](../.github/workflows/ci.yml) 使用 frozen 安装及同一组四条工程命令，无 CD。
 
-通用平台夹具 `node scripts/verify-tool-fixture.mjs cn` / `global` 仅在平台模板变更需要时执行，产物不得部署。目录 `compact` / `pagination` 夹具用法见 [site-tools](../docs/site-tools.md#dev-catalog-samples-c7-r1r2)；默认 off。历史 Converter CN-only 发布模拟脚本已经退役，不恢复另一套发布流程。
+通用平台夹具 `node scripts/verify-tool-fixture.mjs cn` / `global` 在 Registry、Loader、构建配置、资源打包或发布/依赖契约发生实质变化时执行；普通文案、UI 与工具内部参数调整不重复运行。两条命令保留地区组合、升降级、缺 Loader/内容检查，并验证实际模块/Chunk、动态入口、私有 CSS/Worker/WASM 归属，以及提前加载、共享入口带入 Draft、Loader 互换的反例。依赖归属反例必须先成功构建，再由指定归属断言拒绝，不能以无关编译错误充数。
+
+夹具在仓库外 `../.validation/multi-tool-*` 保存源码副本、分阶段产物、构建日志、`*-graph/` 和 `evidence.json`；图证据只在副本配置中采集，不部署 Manifest。Worker 是独立构建图，用生成的 Worker URL 和 WASM 引用连接，仍需独立的 Browser Smoke 验证实际运行。专项夹具不加入日常 CI、不新增 Job/地区矩阵，构建内置守卫不另跑重复步骤。目录 `compact` / `pagination` 夹具用法见 [site-tools](../docs/site-tools.md#dev-catalog-samples-c7-r1r2)；默认 off。历史 Converter CN-only 发布模拟脚本已经退役，不恢复另一套发布流程。
 
 ## 完成任务
 

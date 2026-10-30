@@ -15,6 +15,7 @@
 
 ### Changed
 
+- E2-C 明确 Contract、Unit/Component、Build Artifact 与 Browser Smoke 的职责；专项夹具采集真实构建图并核对 Loader/资源归属，以成功构建后的反例识别提前加载、Draft 依赖泄漏和 Loader 互换，保持日常单 Job CI 不变。
 - E2-B 将逐工具编译期资格统一由 Registry 生成，保留显式 Loader 与单一发布来源；隔离源码夹具验证多工具/多地区、私有 JS/Worker/WASM/CSS 排除、共享依赖和发布状态回退，构建守卫按真实地区 Registry 核对路由与目录。
 - 完成 D2 源码资格审计，两地区正式静态产物与所需资源可构建；未执行线上部署。
 - E1 将 README/AGENTS 整理为简洁入口，建立架构/工作流、四项稳定契约、两条既有决策 ADR 与统一文档索引；五份阶段长文完整归档，保留原路径当前说明和全部研究/验收数据。

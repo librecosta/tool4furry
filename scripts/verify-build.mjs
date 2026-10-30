@@ -867,6 +867,7 @@ for (const page of htmlFiles) {
       dom.querySelector('astro-island[component-url*="ToolRuntime"]'),
       `Wrong fixed root: ${page}`,
     );
+    assert.equal(dom.querySelector('astro-island').getAttribute('client'), 'load', 'Fixed tool root uses client:load');
     assert.equal(
       dom.querySelectorAll('[data-tool-page-entry]').length,
       1,

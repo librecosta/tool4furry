@@ -33,3 +33,10 @@
 权威验证：[静态资格/Loader 契约测试](../tests/build-availability.test.ts)、[Registry 测试](../tests/taxonomy.test.ts)、[地区/发现测试](../tests/discovery.test.mjs)、[夹具隔离测试](../tests/catalog-fixture.test.ts)、[实际静态产物守卫](../scripts/verify-build.mjs)。架构理由见 [ADR-0001](../docs/decisions/0001-static-regions-publication.md)。
 
 多工具机制变更时，按需执行 `node scripts/verify-tool-fixture.mjs cn` / `global`：在仓库外 `../.validation/multi-tool-*` 复制源码，让配置与编译共用测试 Registry，验证地区组合、Draft/Published 转换、缺 Loader/内容失败、共享模块与真实 JS/CSS/Worker/WASM 链。普通工具文案、UI 或参数修改不要求重复这些构建；不新增 CI 矩阵，也不将夹具注册到真实产品。
+
+## 构建图归属
+
+- 固定 ToolRuntime 通过显式动态 Loader 到达工具入口，其静态依赖闭包不得包含工具实现。普通静态页面的增强脚本（含动态依赖）不得到达工具 Runtime 或实现；工具页仍只有一个 `client:load` 根。
+- [专项夹具](../scripts/verify-tool-fixture.mjs) 使用 [测试专用探针](../tests/fixtures/build-graph.mjs) 记录 Vite 的输出模块、Chunk 导入及 CSS/资源信息；逐项核对工具 ID → 实际 Loader → 动态入口，不能仅靠资源总数判断 Loader 是否正确绑定。合法共享模块可以复用。
+- Client 与 Worker 分别采集输出图；Worker URL 和 Worker 内的 WASM 引用必须与实际发出的文件对应。图与归属证据仅写在隔离验证目录，不进入真实配置或生产产物。它不替代浏览器执行、任意运行时拼接 URL 的追踪或移动端兼容验证。
+- 专项反例先确认构建及原有静态守卫成功，再明确验证目标归属失败：提前静态引入 Published 实现、共享入口引入 Draft 依赖、互换两个 Published Loader（两套资源仍齐全）。保留升降级与地区私有资源排除检查，不关闭既有约束。
