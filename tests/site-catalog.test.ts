@@ -8,6 +8,7 @@ import {
 import type { ToolDefinition } from '../src/tools/types';
 import { fixtureTools } from './fixtures/tools';
 import { assertValidRegistry } from '../src/tools/validate-registry';
+import { imageResizeCropDefinition } from '../src/tools/image-resize-crop/definition';
 import { imageConverterDefinition } from '../src/tools/image-converter/definition';
 
 // Test-only metadata; never registered as a real tool or given a loader.
@@ -43,14 +44,16 @@ describe('static tool discovery', () => {
       const entries = getCatalogEntries(region, undefined, true);
       expect(entries.map((entry) => [entry.id, entry.href, entry.title])).toEqual([
         ['image-converter', '/tools/image-converter/', imageConverterDefinition.copy[defaultLocale(region)].title],
+        ['image-resize-crop', '/tools/image-resize-crop/', imageResizeCropDefinition.copy[defaultLocale(region)].title],
       ]);
       expect(getHomepageEntries(region, undefined, [], true)).toEqual(entries);
       expect(getCatalogSections(region, undefined, true).flatMap((section) =>
         section.groups.flatMap((group) => group.entries),
       )).toEqual(entries);
-      expect(getCatalogEntries(region)).toEqual(entries);
-      expect(getHomepageEntries(region)).toEqual(entries);
-      expect(getCatalogSections(region).flatMap(section => section.groups.flatMap(group => group.entries))).toEqual(entries);
+      const published = entries.filter(entry => entry.status === 'published');
+      expect(getCatalogEntries(region)).toEqual(published);
+      expect(getHomepageEntries(region)).toEqual(published);
+      expect(getCatalogSections(region).flatMap(section => section.groups.flatMap(group => group.entries))).toEqual(published);
       expect(imageConverterDefinition.status).toBe('published');
     },
   );

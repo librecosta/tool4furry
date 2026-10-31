@@ -10,7 +10,7 @@ import type { ToolDefinition } from '../src/tools/types';
 import { fixtureTool, fixtureTools, fixtureLoaders } from './fixtures/tools';
 
 describe('publication metadata gate', () => {
-  it('has seven domains and only the real first direction', () => {
+  it('has seven domains and only implemented tools', () => {
     expect(Object.keys(domains)).toEqual([
       'images',
       'creative',
@@ -30,6 +30,7 @@ describe('publication metadata gate', () => {
     expect(() => assertValidRegistry(tools, toolLoaders)).not.toThrow();
     expect(tools.map((tool) => [tool.id, tool.status])).toEqual([
       ['image-converter', 'published'],
+      ['image-resize-crop', 'draft'],
     ]);
     expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter']);
     expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter']);
@@ -46,6 +47,7 @@ describe('publication metadata gate', () => {
       expect(registryIssues(list, fixtureLoaders(list))).toEqual([]);
       expect(tools.map((tool) => [tool.id, tool.status])).toEqual([
         ['image-converter', 'published'],
+        ['image-resize-crop', 'draft'],
       ]);
       expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter']);
       expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter']);

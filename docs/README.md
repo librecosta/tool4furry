@@ -1,6 +1,6 @@
 # 文档导航
 
-当前基线：V0.6-D2。Image Converter 是首个且目前唯一的 Published 工具；CN/Global 均可生成双语静态站点，**两个地区均未线上部署**。
+当前开发：V0.7-A1-A 的 Image Resize & Crop 单图 Draft；正式资格基线仍为 V0.6-D2。Image Converter 是唯一 Published 工具；CN/Global 均可生成双语静态站点，**两个地区均未线上部署**。
 
 来源优先级统一见 [AGENTS — Sources of Truth](../AGENTS.md#sources-of-truth)。当前源码与行为测试优先于说明；历史中的 Draft、三格式、旧配色和零工具结论不能覆盖后续实现。按任务范围阅读，不需要通读所有历史。
 
@@ -13,6 +13,7 @@
 - [工作区](workbench-appearance.md)：Canvas/Form/Batch 布局及状态所有权。
 - [首页与站点外壳](site-homepage.md)：静态首页、导航、品牌、主题与受控增强。
 - [Image Converter](image-converter-implementation.md)：正式工具分层、隐私、任务、资源及证据入口。
+- [Image Resize & Crop](image-resize-crop-implementation.md)：单源 Draft、像素裁剪、尺寸联动、单次绘制导出与人工验收入口。
 - [工具目录](site-tools.md)：当前目录筛选、URL、分页及显式 DEV 夹具。
 - [UI 原语](ui-primitives.md)：受控组件接口；附早期验收记录。
 - [文件交互](file-interactions.md)：FileDropzone 与滚动原语边界；附历史验收。

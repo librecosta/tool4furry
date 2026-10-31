@@ -1154,6 +1154,8 @@ for (const font of ['dm-sans', 'noto-sans-sc']) {
 }
 for (const file of files.filter((file) => file.endsWith('.js'))) {
   const js = await readFile(resolve(root, file), 'utf8');
+  if (!files.includes('tools/image-resize-crop/index.html'))
+    assert(!/data-image-resize-crop|t4f-crop-marching-ants|Discard the current edit/.test(js), `Draft resize/crop implementation leaked: ${file}`);
   assert(!converterLongCopy.some(text => js.includes(plain(text))), `Long Astro Converter guide leaked into JS: ${file}`);
   assert(
     !js.includes('ownership diagnostics'),
@@ -1185,6 +1187,11 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
     toolPages.length > 0 || !js.includes('data-workbench'),
     `Unused workbench leaked without published tools: ${file}`,
   );
+}
+if (!files.includes('tools/image-resize-crop/index.html')) {
+  for (const file of files.filter(file => file.endsWith('.css')))
+    assert(!/ReactCrop__|t4f-crop-marching-ants/.test(await readFile(resolve(root, file), 'utf8')), `Draft crop CSS leaked: ${file}`);
+  assert(!files.some(file => /crop\.NOTICE|ImageResizeCrop|CropEditor/.test(file)), 'Draft crop-specific asset leaked');
 }
 assert((await stat(root)).isDirectory());
 console.log(

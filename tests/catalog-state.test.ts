@@ -50,7 +50,9 @@ describe('catalog state, filtering and pagination', () => {
     for (const locale of ['zh', 'en'] as const) {
       const published = getCatalogEntries(region, tools, false, locale);
       expect(published.map(entry => entry.id)).toEqual(['image-converter']);
-      expect(getCatalogEntries(region, tools, true, locale)).toEqual(published);
+      const dev = getCatalogEntries(region, tools, true, locale);
+      expect(dev.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop']);
+      expect(dev.filter(entry => entry.status === 'published')).toEqual(published);
       expect(published[0].roles).toEqual(['painter', 'developer', 'animator', 'operations']);
       const fixture = fixtureTool('foreign', { regions: [region === 'cn' ? 'global' : 'cn'] });
       expect(getCatalogEntries(region, [fixture], true, locale)).toEqual([]);

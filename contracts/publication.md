@@ -11,6 +11,8 @@
 
 当前 Image Converter 是首个且目前唯一的 Published 工具，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
 
+Image Resize & Crop (`image-resize-crop`) 登记 CN/Global，保持 Draft；仅两地区 DEV 双语页面可访问，生产不得包含其页面、实现、裁剪 CSS 和专属许可资产。
+
 ## 唯一可用性来源
 
 - [registry.ts](../src/tools/registry.ts) 的工具定义、`status` 和 `regions` 决定可用性：DEV 为当前地区 Draft + Published，生产为当前地区 Published。

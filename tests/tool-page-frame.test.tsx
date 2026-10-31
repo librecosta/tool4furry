@@ -6,6 +6,7 @@ import ToolPageFrame from '../src/tools/ToolPageFrame';
 import WorkbenchLab from '../src/lab/WorkbenchLab';
 import { UiProvider } from '../src/ui/UiProvider';
 import * as registry from '../src/tools/registry';
+import { imageResizeCropDefinition } from '../src/tools/image-resize-crop/definition';
 import { imageConverterDefinition } from '../src/tools/image-converter/definition';
 import type { ToolDefinition } from '../src/tools/types';
 import { renderToString } from 'react-dom/server';
@@ -247,7 +248,7 @@ describe('product navigation', () => {
     expect(screen.queryByText('overseas')).toBeNull();
     expect(available).toHaveBeenCalledWith('cn', dev, registry.tools);
     expect([...document.querySelectorAll('[data-tool-panel] a[aria-current], [data-tool-panel] a[href$="draft-slug/"]')].map(link => link.getAttribute('href'))).toEqual(dev ? ['/tools/draft-slug/', '/tools/current-slug/'] : ['/tools/current-slug/']);
-    expect(registry.tools).toEqual([imageConverterDefinition]); // Fixtures never populate the real registry.
+    expect(registry.tools).toEqual([imageConverterDefinition, imageResizeCropDefinition]); // Fixtures never populate the real registry.
     expect(imageConverterDefinition.status).toBe('published');
     expect(original('cn', false)).toEqual([imageConverterDefinition]);
     expect(original('global', false)).toEqual([imageConverterDefinition]);

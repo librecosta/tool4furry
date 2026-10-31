@@ -6,10 +6,10 @@ import { roles } from '../src/site/roles';
 import { tools } from '../src/tools/registry';
 
 describe('catalog-only DEV samples', () => {
-  it.each(['cn', 'global'] as const)('defaults to the real published tool in %s in both locales', region => {
+  it.each(['cn', 'global'] as const)('defaults to real tools under the %s publication gate in both locales', region => {
     for (const locale of ['zh', 'en'] as const) for (const dev of [false, true]) {
       const real = getCatalogEntries(region, tools, dev, locale), sections = getCatalogSections(region, tools, dev, locale);
-      expect(real.map(entry => entry.id)).toEqual(['image-converter']);
+      expect(real.map(entry => entry.id)).toEqual(dev ? ['image-converter', 'image-resize-crop'] : ['image-converter']);
       expect(addCatalogFixture(real, sections, locale)).toEqual({ entries: real, sections, fixtureCount: 0 });
       expect(addCatalogFixture(real, sections, locale, 'off')).toEqual({ entries: real, sections, fixtureCount: 0 });
     }
@@ -18,7 +18,7 @@ describe('catalog-only DEV samples', () => {
     const real = getCatalogEntries('cn', tools, true, locale), sections = getCatalogSections('cn', tools, true, locale);
     const snapshot = structuredClone({ real, sections, tools });
     const result = addCatalogFixture(real, sections, locale, 'compact');
-    expect(result.fixtureCount).toBe(48); expect(result.entries).toHaveLength(49);
+    expect(result.fixtureCount).toBe(48); expect(result.entries).toHaveLength(real.length + 48);
     expect(catalogPage(result.entries.map(entry => ({ ...entry, search: entry.title })), emptyCatalogState()).totalPages).toBe(5);
     const samples = result.entries.filter(entry => entry.fixture);
     expect(new Set(samples.map(entry => entry.id)).size).toBe(48);
@@ -26,10 +26,10 @@ describe('catalog-only DEV samples', () => {
     for (const role of Object.keys(roles)) expect(samples.some(entry => entry.roles.includes(role as keyof typeof roles))).toBe(true);
     expect(result.sections).toHaveLength(5);
     expect(result.sections.flatMap(section => section.groups)).toHaveLength(6);
-    expect(result.sections.flatMap(section => section.groups.flatMap(group => group.entries))).toHaveLength(49);
+    expect(result.sections.flatMap(section => section.groups.flatMap(group => group.entries))).toHaveLength(real.length + 48);
     expect({ real, sections, tools }).toEqual(snapshot);
     expect(getHomepageEntries('cn', tools, undefined, true, locale)).toEqual(real);
-    expect(getCatalogEntries('cn', tools, false, locale)).toEqual(real);
+    expect(getCatalogEntries('cn', tools, false, locale)).toEqual(real.filter(entry => entry.status === 'published'));
   });
   it('can disable samples or extend only the catalog QA data beyond seven pages', () => {
     const real = getCatalogEntries('global', tools, true, 'en'), sections = getCatalogSections('global', tools, true, 'en');
@@ -38,7 +38,7 @@ describe('catalog-only DEV samples', () => {
     expect(extended.fixtureCount).toBe(180);
     const entries = extended.entries.map(entry => ({ ...entry, search: entry.title }));
     for (const [scope, total, totalPages] of [
-      [{}, 181, 16], [{ category: 'images' }, 133, 12], [{ group: 'image-processing' }, 109, 10],
+      [{}, real.length + 180, 16], [{ category: 'images' }, real.length + 132, 12], [{ group: 'image-processing' }, real.length + 108, 10],
     ] as const) {
       const page = catalogPage(entries, { ...emptyCatalogState(), ...scope });
       expect(page.total).toBe(total); expect(page.totalPages).toBe(totalPages);

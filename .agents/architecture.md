@@ -45,6 +45,8 @@ Astro 工具路由 + 静态 Intro / Guide
 
 PNG/JPEG/WebP 原生优先；AVIF 输入使用原生解码，输出按实际任务加载独立单线程 Worker/WASM。它们受同一串行任务契约约束，不建立第二个任务池。`ImageResources` 和工具级 URL owner 负责释放；公共 FileTaskList/预览外壳不管理 Blob。详见 [当前模块说明](../docs/image-converter-implementation.md) 和 [图片处理契约](../contracts/image-processing.md)。
 
+Image Resize & Crop 的单源 Draft 见 [模块说明](../docs/image-resize-crop-implementation.md)：`geometry.ts` 管理 Source 整数像素中的 Crop 与 Output 联动，`render.ts` 复用图片内核一次绘制并验证输出，`session.ts` 拥有独立单图状态；仅复用 `SerialJobs`，不继承 Converter 批量模型。ReactCrop/局部 CSS/NOTICE 从工具懒加载入口进入，不进入纯元数据或公共 Workbench。
+
 ## 地区、语言与生产投影
 
 - CN 与 Global 独立 SSG，`dist/cn` / `dist/global` 及缓存隔离；域名来自 `region.ts`。

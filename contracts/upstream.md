@@ -9,6 +9,7 @@
 | StyleX unplugin | 原生 defineVars/createTheme，完整主题覆盖，生产静态 CSS，关闭运行时注入；Astro 使用编译样式 | `src/styles/`、主题与 StyleX 测试、产物 CSS |
 | jSquash AVIF | 固定单线程 encoder 与独立哈希 WASM，只接受受限 RGBA/参数；不分发包内 decoder 或多线程变体 | `avif-encoder.ts`、`avif.worker.ts`、AVIF 检查/测试与 NOTICE |
 | Base UI / fflate | 弹层键盘/焦点/Portal 与按需 ZIP；资源和快照责任仍归工具，不由库替代业务校验 | UI、预览、ZIP 相关测试 |
+| react-image-crop | Draft 单图裁剪的指针/触控/键盘交互；只负责响应式选区，方向、Source 像素与输出仍归工具；局部变量及 Reduced Motion 覆盖 | `image-resize-crop/CropEditor.tsx`、`crop.css`、`crop.NOTICE.txt`（ISC）与 Resize 定向测试 |
 
 ## StyleX 开发兼容补丁
 

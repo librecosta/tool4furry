@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { assertToolLoaderContract, toolAvailabilityConstant, toolBuildDefines } from '../src/tools/build-availability';
 import { readFileSync } from 'node:fs';
-import { getAvailableTools } from '../src/tools/registry';
+import { getAvailableTools, tools } from '../src/tools/registry';
 import { fixtureTool } from './fixtures/tools';
 import type { ToolDefinition } from '../src/tools/types';
 
@@ -41,7 +41,7 @@ describe('Registry compile-time availability projection', () => {
   });
   it('validates the real explicit Loader and allows omitted/unavailable Draft entries', () => {
     const source = readFileSync('src/tools/loaders.ts', 'utf8');
-    expect(() => assertToolLoaderContract(registry, source)).not.toThrow();
+    expect(() => assertToolLoaderContract(tools, source)).not.toThrow();
     expect(() => assertToolLoaderContract(registry, 'export const toolLoaders = {};')).not.toThrow();
     expect(() => assertToolLoaderContract(registry, "export const toolLoaders = { 'image-resizer': undefined };" )).not.toThrow();
   });

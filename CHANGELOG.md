@@ -8,6 +8,8 @@
 
 ### Added
 
+- V0.7-A1-A 新增 Image Resize & Crop 单图 Draft：自由/固定比例裁剪、指针/键盘控制、精确宽高与百分比、实时构图预览、PNG/JPEG/WebP 单次绘制导出和下载；复用本地图片验证/隐私/资源与串行通道，CN/Global 双语 DEV 可访问，生产排除专属页面和资源。未实现批量、未提升 Published、未部署。
+
 - Astro SSG 双地区双语浏览器工具平台、静态信息页与统一主题/产品外壳。
 - 首个且目前唯一源码 Published 的 Image Converter：PNG/JPEG/WebP/受限静态 AVIF 互转，批量/文件夹导入、预览、逐项下载和 ZIP。
 - AVIF 单线程编码按需加载、独立预算与 Worker 生命周期；默认常见隐私元数据清理，受限 JPEG 作者/版权白名单保留。

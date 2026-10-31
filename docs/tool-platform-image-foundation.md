@@ -1,6 +1,6 @@
 # 工具平台 · 当前说明
 
-当前只有 Image Converter 一个 Published 工具，登记 CN/Global，均未部署。它不是未来平台容量上限；Resizer/Cropper 等尚不存在的工具不能被填充为真实入口。
+当前只有 Image Converter 一个 Published 工具；第二款 [Image Resize & Crop](image-resize-crop-implementation.md) 为真实单图 Draft，两者登记 CN/Global，均未部署。其他未实现工具不能被填充为真实入口。
 
 ## 元数据、发布与发现
 

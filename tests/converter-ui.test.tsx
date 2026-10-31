@@ -990,9 +990,9 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
   });
   it('uses the accepted content and tool route in both regional builds and DEV', () => {
     for (const region of ['cn', 'global'] as const) {
-      expect(getAvailableTools(region, false)).toEqual(getAvailableTools(region, true));
+      expect(getAvailableTools(region, false)).toEqual(getAvailableTools(region, true).filter(tool => tool.status === 'published'));
       expect(getAvailableTools(region, true).map((tool) => tool.slug)).toEqual([
-        'image-converter',
+        'image-converter', 'image-resize-crop',
       ]);
       expect(getPublishedTools(region).map(tool => tool.id)).toEqual(['image-converter']);
       const content = toolPageContents['image-converter'][defaultLocale(region)]!;

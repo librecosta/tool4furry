@@ -32,6 +32,7 @@ const fixtureIds = [...Array.from({ length: 20 }, (_, i) => `fixture-${i + 1}`),
 const resources = { 'image-resizer-fixture': 'resizer', 'character-editor-fixture': 'editor', 'cn-only-fixture': 'cn' };
 const expectedEntries = Object.fromEntries([
   ['image-converter', 'src/tools/image-converter/ImageConverter.tsx'],
+  ['image-resize-crop', 'src/tools/image-resize-crop/ImageResizeCrop.tsx'],
   ...fixtureIds.map(id => [id, resources[id] ? `tests/fixtures/build-resources/${resources[id]}.tsx` : 'tests/fixtures/FixtureTool.tsx']),
 ]);
 const publicationPath = join(source, 'tests/fixtures/publication.ts');
