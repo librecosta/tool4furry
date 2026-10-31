@@ -1,91 +1,56 @@
-import ReactCrop from 'react-image-crop';
+import { useId, useRef, useState } from 'react';
+import { Dialog } from '@base-ui/react/dialog';
 import * as stylex from '@stylexjs/stylex';
-import { aspects, fromPercent, toPercent } from './geometry';
+import { CheckIcon } from '@phosphor-icons/react';
+import { Button } from '../../ui/Button';
 import type { ResizeView } from './session';
-import type { resizeMessages } from './messages';
-import { resizeStyles as s } from './resize.styles';
-import './crop.css';
-import { ArrowCounterClockwiseIcon, QuestionIcon } from '@phosphor-icons/react';
-import { IconButton } from '../../ui/Button';
-import { HelpPopover, Tooltip } from '../../ui/Tooltip';
-import { CompositionPreview } from './CompositionPreview';
+import type { ResizeMessages } from './ParameterControls';
+import { CropWorkspace, type CropDisplay } from './CropWorkspace';
+import { cropWorkspaceStyles as s } from './crop-workspace.styles';
 
-export function CropEditor({
-  view,
-  url,
-  t,
-  onCrop,
-  onReset,
-}: {
+export function CropEditor({ view, url, t, onCrop, onReset }: {
   view: ResizeView;
   url: string;
-  t: (typeof resizeMessages)['en' | 'zh'];
+  t: ResizeMessages;
   onCrop: (crop: NonNullable<ResizeView['crop']>) => void;
   onReset: () => void;
 }) {
-  const { source, crop } = view;
-  if (!source || !crop) return null;
+  const [display, setDisplay] = useState<CropDisplay>('crop');
+  const [hand, setHand] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const focusButtonId = useId();
+  const done = useRef<HTMLButtonElement>(null);
+  if (!view.source || !view.crop) return null;
+  const workspace = (inDialog: boolean) => (
+    <CropWorkspace
+      key={url} view={view} url={url} t={t} display={display} onDisplay={setDisplay}
+      hand={hand} onHand={setHand} focused={inDialog}
+      focusButtonId={focusButtonId} onFocus={() => setFocused(true)}
+      onCrop={onCrop} onReset={onReset}
+    />
+  );
   return (
-    <div {...stylex.props(s.stack)}>
-      <div {...stylex.props(s.cropToolbar)}>
-        <span {...stylex.props(s.note)}>{t.cropHint}</span>
-        <div {...stylex.props(s.actions)}>
-          <HelpPopover content={t.instructions} label={t.keyboardHelp}>
-            <IconButton variant="ghost" label={t.keyboardHelp}>
-              <QuestionIcon size={20} />
-            </IconButton>
-          </HelpPopover>
-          <Tooltip content={t.full}>
-            <IconButton
-              variant="ghost"
-              label={t.full}
-              onClick={onReset}
-              disabled={view.status === 'loading'}
-            >
-              <ArrowCounterClockwiseIcon size={20} />
-            </IconButton>
-          </Tooltip>
-        </div>
-      </div>
-      <div {...stylex.props(s.stage)}>
-        <ReactCrop
-          style={{
-            width: `min(100%, ${Math.max(320, source.width)}px, calc(min(60dvh, 640px) * ${source.width / source.height}))`,
-          }}
-          crop={toPercent(crop, source)}
-          aspect={aspects[view.aspect]}
-          keepSelection
-          ruleOfThirds
-          ariaLabels={t.handles}
-          disabled={view.status === 'loading'}
-          onChange={(_, percent) => {
-            if (percent.width > 0 && percent.height > 0)
-              onCrop(fromPercent(percent, source));
-          }}
+    <Dialog.Root open={focused} onOpenChange={setFocused}>
+      {/* A single interactive crop instance: remounting only changes the viewport. */}
+      {focused ? <div aria-hidden="true" {...stylex.props(s.placeholder)}/> : workspace(false)}
+      <Dialog.Portal>
+        <Dialog.Backdrop {...stylex.props(s.backdrop)}/>
+        <Dialog.Popup
+          data-image-resize-crop
+          initialFocus={done}
+          finalFocus={() => document.getElementById(focusButtonId)}
+          {...stylex.props(s.dialog)}
         >
-          <img
-            src={url}
-            alt={source.file.name}
-            draggable={false}
-            {...stylex.props(s.image)}
-          />
-        </ReactCrop>
-      </div>
-      <div {...stylex.props(s.summary)}>
-        <span>
-          {t.source}: {source.width} × {source.height}
-        </span>
-        <span>
-          {t.crop}: {crop.width} × {crop.height}
-        </span>
-      </div>
-      <div {...stylex.props(s.previewHeading)}>
-        <h3 {...stylex.props(s.heading)}>{t.composition}</h3>
-        <span {...stylex.props(s.note)}>{t.compositionNote}</span>
-      </div>
-      <div {...stylex.props(s.compositionFrame)}>
-        <CompositionPreview view={view} url={url} t={t} />
-      </div>
-    </div>
+          <header {...stylex.props(s.dialogHeader)}>
+            <div {...stylex.props(s.identity)}>
+              <Dialog.Title {...stylex.props(s.title)}>{t.focusEdit}</Dialog.Title>
+              <Dialog.Description {...stylex.props(s.filename)}>{view.source.file.name}</Dialog.Description>
+            </div>
+            <Dialog.Close render={<Button ref={done} size="sm" variant="ghost"><CheckIcon size={18}/>{t.doneEditing}</Button>}/>
+          </header>
+          {focused && workspace(true)}
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

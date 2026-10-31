@@ -4,6 +4,14 @@ import type { ResizeView } from './session';
 import type { ResizeMessages } from './ParameterControls';
 import { resizeStyles as s } from './resize.styles';
 
+export function compositionBitmapSize(output: ResizeView['output']) {
+  const scale = Math.min(1200 / output.width, 800 / output.height, 1);
+  return {
+    width: Math.max(1, Math.round(output.width * scale)),
+    height: Math.max(1, Math.round(output.height * scale)),
+  };
+}
+
 /** Bounded display drawing from the existing oriented preview. Never encodes. */
 export function CompositionPreview({ view, url, t }: {
   view: ResizeView;
@@ -23,9 +31,9 @@ export function CompositionPreview({ view, url, t }: {
       !img || !canvas || !img.complete || !img.naturalWidth ||
       !crop || !source || failed
     ) return;
-    const scale = Math.min(1200 / output.width, 800 / output.height, 1);
-    canvas.width = Math.max(1, Math.round(output.width * scale));
-    canvas.height = Math.max(1, Math.round(output.height * scale));
+    const size = compositionBitmapSize(output);
+    canvas.width = size.width;
+    canvas.height = size.height;
     const context = canvas.getContext('2d');
     if (!context) {
       canvas.width = 0;

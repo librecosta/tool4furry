@@ -75,6 +75,11 @@ async function mount(name = 'source.png') {
     }),
   );
   await screen.findByRole('textbox', { name: 'Width (pixels)' });
+  const preview = mounted.container.querySelector<HTMLImageElement>('[data-crop-workspace] > img[hidden]');
+  if (preview) {
+    Object.defineProperties(preview, {naturalWidth: {value: 1200}, naturalHeight: {value: 800}});
+    fireEvent.load(preview);
+  }
   return { user, ...mounted };
 }
 async function selectFile(
@@ -85,13 +90,18 @@ async function selectFile(
   await user.click(await screen.findByRole('option', { name }));
 }
 describe('single image UI wiring (mocked codecs; not layout/browser evidence)', () => {
-  it('shows composition immediately while keeping limits and legal notice out of the way', async () => {
-    const { container } = await mount();
+  it('starts in crop view and shows composition in the same workspace on request', async () => {
+    const { user, container } = await mount();
     expect(
       screen.getByText('Supported formats and limits').closest('details')!.open,
     ).toBe(false);
+    expect(screen.getByRole('button', {name: 'Crop'}).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.queryByRole('img', { name: 'Composition' })).toBeNull();
+    await user.click(screen.getByRole('button', {name: 'Preview'}));
     expect(screen.getByRole('img', { name: 'Composition' }).tagName).toBe('CANVAS');
     expect(screen.getByText('Composition preview, not the final encoded output.').closest('details')).toBeNull();
+    expect(container.querySelectorAll('[data-crop-viewport]')).toHaveLength(1);
+    await user.click(screen.getByRole('button', {name: 'Crop'}));
     expect(container.querySelector('a[href*="crop.NOTICE"]')).toBeNull();
     expect(
       document.querySelector('link[rel="license"]')?.getAttribute('href'),
@@ -199,6 +209,21 @@ describe('single image UI wiring (mocked codecs; not layout/browser evidence)', 
     await user.click(screen.getByRole('button', { name: 'Quick' }));
     expect(screen.getByText('Downloaded')).toBeDefined();
     await user.click(screen.getByRole('button', { name: 'Download image' }));
+    expect(encode).toHaveBeenCalledOnce();
+    expect(HTMLAnchorElement.prototype.click).toHaveBeenCalledTimes(2);
+  });
+  it('retains a verified result through workspace cameras, inline preview and focused editing', async () => {
+    const { user } = await mount();
+    await user.click(screen.getByRole('button', {name: 'Download image'}));
+    await screen.findByText('Downloaded');
+    await user.click(screen.getByRole('button', {name: 'Zoom in'}));
+    await user.click(screen.getByRole('button', {name: 'Pan mode'}));
+    await user.click(screen.getByRole('button', {name: 'Preview'}));
+    await user.click(screen.getByRole('button', {name: 'Focus editor'}));
+    await user.click(screen.getByRole('button', {name: 'Done editing'}));
+    expect(screen.getByText('Downloaded')).toBeDefined();
+    expect((screen.getByRole('textbox', {name: 'Width (pixels)'}) as HTMLInputElement).value).toBe('1200');
+    await user.click(screen.getByRole('button', {name: 'Download image'}));
     expect(encode).toHaveBeenCalledOnce();
     expect(HTMLAnchorElement.prototype.click).toHaveBeenCalledTimes(2);
   });
