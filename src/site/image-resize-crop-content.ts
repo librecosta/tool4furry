@@ -7,8 +7,7 @@ export const imageResizeCropContent: Record<Locale, ToolPageContent> = {
     h1: '图片尺寸与裁剪',
     description:
       '在浏览器本地裁剪单张图片或批量缩放多张图片，按宽度、高度、最长边或百分比处理，下载 PNG、JPEG、WebP 和 ZIP。无需上传。',
-    intro:
-      '单张模式围绕画面主体调整裁剪与像素尺寸；批量模式按每张完整原图独立计算尺寸。切换模式保留文件和单张草稿，图片只在本地处理。',
+    intro: '自由裁剪、调整尺寸或批量处理图片，全部在浏览器本地完成。',
     features: [
       '自由裁剪及五种常用比例，支持拖动、触控与键盘微调。',
       '自然裁剪尺寸、精确宽高和百分比缩放；改变输出比例会调整构图，不拉伸画面。',
@@ -18,7 +17,7 @@ export const imageResizeCropContent: Record<Locale, ToolPageContent> = {
     steps: [
       '选择或拖入图片；首次一张进入单图，多张进入批量，后续追加不会自动切换模式。',
       '单张模式选择图片，拖动选区、边缘或角点，或选择常用裁剪比例；切换图片保留各自草稿。',
-      '保持比例设置像素尺寸，或解锁后应用宽高；也可以按当前裁剪区域的百分比缩放。',
+      '设置目标尺寸与格式，点击下载图片。高级模式可解锁宽高、按选区百分比缩放，以及调整质量、JPEG 背景和文件名；按 Enter 或移出输入区域确认尺寸。',
       '批量模式选择缩放规则、格式、质量和 JPEG 背景，点击开始处理。成功项可独立下载，全部结束后可下载仅含成功项的 ZIP。',
     ],
     limitations: [
@@ -59,8 +58,7 @@ export const imageResizeCropContent: Record<Locale, ToolPageContent> = {
     h1: 'Image Resize & Crop',
     description:
       'Crop a single image or batch resize images by width, height, longest edge or percentage. Download PNG, JPEG, WebP and ZIP locally without uploads.',
-    intro:
-      'Crop and resize individual images with a live composition preview, or batch resize each full original. Switching modes keeps your files and single-image drafts. Images stay in your browser.',
+    intro: 'Crop, resize or batch process images right in your browser.',
     features: [
       'Free cropping and five common aspect ratios with pointer, touch and keyboard controls.',
       'Natural crop dimensions, exact width and height, or percentage scaling. A new output ratio reframes the crop without stretching.',
@@ -70,7 +68,7 @@ export const imageResizeCropContent: Record<Locale, ToolPageContent> = {
     steps: [
       'Choose or drop images. One initial file opens single mode; multiple files open batch mode. Appending files keeps the current mode.',
       'In single mode, select an image and drag the selection, edges or corners, or choose an aspect ratio. Each image keeps its own draft.',
-      'Set pixels with the ratio locked, unlock and apply dimensions, or scale relative to the current crop.',
+      'Set the size and format, then download your image. Advanced settings include unlocked dimensions, crop percentage, quality, JPEG background and a filename label. Press Enter or leave the dimension fields to confirm edits.',
       'In batch mode, choose a resize rule, format, quality and JPEG background, then start processing. Download successes individually, or pack successful results into ZIP after all tasks finish.',
     ],
     limitations: [

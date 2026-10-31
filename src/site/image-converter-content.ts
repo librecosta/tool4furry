@@ -6,8 +6,7 @@ export const imageConverterContent: ToolContentMap[string] = {
     h1: '在线图片格式转换器',
     description:
       '在浏览器本地批量转换 PNG、JPG、WebP 和 AVIF 图片，无需上传。支持常见格式互转、编码质量调整、图片预览和 ZIP 打包下载，默认清理常见隐私元数据。',
-    intro:
-      '在浏览器中批量转换 PNG、JPG、WebP 和 AVIF 图片，无需上传。使用推荐设置快速转换，或调整编码质量、背景颜色等选项，再预览和下载结果。',
+    intro: '轻松转换 PNG、JPEG、WebP 和 AVIF 图片，全部在浏览器本地完成。',
     steps: [
       '**添加图片**：选择或拖入 PNG、JPEG、WebP、AVIF 图片，也可以直接添加文件夹。支持批量处理，后续添加的图片会继续加入列表。',
       '**选择输出格式**：快速模式使用推荐设置自动转换；高级模式可以调整编码质量、JPEG 背景色和 AVIF 彩色边缘保真等选项。',
@@ -58,8 +57,7 @@ export const imageConverterContent: ToolContentMap[string] = {
     h1: 'Online Image Converter',
     description:
       'Batch convert PNG, JPG, WebP and AVIF images in your browser without uploading files. Adjust quality, preview results and download ZIPs. Common private metadata is removed by default.',
-    intro:
-      'Convert between PNG, JPEG, WebP and supported AVIF images directly in your browser. Use quick presets or advanced quality settings, then preview and download each result or a ZIP.',
+    intro: 'Convert PNG, JPEG, WebP and AVIF images right in your browser.',
     steps: [
       '**Add images**: Select or drag in PNG, JPEG, WebP or AVIF images, or add a folder. Batch processing is supported, and any images added later are appended to the list.',
       '**Choose an output format**: Quick mode converts automatically using recommended settings. Advanced mode lets you adjust encoding quality, the JPEG background color and options such as AVIF colored-edge preservation.',

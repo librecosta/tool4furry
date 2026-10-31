@@ -6,21 +6,27 @@ import type { ResizeView } from './session';
 import type { resizeMessages } from './messages';
 import { resizeStyles as s } from './resize.styles';
 import './crop.css';
+import { ArrowCounterClockwiseIcon, QuestionIcon } from '@phosphor-icons/react';
+import { IconButton } from '../../ui/Button';
+import { Tooltip } from '../../ui/Tooltip';
 
 export function CropEditor({
   view,
   url,
   t,
   onCrop,
+  onReset,
 }: {
   view: ResizeView;
   url: string;
   t: (typeof resizeMessages)['en' | 'zh'];
   onCrop: (crop: NonNullable<ResizeView['crop']>) => void;
+  onReset: () => void;
 }) {
   const image = useRef<HTMLImageElement>(null);
   const preview = useRef<HTMLCanvasElement>(null);
   const [loaded, setLoaded] = useState(0);
+  const [expanded, setExpanded] = useState(false);
   const { source, crop, output } = view;
   useEffect(() => {
     const img = image.current,
@@ -59,15 +65,31 @@ export function CropEditor({
       canvas.width = 0;
       canvas.height = 0;
     };
-  }, [crop, source, output, loaded, url]);
+  }, [crop, source, output, loaded, url, expanded]);
   if (!source || !crop) return null;
   return (
     <div {...stylex.props(s.stack)}>
-      <h2 {...stylex.props(s.heading)}>{t.editor}</h2>
-      <p {...stylex.props(s.note)} id="resize-crop-help">
-        {t.instructions}
-      </p>
-      <div {...stylex.props(s.stage)} aria-describedby="resize-crop-help">
+      <div {...stylex.props(s.cropToolbar)}>
+        <span {...stylex.props(s.note)}>{t.cropHint}</span>
+        <div {...stylex.props(s.actions)}>
+          <Tooltip content={t.instructions}>
+            <IconButton variant="ghost" label={t.keyboardHelp}>
+              <QuestionIcon size={20} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip content={t.full}>
+            <IconButton
+              variant="ghost"
+              label={t.full}
+              onClick={onReset}
+              disabled={view.status === 'loading'}
+            >
+              <ArrowCounterClockwiseIcon size={20} />
+            </IconButton>
+          </Tooltip>
+        </div>
+      </div>
+      <div {...stylex.props(s.stage)}>
         <ReactCrop
           style={{
             width: `min(100%, ${Math.max(320, source.width)}px, calc(min(60dvh, 640px) * ${source.width / source.height}))`,
@@ -100,18 +122,21 @@ export function CropEditor({
         <span>
           {t.crop}: {crop.width} × {crop.height}
         </span>
-        <span>
-          {t.output}: {output.width} × {output.height}
-        </span>
       </div>
-      <h2 {...stylex.props(s.heading)}>{t.composition}</h2>
-      <canvas
-        ref={preview}
-        role="img"
-        aria-label={t.composition}
-        {...stylex.props(s.composition)}
-      />
-      <p {...stylex.props(s.note)}>{t.previewNote}</p>
+      <details
+        open={expanded}
+        onToggle={(event) => setExpanded(event.currentTarget.open)}
+      >
+        <summary {...stylex.props(s.previewToggle)}>{t.composition}</summary>
+        {expanded && (
+          <canvas
+            ref={preview}
+            role="img"
+            aria-label={t.composition}
+            {...stylex.props(s.composition)}
+          />
+        )}
+      </details>
     </div>
   );
 }

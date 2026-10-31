@@ -879,6 +879,7 @@ for (const page of htmlFiles) {
       'Navigation identity is not the SEO H1',
     );
     const intro = dom.querySelector('[data-tool-intro]');
+    assert.equal(intro.querySelectorAll('ul, ol').length, 0, 'Tool introduction stays concise; feature lists belong in the static guide');
     const runtime = dom.querySelector('[data-tool-runtime]');
     const guide = dom.querySelector('[data-tool-guide]');
     assert(

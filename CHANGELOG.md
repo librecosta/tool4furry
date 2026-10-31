@@ -19,6 +19,8 @@
 
 ### Changed
 
+- V0.7-A1-C1 统一两款工具的居中标题与简洁简介，完整功能说明下移至静态指南。Image Resize & Crop 分开工作方式与快速/高级层级，集中文件管理，以裁剪画面为主，单图一次点击完成验证下载；批量改为紧凑任务行及按状态操作。沿用 Converter 的 Token、选择态与表单样式，折叠限制/帮助/预览，保留错误与第三方授权分发；图片处理、任务/ZIP 契约和 Draft 资格不变。
+
 - E2-C 明确 Contract、Unit/Component、Build Artifact 与 Browser Smoke 的职责；专项夹具采集真实构建图并核对 Loader/资源归属，以成功构建后的反例识别提前加载、Draft 依赖泄漏和 Loader 互换，保持日常单 Job CI 不变。
 - E2-B 将逐工具编译期资格统一由 Registry 生成，保留显式 Loader 与单一发布来源；隔离源码夹具验证多工具/多地区、私有 JS/Worker/WASM/CSS 排除、共享依赖和发布状态回退，构建守卫按真实地区 Registry 核对路由与目录。
 - 完成 D2 源码资格审计，两地区正式静态产物与所需资源可构建；未执行线上部署。

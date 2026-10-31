@@ -1,15 +1,17 @@
 # Image Resize & Crop · 当前实现
 
-V0.7-A1-B 完成 A1 首版功能：单张裁剪与批量缩放，CN/Global 双语 **Draft**，仅 DEV 可访问。Image Converter 仍是唯一 Published 工具；未部署。本轮不进行独立 UI 精修，下一阶段集中体验精修与正式资格验收。
+V0.7-A1-B 已完成单张裁剪与批量缩放功能；V0.7-A1-C1 重组工作区层级、快速/高级参数与下载流程。CN/Global 双语继续为 **Draft**，仅 DEV 可访问。Image Converter 仍是唯一 Published 工具；未部署，正式产品资格仍待维护者验收。
 
 ## 模块与数据边界
 
 - `collection.ts`：共享文件集合、稳定 ID/序号、选中项、模式、批量参数/任务、重试/取消与 ZIP 快照。每文件一个轻量 `ResizeSession` 保存单张草稿；所有控制器注入同一个 `SerialJobs` 和 `ImageResources`，不使用 ConverterSession，不建立第二个重型任务池。
-- `session.ts`：原有单张裁剪、尺寸联动和结果版本。切换图片/模式保留合法草稿和单张结果；名称不重新编码。未应用输入由 UI 暂存，明确应用时原子验证。
+- `session.ts`：原有单张裁剪、尺寸联动和结果版本。切换图片/模式保留合法草稿和单张结果；名称不重新编码。未完成输入由 UI 暂存，Enter 或焦点离开尺寸组时原子验证。
 - `geometry.ts`：方向校正后的 Source 整数像素 Crop、稳定中心/边界约束及 Output 联动；响应式只投影。`batch.ts` 从各自完整原图计算宽度、高度、最长边或百分比，最近整数、最小 1px，默认不放大；明确拒绝非法/超预算输出，不通过缩小或换格式规避预算。
 - `render.ts`：复用图片内核验证、方向、资源和 `privacy-v1`。只为当前单图选中项按需生成最长边 1600 的预览；切换释放旧预览，其余文件只保留已验证源信息，不保留解码位图。导出从原图一次绘制裁剪/缩放、编码、清理元数据，再核验实际格式/MIME/尺寸与完整解码。批量传入完整原图 Crop，不继承手动裁剪。
-- `ImageResizeCrop.tsx` / `CollectionControls.tsx` / `BatchPanel.tsx`：继续 Form Wide 与现有受控原语；只增加文件管理、模式切换、批量规则、任务与交付。无工具级 Provider、持久化或独立应用根。桌面/移动端均自然流，保留已有单图布局。
-- `CropEditor.tsx`：保留 react-image-crop 11.1.2、局部 CSS 与 ISC `crop.NOTICE.txt`，裁剪算法/控件不重写。
+- `ImageResizeCrop.tsx`：继续 Form Wide；拥有单张/批量与各自独立的快速/高级展示状态，统一导入、清空、下载 URL 生命周期。无工具级 Provider、持久化或独立应用根。
+- `SingleEditor.tsx` / `CollectionControls.tsx`：当前文件选择与替换/移除集中一处；左侧裁剪、右侧参数，手机按自然顺序排列。单次点击下载复用 Session 编码与验证；自动保存请求遇到编辑、切换图片/工作方式或卸载即放弃，名称仍可独立修改。高级设置只展开控件，不重置参数或结果。
+- `BatchPanel.tsx` / `ParameterControls.tsx`：紧凑任务行、按状态显示操作；集中缩放设置，共用 Converter 的模式/选择/设置/辅助 CTA 样式及既有 UI 原语。批量快速/高级只改变参数展示，未改变引擎或任务版本语义。
+- `CropEditor.tsx`：保留 react-image-crop 11.1.2、局部 CSS 与响应式坐标算法。帮助通过 Tooltip 查看，构图预览按需展开。ISC 原始条款与本地修改说明保留于 `crop.NOTICE.txt`，继续通过 `?url` 随 Draft 实现资源交付，并使用非可见的 `rel="license"` 元数据关联；编辑界面没有许可证入口。
 
 Source 是已验证文件、格式和方向校正尺寸；Crop 是其整数像素矩形；Output 是最终宽高、格式、质量和 JPEG 背景。PNG/JPEG/WebP/受限静态 AVIF 输入，输出仅 PNG/JPEG/WebP。默认 PNG，JPEG 按所选背景合成透明像素。
 
@@ -48,9 +50,19 @@ Source 是已验证文件、格式和方向校正尺寸；Crop 是其整数像�
 
 本轮未测 Firefox/Safari、iOS/Android 真机、真实触摸/原生文件拖拽、低端设备与峰值内存；手机视口不等于真机。CN 英文与 Global 中文未做深入人工交互。文件选择器的多选与追加已实测；拖放沿用既有 FileDropzone 入口与测试。维护者可直接使用上方 DEV 路径进行后续验收。
 
-## 已知非阻断体验事项
+## A1-C1 验收与体验边界（2026-10-31）
 
-批量参数与结果采用自然流，文件多时需较多滚动；单张模式的文件行和编辑区均有移除入口。当前按功能闭环保留，下一阶段统一评估信息密度与操作布局，不在本轮进行视觉精修。
+共享 Astro 工具标题和一句简介居中，功能列表移出首屏标题区域，完整静态内容保留在下方指南与折叠功能概览。两款工具的 H1、SEO description、Canonical/hreflang 所有权不变。Resize 工作区的重复隐私、预算、操作教程及许可证链接已清理；格式/限制折叠，真实错误保持可见。
+
+交互测试覆盖单次下载、原子尺寸提交、快速/高级参数与结果保留、失败重试、晚到自动下载保护、无可见许可证链接及临时 JPEG 背景不阻塞 PNG。未修改 `geometry.ts`、`render.ts`、`session.ts`、`batch.ts`、`collection.ts` 或图片内核；未改变 Registry/Loader/依赖机制。
+
+本地 `pnpm check` 为 0 errors / warnings / hints；`pnpm test` 的 63 文件、713 测试通过；`pnpm build:cn` / `pnpm build:global` 与地区静态产物守卫通过。新增简介无功能列表的产物检查，继续验证唯一静态 H1、SEO 与 Draft 资源排除。本轮未改变平台隔离机制，不重复 E2 专项构建夹具；不宣称远端 CI 已通过。
+
+真实 Chromium IAB：CN 中文桌面 1365×1000、手机视口 390×844，Global 英文手机视口 390×844；亮/暗外观、空状态、单图快速/高级、批量快速/高级、成功与错误状态均检查。完成 1:1 裁剪、键盘微调、尺寸提交、单次 PNG/JPEG/WebP 下载；跨视口选区百分比不变，页面无横向溢出。按需构图预览生成 240×240 Canvas。批量实际处理、独立下载、失败重试保留其他结果、切回单图恢复草稿与结果、部分失败 ZIP 均完成。两地区控制台无 warning/error。
+
+实际下载 PNG/JPEG 为 400×400，经系统独立解码；PNG 保留透明，JPEG 透明区 #123456 得到 RGB 18/52/87（有损误差）。WebP RIFF/容器长度正确，并经过浏览器内完整输出复检。PNG ZIP CRC 正常，三项尺寸为 600×400、240×600、100×60；英文手机路径的 JPEG ZIP 只含两项成功文件，损坏源均被排除。截图与合成样本留在仓库外，不随生产分发。
+
+未测 Firefox/Safari、iOS/Android 真机与真实触摸、原生文件拖拽、Reduced Motion 系统设置的实际切换、低端设备及峰值内存；保留既有 Reduced Motion CSS。CN 英文与 Global 中文未深入人工交互。手机视口不等于真机触控证据。高级参数较多时仍需滚动，极长文件名采用截断与按需完整名称；由维护者确认实际素材、设备下的阅读与操作感受。
 
 ## A1-A 历史浏览器证据（非本轮复测）
 

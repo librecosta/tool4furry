@@ -47,6 +47,7 @@ beforeEach(() => {
   encode
     .mockReset()
     .mockResolvedValue(new Blob(['output'], { type: 'image/png' }));
+  vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
   let n = 0;
   vi.stubGlobal(
     'URL',
@@ -76,7 +77,173 @@ async function mount(name = 'source.png') {
   await screen.findByRole('textbox', { name: 'Width (pixels)' });
   return { user, ...mounted };
 }
+async function selectFile(
+  user: ReturnType<typeof userEvent.setup>,
+  name: string,
+) {
+  await user.click(screen.getByRole('combobox', { name: 'Current image' }));
+  await user.click(await screen.findByRole('option', { name }));
+}
 describe('single image UI wiring (mocked codecs; not layout/browser evidence)', () => {
+  it('keeps disclosures closed and legal notice distributed without a visible license link', async () => {
+    const { container } = await mount();
+    expect(
+      screen.getByText('Supported formats and limits').closest('details')!.open,
+    ).toBe(false);
+    expect(
+      screen.getByText('Show composition preview').closest('details')!.open,
+    ).toBe(false);
+    expect(container.querySelector('a[href*="crop.NOTICE"]')).toBeNull();
+    expect(
+      document.querySelector('link[rel="license"]')?.getAttribute('href'),
+    ).toContain('crop.NOTICE.txt');
+    expect(screen.queryByRole('textbox', { name: 'Scale (%)' })).toBeNull();
+    expect(
+      screen.getAllByRole('button', { name: 'Replace image' }),
+    ).toHaveLength(1);
+    expect(
+      screen.getAllByRole('button', { name: 'Remove image' }),
+    ).toHaveLength(1);
+    expect(screen.queryByRole('button', { name: 'Export image' })).toBeNull();
+  });
+  it('preserves advanced export settings and verified results through quick/advanced changes and renaming', async () => {
+    const { user } = await mount();
+    await user.click(screen.getByRole('radio', { name: 'JPEG' }));
+    await user.click(screen.getByRole('button', { name: 'Advanced' }));
+    const background = screen.getByRole('textbox', { name: 'JPEG background' });
+    await user.clear(background);
+    await user.type(background, '#123456{Enter}');
+    await user.click(screen.getByRole('button', { name: 'Quick' }));
+    expect(
+      screen.getByText('Using your adjusted export settings'),
+    ).toBeDefined();
+    await user.click(screen.getByRole('button', { name: 'Download image' }));
+    await screen.findByText('Downloaded');
+    expect(encode.mock.calls[0]?.[2]).toMatchObject({
+      format: 'jpeg',
+      background: '#123456',
+      quality: 85,
+    });
+    await user.click(screen.getByRole('button', { name: 'Advanced' }));
+    expect(
+      (
+        screen.getByRole('textbox', {
+          name: 'JPEG background',
+        }) as HTMLInputElement
+      ).value,
+    ).toBe('#123456');
+    await user.type(
+      screen.getByRole('textbox', { name: 'Filename label (optional)' }),
+      'renamed',
+    );
+    await user.click(screen.getByRole('button', { name: 'Quick' }));
+    expect(screen.getByText('Downloaded')).toBeDefined();
+    await user.click(screen.getByRole('button', { name: 'Download image' }));
+    expect(encode).toHaveBeenCalledOnce();
+    expect(HTMLAnchorElement.prototype.click).toHaveBeenCalledTimes(2);
+  });
+  it('commits both unlocked dimensions together when focus leaves the group', async () => {
+    const { user } = await mount();
+    await user.click(screen.getByRole('button', { name: 'Advanced' }));
+    await user.click(
+      screen.getByRole('checkbox', { name: 'Keep aspect ratio' }),
+    );
+    const width = screen.getByRole('textbox', { name: 'Width (pixels)' });
+    const height = screen.getByRole('textbox', { name: 'Height (pixels)' });
+    await user.clear(width);
+    await user.type(width, '300');
+    await user.clear(height);
+    await user.type(height, '200');
+    expect(
+      screen.getAllByText(/1200 × 800/, { selector: 'span' }),
+    ).toHaveLength(3);
+    await user.click(screen.getByRole('button', { name: 'Download image' }));
+    await screen.findByText('Downloaded');
+    expect(encode.mock.calls[0]?.[2]).toMatchObject({
+      width: 300,
+      height: 200,
+    });
+  });
+  it('explains hidden invalid advanced input in quick mode', async () => {
+    const { user } = await mount();
+    await user.click(screen.getByRole('button', { name: 'Advanced' }));
+    await user.type(
+      screen.getByRole('textbox', { name: 'Filename label (optional)' }),
+      '/',
+    );
+    await user.click(screen.getByRole('button', { name: 'Quick' }));
+    expect(screen.getByRole('alert').textContent).toContain('Advanced');
+    expect(
+      screen
+        .getByRole('button', { name: 'Download image' })
+        .hasAttribute('disabled'),
+    ).toBe(true);
+  });
+  it('retains a temporary JPEG color without blocking a PNG download', async () => {
+    const { user } = await mount();
+    await user.click(screen.getByRole('radio', { name: 'JPEG' }));
+    await user.click(screen.getByRole('button', { name: 'Advanced' }));
+    const background = screen.getByRole('textbox', { name: 'JPEG background' });
+    await user.clear(background);
+    await user.type(background, '#12');
+    await user.click(screen.getByRole('radio', { name: 'PNG' }));
+    await user.click(screen.getByRole('button', { name: 'Quick' }));
+    expect(screen.queryByRole('alert')).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Download image' }));
+    await screen.findByText('Downloaded');
+    expect(encode.mock.calls[0]?.[2]).toMatchObject({
+      format: 'png',
+      background: '#FFFFFF',
+    });
+    await user.click(screen.getByRole('button', { name: 'Advanced' }));
+    await user.click(screen.getByRole('radio', { name: 'JPEG' }));
+    expect(
+      (
+        screen.getByRole('textbox', {
+          name: 'JPEG background',
+        }) as HTMLInputElement
+      ).value,
+    ).toBe('#12');
+    expect(screen.getByRole('alert').textContent).toContain('#RRGGBB');
+  });
+  it.each(['edit', 'workflow', 'unmount'] as const)(
+    'does not auto-download a late result after %s',
+    async (action) => {
+      let resolve!: (blob: Blob) => void;
+      encode.mockImplementationOnce(
+        () =>
+          new Promise<Blob>((done) => {
+            resolve = done;
+          }),
+      );
+      const { user, unmount } = await mount();
+      await user.click(screen.getByRole('button', { name: 'Download image' }));
+      await waitFor(() => expect(encode).toHaveBeenCalledOnce());
+      if (action === 'edit') {
+        const width = screen.getByRole('textbox', { name: 'Width (pixels)' });
+        await user.clear(width);
+        await user.type(width, '400{Enter}');
+      }
+      if (action === 'workflow')
+        await user.click(screen.getByRole('button', { name: 'Batch resize' }));
+      if (action === 'unmount') unmount();
+      await act(async () => {
+        resolve(new Blob(['late'], { type: 'image/png' }));
+      });
+      expect(HTMLAnchorElement.prototype.click).not.toHaveBeenCalled();
+    },
+  );
+  it('shows encoding failure and retries through the same download action', async () => {
+    encode.mockRejectedValueOnce(new Error('encode'));
+    const { user } = await mount();
+    await user.click(screen.getByRole('button', { name: 'Download image' }));
+    await screen.findByRole('alert');
+    expect(HTMLAnchorElement.prototype.click).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', { name: 'Retry download' }));
+    await screen.findByText('Downloaded');
+    expect(encode).toHaveBeenCalledTimes(2);
+    expect(HTMLAnchorElement.prototype.click).toHaveBeenCalledOnce();
+  });
   it('imports multiple files into batch, runs explicitly, and preserves single drafts through mode/selection changes', async () => {
     const user = userEvent.setup();
     const { container } = render(
@@ -94,20 +261,45 @@ describe('single image UI wiring (mocked codecs; not layout/browser evidence)', 
     ]);
     const batch = await screen.findByRole('region', { name: 'Batch resize' });
     expect(encode).not.toHaveBeenCalled();
+    expect(screen.queryByRole('button', { name: 'Download ZIP' })).toBeNull();
+    await user.click(screen.getByRole('radio', { name: 'JPEG' }));
+    await user.click(screen.getByRole('button', { name: 'Advanced' }));
+    const background = screen.getByRole('textbox', { name: 'JPEG background' });
+    await user.clear(background);
+    await user.type(background, '#abcdef{Enter}');
+    await user.click(screen.getByRole('button', { name: 'Quick' }));
+    const target = screen.getByRole('textbox', { name: 'Target pixels' });
+    await user.clear(target);
+    await user.type(target, '600');
     await waitFor(() =>
       expect(
         within(batch)
-          .getByRole('button', { name: 'Start batch processing' })
+          .getByRole('button', { name: 'Start processing' })
           .hasAttribute('disabled'),
       ).toBe(false),
     );
     await user.click(
-      within(batch).getByRole('button', { name: 'Start batch processing' }),
+      within(batch).getByRole('button', { name: 'Start processing' }),
     );
     await waitFor(() => expect(encode).toHaveBeenCalledTimes(2));
+    for (const call of encode.mock.calls)
+      expect(call[2]).toMatchObject({
+        width: 600,
+        height: 400,
+        format: 'jpeg',
+        background: '#abcdef',
+      });
+    await user.click(screen.getByRole('button', { name: 'Advanced' }));
+    expect(
+      (
+        screen.getByRole('textbox', {
+          name: 'JPEG background',
+        }) as HTMLInputElement
+      ).value,
+    ).toBe('#abcdef');
     expect(
       within(batch)
-        .getAllByRole('button', { name: 'Download image' })
+        .getAllByRole('button', { name: /^Download image:/ })
         .every((button) => !button.hasAttribute('disabled')),
     ).toBe(true);
     await user.click(screen.getByRole('button', { name: 'Single image' }));
@@ -116,8 +308,8 @@ describe('single image UI wiring (mocked codecs; not layout/browser evidence)', 
     });
     await user.clear(width);
     await user.type(width, '400');
-    await user.click(screen.getByRole('button', { name: 'Apply dimensions' }));
-    await user.click(screen.getByRole('button', { name: 'b.png' }));
+    await user.keyboard('{Enter}');
+    await selectFile(user, 'b.png');
     expect(
       (
         screen.getByRole('textbox', {
@@ -128,11 +320,16 @@ describe('single image UI wiring (mocked codecs; not layout/browser evidence)', 
     await user.click(screen.getByRole('button', { name: 'Batch resize' }));
     expect(
       screen
+        .getByRole('button', { name: 'Advanced' })
+        .getAttribute('aria-pressed'),
+    ).toBe('true');
+    expect(
+      screen
         .getByRole('button', { name: 'Download ZIP' })
         .hasAttribute('disabled'),
     ).toBe(false);
     await user.click(screen.getByRole('button', { name: 'Single image' }));
-    await user.click(screen.getByRole('button', { name: 'a.png' }));
+    await selectFile(user, 'a.png');
     expect(
       (
         screen.getByRole('textbox', {
@@ -143,27 +340,21 @@ describe('single image UI wiring (mocked codecs; not layout/browser evidence)', 
     await user.upload(input, new File(['c'], 'c.png', { type: 'image/png' }));
     expect(screen.queryByRole('region', { name: 'Batch resize' })).toBeNull();
     expect(
-      screen
-        .getByRole('button', { name: 'a.png' })
-        .getAttribute('aria-pressed'),
-    ).toBe('true');
+      screen.getByRole('combobox', { name: 'Current image' }).textContent,
+    ).toContain('a.png');
   });
   it('keeps incomplete input out of processing state until a valid explicit submission', async () => {
     const { user } = await mount();
     const width = screen.getByRole('textbox', { name: 'Width (pixels)' });
     await user.clear(width);
     await user.type(width, '-');
-    expect(
-      screen
-        .getByRole('button', { name: 'Export image' })
-        .hasAttribute('disabled'),
-    ).toBe(true);
-    await user.click(screen.getByRole('button', { name: 'Apply dimensions' }));
-    expect(screen.getByRole('alert').textContent).toContain('positive integer');
+    await user.keyboard('{Enter}');
+    expect(screen.getByRole('alert').textContent).toContain('whole numbers');
+    await user.click(screen.getByRole('button', { name: 'Download image' }));
     expect(encode).not.toHaveBeenCalled();
     await user.clear(width);
     await user.type(width, '600');
-    await user.click(screen.getByRole('button', { name: 'Apply dimensions' }));
+    await user.keyboard('{Enter}');
     expect(
       (
         screen.getByRole('textbox', {
@@ -171,8 +362,10 @@ describe('single image UI wiring (mocked codecs; not layout/browser evidence)', 
         }) as HTMLInputElement
       ).value,
     ).toBe('400');
-    await user.click(screen.getByRole('button', { name: 'Export image' }));
-    await waitFor(() => expect(encode).toHaveBeenCalledOnce());
+    await user.click(screen.getByRole('button', { name: 'Download image' }));
+    await screen.findByText('Downloaded');
+    expect(encode).toHaveBeenCalledOnce();
+    expect(HTMLAnchorElement.prototype.click).toHaveBeenCalledOnce();
     expect(encode.mock.calls[0]?.[2]).toMatchObject({
       width: 600,
       height: 400,
@@ -203,16 +396,14 @@ describe('single image UI wiring (mocked codecs; not layout/browser evidence)', 
   });
   it('exposes keyboard handles, keeps state on responsive signals and explains AVIF output choices', async () => {
     const { user, container } = await mount('source.avif');
-    expect(
-      screen.getByText(/This AVIF image can be exported as PNG/),
-    ).toBeDefined();
+    expect(screen.getByText('Save AVIF as PNG, JPEG or WebP.')).toBeDefined();
     expect(
       screen.getByRole('button', { name: 'Bottom-right handle' }),
     ).toBeDefined();
     const width = screen.getByRole('textbox', { name: 'Width (pixels)' });
     await user.clear(width);
     await user.type(width, '500');
-    await user.click(screen.getByRole('button', { name: 'Apply dimensions' }));
+    await user.keyboard('{Enter}');
     act(() => {
       window.dispatchEvent(new Event('resize'));
     });
@@ -220,6 +411,7 @@ describe('single image UI wiring (mocked codecs; not layout/browser evidence)', 
     expect(load).toHaveBeenCalledOnce();
     expect(container.querySelector('[data-workbench="form"]')).not.toBeNull();
     expect(container.querySelector('[data-canvas-viewport]')).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Advanced' }));
     fireEvent.change(
       screen.getByRole('textbox', { name: 'Filename label (optional)' }),
       { target: { value: 'renamed' } },

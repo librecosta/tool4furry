@@ -23,11 +23,11 @@ describe('Astro-only content boundary', () => {
     ['zh', '在线图片格式转换器 - PNG、JPG、WebP、AVIF 互转 | Tool4Furry',
       '在浏览器本地批量转换 PNG、JPG、WebP 和 AVIF 图片，无需上传。支持常见格式互转、编码质量调整、图片预览和 ZIP 打包下载，默认清理常见隐私元数据。',
       '在线图片格式转换器',
-      '在浏览器中批量转换 PNG、JPG、WebP 和 AVIF 图片，无需上传。使用推荐设置快速转换，或调整编码质量、背景颜色等选项，再预览和下载结果。'],
+      '轻松转换 PNG、JPEG、WebP 和 AVIF 图片，全部在浏览器本地完成。'],
     ['en', 'Online Image Converter - PNG, JPG, WebP & AVIF | Tool4Furry',
       'Batch convert PNG, JPG, WebP and AVIF images in your browser without uploading files. Adjust quality, preview results and download ZIPs. Common private metadata is removed by default.',
       'Online Image Converter',
-      'Convert between PNG, JPEG, WebP and supported AVIF images directly in your browser. Use quick presets or advanced quality settings, then preview and download each result or a ZIP.'],
+      'Convert PNG, JPEG, WebP and AVIF images right in your browser.'],
   ] as const)('retains the frozen %s SEO and full four-format guide for the accepted tool', (locale, title, description, h1, intro) => {
     expect(imageConverterContent[locale]).toMatchObject({ title, description, h1, intro });
     expect(imageConverterContent[locale]?.steps).toHaveLength(4);
