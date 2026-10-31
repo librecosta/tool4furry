@@ -13,11 +13,13 @@
 - V0.7-A1-A 新增 Image Resize & Crop 单图 Draft：自由/固定比例裁剪、指针/键盘控制、精确宽高与百分比、实时构图预览、PNG/JPEG/WebP 单次绘制导出和下载；复用本地图片验证/隐私/资源与串行通道，CN/Global 双语 DEV 可访问，生产排除专属页面和资源。未实现批量、未提升 Published、未部署。
 
 - Astro SSG 双地区双语浏览器工具平台、静态信息页与统一主题/产品外壳。
-- 首个且目前唯一源码 Published 的 Image Converter：PNG/JPEG/WebP/受限静态 AVIF 互转，批量/文件夹导入、预览、逐项下载和 ZIP。
+- 首个源码 Published 的 Image Converter：PNG/JPEG/WebP/受限静态 AVIF 互转，批量/文件夹导入、预览、逐项下载和 ZIP。
 - AVIF 单线程编码按需加载、独立预算与 Worker 生命周期；默认常见隐私元数据清理，受限 JPEG 作者/版权白名单保留。
 - 真实 Registry 驱动的首页/导航/工具目录，以及双语 SEO、OG、Canonical/hreflang、Sitemap 和静态发现/安全文件。
 
 ### Changed
+
+- V0.7-A1-D2 完成 Image Resize & Crop L2 Beta 资格审计，并按维护者授权提升为 Published。两地区各包含两款工具、完整双语页面、发现链接、按需裁剪资源及 ISC 声明；验证当前 Chromium 桌面/手机视口与实际输出，修复共享 StyleX 在多 CSS 产物中的注入目标，继续保留 Draft/Lab/Fixture 隔离。A1 首版收尾；源码资格不代表部署，L3 跨浏览器/真机与性能压力验证仍按需跟进。
 
 - V0.7-A1-C3 将单图裁剪整合为轻量工作区：缩放/平移、适应画面、预览位图 100%、同区裁剪/构图切换和共享草稿的专注编辑；桌面侧栏、手机横向工具栏，移除下方重复预览。按实际 DOM 尺寸映射裁剪坐标，视图变化不改参数或有效结果，多指冲突保护选区；图片处理、批量/ZIP、隐私及 Draft 发布契约不变。
 

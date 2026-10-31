@@ -1,6 +1,6 @@
 # 当前架构
 
-Tool4Furry 是单项目的浏览器工具站：Astro SSG + 必要的 React Islands + TypeScript + StyleX。Image Converter 是当前唯一 Published 工具，两个地区构建就绪但均未部署。来源优先级见 [AGENTS](../AGENTS.md#sources-of-truth)。
+Tool4Furry 是单项目的浏览器工具站：Astro SSG + 必要的 React Islands + TypeScript + StyleX。Image Converter 与 Image Resize & Crop 是当前两款 Published 工具，两个地区构建就绪但均未部署。来源优先级见 [AGENTS](../AGENTS.md#sources-of-truth)。
 
 ## 静态站点层
 
@@ -45,7 +45,7 @@ Astro 工具路由 + 静态 Intro / Guide
 
 PNG/JPEG/WebP 原生优先；AVIF 输入使用原生解码，输出按实际任务加载独立单线程 Worker/WASM。它们受同一串行任务契约约束，不建立第二个任务池。`ImageResources` 和工具级 URL owner 负责释放；公共 FileTaskList/预览外壳不管理 Blob。详见 [当前模块说明](../docs/image-converter-implementation.md) 和 [图片处理契约](../contracts/image-processing.md)。
 
-Image Resize & Crop 的单张/批量 Draft 见 [模块说明](../docs/image-resize-crop-implementation.md)：`geometry.ts` 管理 Source 整数像素中的 Crop 与 Output 联动，`render.ts` 复用图片内核一次绘制并验证输出，`session.ts` 保存逐文件单图草稿，`collection.ts` 拥有文件集合、批量规则/任务和 ZIP 快照。所有草稿与批量共用一条 `SerialJobs` 和一个 `ImageResources`，只为选中图片生成有界预览，不继承 ConverterSession 批量模型。ReactCrop/局部 CSS/NOTICE 从工具懒加载入口进入，不进入纯元数据或公共 Workbench。
+Image Resize & Crop 的 Published 单张/批量实现见 [模块说明](../docs/image-resize-crop-implementation.md)：`geometry.ts` 管理 Source 整数像素中的 Crop 与 Output 联动，`render.ts` 复用图片内核一次绘制并验证输出，`session.ts` 保存逐文件单图草稿，`collection.ts` 拥有文件集合、批量规则/任务和 ZIP 快照。所有草稿与批量共用一条 `SerialJobs` 和一个 `ImageResources`，只为选中图片生成有界预览，不继承 ConverterSession 批量模型。ReactCrop/局部 CSS/NOTICE 从工具懒加载入口进入，不进入纯元数据或公共 Workbench。
 
 ## 地区、语言与生产投影
 

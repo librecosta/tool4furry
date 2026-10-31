@@ -1,6 +1,6 @@
 # Image Converter · 当前实现
 
-**V0.6-D2：首个且目前唯一的 Published 工具。CN/Global 均构建就绪，两个地区均未部署。** 真实状态见 [definition.ts](../src/tools/image-converter/definition.ts)；源码资格不等于部署授权。
+**V0.6-D2：首个 Published 工具；当前第二款 Image Resize & Crop 也已通过 A1-D2 审计。CN/Global 均构建就绪，两个地区均未部署。** 真实状态见 [definition.ts](../src/tools/image-converter/definition.ts)；源码资格不等于部署授权。
 
 | 地区 | 默认语言 | 另一语言 |
 | --- | --- | --- |

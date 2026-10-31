@@ -1,6 +1,6 @@
 # 工具平台 · 当前说明
 
-当前只有 Image Converter 一个 Published 工具；第二款 [Image Resize & Crop](image-resize-crop-implementation.md) 为真实单图 Draft，两者登记 CN/Global，均未部署。其他未实现工具不能被填充为真实入口。
+当前 Image Converter 与 [Image Resize & Crop](image-resize-crop-implementation.md) 均为 Published；第二款已完成单张裁剪、批量缩放与 A1-D2 Beta 资格审计。两者登记 CN/Global，均未部署。其他未实现工具不能被填充为真实入口。
 
 ## 元数据、发布与发现
 

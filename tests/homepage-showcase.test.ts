@@ -27,7 +27,7 @@ describe('four-slot featured presentation', () => {
     expect(cards).toHaveLength(Math.min(count, 4));
   });
 
-  it.each(['cn', 'global'] as const)('shows the real Draft in %s DEV and only Published in production', region => {
+  it.each(['cn', 'global'] as const)('shows both real Published tools in %s DEV and production', region => {
     for (const locale of ['zh', 'en'] as const) {
       const entries = getHomepageEntries(region, undefined, undefined, true, locale);
       const cards = getFeaturedShowcase(entries);
@@ -35,7 +35,7 @@ describe('four-slot featured presentation', () => {
       expect(cards[0].description).toBe(imageConverterDefinition.copy[locale].summary);
       expect(entries[0].description).toBe(imageConverterDefinition.copy[locale].description);
       expect(cards[0].href).toBe(entries[0].href);
-      expect(getFeaturedShowcase(getHomepageEntries(region, undefined, undefined, false, locale))).toEqual(cards.filter(card => card.id === 'image-converter'));
+      expect(getFeaturedShowcase(getHomepageEntries(region, undefined, undefined, false, locale))).toEqual(cards);
     }
     expect(imageConverterDefinition.status).toBe('published');
   });

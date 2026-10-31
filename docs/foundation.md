@@ -13,7 +13,7 @@ DEV Lab 与正式工具分离：UI/文件/Canvas/Form/Batch 各自持有演示�
 
 ## StyleX 与字体
 
-[astro.config.mjs](../astro.config.mjs) 使用官方 unplugin 的 Vite pre-transform、`devMode: 'css-only'`、`runtimeInjection: false`、独立生产 CSS；React 使用现有集成路径，不恢复旧 Babel 配置。样式在 TS/TSX 中定义，Astro 用 `stylex.attrs`，React 用 `stylex.props`。`global.css` 仅承载 reset、字体/继承与必要基础桥接，不能变成第二套组件样式系统。
+[astro.config.mjs](../astro.config.mjs) 使用官方 unplugin 的 Vite pre-transform、`devMode: 'css-only'`、`runtimeInjection: false`、独立生产 CSS；React 使用现有集成路径，不恢复旧 Babel 配置。生产 `cssInjectionTarget` 固定选择所有静态页引用的 SiteLayout CSS，防止工具局部 CSS 成为上游默认的首资产注入目标；不改变工具 CSS 的按需归属。样式在 TS/TSX 中定义，Astro 用 `stylex.attrs`，React 用 `stylex.props`。`global.css` 仅承载 reset、字体/继承与必要基础桥接，不能变成第二套组件样式系统。
 
 原生 `defineVars/createTheme` 与 `resolveTheme` 选择一份完整主题；根 class/data/color-scheme 覆盖静态页面、Island 和 Portal。外观恢复与切换由既有受控脚本完成，不增加 React ThemeProvider。主题值、字体和品牌权威入口见 [视觉说明](visual-foundation.md)。
 

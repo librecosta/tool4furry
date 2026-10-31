@@ -1,8 +1,8 @@
 # Image Resize & Crop · 当前实现
 
-V0.7-A1-B 已完成单张裁剪与批量缩放功能；A1-C1 重组工作区层级，A1-C2 完善缩略图与共享对比，A1-C3 将单张裁剪升级为可缩放/平移、同区预览及专注编辑工作区。CN/Global 双语继续为 **Draft**，仅 DEV 可访问。Image Converter 仍是唯一 Published 工具；未部署，下一步为 A1 最终 UX 与 Beta 资格验收，不再扩展裁剪工作区功能。
+V0.7-A1-B 已完成单张裁剪与批量缩放功能；A1-C1 重组工作区层级，A1-C2 完善缩略图与共享对比，A1-C3 将单张裁剪升级为可缩放/平移、同区预览及专注编辑工作区。A1-D2 已完成 L2 Beta 资格审计，依维护者授权提升为 **Published**。与 Image Converter 一起进入 CN/Global 双语正式构建；两个地区均未部署。A1 首版收尾，不再扩展裁剪工作区功能，后续进入下一款基础工具研发。
 
-A1-D1 静态中英文文案已冻结于 `src/site/image-resize-crop-content.ts`：H1/简介、4 项步骤、4 项限制、6 项 FAQ 及真实相关工具；本工具不再提供独立功能概览。SEO 长文仅由 Astro 使用，Registry 保留短元数据；英文章节标题使用可选文案覆盖，公共 ToolGuide 的默认标题、可选内容及 Converter 文案不变。继续保持 DEV noindex 与正式产物 Draft 隔离，下一步进入最终 Beta 资格审计。
+A1-D1 静态中英文文案已冻结于 `src/site/image-resize-crop-content.ts`：H1/简介、4 项步骤、4 项限制、6 项 FAQ 及真实相关工具；本工具不再提供独立功能概览。SEO 长文仅由 Astro 使用，Registry 保留短元数据；英文章节标题使用可选文案覆盖，公共 ToolGuide 的默认标题、可选内容及 Converter 文案不变。D1 当时保持 Draft/DEV noindex；D2 后正式页面按 Published 生成 SEO 与发现文件，资格证据见下文，历史 Draft 记录不改写。
 
 ## 模块与数据边界
 
@@ -16,7 +16,7 @@ A1-D1 静态中英文文案已冻结于 `src/site/image-resize-crop-content.ts`�
 - `CropEditor.tsx` / `CropWorkspace.tsx`：保留 react-image-crop 11.1.2 与局部 CSS，默认裁剪视图；工作区只拥有 Zoom/Pan、裁剪/预览、裁剪/平移和专注弹窗等临时视图状态。复用 `preview-geometry.ts` 的 Fit/Zoom/Clamp；按预览位图实际自然尺寸乘缩放比例设置 DOM 宽高，只做平移、不对 ReactCrop 使用 CSS scale。库读取的 DOM 媒体框与 client pointer delta 同单位，再由既有百分比投影回 Source 整数像素。Fit/Clamp 预留 24px 控制点空间，Resize 仅重新 Fit，不写 Crop。100% 是当前有界预览位图的 1:1，并非原图逐像素。
 - 专注编辑复用 Base UI Dialog，进入/退出仅更换视口实例；始终只有一个交互裁剪适配器，共享原 Session 的 Crop/Output/结果。普通滚轮滚动页面，Ctrl/⌘ + 滚轮缩放；专注模式直接滚轮缩放。裁剪模式第二触点会中止当前手势，防止 ReactCrop 未过滤 pointer ID 的 document 监听器误写选区；双指缩放/平移仅在平移模式与预览中实现，待真机验证。保留键盘控制点，平移时控制点不可聚焦。
 - `CompositionPreview.tsx`：构图预览整合到同一画布的预览视图，移除下方独立大区域。从既有方向校正预览绘制最长 1200×800 的有界 Canvas，按目标比例和 JPEG 背景显示，标注非最终编码结果；不编码、不创建结果 Blob，卸载释放 Canvas。裁剪与预览各自保留临时镜头。C2 独立原图/实际结果/对比弹窗继续使用有效实际结果。
-- ISC 原始条款与本地修改说明保留于 `crop.NOTICE.txt`，继续通过 `?url` 随 Draft 实现资源交付，并使用非可见的 `rel="license"` 元数据关联；编辑界面没有许可证入口。
+- ISC 原始条款与本地修改说明保留于 `crop.NOTICE.txt`，继续通过 `?url` 随工具按需实现资源交付，并使用非可见的 `rel="license"` 元数据关联；编辑界面没有许可证入口。
 - 预览展示复用 `image/ImageComparisonDialog.tsx`、`FilePreviewDialog` 和 `ImagePreviewViewport`：原图/实际结果/对比，桌面并排、手机上下独立缩放平移。单图未导出时可单独查看明确标注的非最终构图；批量未处理时只查看原图。任务行使用 `ImageTaskMedia` 与原生懒加载缩略图，不额外生成整批 Bitmap/Canvas/Blob。URL 由调用方通过既有 `useOwnedUrl` 管理，结果失效立即隐藏并撤销；删除关闭对应弹窗，正常关闭焦点回到预览按钮。
 
 Source 是已验证文件、格式和方向校正尺寸；Crop 是其整数像素矩形；Output 是最终宽高、格式、质量和 JPEG 背景。PNG/JPEG/WebP/受限静态 AVIF 输入，输出仅 PNG/JPEG/WebP。默认 PNG，JPEG 按所选背景合成透明像素。
@@ -31,7 +31,7 @@ Source 是已验证文件、格式和方向校正尺寸；Crop 是其整数像�
 
 成功项可在其他任务处理中下载；失败可逐项重试。ZIP 等所有任务结束，仅包含当前成功且已验证的结果，部分失败在界面明确提示。沿用 `taskFilename` 的序号/清洗/同名处理，显式点击后动态加载既有 `packZip`，保留 ZIP 大小预算与分块打包。文件/规则/结果改变时 Abort + delivery version 使快照失效，过期 ZIP 不下载。打包仍需最终 Blob 内存。
 
-不含旋转、透视、AI、持久化、历史或作者版权编辑。没有更改 Registry/Loader/依赖隔离机制；短元数据与静态双语说明更新，Draft 资格不变。
+不含旋转、透视、AI、持久化、历史或作者版权编辑。Registry/Loader/依赖隔离机制不变；D2 仅通过既有 Definition 状态提升源码资格，并同步正式产物断言。
 
 ## 验证与人工入口
 
@@ -45,6 +45,32 @@ Source 是已验证文件、格式和方向校正尺寸；Crop 是其整数像�
 | Global | `/zh/tools/image-resize-crop/` | `/tools/image-resize-crop/` |
 
 人工检查：单张导入并裁剪/改尺寸 → 追加不同尺寸图片（保持单张模式）→ 切换图片并返回确认草稿 → 切批量确认使用完整原图 → 四种规则/不放大/格式背景 → 明确开始 → 单项下载 → 全部结束后 ZIP → 非法文件/重试/移除/清空/规则改变 → 回到单图恢复草稿。桌面与手机视口分别操作；真机触摸和跨浏览器另验。
+
+## A1-D2 Beta 资格审计（2026-10-31）
+
+结论：L2 七项满足，维护者已在 D2 任务内预先授予通过后的资格决策权限；`definition.ts` 提升为 Published，地区仍为 CN/Global。A1 首版收尾。未部署，也未创建 PR、Tag 或 Release。
+
+| L2 项 | 本次结论与证据 |
+| --- | --- |
+| CI | 开工基线 `b4758db` 的 [GitHub Actions](https://github.com/librecosta/tool4furry/actions/runs/41196967708) 已通过；最终提交的 CI 链接与结论随交付报告提供，不将基线冒充本次提交结果。 |
+| 真实 Chromium | 当前代码的 CN 中文桌面与 Global 英文 390×844 视口完成导入、裁剪/缩放、构图/实际结果对比、专注编辑与下载；Published 静态产物另做核心 Smoke。 |
+| 真实文件 | PNG/JPEG/WebP 实际编码与下载，管线执行实际格式、MIME、尺寸及完整解码复检；下载后的 PNG/JPEG 系统独立解码、WebP 容器尺寸及 ZIP 条目核验通过。 |
+| 布局 | 桌面与常见手机视口可完成操作，亮/暗外观检查，无阻断交互或横向溢出；手机视口不等于真机。 |
+| 能力回退 | 复用实际编码探测和格式禁用；补充三种原生编码不可用时阻止导出、不静默换格式的测试。当前 Chromium 三种均可用，未声称在真实缺编码浏览器测过该分支。 |
+| 阻断缺陷 | 发现并修复多工具构建时公共 StyleX 被注入工具私有 CSS 的问题；重新构建和静态浏览器检查通过。未发现遗留数据损坏、严重崩溃或发布阻断。 |
+| 维护者决定 | 本次明确授权审计通过后直接 Published、提交并推送 develop；授权不包含生产部署。 |
+
+本地工程：`pnpm check` 0 errors/warnings/hints；`pnpm test` 65 文件、745 项通过；`pnpm build:cn` / `pnpm build:global` 及产物守卫通过。每地区 15 个 HTML、14 个可索引 URL，包含两款工具的中英文页面、首页/目录/相互相关推荐、同地区 Canonical/hreflang、OG/Twitter 与 Sitemap/llms。Resize 页面不再 Draft noindex，4/4/6 静态长文不进入客户端。裁剪 CSS 与完整 ISC/本地修改声明进入按需资源，其他 Draft/Lab/Fixture 排除规则及回退测试保留。
+
+构建阻断修复仅设置既有 StyleX unplugin 的 `cssInjectionTarget` 指向每页引用的 SiteLayout CSS；工具局部裁剪 CSS 继续归工具，不改发布门、Loader 或依赖版本。原有产物守卫先发现首页/404 缺公共样式，未放宽断言；修复后两地区通过。未重复与本次状态提升无关的完整 E2 多工具夹具。
+
+本次 DEV Smoke：坐标源 2400×1600，在预览位图 100% 下移动选区并平移，Crop 为 `(490,0,1600,1600)`；下载 PNG 1600×1600 的 5 个 RGB 采样与原图对应坐标完全一致。再输出 JPEG 400×400；四种批量规则、不放大、损坏文件失败/重试不影响其余三项、单项 WebP 与部分成功 ZIP、参数变更立即失效、切回单图恢复草稿/结果均检查。嵌套文件夹导入有效图片并拒绝文本；有效静态 AVIF 256×160 导出 PNG，动画 AVIF 明确拒绝并保留草稿，清空返回导入入口。
+
+Published 静态产物 Smoke：原端口 CN 4321 / Global 4322 本地托管，无端口变更。CN 单图 1:1 裁剪并缩至 PNG 320×320，独立解码确认透明像素；快速/高级、视图操作和专注编辑保留有效结果，实际对比正常。Global 英文手机视口文件夹导入进入批量，最长边 600 的 WebP 为 240×600、600×400，独立下载与两项 ZIP 均核验；对比上下排列，移除单项保留其他结果，移除全部恢复空状态。Converter 同一正式产物完成 PNG → WebP 1200×800 下载与手机对比回归。两工具控制台无 warning/error。截图与下载清单保存在本机仓库外 `.validation/resize-d2` 和 Codex 可视化目录，不随产物分发。
+
+复用下方 A1-A/B/C 的 EXIF 6、JPEG 透明背景与放大后角点/真实像素证据，未伪称本轮重跑完整矩阵。取消/晚到、共享串行通道、URL/Bitmap/Canvas 释放、ZIP 快照及累计结果边界由既有定向测试复核，未在浏览器强制制造原生超时或测量峰值内存。
+
+L3 未覆盖：Firefox、Safari/WebKit、真实 iOS/Android 与多指/触控手柄、实体设备修饰键滚轮、低端设备/峰值内存完整压力测试；CN 英文与 Global 中文做静态与构建检查，未深入执行全部交互。已知手势边界仍为裁剪模式第二触点中止当前手势，双指缩放/平移仅在平移/预览模式实现；待真机验证，不作为普遍兼容承诺。
 
 ## A1-B 本轮验收记录（2026-10-31）
 

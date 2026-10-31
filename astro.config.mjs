@@ -32,6 +32,9 @@ export default defineConfig({
         devMode: 'css-only',
         runtimeInjection: false,
         useCSSLayers: { before: ['reset', 'base'] },
+        // Every static page links SiteLayout CSS. A tool's local CSS must not
+        // become the plugin's default first-asset target for shared StyleX.
+        cssInjectionTarget: (fileName) => /(?:^|\/)SiteLayout(?:[.-][^/]*)?\.css$/.test(fileName),
       }),
       {
         // Astro scans islands even when getStaticPaths() is empty. Do not emit

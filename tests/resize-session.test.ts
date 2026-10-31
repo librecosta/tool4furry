@@ -106,6 +106,23 @@ describe('single-source resize draft lifecycle', () => {
     expect(session.snapshot.result).toBeUndefined();
     session.dispose();
   });
+  it.each(['png', 'jpeg', 'webp'] as const)('blocks an unavailable %s encoder without a silent format fallback', async format => {
+    const { session, services } = setup({ capabilities: async () => ({
+      png: { supported: format !== 'png' },
+      jpeg: { supported: format !== 'jpeg' },
+      webp: { supported: format !== 'webp' },
+      avif: { supported: false },
+    }) });
+    await flush();
+    session.output({ format });
+    expect(session.validOutput()).toBe(false);
+    session.export();
+    await flush();
+    expect(services.render).not.toHaveBeenCalled();
+    expect(session.download()).toBeUndefined();
+    expect(session.snapshot.output.format).toBe(format);
+    session.dispose();
+  });
   it('blocks over-budget derived dimensions and does not silently shrink', async () => {
     const { session, services } = setup();
     await flush();

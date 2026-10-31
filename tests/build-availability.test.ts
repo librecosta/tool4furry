@@ -12,6 +12,12 @@ describe('Registry compile-time availability projection', () => {
     fixtureTool('character-editor', { regions: ['global'] }),
     fixtureTool('cn-only', { regions: ['cn'] }),
   ];
+  it.each(['cn', 'global'] as const)('enables both real Published tools in %s', region => {
+    expect(toolBuildDefines(tools, region)).toEqual({
+      'import.meta.env.T4F_TOOL_IMAGE_CONVERTER_AVAILABLE': 'true',
+      'import.meta.env.T4F_TOOL_IMAGE_RESIZE_CROP_AVAILABLE': 'true',
+    });
+  });
   it.each(['cn', 'global'] as const)('projects every registered id in %s without runtime flags', region => {
     const defines = toolBuildDefines(registry, region);
     expect(defines).toEqual({

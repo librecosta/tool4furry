@@ -29,8 +29,17 @@ describe.each(['cn', 'global'])('%s discovery', region => {
     }
     const changed = registry.map(tool => tool.id === 'shared' ? { ...tool, status: 'draft' } : tool);
     expect(publicPages(region, changed).map(page => page.url)).not.toContain(`${origin}/tools/shared/`);
-    expect(publicPages(region).filter(page => page.url.includes('/tools/image-converter/')).map(page => page.url))
-      .toEqual([`${origin}/${region === 'cn' ? '' : 'zh/'}tools/image-converter/`, `${origin}/${region === 'cn' ? 'en/' : ''}tools/image-converter/`]);
+    const actualPages = publicPages(region);
+    expect(actualPages).toHaveLength(14);
+    for (const slug of ['image-converter', 'image-resize-crop']) {
+      const toolURLs = [`${origin}/${region === 'cn' ? '' : 'zh/'}tools/${slug}/`, `${origin}/${region === 'cn' ? 'en/' : ''}tools/${slug}/`];
+      expect(actualPages.filter(page => page.url.includes(`/tools/${slug}/`)).map(page => page.url)).toEqual(toolURLs);
+      const sitemapURLs = [...parseXML(sitemapXML(region)).querySelectorAll('url > loc')].map(node => node.textContent);
+      for (const url of toolURLs) {
+        expect(sitemapURLs).toContain(url);
+        expect(llmsText(region)).toContain(`](${url})`);
+      }
+    }
   });
   it('generates parseable Sitemap XML and reciprocal local alternates without invented dates', () => {
     const index = parseXML(sitemapIndex(region));

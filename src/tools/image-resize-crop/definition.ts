@@ -8,7 +8,7 @@ export const imageResizeCropDefinition: ToolDefinition = {
   audiences: ['creator', 'developer'],
   contexts: ['studio'],
   mode: 'form',
-  status: 'draft',
+  status: 'published',
   regions: ['cn', 'global'],
   copy: {
     zh: {

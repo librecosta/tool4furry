@@ -999,7 +999,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
       expect(getAvailableTools(region, true).map((tool) => tool.slug)).toEqual([
         'image-converter', 'image-resize-crop',
       ]);
-      expect(getPublishedTools(region).map(tool => tool.id)).toEqual(['image-converter']);
+      expect(getPublishedTools(region).map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop']);
       const content = toolPageContents['image-converter'][defaultLocale(region)]!;
       expect(content.h1).toBeTruthy();
       expect(content.steps?.length).toBe(4);

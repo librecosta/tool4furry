@@ -15,23 +15,23 @@ import { getToolPageContent } from '../src/site/tool-content';
 import { getRelatedTools } from '../src/site/tool-content';
 import { imageConverterDefinition } from '../src/tools/image-converter/definition';
 
-describe('Resize & Crop Draft platform contract', () => {
+describe('Resize & Crop Published platform contract', () => {
   it.each(['cn', 'global'] as const)(
-    'is available in %s DEV only, with both static locales and a literal gated loader',
+    'is available in %s DEV and production, with both static locales and a literal gated loader',
     (region) => {
       expect(definition).toMatchObject({
         id: 'image-resize-crop',
         slug: 'image-resize-crop',
-        status: 'draft',
+        status: 'published',
         mode: 'form',
       });
       expect(getAvailableTools(region, true)).toContain(definition);
-      expect(getPublishedTools(region)).not.toContain(definition);
+      expect(getPublishedTools(region)).toContain(definition);
       expect(
         toolBuildDefines(tools, region)[
           'import.meta.env.T4F_TOOL_IMAGE_RESIZE_CROP_AVAILABLE'
         ],
-      ).toBe('false');
+      ).toBe('true');
       expect(() =>
         assertToolLoaderContract(
           tools,
@@ -42,14 +42,14 @@ describe('Resize & Crop Draft platform contract', () => {
         expect(
           getToolPageContent(definition, region, undefined, true, locale),
         ).toEqual(imageResizeCropContent[locale]);
-        expect(() =>
+        expect(
           getToolPageContent(definition, region, undefined, false, locale),
-        ).toThrow('Unpublished');
+        ).toEqual(imageResizeCropContent[locale]);
       }
       expect(getRelatedTools(definition, region)).toContain(
         imageConverterDefinition,
       );
-      expect(getRelatedTools(imageConverterDefinition, region)).not.toContain(
+      expect(getRelatedTools(imageConverterDefinition, region)).toContain(
         definition,
       );
       expect(
@@ -57,6 +57,19 @@ describe('Resize & Crop Draft platform contract', () => {
       ).toContain(definition);
     },
   );
+  it.each(['cn', 'global'] as const)('still excludes a reverted Draft from %s production and related links', region => {
+    const draft = { ...definition, status: 'draft' as const };
+    const registry = [imageConverterDefinition, draft];
+    expect(getAvailableTools(region, true, registry)).toContain(draft);
+    expect(getPublishedTools(region, registry)).toEqual([imageConverterDefinition]);
+    expect(toolBuildDefines(registry, region)['import.meta.env.T4F_TOOL_IMAGE_RESIZE_CROP_AVAILABLE']).toBe('false');
+    expect(getRelatedTools(imageConverterDefinition, region, registry)).not.toContain(draft);
+    expect(getRelatedTools(imageConverterDefinition, region, registry, true)).toContain(draft);
+    for (const locale of ['zh', 'en'] as const) {
+      expect(() => getToolPageContent(draft, region, undefined, false, locale)).toThrow('Unpublished');
+      expect(getToolPageContent(draft, region, undefined, true, locale)).toEqual(imageResizeCropContent[locale]);
+    }
+  });
   it('keeps crop CSS variables local and includes the original ISC terms', () => {
     const css = readFileSync('src/tools/image-resize-crop/crop.css', 'utf8');
     expect(css).not.toContain(':root');

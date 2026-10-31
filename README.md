@@ -8,7 +8,9 @@
 
 **Image Converter** 支持 PNG、JPEG、WebP、AVIF 静态图片互转，批量与文件夹导入、图片预览、逐项下载和 ZIP 打包；默认清理常见来源隐私元数据，并提供受限的作者与版权字段保留。能力与限制见 [当前模块说明](docs/image-converter-implementation.md)。
 
-这是第一个且目前唯一在源码层面 **Published** 的工具。CN/Global 均可构建完整双语静态站点，**两个地区均未线上部署**。Published 和构建就绪不代表已对公网提供服务。
+**Image Resize & Crop** 支持自由/固定比例裁剪、精确尺寸与百分比、可缩放平移的裁剪工作区，以及批量缩放、文件夹导入、预览对比、独立下载和 ZIP；支持 PNG/JPEG/WebP/受限静态 AVIF 输入，输出 PNG/JPEG/WebP。能力、Beta 资格与未测范围见 [当前模块说明](docs/image-resize-crop-implementation.md)。
+
+两款工具均在源码层面 **Published**。CN/Global 均可构建完整双语静态站点，**两个地区均未线上部署**。Published 和构建就绪不代表已对公网提供服务。
 
 ## 技术与架构
 
@@ -32,7 +34,7 @@ pnpm dev
 | CN | 中文 `http://127.0.0.1:4321/` | English `http://127.0.0.1:4321/en/` |
 | Global | English `http://127.0.0.1:4322/` | 中文 `http://127.0.0.1:4322/zh/` |
 
-相同前缀适用于 `/tools/`、`/tools/image-converter/` 和信息页。语言切换留在当前来源；端口固定，占用会报错，不自动换端口。同仓库旧服务可用 `pnpm dev stop` 关闭后重新启动；不要为调试占用修改端口配置，也不要终止归属不明的进程。Ctrl+C 或 `pnpm dev stop` 同时停止两端。具体约束见 [开发工作流](.agents/playbook.md#本地服务与固定端口)。Lab 与显式目录夹具仅供 DEV，不进入生产。
+相同前缀适用于 `/tools/`、`/tools/image-converter/`、`/tools/image-resize-crop/` 和信息页。语言切换留在当前来源；端口固定，占用会报错，不自动换端口。同仓库旧服务可用 `pnpm dev stop` 关闭后重新启动；不要为调试占用修改端口配置，也不要终止归属不明的进程。Ctrl+C 或 `pnpm dev stop` 同时停止两端。具体约束见 [开发工作流](.agents/playbook.md#本地服务与固定端口)。Lab 与显式目录夹具仅供 DEV，不进入生产。
 
 ## 测试与构建
 
@@ -71,4 +73,4 @@ pnpm build:global
 
 ## 许可证
 
-项目自有代码采用 [BSD-3-Clause](LICENSE)。第三方组件与素材按各自授权：自托管字体的 [DM Sans OFL](public/licenses/dm-sans-OFL.txt) / [Noto Sans SC OFL](public/licenses/noto-sans-sc-OFL.txt)、[AVIF LICENSE/NOTICE](src/tools/image/avif.NOTICE.txt)、[Wavefield NOTICE](src/visuals/wavefield/NOTICE.md) 和 [滚动参考许可](public/licenses/gopher-atlas.txt)；品牌与正式素材来源见 [视觉说明](docs/visual-foundation.md)。
+项目自有代码采用 [BSD-3-Clause](LICENSE)。第三方组件与素材按各自授权：自托管字体的 [DM Sans OFL](public/licenses/dm-sans-OFL.txt) / [Noto Sans SC OFL](public/licenses/noto-sans-sc-OFL.txt)、[AVIF LICENSE/NOTICE](src/tools/image/avif.NOTICE.txt)、[裁剪组件 ISC/修改声明](src/tools/image-resize-crop/crop.NOTICE.txt)、[Wavefield NOTICE](src/visuals/wavefield/NOTICE.md) 和 [滚动参考许可](public/licenses/gopher-atlas.txt)；品牌与正式素材来源见 [视觉说明](docs/visual-foundation.md)。

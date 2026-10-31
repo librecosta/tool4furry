@@ -1,6 +1,6 @@
 # Image processing capability evidence — V0.4-A
 
-> **历史能力证据**：以下是原生三格式的早期环境与当时发布判断，不是当前格式/状态矩阵。Image Converter 已在 D2 成为唯一 Published，支持受限 AVIF，CN/Global 均未部署；当前能力、默认隐私和证据入口见 [Converter 当前说明](image-converter-implementation.md)。本页保留原测量与待验项，现行门禁采用 [L1/L2/L3](../AGENTS.md#mvp-beta-release-policy-2026-10-10)。
+> **历史能力证据**：以下是原生三格式的早期环境与当时发布判断，不是当前格式/状态矩阵。Image Converter 已在 V0.6-D2 成为首个 Published，支持受限 AVIF；当前 Image Resize & Crop 也已通过 A1-D2 审计，CN/Global 均未部署；当前能力、默认隐私和证据入口见 [Converter 当前说明](image-converter-implementation.md)。本页保留原测量与待验项，现行门禁采用 [L1/L2/L3](../AGENTS.md#mvp-beta-release-policy-2026-10-10)。
 
 ## 当前 MVP Beta 政策（2026-10-10）
 

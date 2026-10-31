@@ -1,6 +1,6 @@
 # Tools Catalog Workbench — V0.5-C7
 
-> **Current · E1 索引说明**：本页描述当前目录行为与显式 DEV 夹具，不作大规模迁移。发布状态见 [publication](../contracts/publication.md)，地区语言见 [compatibility](../contracts/compatibility.md)；下文注明环境的测量仍是当时证据，不能推定其他浏览器已实测。当前 Converter 为唯一 Published，CN/Global 均未部署。
+> **Current · E1 索引说明**：本页描述当前目录行为与显式 DEV 夹具，不作大规模迁移。发布状态见 [publication](../contracts/publication.md)，地区语言见 [compatibility](../contracts/compatibility.md)；下文注明环境的测量仍是当时证据，不能推定其他浏览器已实测。当前 Converter 与 Resize & Crop 均为 Published，CN/Global 均未部署。
 
 Only localized `/tools/` uses `SiteLayout.catalogWorkbench`: the existing Header,
 100dvh shell, 256px sidebar and independent native scrollports. No Footer,
@@ -14,7 +14,7 @@ use up to 1600px; narrower viewports retain the existing three/two/one columns.
 Registry `getAvailableTools(region, dev)` is still the sole publication gate.
 `taxonomy.ts` owns two-level category/group relationships; `roles.ts` owns six
 identity IDs, labels and icon semantics. `ToolDefinition.roles` is a many-to-many
-match, independent of homepage manual editorial order. Converter is the first and currently only Published tool in both regions (not deployed),
+match, independent of homepage manual editorial order. Converter and Resize & Crop are Published in both regions (not deployed),
 associated with painter/developer/animator/operations. Legacy audiences/contexts
 remain metadata-compatible, but the catalog never reads those dimensions.
 The unused `getDiscoverySections` projection, its legacy assertions and the old

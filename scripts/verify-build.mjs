@@ -28,19 +28,24 @@ async function metadataURL(path) {
   return url;
 }
 const { imageConverterContent } = await staticData('src/site/image-converter-content.ts');
+const { imageResizeCropContent } = await staticData('src/site/image-resize-crop-content.ts');
 const { tools } = await staticData('src/tools/registry.ts');
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const converterLongCopy = Object.values(imageConverterContent).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
-function assertConverterContent(dom, locale) {
-  const expected = imageConverterContent[locale];
+function assertToolContent(dom, locale, contents) {
+  const expected = contents[locale];
   assert.equal(dom.title, expected.title);
   assert.equal(dom.querySelector('meta[name="description"]')?.content, expected.description);
   assert.deepEqual([...dom.querySelectorAll('h1')].map(node => node.textContent), [expected.h1]);
   assert.equal(dom.querySelector('[data-tool-intro] p')?.textContent, expected.intro);
   const guide = dom.querySelector('[data-tool-guide]');
   assert(guide && !guide.closest('astro-island'), 'The full guide is static Astro HTML outside hydration');
+  for (const [key, heading] of Object.entries(expected.headings ?? {}))
+    assert.equal(guide.querySelector(`#tool-${key}`)?.textContent, heading);
+  assert.equal(guide.querySelectorAll(':scope > details').length, expected.features?.length ? 1 : 0,
+    'Only tools with optional feature content receive a feature overview');
   for (const [key, selector] of [['steps', '#tool-steps + ol > li'], ['limitations', '#tool-limitations + ul > li']]) {
     assert.equal(expected[key].length, 4);
     assert.deepEqual([...guide.querySelectorAll(selector)].map(node => plain(node.textContent)), expected[key].map(plain));
@@ -839,7 +844,8 @@ for (const page of htmlFiles) {
   }
   }
   if (toolPages.includes(page)) {
-    if (page === 'tools/image-converter/index.html') assertConverterContent(dom, locale);
+    if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
+    if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/image-converter/index.html')
       assert(!/开发保护值|全设备兼容承诺|development (?:resource )?guardrails/i.test(dom.body.textContent),
         'Converter public copy must describe current limits, not internal guardrails');
@@ -1157,7 +1163,7 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
   const js = await readFile(resolve(root, file), 'utf8');
   if (!files.includes('tools/image-resize-crop/index.html'))
     assert(!/data-image-resize-crop|t4f-crop-marching-ants|Discard the current edit/.test(js), `Draft resize/crop implementation leaked: ${file}`);
-  assert(!converterLongCopy.some(text => js.includes(plain(text))), `Long Astro Converter guide leaked into JS: ${file}`);
+  assert(!toolLongCopy.some(text => js.includes(plain(text))), `Long Astro tool guide leaked into JS: ${file}`);
   assert(
     !js.includes('ownership diagnostics'),
     `DEV diagnostics leaked: ${file}`,
@@ -1193,6 +1199,16 @@ if (!files.includes('tools/image-resize-crop/index.html')) {
   for (const file of files.filter(file => file.endsWith('.css')))
     assert(!/ReactCrop__|t4f-crop-marching-ants/.test(await readFile(resolve(root, file), 'utf8')), `Draft crop CSS leaked: ${file}`);
   assert(!files.some(file => /crop\.NOTICE|ImageResizeCrop|CropEditor/.test(file)), 'Draft crop-specific asset leaked');
+} else {
+  const scripts = await Promise.all(files.filter(file => file.endsWith('.js')).map(file => readFile(resolve(root, file), 'utf8')));
+  const styles = await Promise.all(files.filter(file => file.endsWith('.css')).map(file => readFile(resolve(root, file), 'utf8')));
+  assert(scripts.some(js => js.includes('data-image-resize-crop')), 'Published crop implementation is included');
+  assert(styles.some(css => css.includes('ReactCrop__') && css.includes('[data-image-resize-crop]')), 'Published crop CSS is included and scoped');
+  const notice = await readFile('src/tools/image-resize-crop/crop.NOTICE.txt');
+  const emittedNotice = files.filter(file => /crop\.NOTICE/.test(file));
+  const hasNotice = scripts.some(js => js.includes(notice.toString('base64'))) ||
+    (await Promise.all(emittedNotice.map(async file => (await readFile(resolve(root, file))).equals(notice)))).some(Boolean);
+  assert(hasNotice, 'Published crop distributes the complete ISC license and local modification notice');
 }
 assert((await stat(root)).isDirectory());
 console.log(

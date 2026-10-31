@@ -6,9 +6,9 @@
 
 ## Current State
 
-- Image Converter 是首个且目前唯一的 Published 工具；CN/Global 双语静态构建可用，**两个地区均未部署**。源码 Published 不代表部署授权。
+- Image Converter 与 Image Resize & Crop 均为 Published 工具；CN/Global 双语静态构建可用，**两个地区均未部署**。源码 Published 不代表部署授权。
 - 当前没有后端、数据库、SSR 服务或用户系统。Lab 仅供 DEV，不能进入生产路由/资源图。
-- Image Resize & Crop 是第二款真实工具，当前为 CN/Global 双语单张裁剪与批量缩放 Draft；实现与人工入口见 [Resize/Crop 说明](docs/image-resize-crop-implementation.md)。生产仍排除其页面、实现和专属资源；A1 首版功能已闭环，待集中体验精修与正式资格验收。
+- Image Resize & Crop 已完成 A1-D2 Beta 资格审计；单张裁剪、批量缩放、双语静态页面与所需资源进入两地区正式构建。实现、资格证据及 L3 未测范围见 [Resize/Crop 说明](docs/image-resize-crop-implementation.md)。A1 已收尾，不继续扩展裁剪工作区。
 - 当前能力与 D2 证据见 [Converter 说明](docs/image-converter-implementation.md)；旧阶段的 Draft、零工具、三格式和 CN-only 结论属于历史。
 
 ## Start Here
