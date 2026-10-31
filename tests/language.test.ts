@@ -45,6 +45,6 @@ describe.each(['cn', 'global'] as const)('independent locale in %s', region => {
         .toBe(origin + localizedPath(path, target, locale));
     for (const path of ['/tools/draft/', '/tools/cn-only/', '/lab/ui', '/unknown/'])
       expect(regionLink(localizedPath(path, region, locale), region, registry, true))
-        .toBe(`http://127.0.0.1:${target === 'cn' ? 54321 : 54322}` + localizedPath('/tools/', target, locale));
+        .toBe(`http://127.0.0.1:${target === 'cn' ? 4321 : 4322}` + localizedPath('/tools/', target, locale));
   });
 });

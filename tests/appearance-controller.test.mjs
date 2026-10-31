@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 const source = readFileSync('src/styles/appearance-controller.js', 'utf8');
 const html = `<html class="dark-theme root-style unrelated" data-appearance="dark"><head>
-<script id="t4f-appearance" data-dark="dark-theme" data-light="light-theme" data-default="dark" data-region-origins='["https://tool4furry.cn","https://tool4furry.com","http://127.0.0.1:54321","http://127.0.0.1:54322"]'>${source}</script>
+<script id="t4f-appearance" data-dark="dark-theme" data-light="light-theme" data-default="dark" data-region-origins='["https://tool4furry.cn","https://tool4furry.com","http://127.0.0.1:4321","http://127.0.0.1:4322"]'>${source}</script>
 </head><body><button disabled data-appearance-toggle="static" data-light-label="Light" data-dark-label="Dark"></button></body></html>`;
 
 function page(preference, blocked = false, scripts = true, options = {}) {
@@ -75,7 +75,7 @@ describe('synchronous appearance controller', () => {
 
 describe('one-shot cross-origin appearance relay', () => {
   it.each(['light', 'dark'])('overrides the target preference before paint, persists and removes only its known hash (%s)', theme => {
-    for (const origin of ['https://tool4furry.com', 'http://127.0.0.1:54322', 'http://127.0.0.1:54321']) {
+    for (const origin of ['https://tool4furry.com', 'http://127.0.0.1:4322', 'http://127.0.0.1:4321']) {
       const dom = page(theme === 'light' ? 'dark' : 'light', false, true, { url: `${origin}/tools/image-converter/?keep=1#t4f-theme=${theme}` });
       expect(dom.window.t4fAppearance.get()).toBe(theme);
       expect(dom.window.localStorage.getItem('t4f.appearance')).toBe(theme);

@@ -49,8 +49,10 @@
 - **静态与交互**：页面正文、唯一 H1、指南/FAQ 保留 Astro 静态输出；固定 ToolRuntime/LabRuntime 才挂必要 React，工具实现懒加载。无全站 React Provider/业务 Store；静态页面受精确脚本审计，不随意加 JS 或 preload。
 - **所有权**：WorkbenchShell 只管布局/插槽/面板，UI 原语受控；文件、设置、任务和释放归工具。不得因断点切换或开关面板重建业务状态。具体 Canvas/预览合同见 [工作区说明](docs/workbench-appearance.md)。
 - **样式**：继续 StyleX 与统一语义 Token，global.css 限于 reset/基础桥接；保留静态主题、Portal 继承及现有 DEV FOUC 兼容补丁，不另建主题系统或恢复旧 Babel 配置。
+- **固定 DEV 端口**：CN `4321`、Global `4322` 由 `src/config/dev-origins.mjs` 唯一定义。未经维护者明确要求，禁止修改端口、引入备用端口或关闭 `strictPort` 来绕过占用。占用者可能是维护者自行启动的同仓库服务；先确认归属，再通过 `pnpm dev stop` 或已核实的精确 PID 停止旧实例，仍用原端口调试。归属不明时保留进程并报告，不误杀、不改端口。操作步骤见 [playbook](.agents/playbook.md#本地服务与固定端口)。
 - **本地文件与隐私**：不上传/持久存储用户文件；真实输出、默认隐私、版本隔离、取消和资源预算不可放宽。名称不触发编码，失效结果不得下载或进入 ZIP。详见图片处理契约。
 - **范围与授权**：最小完整修改，不顺带依赖升级、重构或伪造工具。保留 BSD 和第三方授权。未经授权不合并发布分支、创建 Release/Tag 或部署；当前流程为 `develop → PR → pre-master → PR → master`。
+- **本地提交**：有改动的任务完成后默认提交到本地；推送须有维护者明确要求，并以最新指令为准。不把“本地提交”自动扩展为推送、PR、合并或发布。
 
 ## Verification
 

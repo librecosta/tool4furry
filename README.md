@@ -29,10 +29,10 @@ pnpm dev
 
 | 地区 | 默认语言 | 另一语言 |
 | --- | --- | --- |
-| CN | 中文 `http://127.0.0.1:54321/` | English `http://127.0.0.1:54321/en/` |
-| Global | English `http://127.0.0.1:54322/` | 中文 `http://127.0.0.1:54322/zh/` |
+| CN | 中文 `http://127.0.0.1:4321/` | English `http://127.0.0.1:4321/en/` |
+| Global | English `http://127.0.0.1:4322/` | 中文 `http://127.0.0.1:4322/zh/` |
 
-相同前缀适用于 `/tools/`、`/tools/image-converter/` 和信息页。语言切换留在当前来源；端口占用会报错，不自动换端口。Ctrl+C 或 `pnpm dev stop` 同时停止两端。Lab 与显式目录夹具仅供 DEV，不进入生产。
+相同前缀适用于 `/tools/`、`/tools/image-converter/` 和信息页。语言切换留在当前来源；端口固定，占用会报错，不自动换端口。同仓库旧服务可用 `pnpm dev stop` 关闭后重新启动；不要为调试占用修改端口配置，也不要终止归属不明的进程。Ctrl+C 或 `pnpm dev stop` 同时停止两端。具体约束见 [开发工作流](.agents/playbook.md#本地服务与固定端口)。Lab 与显式目录夹具仅供 DEV，不进入生产。
 
 ## 测试与构建
 
