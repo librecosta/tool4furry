@@ -8,7 +8,6 @@ import {
   TrashIcon,
 } from '@phosphor-icons/react';
 import { Button, IconButton } from '../../ui/Button';
-import { SelectField } from '../../ui/SelectField';
 import { TextField } from '../../ui/TextField';
 import { CheckboxField } from '../../ui/CheckboxField';
 import { SliderField } from '../../ui/SliderField';
@@ -27,6 +26,7 @@ import type {
 import type { BatchRule } from './batch';
 import {
   ParameterModes,
+  ParameterChoices,
   FormatChoices,
   type ResizeMessages,
 } from './ParameterControls';
@@ -101,7 +101,7 @@ export function BatchPanel({
             t={t}
           />
         </div>
-        <SelectField
+        <ParameterChoices
           label={t.rule}
           value={settings.rule}
           options={Object.entries(t.rules).map(([value, label]) => ({

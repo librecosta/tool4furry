@@ -78,6 +78,14 @@ export const resizeStyles = stylex.create({
     gap: t.space12,
   },
   formats: { gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' },
+  parameterChoices: { display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', gap: t.space4 },
+  parameterChoice: {
+    display: 'inline-flex', alignItems: 'center', gap: t.space8,
+    minWidth: 44, minHeight: 44, fontSize: 14, fontWeight: 500,
+    cursor: 'pointer', whiteSpace: 'nowrap',
+    color: { default: t.textSecondary, ':hover': t.textPrimary },
+  },
+  parameterChosen: { color: { default: t.supportLavender, ':hover': t.supportLavender } },
   heading: { margin: 0, fontSize: 16, fontWeight: 600 },
   note: {
     margin: 0,

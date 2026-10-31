@@ -90,6 +90,89 @@ async function selectFile(
   await user.click(await screen.findByRole('option', { name }));
 }
 describe('single image UI wiring (mocked codecs; not layout/browser evidence)', () => {
+  it('imports nested folder files in stable order, reports invalid files and appends without losing a single draft', async () => {
+    const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'webkitdirectory');
+    Object.defineProperty(HTMLInputElement.prototype, 'webkitdirectory', {configurable: true, value: false});
+    try {
+      const user = userEvent.setup();
+      const {container} = render(
+        <UiProvider labels={messages.en}>
+          <ImageResizeCrop region="global" locale="en" />
+        </UiProvider>,
+      );
+      const folder = container.querySelector<HTMLInputElement>('#resize-folder')!;
+      const addFolder = screen.getByRole('button', {name: 'Add folder'});
+      await waitFor(() => expect(addFolder.hasAttribute('disabled')).toBe(false));
+      expect(folder.hasAttribute('webkitdirectory')).toBe(true);
+      expect(folder.multiple).toBe(true);
+      const folderFile = (path: string, type = 'image/png') => {
+        const file = new File(['source'], path.split('/').at(-1)!, {type});
+        Object.defineProperty(file, 'webkitRelativePath', {value: path});
+        return file;
+      };
+      fireEvent.change(folder, {target: {files: [
+        folderFile('images/z.png'),
+        folderFile('images/b/same.png'),
+        folderFile('images/notes.txt', 'text/plain'),
+        folderFile('images/a/same.png'),
+      ]}});
+      await screen.findByRole('region', {name: 'Batch resize'});
+      await waitFor(() => expect(load).toHaveBeenCalledTimes(3));
+      expect(load.mock.calls.map(([file]) => file.webkitRelativePath)).toEqual([
+        'images/a/same.png', 'images/b/same.png', 'images/z.png',
+      ]);
+      expect(screen.getAllByRole('listitem', {name: 'same.png'})).toHaveLength(2);
+      expect(screen.getByRole('alert').textContent).toContain('Unsupported format × 1');
+      expect(encode).not.toHaveBeenCalled();
+      expect(folder.value).toBe('');
+      await user.click(screen.getByRole('button', {name: 'Single image'}));
+      const width = await screen.findByRole('textbox', {name: 'Width (pixels)'});
+      await user.clear(width);
+      await user.type(width, '400{Enter}');
+      fireEvent.change(folder, {target: {files: [folderFile('more/first.png'), folderFile('more/second.png')]}});
+      await waitFor(() => expect(load).toHaveBeenCalledTimes(5));
+      expect(screen.queryByRole('region', {name: 'Batch resize'})).toBeNull();
+      expect((width as HTMLInputElement).value).toBe('400');
+      expect(screen.getByRole('combobox', {name: 'Current image'}).textContent).toContain('same.png');
+      expect(folder.value).toBe('');
+    } finally {
+      if (descriptor) Object.defineProperty(HTMLInputElement.prototype, 'webkitdirectory', descriptor);
+      else Reflect.deleteProperty(HTMLInputElement.prototype, 'webkitdirectory');
+    }
+  });
+  it('disables folder intake with an accessible fallback in an unsupported browser', async () => {
+    render(<UiProvider labels={messages.en}><ImageResizeCrop region="global" locale="en" /></UiProvider>);
+    const folder = screen.getByRole('button', {name: 'Add folder'});
+    await waitFor(() => expect(folder.hasAttribute('disabled')).toBe(true));
+    expect(document.getElementById(folder.getAttribute('aria-describedby')!)?.textContent).toContain('Use Add images instead.');
+    expect(screen.getByRole('button', {name: 'Choose images or drop them here'}).hasAttribute('disabled')).toBe(false);
+  });
+  it('exposes aspect and batch rules as separate keyboard-operable radio groups', async () => {
+    const { user } = await mount();
+    const aspects = screen.getByRole('group', {name: 'Crop aspect ratio'});
+    expect(within(aspects).getAllByRole('radio')).toHaveLength(6);
+    expect(screen.queryByRole('combobox', {name: 'Crop aspect ratio'})).toBeNull();
+    await user.click(within(aspects).getByRole('radio', {name: '1:1'}));
+    expect((screen.getByRole('textbox', {name: 'Width (pixels)'}) as HTMLInputElement).value).toBe('800');
+    expect((screen.getByRole('textbox', {name: 'Height (pixels)'}) as HTMLInputElement).value).toBe('800');
+    await user.keyboard('{ArrowRight}');
+    expect((within(aspects).getByRole('radio', {name: '4:3'}) as HTMLInputElement).checked).toBe(true);
+    await user.click(screen.getByRole('button', {name: 'Advanced'}));
+    expect((within(aspects).getByRole('radio', {name: '4:3'}) as HTMLInputElement).checked).toBe(true);
+    await user.click(screen.getByRole('button', {name: 'Batch resize'}));
+    const rules = screen.getByRole('group', {name: 'Resize method'});
+    expect(within(rules).getAllByRole('radio')).toHaveLength(4);
+    expect(screen.queryByRole('combobox', {name: 'Resize method'})).toBeNull();
+    expect((within(rules).getByRole('radio', {name: 'Longest edge'}) as HTMLInputElement).checked).toBe(true);
+    await user.click(within(rules).getByRole('radio', {name: 'Percentage'}));
+    const percent = screen.getByRole('textbox', {name: 'Scale (%)'});
+    await user.clear(percent);
+    await user.type(percent, '50{Enter}');
+    await user.click(screen.getByRole('button', {name: 'Start processing'}));
+    await waitFor(() => expect(encode).toHaveBeenCalledOnce());
+    expect(encode.mock.calls[0]?.[1]).toEqual({x: 0, y: 0, width: 1200, height: 800});
+    expect(encode.mock.calls[0]?.[2]).toMatchObject({width: 600, height: 400});
+  });
   it('starts in crop view and shows composition in the same workspace on request', async () => {
     const { user, container } = await mount();
     expect(

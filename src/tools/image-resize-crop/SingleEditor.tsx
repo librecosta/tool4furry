@@ -2,7 +2,6 @@ import { useEffect, useId, useRef, useState } from 'react';
 import * as stylex from '@stylexjs/stylex';
 import { Button } from '../../ui/Button';
 import { TextField } from '../../ui/TextField';
-import { SelectField } from '../../ui/SelectField';
 import { CheckboxField } from '../../ui/CheckboxField';
 import { SliderField } from '../../ui/SliderField';
 import { checkDimensions } from '../image/types';
@@ -17,6 +16,7 @@ import { useOwnedUrl } from '../image-converter/use-owned-url';
 import {
   FormatChoices,
   ParameterModes,
+  ParameterChoices,
   type ResizeMessages,
 } from './ParameterControls';
 import type { ResizeCollection, CollectionView } from './collection';
@@ -234,7 +234,7 @@ export function SingleEditor({
               t={t}
             />
           </div>
-          <SelectField
+          <ParameterChoices
             label={t.aspect}
             value={editor.aspect}
             disabled={busy}

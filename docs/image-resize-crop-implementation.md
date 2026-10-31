@@ -8,9 +8,9 @@ V0.7-A1-B 已完成单张裁剪与批量缩放功能；A1-C1 重组工作区层�
 - `session.ts`：原有单张裁剪、尺寸联动和结果版本。切换图片/模式保留合法草稿和单张结果；名称不重新编码。未完成输入由 UI 暂存，Enter 或焦点离开尺寸组时原子验证。
 - `geometry.ts`：方向校正后的 Source 整数像素 Crop、稳定中心/边界约束及 Output 联动；响应式只投影。`batch.ts` 从各自完整原图计算宽度、高度、最长边或百分比，最近整数、最小 1px，默认不放大；明确拒绝非法/超预算输出，不通过缩小或换格式规避预算。
 - `render.ts`：复用图片内核验证、方向、资源和 `privacy-v1`。只为当前单图选中项按需生成最长边 1600 的预览；切换释放旧预览，其余文件只保留已验证源信息，不保留解码位图。导出从原图一次绘制裁剪/缩放、编码、清理元数据，再核验实际格式/MIME/尺寸与完整解码。批量传入完整原图 Crop，不继承手动裁剪。
-- `ImageResizeCrop.tsx`：继续 Form Wide；拥有单张/批量与各自独立的快速/高级展示状态，统一导入、清空、下载 URL 生命周期。无工具级 Provider、持久化或独立应用根。
+- `ImageResizeCrop.tsx`：继续 Form Wide；拥有单张/批量与各自独立的快速/高级展示状态，统一导入、清空、下载 URL 生命周期。空状态与追加区均提供与 Converter 一致的文件夹入口，复用 `sortedFolderFiles()` 后交给同一集合检查、限额与反馈；不支持目录选择时禁用入口并提示添加图片。无工具级 Provider、持久化或独立应用根。
 - `SingleEditor.tsx` / `CollectionControls.tsx`：当前文件选择与替换/移除集中一处；左侧裁剪、右侧参数，手机按自然顺序排列。单次点击下载复用 Session 编码与验证；自动保存请求遇到编辑、切换图片/工作方式或卸载即放弃，名称仍可独立修改。高级设置只展开控件，不重置参数或结果。
-- `BatchPanel.tsx` / `ParameterControls.tsx`：紧凑任务行、按状态显示操作；集中缩放设置，共用 Converter 的模式/选择/设置/辅助 CTA 样式及既有 UI 原语。批量快速/高级只改变参数展示，未改变引擎或任务版本语义。
+- `BatchPanel.tsx` / `ParameterControls.tsx`：紧凑任务行、按状态显示操作；集中缩放设置，共用 Converter 的模式/选择/设置/辅助 CTA 样式及既有 UI 原语。裁剪比例与批量缩放方式使用同一左对齐原生单选组，选项直接展示、窄屏自然换行。批量快速/高级只改变参数展示，未改变引擎或任务版本语义。
 - `CropEditor.tsx` / `CropWorkspace.tsx`：保留 react-image-crop 11.1.2 与局部 CSS，默认裁剪视图；工作区只拥有 Zoom/Pan、裁剪/预览、裁剪/平移和专注弹窗等临时视图状态。复用 `preview-geometry.ts` 的 Fit/Zoom/Clamp；按预览位图实际自然尺寸乘缩放比例设置 DOM 宽高，只做平移、不对 ReactCrop 使用 CSS scale。库读取的 DOM 媒体框与 client pointer delta 同单位，再由既有百分比投影回 Source 整数像素。Fit/Clamp 预留 24px 控制点空间，Resize 仅重新 Fit，不写 Crop。100% 是当前有界预览位图的 1:1，并非原图逐像素。
 - 专注编辑复用 Base UI Dialog，进入/退出仅更换视口实例；始终只有一个交互裁剪适配器，共享原 Session 的 Crop/Output/结果。普通滚轮滚动页面，Ctrl/⌘ + 滚轮缩放；专注模式直接滚轮缩放。裁剪模式第二触点会中止当前手势，防止 ReactCrop 未过滤 pointer ID 的 document 监听器误写选区；双指缩放/平移仅在平移模式与预览中实现，待真机验证。保留键盘控制点，平移时控制点不可聚焦。
 - `CompositionPreview.tsx`：构图预览整合到同一画布的预览视图，移除下方独立大区域。从既有方向校正预览绘制最长 1200×800 的有界 Canvas，按目标比例和 JPEG 背景显示，标注非最终编码结果；不编码、不创建结果 Blob，卸载释放 Canvas。裁剪与预览各自保留临时镜头。C2 独立原图/实际结果/对比弹窗继续使用有效实际结果。

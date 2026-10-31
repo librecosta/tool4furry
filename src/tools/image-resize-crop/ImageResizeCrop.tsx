@@ -7,7 +7,7 @@ import { FileDropzone } from '../../ui/FileDropzone';
 import { Button } from '../../ui/Button';
 import { ConfirmDialog } from '../../ui/ConfirmDialog';
 import { mobileImageLimits, resolveImageLimits } from '../image/limits';
-import { imageAccept } from '../image-converter/intake';
+import { imageAccept, sortedFolderFiles } from '../image-converter/intake';
 import { converterStyles as c } from '../image-converter/converter.styles';
 import { ResizeCollection, initialCollection } from './collection';
 import { SingleEditor } from './SingleEditor';
@@ -24,11 +24,14 @@ export default function ImageResizeCrop({ locale }: ToolProps) {
   const [singleAdvanced, setSingleAdvanced] = useState(false);
   const [batchAdvanced, setBatchAdvanced] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
+  const [folderSupported, setFolderSupported] = useState<boolean>();
+  const folderInput = useRef<HTMLInputElement>(null);
   const downloads = useRef(new Set<string>());
   const hadFiles = useRef(false);
   const limits = manager?.limits ?? mobileImageLimits;
   const hasFiles = !!view.files.length;
   useEffect(() => {
+    setFolderSupported('webkitdirectory' in document.createElement('input'));
     const current = new ResizeCollection(
       setView,
       undefined,
@@ -131,21 +134,54 @@ export default function ImageResizeCrop({ locale }: ToolProps) {
               </div>
             )}
             <div {...stylex.props(hasFiles && s.addFiles)}>
-              <FileDropzone
-                id="resize-source"
-                label={hasFiles ? t.append : t.pick}
-                hint={hasFiles ? undefined : 'PNG / JPEG / WebP / AVIF'}
-                accept={imageAccept}
-                multiple
-                appearance={hasFiles ? 'compact' : 'expanded'}
-                disabled={!manager}
-                issueMessages={{
-                  type: t.intake.type,
-                  size: t.intake.size,
-                  count: t.intake.count,
-                }}
-                onFilesReceived={(files) => manager?.add(files)}
-              />
+              <div {...stylex.props(c.intakeActions, hasFiles && c.compactIntake)}>
+                <FileDropzone
+                  id="resize-source"
+                  label={hasFiles ? t.append : t.pick}
+                  hint={hasFiles ? undefined : 'PNG / JPEG / WebP / AVIF'}
+                  accept={imageAccept}
+                  multiple
+                  appearance={hasFiles ? 'compact' : 'expanded'}
+                  disabled={!manager}
+                  issueMessages={{
+                    type: t.intake.type,
+                    size: t.intake.size,
+                    count: t.intake.count,
+                  }}
+                  onFilesReceived={(files) => manager?.add(files)}
+                />
+                <input
+                  ref={(node) => {
+                    folderInput.current = node;
+                    node?.setAttribute('webkitdirectory', '');
+                  }}
+                  id="resize-folder"
+                  type="file"
+                  multiple
+                  hidden
+                  aria-label={t.addFolder}
+                  disabled={!manager || folderSupported === false}
+                  onChange={(event) => {
+                    const input = event.currentTarget;
+                    try {
+                      if (input.files?.length)
+                        manager?.add(sortedFolderFiles(Array.from(input.files)));
+                    } finally {
+                      input.value = '';
+                    }
+                  }}
+                />
+                <Button
+                  xstyle={c.supportAction}
+                  disabled={!manager || folderSupported === false}
+                  aria-describedby={
+                    folderSupported === false ? 'resize-folder-hint' : undefined
+                  }
+                  onClick={() => folderInput.current?.click()}
+                >
+                  {t.addFolder}
+                </Button>
+              </div>
               {view.files.length > 1 && (
                 <ConfirmDialog
                   open={confirmClear}
@@ -165,6 +201,11 @@ export default function ImageResizeCrop({ locale }: ToolProps) {
               )}
             </div>
           </div>
+          {folderSupported === false && (
+            <p id="resize-folder-hint" {...stylex.props(c.note)}>
+              {t.folderUnavailable}
+            </p>
+          )}
           <details {...stylex.props(c.help)}>
             <summary>{t.fileDetails}</summary>
             <p {...stylex.props(c.note)}>{t.input}</p>

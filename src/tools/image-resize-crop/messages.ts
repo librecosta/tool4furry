@@ -5,6 +5,8 @@ export const resizeMessages = {
     preview: imagePreviewMessages.zh,
     pick: '选择图片或拖放到这里',
     append: '添加图片',
+    addFolder: '添加文件夹',
+    folderUnavailable: '当前浏览器不支持选择文件夹，请使用添加图片。',
     input: '支持 PNG、JPEG、WebP 和受支持的静态 AVIF。输出 PNG、JPEG 或 WebP。',
     inputLimitations:
       '仅支持静态图片。动画、HDR 和无法读取的图片会提示错误；放大图片不会增加细节。',
@@ -151,6 +153,9 @@ export const resizeMessages = {
     preview: imagePreviewMessages.en,
     pick: 'Choose images or drop them here',
     append: 'Add images',
+    addFolder: 'Add folder',
+    folderUnavailable:
+      'Folder selection is unavailable in this browser. Use Add images instead.',
     input:
       'PNG, JPEG, WebP and supported static AVIF input. PNG, JPEG or WebP output.',
     inputLimitations:

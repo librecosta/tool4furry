@@ -7,6 +7,41 @@ import { resizeStyles as s } from './resize.styles';
 import type { resizeMessages } from './messages';
 
 export type ResizeMessages = (typeof resizeMessages)['zh'];
+
+export function ParameterChoices<Value extends string>({
+  label, value, options, disabled, onValueChange,
+}: {
+  label: string;
+  value: Value;
+  options: readonly {value: Value; label: string}[];
+  disabled?: boolean;
+  onValueChange: (value: Value) => void;
+}) {
+  const name = useId();
+  return (
+    <fieldset {...stylex.props(c.group)}>
+      <legend {...stylex.props(c.legend)}>{label}</legend>
+      <div {...stylex.props(s.parameterChoices)}>
+        {options.map(option => (
+          <label key={option.value} {...stylex.props(
+            s.parameterChoice, c.parameterControl,
+            value === option.value && s.parameterChosen,
+            disabled && c.disabled,
+          )}>
+            <input
+              type="radio" name={name} value={option.value}
+              checked={value === option.value} disabled={disabled}
+              onChange={() => onValueChange(option.value)}
+              {...stylex.props(c.radio)}
+            />
+            <span>{option.label}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
 export function ParameterModes({
   advanced,
   onChange,
