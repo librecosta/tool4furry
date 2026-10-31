@@ -14,7 +14,19 @@ export const cropWorkspaceStyles = stylex.create({
   top: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: t.space8 },
   modes: { display: 'inline-flex', gap: t.space4 },
   mode: { minWidth: 64, minHeight: 44 },
-  selected: { color: t.supportLavender, backgroundColor: t.actionTint },
+  selected: {
+    color: { default: t.supportLavender, ':hover': t.supportLavender, ':active': t.supportLavender },
+    backgroundColor: {
+      default: `color-mix(in srgb, ${t.supportLavender} 16%, ${t.inputSurface})`,
+      ':hover': `color-mix(in srgb, ${t.supportLavender} 24%, ${t.inputSurface})`,
+      ':active': `color-mix(in srgb, ${t.supportLavender} 24%, ${t.inputSurface})`,
+    },
+    borderWidth: 0,
+    borderStyle: 'none',
+    borderColor: 'transparent',
+    textDecoration: 'none',
+    boxShadow: 'none',
+  },
   body: {
     display: 'grid',
     gridTemplateColumns: { default: '100px minmax(0, 1fr) 44px', '@media (max-width: 700px)': 'minmax(0, 1fr)' },

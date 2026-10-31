@@ -271,7 +271,7 @@ export default function ImageConverter({ locale }: ToolProps) {
                   {...stylex.props(
                     s.mode,
                     s.parameterControl,
-                    state.mode === mode && s.currentMode,
+                    state.mode === mode && s.currentParameterMode,
                   )}
                   onClick={() => {
                     setQualityDraft(undefined);

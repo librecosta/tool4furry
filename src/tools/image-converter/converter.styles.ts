@@ -67,9 +67,17 @@ export const converterStyles = stylex.create({
     fontSize: 13,
     fontWeight: 500,
   },
-  currentMode: {
-    backgroundColor: t.actionTint,
-    color: t.textPrimary,
+  currentParameterMode: {
+    backgroundColor: {
+      default: `color-mix(in srgb, ${t.supportLavender} 16%, ${t.inputSurface})`,
+      ':hover': `color-mix(in srgb, ${t.supportLavender} 24%, ${t.inputSurface})`,
+      ':active': `color-mix(in srgb, ${t.supportLavender} 24%, ${t.inputSurface})`,
+    },
+    color: { default: t.supportLavender, ':hover': t.supportLavender, ':active': t.supportLavender },
+    borderWidth: 0,
+    borderStyle: 'none',
+    textDecoration: 'none',
+    boxShadow: 'none',
   },
   parameterControl: {
     transitionProperty: 'color, background-color',
