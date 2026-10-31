@@ -13,7 +13,7 @@
 | [home-community.ts](../src/site/home-community.ts) | Region 决定真实社群/支持平台，Locale 决定文案 |
 | [homepage.ts](../src/styles/homepage.ts)、`home-pillars.ts`、`home-community.ts` | 当前几何、局部样式与既有动效时间轴 |
 
-首页保留 `section#tools` 兼容锚点，Hero CTA 始终进入本地区/语言 `/tools/`。首页最多四项真实精选；导航沿用同一精选排序与自己的上限，不另造工具表。六角色手工 toolIds 经地区/状态过滤、去重并限量，不自动按分类分配或补足虚构项。角色插画有真实素材才显示，3:4、底对齐、手机隐藏；工具列表独立从左上按行排列，身份 Icon 与简介左缘一致。精选可选左侧插画是正常 Grid 列，不用绝对定位/负偏移制造空白列。
+首页保留 `section#tools` 兼容锚点，Hero CTA 始终进入本地区/语言 `/tools/`。首页最多四项真实精选；导航沿用同一精选排序与自己的上限，不另造工具表。六角色手工 toolIds 经地区/状态过滤、去重并限量，不自动按分类分配或补足虚构项。画家、开发者、动画师和运营按 Image Converter → Image Resize & Crop 顺序关联两款工具；作曲家与工作室保持空列表。资格仍由 Registry 决定，人工关联不绕过 Draft/地区过滤。角色插画有真实素材才显示，3:4、底对齐、手机隐藏；工具列表独立从左上按行排列，身份 Icon 与简介左缘一致。精选可选左侧插画是正常 Grid 列，不用绝对定位/负偏移制造空白列。
 
 ## 品牌、Header、Footer 与主题
 
