@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import * as stylex from '@stylexjs/stylex';
 import { Button } from '../../ui/Button';
 import { TextField } from '../../ui/TextField';
@@ -11,6 +11,9 @@ import { converterStyles as c } from '../image-converter/converter.styles';
 import { aspects, fullCrop, type Aspect } from './geometry';
 import { CollectionControls } from './CollectionControls';
 import { CropEditor } from './CropEditor';
+import { CompositionPreview } from './CompositionPreview';
+import { ImageComparisonDialog } from '../image/ImageComparisonDialog';
+import { useOwnedUrl } from '../image-converter/use-owned-url';
 import {
   FormatChoices,
   ParameterModes,
@@ -40,6 +43,18 @@ export function SingleEditor({
   const session = manager.editor;
   const editor = view.editor;
   const { source, crop, output } = editor;
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const previewButtonId = useId();
+  const actual = session?.download();
+  const sourceURL = useOwnedUrl(
+    previewOpen ? source?.blob : undefined,
+    manager.resources,
+  );
+  const outputURL = useOwnedUrl(
+    previewOpen ? actual?.blob : undefined,
+    manager.resources,
+  );
+  useEffect(() => setPreviewOpen(false), [source]);
   const [draft, setDraft] = useState<{
     width: string;
     height: string;
@@ -157,7 +172,41 @@ export function SingleEditor({
   return (
     <div {...stylex.props(s.grid)}>
       <section aria-label={t.editor} {...stylex.props(s.stack)}>
-        <CollectionControls manager={manager} view={view} t={t} />
+        <CollectionControls
+          manager={manager}
+          view={view}
+          t={t}
+          onPreview={() => setPreviewOpen(true)}
+          previewButtonId={previewButtonId}
+        />
+        {source && (
+          <ImageComparisonDialog
+            open={previewOpen}
+            onOpenChange={setPreviewOpen}
+            name={source.file.name}
+            source={{
+              url: sourceURL,
+              width: source.width,
+              height: source.height,
+              format: source.info.format,
+              onError: () => {},
+            }}
+            output={actual ? {
+              url: outputURL,
+              width: output.width,
+              height: output.height,
+              format: output.format,
+              onError: () => {},
+            } : undefined}
+            composition={url && crop ? {
+              label: t.composition,
+              note: t.compositionNote,
+              content: <CompositionPreview view={editor} url={url} t={t} />,
+            } : undefined}
+            labels={t.preview}
+            finalFocus={() => document.getElementById(previewButtonId) ?? document.getElementById('resize-source-button')}
+          />
+        )}
         {source && crop && url && (
           <CropEditor
             view={editor}

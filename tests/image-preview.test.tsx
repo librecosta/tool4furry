@@ -1,8 +1,9 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ImagePreviewViewport } from '../src/tools/image/ImagePreviewViewport';
 import { ImageThumbnail } from '../src/tools/image/ImageThumbnail';
+import { ImageComparisonDialog } from '../src/tools/image/ImageComparisonDialog';
 import {
   constrain,
   fitScale,
@@ -208,6 +209,7 @@ describe('image preview geometry and interactions (simulated DOM, no codec)', ()
   it('falls back for loading/checking/broken thumbnails without owning a URL', () => {
     const { container, rerender } = render(<ImageThumbnail src="blob:one" />);
     expect(container.querySelector('svg')).toBeTruthy();
+    expect(container.querySelector('img')?.getAttribute('loading')).toBe('lazy');
     fireEvent.load(container.querySelector('img')!);
     expect(container.querySelector('svg')).toBeNull();
     fireEvent.error(container.querySelector('img')!);
@@ -219,5 +221,28 @@ describe('image preview geometry and interactions (simulated DOM, no codec)', ()
     expect(container.querySelector('img')?.getAttribute('src')).toBe(
       'blob:two',
     );
+  });
+  it('compares with independent viewport controls and immediately removes unavailable outputs', async () => {
+    const user = userEvent.setup();
+    const source = {url: 'blob:original', width: 1600, height: 1200, format: 'png', onError: vi.fn()};
+    const output = {url: 'blob:output', width: 800, height: 600, format: 'webp', onError: vi.fn()};
+    const dialog = (result = true) => <UiProvider labels={messages.en}><ImageComparisonDialog open onOpenChange={() => {}} name="art.png" source={source} output={result ? output : undefined} labels={converterMessages.en} finalFocus={() => null}/></UiProvider>;
+    const {rerender} = render(dialog());
+    await user.click(screen.getByRole('button', {name: 'Compare'}));
+    const originalPanel = screen.getByRole('region', {name: 'Original'});
+    const outputPanel = screen.getByRole('region', {name: 'Output'});
+    fireEvent.load(within(originalPanel).getByRole('img'));
+    fireEvent.load(within(outputPanel).getByRole('img'));
+    const outputTransform = within(outputPanel).getByRole('img').getAttribute('style');
+    await user.click(within(originalPanel).getByRole('button', {name: labels.actual}));
+    expect(within(originalPanel).getByRole('img').getAttribute('style')).toContain('scale(1)');
+    expect(within(outputPanel).getByRole('img').getAttribute('style')).toBe(outputTransform);
+    fireEvent.error(within(outputPanel).getByRole('img'));
+    expect(within(outputPanel).getByRole('alert').textContent).toBe(labels.error);
+    expect(output.onError).toHaveBeenCalledOnce();
+    rerender(dialog(false));
+    expect(screen.queryByRole('img', {name: 'Output'})).toBeNull();
+    expect(screen.getByRole('button', {name: 'Compare'}).hasAttribute('disabled')).toBe(true);
+    expect(screen.getByRole('button', {name: 'Original'}).getAttribute('aria-pressed')).toBe('true');
   });
 });

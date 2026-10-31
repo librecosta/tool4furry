@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import * as stylex from '@stylexjs/stylex';
 import {
   ArrowClockwiseIcon,
   DownloadSimpleIcon,
   CropIcon,
+  EyeIcon,
   TrashIcon,
 } from '@phosphor-icons/react';
 import { Button, IconButton } from '../../ui/Button';
@@ -13,7 +14,10 @@ import { CheckboxField } from '../../ui/CheckboxField';
 import { SliderField } from '../../ui/SliderField';
 import { ConfirmDialog } from '../../ui/ConfirmDialog';
 import { Tooltip } from '../../ui/Tooltip';
-import { FileTaskList } from '../../ui/FileTaskList';
+import { FileTaskList, fileTaskStyles as rows } from '../../ui/FileTaskList';
+import { ImageTaskMedia } from '../image/ImageTaskMedia';
+import { ImageComparisonDialog } from '../image/ImageComparisonDialog';
+import { useOwnedUrl } from '../image-converter/use-owned-url';
 import { converterStyles as c } from '../image-converter/converter.styles';
 import type {
   ResizeCollection,
@@ -141,6 +145,7 @@ export function BatchPanel({
         />
         <CheckboxField
           label={t.noUpscale}
+          hint={t.noUpscaleHint}
           checked={settings.noUpscale}
           onCheckedChange={(noUpscale) => manager.batchSettings({ noUpscale })}
         />
@@ -317,30 +322,44 @@ function ResizeTaskRow({
   blocked: boolean;
 }) {
   const [confirm, setConfirm] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const previewButtonId = useId();
+  const nameId = useId();
   const error = item.error ?? item.batch.error;
   const failed = item.intake === 'failed' || item.batch.status === 'failed';
   const active =
     ['waiting', 'validating'].includes(item.intake) ||
     ['waiting', 'processing'].includes(item.batch.status);
   const result = manager.download(item.id);
+  const sourceURL = useOwnedUrl(item.source?.blob, manager.resources);
+  const outputURL = useOwnedUrl(result?.blob, manager.resources);
   const status =
     item.intake !== 'ready'
       ? t.intakeStates[item.intake]
       : t.batchStates[item.batch.status];
   return (
     <li
+      aria-labelledby={nameId}
       data-task-id={item.id}
       data-task-status={item.batch.status}
-      {...stylex.props(s.task)}
+      {...stylex.props(rows.item)}
     >
-      <div {...stylex.props(s.taskNameRow)}>
-        <span title={item.file.name} {...stylex.props(s.taskName)}>
+      <div aria-hidden="true" {...stylex.props(rows.media)}>
+        <ImageTaskMedia
+          source={sourceURL}
+          output={result ? outputURL : undefined}
+          checking={active && !item.source}
+          labels={t.preview}
+        />
+      </div>
+      <div {...stylex.props(rows.heading)}>
+        <span id={nameId} title={item.file.name} {...stylex.props(rows.name)}>
           {item.file.name}
         </span>
         <span
           role="status"
           {...stylex.props(
-            s.taskStatus,
+            rows.status,
             result && s.success,
             failed && s.error,
             active && s.waiting,
@@ -349,18 +368,39 @@ function ResizeTaskRow({
           {status}
         </span>
       </div>
-      <div {...stylex.props(s.taskMeta)}>
-        {item.source ? `${item.source.width} × ${item.source.height}` : '—'} →{' '}
-        {item.batch.target
-          ? `${item.batch.target.width} × ${item.batch.target.height}`
-          : '—'}{' '}
-        · {view.settings.format.toUpperCase()}
+      <div {...stylex.props(rows.metadataRow)}>
+        <div {...stylex.props(rows.metadata)}>
+          {item.source ? `${item.source.width} × ${item.source.height}` : '—'} →{' '}
+          {item.batch.target
+            ? `${item.batch.target.width} × ${item.batch.target.height}`
+            : '—'}{' '}
+          · {view.settings.format.toUpperCase()}
+          {error && (
+            <p role="alert" {...stylex.props(s.error)}>
+              {t.errors[error as keyof typeof t.errors] ?? t.errors.fallback}
+            </p>
+          )}
+        </div>
       </div>
-      <div {...stylex.props(s.taskActions)}>
+      <div {...stylex.props(rows.actions)}>
+        {item.source && (
+          <Tooltip content={t.preview.preview}>
+            <IconButton
+              id={previewButtonId}
+              variant="ghost"
+              label={`${t.preview.preview}: ${item.file.name}`}
+              xstyle={rows.action}
+              onClick={() => setPreviewOpen(true)}
+            >
+              <EyeIcon size={18} />
+            </IconButton>
+          </Tooltip>
+        )}
         {result && (
           <Tooltip content={t.download}>
             <IconButton
               variant="ghost"
+              xstyle={rows.action}
               label={`${t.download}: ${item.file.name}`}
               onClick={() => save(manager.download(item.id))}
             >
@@ -372,6 +412,7 @@ function ResizeTaskRow({
           <Tooltip content={t.retryFile}>
             <IconButton
               variant="ghost"
+              xstyle={rows.action}
               label={`${t.retryFile}: ${item.file.name}`}
               disabled={blocked}
               onClick={() => manager.retry(item.id)}
@@ -384,6 +425,7 @@ function ResizeTaskRow({
           <Tooltip content={t.editFile}>
             <IconButton
               variant="ghost"
+              xstyle={rows.action}
               label={`${t.editFile}: ${item.file.name}`}
               onClick={() => {
                 manager.select(item.id);
@@ -406,6 +448,7 @@ function ResizeTaskRow({
           trigger={
             <IconButton
               variant="ghost"
+              xstyle={rows.action}
               label={`${t.remove}: ${item.file.name}`}
               title={t.remove}
             >
@@ -414,10 +457,27 @@ function ResizeTaskRow({
           }
         />
       </div>
-      {error && (
-        <p role="alert" {...stylex.props(s.taskError)}>
-          {t.errors[error as keyof typeof t.errors] ?? t.errors.fallback}
-        </p>
+      {item.source && (
+        <ImageComparisonDialog
+          open={previewOpen}
+          onOpenChange={setPreviewOpen}
+          name={item.file.name}
+          source={{
+            url: sourceURL,
+            width: item.source.width,
+            height: item.source.height,
+            format: item.source.info.format,
+            onError: () => {},
+          }}
+          output={result && item.batch.target ? {
+            url: outputURL,
+            ...item.batch.target,
+            format: view.settings.format,
+            onError: () => {},
+          } : undefined}
+          labels={t.preview}
+          finalFocus={() => document.getElementById(previewButtonId) ?? document.getElementById('resize-source-button')}
+        />
       )}
     </li>
   );

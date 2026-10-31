@@ -303,6 +303,10 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     expect(await screen.findByRole('img', { name: 'Output' })).toBeTruthy();
     expect(screen.queryByRole('img', { name: 'Original' })).toBeNull();
     expect(URL.createObjectURL).toHaveBeenCalledTimes(2);
+    expect(container.querySelectorAll('[data-thumbnail-kind="output"] img')).toHaveLength(1);
+    await user.click(screen.getByRole('button', { name: 'Compare' }));
+    expect(screen.getByRole('img', { name: 'Original' })).toBeTruthy();
+    expect(screen.getByRole('img', { name: 'Output' })).toBeTruthy();
     await user.click(
       screen.getByRole('button', { name: 'Close image preview' }),
     );
@@ -357,6 +361,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     );
     expect(screen.queryByRole('link', { name: 'Download result' })).toBeNull();
     expect(screen.getByText('Enter an integer from 1 to 100.')).toBeTruthy();
+    expect(container.querySelector('[data-thumbnail-kind="output"]')).toBeNull();
     expect(
       container
         .querySelector('[data-image-thumbnail] img')

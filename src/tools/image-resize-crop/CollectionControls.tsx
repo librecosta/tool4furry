@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import * as stylex from '@stylexjs/stylex';
-import { ArrowsClockwiseIcon, TrashIcon } from '@phosphor-icons/react';
+import { ArrowsClockwiseIcon, EyeIcon, TrashIcon } from '@phosphor-icons/react';
 import { Button, IconButton } from '../../ui/Button';
 import { SelectField } from '../../ui/SelectField';
 import { ConfirmDialog } from '../../ui/ConfirmDialog';
@@ -15,10 +15,14 @@ export function CollectionControls({
   manager,
   view,
   t,
+  onPreview,
+  previewButtonId,
 }: {
   manager: ResizeCollection;
   view: CollectionView;
   t: ResizeMessages;
+  onPreview: () => void;
+  previewButtonId: string;
 }) {
   const [confirm, setConfirm] = useState<'replace' | 'remove'>();
   const replacement = useRef<HTMLInputElement>(null);
@@ -36,6 +40,13 @@ export function CollectionControls({
         onValueChange={(id) => manager.select(id)}
       />
       <div {...stylex.props(s.actions)}>
+        {selected.source && (
+          <Tooltip content={t.preview.preview}>
+            <IconButton id={previewButtonId} variant="ghost" label={t.preview.preview} onClick={onPreview}>
+              <EyeIcon size={20} />
+            </IconButton>
+          </Tooltip>
+        )}
         {selected.source && (
           <ConfirmDialog
             open={confirm === 'replace'}

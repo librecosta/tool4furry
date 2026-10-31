@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FileTaskRow, type FileTaskItem } from '../../ui/FileTaskList';
-import { ImageThumbnail } from '../image/ImageThumbnail';
+import { ImageTaskMedia } from '../image/ImageTaskMedia';
 import { useOwnedUrl } from './use-owned-url';
 import { ImagePreviewDialog } from './ImagePreviewDialog';
 import type { ConverterSession, ConverterTask } from './session';
@@ -29,15 +29,15 @@ export function ConverterTaskRow({
   const [previewError, setPreviewError] = useState<Blob>();
   const source = task.source;
   const result = session.download(task.id);
+  const output = !blocked ? result : undefined;
   const sourceUrl = useOwnedUrl(source?.blob, session.resources);
   const ownedResultUrl = useOwnedUrl(
-    result?.blob !== source?.blob ? result?.blob : undefined,
+    output?.blob !== source?.blob ? output?.blob : undefined,
     session.resources,
   );
-  const resultUrl = result?.blob === source?.blob ? sourceUrl : ownedResultUrl;
+  const resultUrl = output?.blob === source?.blob ? sourceUrl : ownedResultUrl;
   useEffect(() => setPreviewError(undefined), [source?.blob, result?.blob]);
   const name = session.filename(task.id);
-  const output = !blocked ? result : undefined;
   const downloadable =
     !!output && !!resultUrl && !name.error && previewError !== output.blob;
   const state = blocked && task.status === 'ready' ? 'stale' : task.status;
@@ -54,13 +54,13 @@ export function ConverterTaskRow({
     id: task.id,
     name: task.file.name,
     media: (
-      <ImageThumbnail src={sourceUrl} checking={task.status === 'validating'} />
+      <ImageTaskMedia source={sourceUrl} output={output ? resultUrl : undefined} checking={task.status === 'validating'} labels={t} />
     ),
     metadata: source
       ? `${source.info.format.toUpperCase()} · ${source.width}×${source.height} · ${formatBytes(task.file.size)}`
       : formatBytes(task.file.size),
     output: output
-      ? `${output.mime.replace('image/', '').toUpperCase()} · ${formatBytes(output.bytes)} (${output.bytes - task.file.size >= 0 ? '+' : ''}${formatBytes(output.bytes - task.file.size)})`
+      ? `${output.mime.replace('image/', '').toUpperCase()} · ${output.width}×${output.height} · ${formatBytes(output.bytes)} (${output.bytes - task.file.size >= 0 ? '+' : ''}${formatBytes(output.bytes - task.file.size)})`
       : undefined,
     status: state,
     statusLabel: t.taskStatus[state],

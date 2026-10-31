@@ -26,7 +26,7 @@ export function ParameterModes({
           {...stylex.props(
             c.mode,
             c.parameterControl,
-            advanced === value && c.currentMode,
+            advanced === value && s.currentParameterMode,
           )}
           onClick={() => onChange(value)}
         >

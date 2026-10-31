@@ -1,6 +1,6 @@
 # Image Resize & Crop · 当前实现
 
-V0.7-A1-B 已完成单张裁剪与批量缩放功能；V0.7-A1-C1 重组工作区层级、快速/高级参数与下载流程。CN/Global 双语继续为 **Draft**，仅 DEV 可访问。Image Converter 仍是唯一 Published 工具；未部署，正式产品资格仍待维护者验收。
+V0.7-A1-B 已完成单张裁剪与批量缩放功能；A1-C1 重组工作区层级，A1-C2 完善构图、缩略图和两款工具共享的预览/对比。CN/Global 双语继续为 **Draft**，仅 DEV 可访问。Image Converter 仍是唯一 Published 工具；未部署，正式产品资格仍待维护者验收。
 
 ## 模块与数据边界
 
@@ -11,7 +11,8 @@ V0.7-A1-B 已完成单张裁剪与批量缩放功能；V0.7-A1-C1 重组工作�
 - `ImageResizeCrop.tsx`：继续 Form Wide；拥有单张/批量与各自独立的快速/高级展示状态，统一导入、清空、下载 URL 生命周期。无工具级 Provider、持久化或独立应用根。
 - `SingleEditor.tsx` / `CollectionControls.tsx`：当前文件选择与替换/移除集中一处；左侧裁剪、右侧参数，手机按自然顺序排列。单次点击下载复用 Session 编码与验证；自动保存请求遇到编辑、切换图片/工作方式或卸载即放弃，名称仍可独立修改。高级设置只展开控件，不重置参数或结果。
 - `BatchPanel.tsx` / `ParameterControls.tsx`：紧凑任务行、按状态显示操作；集中缩放设置，共用 Converter 的模式/选择/设置/辅助 CTA 样式及既有 UI 原语。批量快速/高级只改变参数展示，未改变引擎或任务版本语义。
-- `CropEditor.tsx`：保留 react-image-crop 11.1.2、局部 CSS 与响应式坐标算法。帮助通过 Tooltip 查看，构图预览按需展开。ISC 原始条款与本地修改说明保留于 `crop.NOTICE.txt`，继续通过 `?url` 随 Draft 实现资源交付，并使用非可见的 `rel="license"` 元数据关联；编辑界面没有许可证入口。
+- `CropEditor.tsx` / `CompositionPreview.tsx`：保留 react-image-crop 11.1.2、局部 CSS 与响应式坐标算法。导入后始终展示较大构图预览，从已有方向校正预览绘制有界 Canvas，不在拖动时编码。帮助复用 150ms Hover 与可点击的 Base UI Popover。ISC 原始条款与本地修改说明保留于 `crop.NOTICE.txt`，继续通过 `?url` 随 Draft 实现资源交付，并使用非可见的 `rel="license"` 元数据关联；编辑界面没有许可证入口。
+- 预览展示复用 `image/ImageComparisonDialog.tsx`、`FilePreviewDialog` 和 `ImagePreviewViewport`：原图/实际结果/对比，桌面并排、手机上下独立缩放平移。单图未导出时可单独查看明确标注的非最终构图；批量未处理时只查看原图。任务行使用 `ImageTaskMedia` 与原生懒加载缩略图，不额外生成整批 Bitmap/Canvas/Blob。URL 由调用方通过既有 `useOwnedUrl` 管理，结果失效立即隐藏并撤销；删除关闭对应弹窗，正常关闭焦点回到预览按钮。
 
 Source 是已验证文件、格式和方向校正尺寸；Crop 是其整数像素矩形；Output 是最终宽高、格式、质量和 JPEG 背景。PNG/JPEG/WebP/受限静态 AVIF 输入，输出仅 PNG/JPEG/WebP。默认 PNG，JPEG 按所选背景合成透明像素。
 
@@ -63,6 +64,16 @@ Source 是已验证文件、格式和方向校正尺寸；Crop 是其整数像�
 实际下载 PNG/JPEG 为 400×400，经系统独立解码；PNG 保留透明，JPEG 透明区 #123456 得到 RGB 18/52/87（有损误差）。WebP RIFF/容器长度正确，并经过浏览器内完整输出复检。PNG ZIP CRC 正常，三项尺寸为 600×400、240×600、100×60；英文手机路径的 JPEG ZIP 只含两项成功文件，损坏源均被排除。截图与合成样本留在仓库外，不随生产分发。
 
 未测 Firefox/Safari、iOS/Android 真机与真实触摸、原生文件拖拽、Reduced Motion 系统设置的实际切换、低端设备及峰值内存；保留既有 Reduced Motion CSS。CN 英文与 Global 中文未深入人工交互。手机视口不等于真机触控证据。高级参数较多时仍需滚动，极长文件名采用截断与按需完整名称；由维护者确认实际素材、设备下的阅读与操作感受。
+
+## A1-C2 预览验收（2026-10-31）
+
+新增定向测试覆盖默认构图、裁剪变化的有界绘制与 Canvas 释放、150ms Tooltip、可点击/键盘操作的帮助、独立对比视口、逐文件身份、有效结果缩略图、参数失效与 URL 撤销；沿用既有编码/任务/ZIP 回归。本地 `pnpm check` 为 0 errors / warnings / hints，`pnpm test` 的 64 文件、719 项通过；双地区构建及静态产物守卫通过。未改 Registry/Loader/依赖机制，不重复平台专项夹具，也不宣称远端 CI 通过。
+
+真实 Chromium IAB：CN 中文 Resize、Global 英文 Converter，桌面 1200×900、手机视口 390×844，亮/暗外观。Resize 空状态、单图快速/高级、默认大构图、裁剪即时更新、帮助点击/Escape、导出前非最终构图与导出后实际结果对比均完成。发现并修正 Canvas 撑开网格导致预览裁切的问题；修正后桌面画布显示高度 400px、手机 273px，`object-fit: contain` 保留完整构图。原图/结果各自缩放，关闭焦点回到对应预览按钮；裁剪或批量规则改变后，旧结果缩略图和对比立即不可用。批量未处理预览原图、成功项双缩略图、错误/重试反馈和部分成功 ZIP 均完成。Converter 的原图/结果/对比、单项下载及无效参数清除结果缩略图也完成。两工具控制台无 warning/error，两个视口无横向溢出。
+
+实际单图 PNG 下载经系统独立解码为 400×400，透明像素保留；批量 ZIP CRC 正常，只含 600×400 与 240×600 两项成功 PNG，损坏源被排除。Converter 下载 WebP 的 RIFF/WEBP 标识与容器长度正确，实际结果已在浏览器完整解码显示。截图与合成样本保留在仓库外，不作为生产资源。
+
+悬停延迟由可控计时组件测试验证，浏览器自动化未测量真实鼠标悬停的体感；帮助点击/Escape 已实测。未测 Firefox/Safari、iOS/Android 真机及真实触摸、Reduced Motion 系统设置切换、低端设备与峰值内存；手机视口不等于真机。CN 英文与 Global 中文未做深入人工交互。维护者可用上方 DEV 入口复核真实素材和设备的缩放/平移、悬停和触控手感。
 
 ## A1-A 历史浏览器证据（非本轮复测）
 

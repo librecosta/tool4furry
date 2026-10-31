@@ -57,7 +57,7 @@ export function FileTaskList({
   children?: ReactNode;
 }) {
   return (
-    <ul aria-label={label} {...stylex.props(s.list)}>
+    <ul aria-label={label} {...stylex.props(fileTaskStyles.list)}>
       {items
         ? items.map((item) => <FileTaskRow key={item.id} item={item} />)
         : children}
@@ -76,34 +76,34 @@ export function FileTaskRow({ item }: { item: FileTaskItem }) {
       aria-describedby={item.error ? errorId : undefined}
       data-task-id={item.id}
       data-task-status={item.status}
-      {...stylex.props(s.item)}
+      {...stylex.props(fileTaskStyles.item)}
     >
-      <div aria-hidden="true" {...stylex.props(s.media)}>
+      <div aria-hidden="true" {...stylex.props(fileTaskStyles.media)}>
         {item.media ?? item.icon ?? <FileIcon size={22} />}
       </div>
-      <div {...stylex.props(s.heading)}>
-        <span id={nameId} title={item.name} {...stylex.props(s.name)}>
+      <div {...stylex.props(fileTaskStyles.heading)}>
+        <span id={nameId} title={item.name} {...stylex.props(fileTaskStyles.name)}>
           {item.name}
         </span>
         <span
           role="status"
           {...stylex.props(
-            s.status,
-            item.status === 'ready' && s.ready,
-            item.status === 'error' && s.error,
+            fileTaskStyles.status,
+            item.status === 'ready' && fileTaskStyles.ready,
+            item.status === 'error' && fileTaskStyles.error,
           )}
         >
           {item.statusLabel}
         </span>
       </div>
-      <div {...stylex.props(s.metadataRow)}>
-        <div {...stylex.props(s.metadata)}>
+      <div {...stylex.props(fileTaskStyles.metadataRow)}>
+        <div {...stylex.props(fileTaskStyles.metadata)}>
           {item.error ? (
             <span
               id={errorId}
               role="alert"
               title={item.error}
-              {...stylex.props(s.error)}
+              {...stylex.props(fileTaskStyles.error)}
             >
               {item.error}
             </span>
@@ -115,7 +115,7 @@ export function FileTaskRow({ item }: { item: FileTaskItem }) {
                   : item.metadata}
               </span>
               {item.status === 'ready' && item.output && (
-                <span {...stylex.props(s.output)}> → {item.output}</span>
+                <span {...stylex.props(fileTaskStyles.output)}> → {item.output}</span>
               )}
             </>
           )}
@@ -131,12 +131,12 @@ export function FileTaskRow({ item }: { item: FileTaskItem }) {
                 ? Math.round(Math.max(0, Math.min(1, item.progress!)) * 100)
                 : undefined
             }
-            {...stylex.props(s.progress)}
+            {...stylex.props(fileTaskStyles.progress)}
           >
             <span
               {...stylex.props(
-                s.bar,
-                !Number.isFinite(item.progress) && s.indeterminate,
+                fileTaskStyles.bar,
+                !Number.isFinite(item.progress) && fileTaskStyles.indeterminate,
               )}
               style={
                 Number.isFinite(item.progress)
@@ -149,7 +149,7 @@ export function FileTaskRow({ item }: { item: FileTaskItem }) {
           </div>
         )}
       </div>
-      <div {...stylex.props(s.actions)}>
+      <div {...stylex.props(fileTaskStyles.actions)}>
         {item.actions.map((action) => {
           const Icon = icons[action.kind];
           const content = <Icon size={18} aria-hidden="true" />;
@@ -168,8 +168,8 @@ export function FileTaskRow({ item }: { item: FileTaskItem }) {
                   {...stylex.props(
                     controls.button,
                     controls.ghost,
-                    s.action,
-                    action.kind === 'download' && s.ready,
+                    fileTaskStyles.action,
+                    action.kind === 'download' && fileTaskStyles.ready,
                   )}
                 >
                   {content}
@@ -184,7 +184,7 @@ export function FileTaskRow({ item }: { item: FileTaskItem }) {
                   aria-description={action.disabledReason}
                   title={action.disabledReason}
                   onClick={action.onClick}
-                  {...stylex.props(s.action)}
+                  {...stylex.props(fileTaskStyles.action)}
                 >
                   {content}
                 </IconButton>
@@ -201,11 +201,11 @@ const glide = stylex.keyframes({
   from: { transform: 'translateX(-100%)' },
   to: { transform: 'translateX(280%)' },
 });
-const s = stylex.create({
+export const fileTaskStyles = stylex.create({
   list: { listStyle: 'none', padding: 0, margin: 0, minWidth: 0 },
   item: {
     display: 'grid',
-    gridTemplateColumns: '44px minmax(0, 1fr) auto',
+    gridTemplateColumns: { default: 'auto minmax(0, 1fr) auto', '@media (max-width: 600px)': 'auto minmax(0, 1fr)' },
     alignItems: 'center',
     columnGap: t.space8,
     rowGap: 2,
@@ -219,6 +219,7 @@ const s = stylex.create({
   },
   heading: {
     gridColumn: 2,
+    gridRow: 1,
     display: 'flex',
     alignItems: 'center',
     gap: t.space8,
@@ -226,14 +227,14 @@ const s = stylex.create({
   },
   media: {
     gridColumn: 1,
-    gridRow: { default: '1 / 3', '@media (max-width: 600px)': '1' },
-    width: 44,
-    height: 44,
+    gridRow: '1 / 3',
+    minWidth: 44,
+    minHeight: 44,
     display: 'grid',
     placeItems: 'center',
     overflow: 'hidden',
     borderRadius: t.radiusSm,
-    backgroundColor: t.workspace,
+    backgroundColor: 'transparent',
     color: t.textSecondary,
   },
   name: {
@@ -252,7 +253,7 @@ const s = stylex.create({
   },
   ready: { color: t.accent },
   metadataRow: {
-    gridColumn: { default: '2', '@media (max-width: 600px)': '1 / -1' },
+    gridColumn: 2,
     gridRow: 2,
     display: 'flex',
     alignItems: 'center',
@@ -268,7 +269,7 @@ const s = stylex.create({
     fontVariantNumeric: 'tabular-nums',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    whiteSpace: { default: 'nowrap', '@media (max-width: 600px)': 'normal' },
   },
   progress: {
     width: 80,
@@ -292,10 +293,11 @@ const s = stylex.create({
   },
   output: { color: t.textPrimary },
   actions: {
-    gridColumn: 3,
-    gridRow: { default: '1 / 3', '@media (max-width: 600px)': '1' },
+    gridColumn: { default: '3', '@media (max-width: 600px)': '1 / -1' },
+    gridRow: { default: '1 / 3', '@media (max-width: 600px)': '3' },
     display: 'flex',
     alignItems: 'center',
+    justifySelf: 'end',
   },
   action: { width: 44, height: 44, paddingInline: 0, flexShrink: 0 },
   error: { color: t.danger },

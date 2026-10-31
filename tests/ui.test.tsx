@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { act, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Button, IconButton } from '../src/ui/Button';
@@ -7,7 +7,7 @@ import { TextField, TextAreaField } from '../src/ui/TextField';
 import { SelectField } from '../src/ui/SelectField';
 import { CheckboxField } from '../src/ui/CheckboxField';
 import { SliderField } from '../src/ui/SliderField';
-import { Tooltip } from '../src/ui/Tooltip';
+import { HelpPopover, Tooltip } from '../src/ui/Tooltip';
 import { ConfirmDialog } from '../src/ui/ConfirmDialog';
 import { UiProvider } from '../src/ui/UiProvider';
 import { useToast } from '../src/ui/Toast';
@@ -211,6 +211,32 @@ describe('UI primitives', () => {
     );
     await user.keyboard('{Escape}');
     await waitFor(() => expect(screen.queryByText('Extra help')).toBeNull());
+  });
+  it('opens ordinary hover help after 150ms and makes crop help clickable and keyboard dismissible', async () => {
+    vi.useFakeTimers();
+    try {
+      render(<UiProvider labels={labels}><Tooltip content="Fast hover"><IconButton label="Hover help">?</IconButton></Tooltip></UiProvider>);
+      fireEvent.mouseEnter(screen.getByRole('button', {name: 'Hover help'}));
+      fireEvent.mouseMove(screen.getByRole('button', {name: 'Hover help'}));
+      await act(async () => { await vi.advanceTimersByTimeAsync(149); });
+      expect(screen.queryByText('Fast hover')).toBeNull();
+      await act(async () => { await vi.advanceTimersByTimeAsync(1); });
+      expect(screen.getByText('Fast hover')).toBeDefined();
+    } finally {
+      vi.useRealTimers();
+    }
+    const keyboard = userEvent.setup();
+    render(<HelpPopover label="Crop help" content="Drag or use arrow keys"><IconButton label="Crop help">?</IconButton></HelpPopover>);
+    const trigger = screen.getByRole('button', {name: 'Crop help'});
+    await keyboard.click(trigger);
+    expect(await screen.findByRole('dialog', {name: 'Crop help'})).toBeDefined();
+    expect(screen.getByText('Drag or use arrow keys')).toBeDefined();
+    await keyboard.keyboard('{Escape}');
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    await keyboard.tab();
+    act(() => trigger.focus());
+    await keyboard.keyboard('{Enter}');
+    expect(await screen.findByRole('dialog', {name: 'Crop help'})).toBeDefined();
   });
   it('cancels by button/Escape, traps focus and confirms exactly once', async () => {
     const user = userEvent.setup();

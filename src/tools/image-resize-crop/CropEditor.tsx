@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from 'react';
 import ReactCrop from 'react-image-crop';
 import * as stylex from '@stylexjs/stylex';
 import { aspects, fromPercent, toPercent } from './geometry';
@@ -8,7 +7,8 @@ import { resizeStyles as s } from './resize.styles';
 import './crop.css';
 import { ArrowCounterClockwiseIcon, QuestionIcon } from '@phosphor-icons/react';
 import { IconButton } from '../../ui/Button';
-import { Tooltip } from '../../ui/Tooltip';
+import { HelpPopover, Tooltip } from '../../ui/Tooltip';
+import { CompositionPreview } from './CompositionPreview';
 
 export function CropEditor({
   view,
@@ -23,60 +23,18 @@ export function CropEditor({
   onCrop: (crop: NonNullable<ResizeView['crop']>) => void;
   onReset: () => void;
 }) {
-  const image = useRef<HTMLImageElement>(null);
-  const preview = useRef<HTMLCanvasElement>(null);
-  const [loaded, setLoaded] = useState(0);
-  const [expanded, setExpanded] = useState(false);
-  const { source, crop, output } = view;
-  useEffect(() => {
-    const img = image.current,
-      canvas = preview.current;
-    if (
-      !img ||
-      !canvas ||
-      !img.complete ||
-      !img.naturalWidth ||
-      !crop ||
-      !source
-    )
-      return;
-    const scale = Math.min(600 / output.width, 240 / output.height, 1);
-    canvas.width = Math.max(1, Math.round(output.width * scale));
-    canvas.height = Math.max(1, Math.round(output.height * scale));
-    const context = canvas.getContext('2d');
-    if (!context) return;
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    if (output.format === 'jpeg') {
-      context.fillStyle = output.background;
-      context.fillRect(0, 0, canvas.width, canvas.height);
-    }
-    context.drawImage(
-      img,
-      (crop.x * img.naturalWidth) / source.width,
-      (crop.y * img.naturalHeight) / source.height,
-      (crop.width * img.naturalWidth) / source.width,
-      (crop.height * img.naturalHeight) / source.height,
-      0,
-      0,
-      canvas.width,
-      canvas.height,
-    );
-    return () => {
-      canvas.width = 0;
-      canvas.height = 0;
-    };
-  }, [crop, source, output, loaded, url, expanded]);
+  const { source, crop } = view;
   if (!source || !crop) return null;
   return (
     <div {...stylex.props(s.stack)}>
       <div {...stylex.props(s.cropToolbar)}>
         <span {...stylex.props(s.note)}>{t.cropHint}</span>
         <div {...stylex.props(s.actions)}>
-          <Tooltip content={t.instructions}>
+          <HelpPopover content={t.instructions} label={t.keyboardHelp}>
             <IconButton variant="ghost" label={t.keyboardHelp}>
               <QuestionIcon size={20} />
             </IconButton>
-          </Tooltip>
+          </HelpPopover>
           <Tooltip content={t.full}>
             <IconButton
               variant="ghost"
@@ -106,11 +64,9 @@ export function CropEditor({
           }}
         >
           <img
-            ref={image}
             src={url}
             alt={source.file.name}
             draggable={false}
-            onLoad={() => setLoaded((n) => n + 1)}
             {...stylex.props(s.image)}
           />
         </ReactCrop>
@@ -123,20 +79,13 @@ export function CropEditor({
           {t.crop}: {crop.width} × {crop.height}
         </span>
       </div>
-      <details
-        open={expanded}
-        onToggle={(event) => setExpanded(event.currentTarget.open)}
-      >
-        <summary {...stylex.props(s.previewToggle)}>{t.composition}</summary>
-        {expanded && (
-          <canvas
-            ref={preview}
-            role="img"
-            aria-label={t.composition}
-            {...stylex.props(s.composition)}
-          />
-        )}
-      </details>
+      <div {...stylex.props(s.previewHeading)}>
+        <h3 {...stylex.props(s.heading)}>{t.composition}</h3>
+        <span {...stylex.props(s.note)}>{t.compositionNote}</span>
+      </div>
+      <div {...stylex.props(s.compositionFrame)}>
+        <CompositionPreview view={view} url={url} t={t} />
+      </div>
     </div>
   );
 }

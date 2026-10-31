@@ -1,6 +1,8 @@
 import type { Locale } from '../../i18n/locale';
+import { imagePreviewMessages } from '../image/preview-messages';
 export const resizeMessages = {
   zh: {
+    preview: imagePreviewMessages.zh,
     pick: '选择图片或拖放到这里',
     append: '添加图片',
     input: '支持 PNG、JPEG、WebP 和受支持的静态 AVIF。输出 PNG、JPEG 或 WebP。',
@@ -47,7 +49,8 @@ export const resizeMessages = {
     keyboardHelp: '裁剪操作帮助',
     instructions:
       '拖动选区移动构图，拖动边缘或角点调整大小。按 Tab 选择控制点，用方向键微调；按住 Shift 加快移动。',
-    composition: '查看构图预览',
+    composition: '构图预览',
+    compositionNote: '构图预览，非最终编码结果。',
     source: '原图',
     crop: '选区',
     width: '宽度（像素）',
@@ -81,7 +84,8 @@ export const resizeMessages = {
     },
     pixelValue: '目标像素',
     percentValue: '缩放比例（%）',
-    noUpscale: '不放大小图',
+    noUpscale: '不放大原图',
+    noUpscaleHint: '目标尺寸超过原图时，保持原有像素尺寸。',
     startBatch: '开始处理',
     cancelBatch: '取消处理',
     completed: '已完成',
@@ -133,6 +137,7 @@ export const resizeMessages = {
     },
   },
   en: {
+    preview: imagePreviewMessages.en,
     pick: 'Choose images or drop them here',
     append: 'Add images',
     input:
@@ -182,7 +187,8 @@ export const resizeMessages = {
     keyboardHelp: 'Crop controls help',
     instructions:
       'Drag the selection to move it, or an edge or corner to resize. Tab to a handle and use arrow keys to nudge. Hold Shift for larger steps.',
-    composition: 'Show composition preview',
+    composition: 'Composition',
+    compositionNote: 'Composition preview, not the final encoded output.',
     source: 'Original',
     crop: 'Selection',
     width: 'Width (pixels)',
@@ -218,7 +224,8 @@ export const resizeMessages = {
     },
     pixelValue: 'Target pixels',
     percentValue: 'Scale (%)',
-    noUpscale: 'Do not enlarge small images',
+    noUpscale: "Don't upscale images",
+    noUpscaleHint: 'Keep the original pixel dimensions when the target is larger.',
     startBatch: 'Start processing',
     cancelBatch: 'Cancel processing',
     completed: 'completed',

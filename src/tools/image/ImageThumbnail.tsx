@@ -22,6 +22,8 @@ export function ImageThumbnail({
         <img
           src={src}
           alt=""
+          loading="lazy"
+          decoding="async"
           draggable={false}
           onLoad={() => setLoaded(src)}
           onError={() => setFailed(src)}

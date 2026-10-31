@@ -56,7 +56,6 @@ export const converterStyles = stylex.create({
     backgroundColor: t.inputSurface,
     borderRadius: t.radiusMd,
   },
-  previewModes: { display: 'inline-flex' },
   mode: {
     minHeight: 44,
     minWidth: 44,

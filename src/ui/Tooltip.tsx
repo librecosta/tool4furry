@@ -1,5 +1,6 @@
 import type { ReactElement, ReactNode } from 'react';
 import { Tooltip as BaseTooltip } from '@base-ui/react/tooltip';
+import { Popover } from '@base-ui/react/popover';
 import * as stylex from '@stylexjs/stylex';
 import { tokens } from '../styles/tokens.stylex';
 export function Tooltip({
@@ -15,7 +16,7 @@ export function Tooltip({
 }) {
   return (
     <BaseTooltip.Root open={open} onOpenChange={onOpenChange}>
-      <BaseTooltip.Trigger render={children} />
+      <BaseTooltip.Trigger render={children} delay={150} />
       <BaseTooltip.Portal>
         <BaseTooltip.Positioner
           sideOffset={8}
@@ -30,7 +31,27 @@ export function Tooltip({
     </BaseTooltip.Root>
   );
 }
+/** Hover help that can also be opened by touch or keyboard activation. */
+export function HelpPopover({ children, content, label }: {
+  children: ReactElement;
+  content: ReactNode;
+  label: string;
+}) {
+  return (
+    <Popover.Root>
+      <Popover.Trigger render={children} openOnHover delay={150} />
+      <Popover.Portal>
+        <Popover.Positioner sideOffset={8} collisionPadding={12} {...stylex.props(styles.positioner)}>
+          <Popover.Popup aria-label={label} initialFocus={false} {...stylex.props(styles.popup)}>
+            <Popover.Description {...stylex.props(styles.description)}>{content}</Popover.Description>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}
 const styles = stylex.create({
+  description: { margin: 0 },
   positioner: { zIndex: tokens.layerTooltip },
   popup: {
     maxWidth: 'min(280px, calc(100vw - 24px))',

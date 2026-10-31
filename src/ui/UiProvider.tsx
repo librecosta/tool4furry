@@ -12,7 +12,7 @@ export function UiProvider({
   labels: UiLabels;
 }) {
   return (
-    <Tooltip.Provider delay={400}>
+    <Tooltip.Provider>
       <Toast.Provider limit={3} timeout={5000}>
         {children}
         <ToastViewport labels={labels} />

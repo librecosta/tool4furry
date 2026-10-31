@@ -11,7 +11,7 @@ export const imageResizeCropContent: Record<Locale, ToolPageContent> = {
     features: [
       '自由裁剪及五种常用比例，支持拖动、触控与键盘微调。',
       '自然裁剪尺寸、精确宽高和百分比缩放；改变输出比例会调整构图，不拉伸画面。',
-      '批量按宽度、高度、最长边或百分比缩放，默认不放大小图；逐项下载或打包 ZIP。',
+      '批量按宽度、高度、最长边或百分比缩放，默认不放大原图；逐项下载或打包 ZIP。',
       '支持 PNG、JPEG、WebP 和受限静态 AVIF 输入，输出 PNG、JPEG 或 WebP。',
     ],
     steps: [

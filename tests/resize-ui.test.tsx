@@ -85,14 +85,13 @@ async function selectFile(
   await user.click(await screen.findByRole('option', { name }));
 }
 describe('single image UI wiring (mocked codecs; not layout/browser evidence)', () => {
-  it('keeps disclosures closed and legal notice distributed without a visible license link', async () => {
+  it('shows composition immediately while keeping limits and legal notice out of the way', async () => {
     const { container } = await mount();
     expect(
       screen.getByText('Supported formats and limits').closest('details')!.open,
     ).toBe(false);
-    expect(
-      screen.getByText('Show composition preview').closest('details')!.open,
-    ).toBe(false);
+    expect(screen.getByRole('img', { name: 'Composition' }).tagName).toBe('CANVAS');
+    expect(screen.getByText('Composition preview, not the final encoded output.').closest('details')).toBeNull();
     expect(container.querySelector('a[href*="crop.NOTICE"]')).toBeNull();
     expect(
       document.querySelector('link[rel="license"]')?.getAttribute('href'),
@@ -105,6 +104,67 @@ describe('single image UI wiring (mocked codecs; not layout/browser evidence)', 
       screen.getAllByRole('button', { name: 'Remove image' }),
     ).toHaveLength(1);
     expect(screen.queryByRole('button', { name: 'Export image' })).toBeNull();
+  });
+  it('previews source and composition before export, actual output after export, and releases invalid results', async () => {
+    const { user, unmount } = await mount();
+    const trigger = screen.getByRole('button', { name: 'Image preview' });
+    await user.click(trigger);
+    const dialog = await screen.findByRole('dialog');
+    expect(within(dialog).getByRole('img', { name: 'Original' })).toBeDefined();
+    expect(within(dialog).getByRole('button', { name: 'Compare' }).hasAttribute('disabled')).toBe(true);
+    await user.click(within(dialog).getByRole('button', { name: 'Composition' }));
+    expect(within(dialog).getByText('Composition preview, not the final encoded output.')).toBeDefined();
+    expect(encode).not.toHaveBeenCalled();
+    await user.keyboard('{Escape}');
+    await waitFor(() => expect(document.activeElement).toBe(trigger));
+    await user.click(screen.getByRole('button', { name: 'Download image' }));
+    await screen.findByText('Downloaded');
+    await user.click(trigger);
+    await user.click(screen.getByRole('button', { name: 'Compare' }));
+    const output = screen.getByRole('img', { name: 'Output' }).getAttribute('src');
+    expect(screen.getByRole('img', { name: 'Original' })).toBeDefined();
+    await user.keyboard('{Escape}');
+    const width = screen.getByRole('textbox', { name: 'Width (pixels)' });
+    fireEvent.change(width, { target: {value: '400'} });
+    await user.type(width, '{Enter}');
+    await user.click(trigger);
+    expect(screen.queryByRole('img', { name: 'Output' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Compare' }).hasAttribute('disabled')).toBe(true);
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith(output);
+    unmount();
+    expect(URL.revokeObjectURL).toHaveBeenCalledTimes(vi.mocked(URL.createObjectURL).mock.calls.length);
+  });
+  it('shows per-file original/result thumbnails, previews the right batch file, and clears invalid output URLs', async () => {
+    const { user, container, unmount } = await mount('a.png');
+    await user.upload(container.querySelector('input[type=file]')!, new File(['b'], 'b.png', {type: 'image/png'}));
+    await user.click(screen.getByRole('button', {name: 'Batch resize'}));
+    const row = screen.getByRole('listitem', {name: 'b.png'});
+    await waitFor(() => expect(row.querySelector('[data-thumbnail-kind="source"] img')).not.toBeNull());
+    expect(row.querySelector('[data-thumbnail-kind="output"]')).toBeNull();
+    expect(screen.getByRole('checkbox', {name: "Don't upscale images"}).getAttribute('aria-checked')).toBe('true');
+    expect(screen.getByText('Keep the original pixel dimensions when the target is larger.')).toBeDefined();
+    const trigger = within(row).getByRole('button', {name: 'Image preview: b.png'});
+    await user.click(trigger);
+    expect(within(screen.getByRole('dialog')).getByText('b.png')).toBeDefined();
+    expect(screen.getByRole('button', {name: 'Output'}).hasAttribute('disabled')).toBe(true);
+    await user.keyboard('{Escape}');
+    await user.click(screen.getByRole('button', {name: 'Start processing'}));
+    await waitFor(() => expect(row.querySelector('[data-thumbnail-kind="output"] img')).not.toBeNull());
+    const outputURL = row.querySelector('[data-thumbnail-kind="output"] img')!.getAttribute('src');
+    await user.click(trigger);
+    await user.click(screen.getByRole('button', {name: 'Compare'}));
+    expect(screen.getByRole('img', {name: 'Output'}).getAttribute('src')).toBe(outputURL);
+    await user.keyboard('{Escape}');
+    await waitFor(() => expect(document.activeElement).toBe(trigger));
+    fireEvent.change(screen.getByRole('textbox', {name: 'Target pixels'}), {target: {value: '600'}});
+    await user.type(screen.getByRole('textbox', {name: 'Target pixels'}), '{Enter}');
+    expect(row.querySelector('[data-thumbnail-kind="output"]')).toBeNull();
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith(outputURL);
+    await user.click(within(row).getByRole('button', {name: 'Remove image: b.png'}));
+    await user.click(within(screen.getByRole('alertdialog')).getByRole('button', {name: 'Remove image'}));
+    expect(screen.queryByRole('listitem', {name: 'b.png'})).toBeNull();
+    unmount();
+    expect(URL.revokeObjectURL).toHaveBeenCalledTimes(vi.mocked(URL.createObjectURL).mock.calls.length);
   });
   it('preserves advanced export settings and verified results through quick/advanced changes and renaming', async () => {
     const { user } = await mount();

@@ -37,7 +37,7 @@ PNG/JPEG/WebP/受限静态 AVIF 双向转换；Quick 推荐自动执行与 Advan
 - 实际元数据策略、AVIF 色度、质量/背景等参与有效设置与结果契约；切换策略或编码设置立即失效，名称编辑不编码。无有效策略变化的普通模式切换不产生多余编码。
 - 单通道串行；原生操作不可硬取消时保持占用至结束，Worker 超时/取消真实终止并重建。删除/清空/跨批次晚到结果只清理，不能复活任务。
 - 每项 ready 下载独立，不被其他任务导入/处理中暂时禁用；ZIP 只包含全部任务已终结时的有效成功结果，允许明确部分失败，不空打包、不混入旧版本。打包中修改批次/参数/标签使快照失效。
-- 缩略图只反映原图，按需打开预览；关闭不能撤销仍被列表使用的源 URL。移除/清空/卸载及时释放，公共列表和预览外壳不管理资源业务。
+- 任务行懒加载原图与当前有效结果缩略图，按需打开原图/结果/对比。共享 `ImageComparisonDialog` 只展示，由任务行拥有 URL；关闭不能撤销仍被列表使用的 URL，失效结果立即移除，删除/清空/卸载释放。桌面对比并排、手机上下排列，每侧独立复用 `ImagePreviewViewport` 的缩放与平移；未改变 ConverterSession 或编码流程。
 
 布局入口见 [工作区说明](workbench-appearance.md)：未导入紧凑 Form，导入后显式 wide；只切换 class，不重置任务/参数/结果。静态 4 步骤、4 限制、6 FAQ 与 SEO 为已审核内容，不在普通重构中重新拟稿。
 
@@ -52,6 +52,7 @@ PNG/JPEG/WebP/受限静态 AVIF 双向转换；Quick 推荐自动执行与 Advan
 
 ## 已入库证据与待验事项
 
+- A1-C2 的共享缩略图/对比交互、Global 英文 Chromium 桌面与手机视口、实际 WebP 下载和未测范围，见 [预览验收](image-resize-crop-implementation.md#a1-c2-预览验收2026-10-31)。这是展示层验证，未重测整个编码格式矩阵，也未改变 D2 资格结论。
 - [D2 资格审计全文](history/image-converter-v0.4-v0.6.md#v06-d2--beta-资格审计) / [结构化证据](evidence/image-converter-d2.json)：真实两地区静态站及 Chromium 导航、格式转换、隐私、预览、下载与 ZIP；非公网验收。
 - [C2-C](evidence/image-avif-c2c.json) / [C2-D](evidence/image-avif-c2d.json)：四格式组合、宽幅预算、方向、作者/版权、Worker 取消和受控高分辨率研究；高额度候选不自动获准。
 - [C2-B](evidence/image-metadata-c2b.json)、[C2-A 研究](research/image-codec-c2a.md)、[C1 研究](research/image-codec-evaluation.md)：默认清理及原始选型事实，不改写当时结论。
