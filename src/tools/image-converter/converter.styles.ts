@@ -24,7 +24,7 @@ export const converterStyles = stylex.create({
     borderColor: { default: 'transparent', ':disabled': t.controlBorder },
     color: { default: t.onCommunityAction, ':disabled': t.textSecondary },
     transitionProperty: 'background-color, border-color, color',
-    transitionDuration: { default: '220ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
+    transitionDuration: { default: '200ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
   },
   listActions: {
     display: 'flex',
@@ -57,6 +57,9 @@ export const converterStyles = stylex.create({
     borderRadius: t.radiusMd,
   },
   mode: {
+    transitionProperty: 'color, background-color',
+    transitionTimingFunction: 'ease-out',
+    transitionDuration: { default: '280ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
     minHeight: 44,
     minWidth: 44,
     paddingInline: t.space12,
@@ -81,7 +84,8 @@ export const converterStyles = stylex.create({
   },
   parameterControl: {
     transitionProperty: 'color, background-color',
-    transitionDuration: { default: '180ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
+    transitionTimingFunction: 'ease-out',
+    transitionDuration: { default: '280ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
   },
   qualityInput: {
     width: 64,
@@ -119,8 +123,9 @@ export const converterStyles = stylex.create({
   },
   choice: {
     transitionProperty: 'opacity, color, background-color, border-color',
+    transitionTimingFunction: 'ease-out',
     transitionDuration: {
-      default: '150ms',
+      default: '280ms',
       '@media (prefers-reduced-motion: reduce)': '0ms',
     },
     display: 'flex',

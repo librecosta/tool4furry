@@ -1,13 +1,13 @@
 # Palette Extractor · 当前实现
 
-V0.7-A2-B：第三款工具，CN/Global、zh/en 均为 **Draft**，只在 DEV 的 `/tools/palette-extractor/`（以及同地区语言前缀路径）可用。现有两款 Published 工具、生产页面和部署状态不变。下一阶段为独立的 A2-C UX/SEO/Beta 资格验收，本轮不提升发布状态。
+第三款工具，CN/Global、zh/en 均为 **Draft**，只在 DEV 的 `/tools/palette-extractor/`（以及同地区语言前缀路径）可用。A2-B 完成功能，A2-C1 调整工作区与交互；现有两款 Published 工具、生产页面和部署状态不变，尚未完成 Palette Beta 资格验收。
 
 ## 模块与所有权
 
 - [工具实现](../src/tools/palette-extractor/PaletteExtractor.tsx)：Form Wide、单图导入、稳定 ID 色卡、完整 HEX 提交、复制/排序/删除、覆盖确认。
 - [session](../src/tools/palette-extractor/session.ts)：复用 `acceptImage`、`decodeChecked`、`ImageResources`、设备 `ImageLimits` 与既有 `SerialJobs`；版本隔离、串行原生任务、过期导出作废、资源释放均由工具拥有。不修改 Image Core 或两款正式工具。
 - [palette](../src/tools/palette-extractor/palette.ts)：有界像素过滤、Color Thief 候选量化、六种倾向与近色去重、contain 坐标映射。
-- [ImageSampler](../src/tools/palette-extractor/ImageSampler.tsx)：鼠标/触摸 Pointer Events、目标色卡、Escape、9×9 预览像素放大镜。移动鼠标不解码、不量化、不创建 Blob。
+- [ImageSampler](../src/tools/palette-extractor/ImageSampler.tsx)：复用 Image Core 的 `preview-geometry` 视图数学，拥有适应/缩放/平移与单实例专注模态框；鼠标/触摸 Pointer Events、目标色卡、Escape、9×9 预览像素放大镜。移动鼠标不解码、不量化、不创建 Blob。
 - [render](../src/tools/palette-extractor/render.ts) / [ShareDialog](../src/tools/palette-extractor/ShareDialog.tsx)：同一套 Canvas 几何、字体测量、PNG 预览/导出、有效版本下载与可用设备的文件分享。没有全站分享框架、Worker 或持久化。
 - [静态内容](../src/site/palette-extractor-content.ts) / [定义](../src/tools/palette-extractor/definition.ts)：双语 SEO、H1、3 步说明、4 项限制、4 项 FAQ；Registry 与字面量 Loader 沿用统一编译期资格。DEV 画家/动画师展示走既有手选 ID 与发布过滤。
 
@@ -39,7 +39,26 @@ Alpha=0 在调用量化库前始终排除；存在不透明内容时阈值为 19
 
 系统分享仅在 `canShare({files})` 与 `share` 都可用时显示；点击前已准备当前有效 PNG，调用位于用户激活处理内。取消不报失败，真正失败有提示；下载独立可用。不生成链接、不上传分享图、不连接外部账户。
 
-## 验证与未测范围
+## A2-C1 工作区与过渡
+
+Form Wide 内改为纵向：紧凑导入/参数 → 宽幅取色工作区 → 单行色卡 → 操作区。提色倾向和分享模板使用公共 SelectField；自动目标 3–10 用原生 Radio 语义的紧凑组（不是原生下拉），保留方向键与覆盖确认。色块 48px；窄屏次级 RGB/排序/删除在可点击的 Popover 内，不挤占 HEX 输入。
+
+取色与平移互斥。支持适应、预览位图 100%、缩放、键盘 +/-/0/1 和方向键平移；专注窗口保持同一视图状态，只有一个交互采样实例。触屏在普通视图未取色时保留页面纵向滚动，在专注视图内可平移；启用吸管后按住移动、松开提交。取色时第一个 Escape 取消，随后 Escape 关闭专注窗口；关闭后返回入口焦点。缩放、平移、弹窗的 CSS 缩放过渡均纳入坐标映射，留白、棋盘格、透明像素及视口外位置不采样；替换图片释放指针、退出取色与专注状态。
+
+三款工具复用公共控件过渡：通常反馈 200ms、局部模式/单选/色卡选中 280ms、Dialog 300ms ease-out；共用 [motion](../src/styles/motion.ts)，不改变主题调色板。Focus outline / 输入焦点阴影立即可见，不参与淡入；Reduced Motion 的过渡为 0ms。Canvas 视图位置不加 CSS 过渡，状态更新和取色不延迟。三套模板的绘制与排版、量化及预算未改动。
+
+## A2-C1 定向验证
+
+- `pnpm check`：284 文件，零错误/警告/提示；11 个相关测试文件、124 项通过，覆盖三个工具 UI、原语、视图几何、Palette 状态及分享失效。新增缩放/平移后的真实像素映射、旧源手势丢弃、目标数量方向键、单行编辑与 Portal 单实例/焦点返回回归。
+- CN/Global 正式构建与既有守卫通过：仍各有两款 Published 工具；无 Palette 页面、私有实现或 Color Thief/NOTICE 泄漏。没有修改 Registry、Loader 或生产资格。
+- Chromium：CN 中文 Light/Dark，1440/1200px 桌面与 320px；Global 英文 Dark、390px。实际检查零原生 select、3–10 单选、覆盖取消、缩放/平移/100%/适应、透明拒绝、自动退出取色、专注窗口目标切换/两次 Escape/焦点返回、手机更多菜单与排序；320px HEX 输入为 92px、图标有效区域 44px，无横向溢出。
+- 缩放至约 174%、平移 (150,40) 后点击合成渐变图，对应预览像素 (413,199)，实际取色 `#696569`，与独立读取原样本像素一致。放大镜只拷贝小邻域，HEX 浮层不改变布局或触发视口重排。
+- 三套模板各下载一个六色、中英/Emoji 标题 PNG，以 Pillow 完整回解码确认 1080×1350 / 1200×1200 / 1600×900。模板渲染文件未变；没有重跑 A2-B 的尺寸/颜色数量完整矩阵。
+- Converter / Resize 实际 CSS：普通按钮/输入 200ms，模式/格式 280ms，Dialog 300ms ease-out；Resize 导入、专注窗口开关无控制台错误。浏览器已解析 Reduced Motion 的 0ms 规则，本机媒体状态为普通动效；未执行操作系统级 Reduced Motion 切换或真实移动设备验收。
+
+截图与本轮下载仍留在仓库外 `.validation/palette/` / 本机 Downloads；不作为生产资源。真实触屏平移/长按放大镜手感、系统分享目标的实际投递、Firefox/Safari 仍待后续验收。跨语言整页导航仍不保留内存会话。
+
+## A2-B 基线验证与未测范围
 
 - [算法/几何测试](../tests/palette-extractor.test.ts)：纯色、透明、半透明/抗锯齿、白灰米色、暗色噪点、亮暗候选、少色像素图；六倾向确定性、去重、contain/透明取色、3 模板 × 1/6/10 色与标题字素测量。
 - [状态测试](../tests/palette-session.test.ts)：稳定 ID、有效 HEX、数量与顺序、源图替换/清空、过期导出、串行收尾及资源计数。

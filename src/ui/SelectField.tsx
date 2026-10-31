@@ -1,6 +1,7 @@
 import { Select } from '@base-ui/react/select';
 import { CaretDownIcon, CheckIcon } from '@phosphor-icons/react';
 import * as stylex from '@stylexjs/stylex';
+import { motion } from '../styles/motion';
 import { controls } from '../styles/controls';
 import { tokens } from '../styles/tokens.stylex';
 import { FieldFrame, useField, type FieldProps } from './Field';
@@ -69,6 +70,7 @@ export function SelectField({
                   className={(state) =>
                     stylex.props(
                       styles.item,
+                      motion.selection,
                       state.highlighted && styles.highlighted,
                       state.selected && styles.selected,
                       state.disabled && styles.disabled,

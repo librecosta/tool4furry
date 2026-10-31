@@ -26,8 +26,9 @@ export const controls = stylex.create({
     lineHeight: 1.5,
     opacity: { default: 1, ':disabled': 0.55 },
     transitionProperty: 'background-color, border-color, color, transform',
+    transitionTimingFunction: 'ease-out',
     transitionDuration: {
-      default: tokens.durationFast,
+      default: '200ms',
       '@media (prefers-reduced-motion: reduce)': '0s',
     },
     textDecoration: 'none',
@@ -84,6 +85,9 @@ export const controls = stylex.create({
   },
   field: { display: 'grid', gap: tokens.space8, minWidth: 0, fontSize: 14 },
   input: {
+    transitionProperty: 'background-color, border-color, color',
+    transitionDuration: { default: '200ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
+    transitionTimingFunction: 'ease-out',
     width: '100%',
     minWidth: 0,
     minHeight: 44,

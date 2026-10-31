@@ -111,12 +111,14 @@ const styles = stylex.create({
   lavenderIndicator: {
     backgroundColor: tokens.supportLavender,
     transitionProperty: 'background-color',
-    transitionDuration: { default: '180ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
+    transitionTimingFunction: 'ease-out',
+    transitionDuration: { default: '200ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
   },
   lavenderThumb: {
     borderColor: tokens.supportLavender,
     transitionProperty: 'border-color, background-color',
-    transitionDuration: { default: '180ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
+    transitionTimingFunction: 'ease-out',
+    transitionDuration: { default: '200ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
   },
   thumb: {
     width: 26,

@@ -137,7 +137,7 @@ const s = stylex.create({
     color: { default: t.textSecondary, ':hover': t.textPrimary, ':disabled': t.textSecondary },
     backgroundColor: { default: 'transparent', ':hover': t.surfaceHover, ':disabled': 'transparent' },
     fontSize: 13, fontWeight: 500, opacity: {default: 1, ':disabled': 0.5},
-    transitionProperty: 'background-color, color', transitionDuration: {default: t.durationFast, '@media (prefers-reduced-motion: reduce)': '0ms'},
+    transitionProperty: 'background-color, color', transitionTimingFunction: 'ease-out', transitionDuration: {default: '280ms', '@media (prefers-reduced-motion: reduce)': '0ms'},
   },
   current: { backgroundColor: t.actionTint, color: t.supportLavender },
   view: { height: '100%', minHeight: 0, minWidth: 0, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gridTemplateRows: 'minmax(0, 1fr)', gap: t.space12 },

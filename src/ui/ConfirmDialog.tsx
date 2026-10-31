@@ -1,6 +1,7 @@
 import { useRef, type ReactElement } from 'react';
 import { AlertDialog } from '@base-ui/react/alert-dialog';
 import * as stylex from '@stylexjs/stylex';
+import { motion } from '../styles/motion';
 import { tokens } from '../styles/tokens.stylex';
 import { controls } from '../styles/controls';
 import { Button } from './Button';
@@ -39,10 +40,10 @@ export function ConfirmDialog({
     >
       <AlertDialog.Trigger render={trigger} />
       <AlertDialog.Portal>
-        <AlertDialog.Backdrop forceRender {...stylex.props(styles.backdrop)} />
+        <AlertDialog.Backdrop forceRender {...stylex.props(styles.backdrop, motion.backdrop)} />
         <AlertDialog.Popup
           initialFocus={cancelRef}
-          {...stylex.props(styles.popup, controls.stack)}
+          {...stylex.props(styles.popup, controls.stack, motion.dialog)}
         >
           <AlertDialog.Title {...stylex.props(controls.heading, styles.title)}>
             {title}

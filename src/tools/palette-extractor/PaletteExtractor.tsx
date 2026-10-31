@@ -1,16 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
+import { Popover } from '@base-ui/react/popover';
 import {
   CopyIcon,
   EyedropperIcon,
   TrashIcon,
   ArrowUpIcon,
   ArrowDownIcon,
+  DotsThreeIcon,
 } from '@phosphor-icons/react';
 import * as stylex from '@stylexjs/stylex';
 import WorkbenchShell from '../../workbench/WorkbenchShell';
 import { FileDropzone } from '../../ui/FileDropzone';
 import { Button, IconButton } from '../../ui/Button';
+import { SelectField } from '../../ui/SelectField';
+import { Tooltip } from '../../ui/Tooltip';
+import { motion } from '../../styles/motion';
 import { TextField } from '../../ui/TextField';
 import { ConfirmDialog } from '../../ui/ConfirmDialog';
 import { useToast } from '../../ui/Toast';
@@ -30,115 +35,51 @@ import { ImageSampler } from './ImageSampler';
 import { ShareDialog } from './ShareDialog';
 import notice from './colorthief.NOTICE.txt?url';
 
-function ColorRow({
-  color,
-  index,
-  length,
-  session,
-  pick,
-  copy,
-  t,
-}: {
-  color: Swatch;
-  index: number;
-  length: number;
-  session: PaletteSession;
-  pick: (id: string) => void;
-  copy: (text: string) => void;
-  t: Labels;
+export function ColorRow({ color, index, length, session, pick, selected, copy, t }: {
+  color: Swatch; index: number; length: number; session: PaletteSession;
+  pick: (id: string) => void; selected: boolean; copy: (text: string) => void; t: Labels;
 }) {
-  const [value, setValue] = useState(color.hex),
-    [error, setError] = useState(false);
-  useEffect(() => {
-    setValue(color.hex);
-    setError(false);
-  }, [color.hex]);
-  return (
-    <li data-swatch={color.id} {...stylex.props(s.colorRow)}>
-      <div
-        {...stylex.props(s.chip)}
-        style={{ backgroundColor: color.hex }}
-        aria-label={color.hex}
-        role="img"
-      />
-      <div {...stylex.props(s.stack)}>
-        <div {...stylex.props(s.row)}>
-          <form
-            {...stylex.props(s.hex)}
-            onSubmit={(e) => {
-              e.preventDefault();
-              setError(!session.edit(color.id, value));
-            }}
-          >
-            <input
-              aria-label={`${t.hex} ${index + 1}`}
-              value={value}
-              spellCheck={false}
-              maxLength={7}
-              aria-invalid={error || undefined}
-              {...stylex.props(controls.input)}
-              onChange={(e) => {
-                setValue(e.target.value);
-                setError(false);
-              }}
-              onBlur={() => setError(!session.edit(color.id, value))}
-            />
-          </form>
-          <IconButton
-            label={`${t.copy} ${index + 1}`}
-            onClick={() => copy(color.hex)}
-          >
-            <CopyIcon size={20} />
-          </IconButton>
-          <IconButton
-            label={`${t.pick} ${index + 1}`}
-            onClick={() => pick(color.id)}
-          >
-            <EyedropperIcon size={20} />
-          </IconButton>
-        </div>
-        {error && (
-          <p role="alert" {...stylex.props(s.error)}>
-            {t.invalid}
-          </p>
-        )}
-        <div {...stylex.props(s.row)}>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => copy(rgbText(color.hex))}
-            aria-label={`${t.rgb} ${index + 1}`}
-          >
-            RGB
-          </Button>
-          <IconButton
-            label={`${t.up} ${index + 1}`}
-            variant="ghost"
-            disabled={!index}
-            onClick={() => session.move(color.id, -1)}
-          >
-            <ArrowUpIcon size={18} />
-          </IconButton>
-          <IconButton
-            label={`${t.down} ${index + 1}`}
-            variant="ghost"
-            disabled={index === length - 1}
-            onClick={() => session.move(color.id, 1)}
-          >
-            <ArrowDownIcon size={18} />
-          </IconButton>
-          <IconButton
-            label={`${t.remove} ${index + 1}`}
-            variant="ghost"
-            disabled={length === 1}
-            onClick={() => session.remove(color.id)}
-          >
-            <TrashIcon size={18} />
-          </IconButton>
-        </div>
-      </div>
-    </li>
-  );
+  const [value, setValue] = useState(color.hex), [error, setError] = useState(false);
+  useEffect(() => { setValue(color.hex); setError(false); }, [color.hex]);
+  const actions = [
+    { label: t.rgb, icon: CopyIcon, run: () => copy(rgbText(color.hex)), text: 'RGB' },
+    { label: t.up, icon: ArrowUpIcon, run: () => session.move(color.id, -1), disabled: !index },
+    { label: t.down, icon: ArrowDownIcon, run: () => session.move(color.id, 1), disabled: index === length - 1 },
+    { label: t.remove, icon: TrashIcon, run: () => session.remove(color.id), disabled: length === 1 },
+  ];
+  return <li data-swatch={color.id} data-picking={selected || undefined} {...stylex.props(s.colorRow, motion.selection, selected && s.selected)}>
+    <div {...stylex.props(s.chip)} style={{ backgroundColor: color.hex }} aria-label={color.hex} role="img"/>
+    <form {...stylex.props(s.hex)} onSubmit={event => { event.preventDefault(); setError(!session.edit(color.id, value)); }}>
+      <input aria-label={`${t.hex} ${index + 1}`} value={value} spellCheck={false} maxLength={7} aria-invalid={error || undefined} aria-description={error ? t.invalid : undefined}
+        {...stylex.props(controls.input, s.hexInput, error && controls.invalid)}
+        onChange={event => { setValue(event.target.value); setError(false); }} onBlur={() => setError(!session.edit(color.id, value))}/>
+    </form>
+    {error && <span role="alert" {...stylex.props(s.srOnly)}>{t.invalid}</span>}
+    <div {...stylex.props(s.rowActions)}>
+      <Tooltip content={t.copy}><IconButton label={`${t.copy} ${index + 1}`} variant="ghost" xstyle={s.tool} onClick={() => copy(color.hex)}><CopyIcon size={20}/></IconButton></Tooltip>
+      <Tooltip content={t.pick}><IconButton label={`${t.pick} ${index + 1}`} variant="ghost" aria-pressed={selected} xstyle={[s.tool, motion.selection, selected && s.selected]} onClick={() => pick(color.id)}><EyedropperIcon size={20}/></IconButton></Tooltip>
+      <div {...stylex.props(s.secondaryActions)}>{actions.map(action => <Tooltip key={action.label} content={action.label}><IconButton label={`${action.label} ${index + 1}`} variant="ghost" xstyle={s.tool} disabled={action.disabled} onClick={action.run}>{action.text ?? <action.icon size={18}/>}</IconButton></Tooltip>)}</div>
+      <Popover.Root>
+        <Popover.Trigger render={<IconButton label={`${t.more} ${index + 1}`} variant="ghost" xstyle={[s.tool, s.more]}><DotsThreeIcon size={22}/></IconButton>}/>
+        <Popover.Portal><Popover.Positioner sideOffset={6} collisionPadding={8} {...stylex.props(s.popoverPositioner)}><Popover.Popup aria-label={t.more} {...stylex.props(s.popover, motion.dialog)}>{actions.map(action => <Popover.Close key={action.label} render={<Button variant="ghost" disabled={action.disabled} onClick={action.run}/>}><action.icon size={18}/>{action.label}</Popover.Close>)}</Popover.Popup></Popover.Positioner></Popover.Portal>
+      </Popover.Root>
+    </div>
+  </li>;
+}
+
+export function PaletteParameters({ mode, count, disabled, extract, t }: {
+  mode: Mode; count: number; disabled: boolean; extract: (mode: Mode, count: number) => void; t: Labels;
+}) {
+  return <div {...stylex.props(s.parameters)}>
+    <div {...stylex.props(s.direction)}><SelectField label={t.mode} value={mode} disabled={disabled} onValueChange={value => extract(value as Mode, count)} options={modes.map(value => ({ value, label: t[value] }))}/></div>
+    <fieldset disabled={disabled} {...stylex.props(s.counts)}>
+      <legend {...stylex.props(s.legend)}>{t.count}</legend>
+      <div {...stylex.props(s.row)}>{Array.from({ length: 8 }, (_, i) => i + 3).map(n => <label key={n} {...stylex.props(s.count, motion.selection, count === n && s.selected, disabled && s.disabled)}>
+        <input type="radio" aria-label={String(n)} name="palette-target-count" value={n} checked={count === n} onChange={() => extract(mode, n)} {...stylex.props(s.radio)}/><span aria-hidden="true">{n}</span>
+      </label>)}</div>
+    </fieldset>
+    <Button disabled={disabled} onClick={() => extract(mode, count)}>{t.extract}</Button>
+  </div>;
 }
 
 export default function PaletteExtractor({ locale }: ToolProps) {
@@ -227,6 +168,7 @@ export default function PaletteExtractor({ locale }: ToolProps) {
         <div {...stylex.props(s.stack)}>
           <FileDropzone
             label={t.import}
+            appearance={view.source ? 'compact' : 'expanded'}
             disabled={!session}
             accept="image/png,image/jpeg,image/webp,image/avif,.png,.jpg,.jpeg,.webp,.avif"
             maxFiles={1}
@@ -241,6 +183,7 @@ export default function PaletteExtractor({ locale }: ToolProps) {
             {session &&
               ` ≤ ${session.limits.bytes / 1024 ** 2} MiB · ${session.limits.pixels / 1e6} MP · ${session.limits.edge}px`}
           </p>
+          <PaletteParameters mode={view.mode} count={view.count} disabled={!view.source || view.busy} {...{ extract, t }}/>
           {view.busy && <p role="status">{t.loading}</p>}
           {view.error && (
             <p role="alert" {...stylex.props(s.error)}>
@@ -265,64 +208,29 @@ export default function PaletteExtractor({ locale }: ToolProps) {
                 </Button>
               </div>
               <ImageSampler
+                key={view.source.url}
                 pixels={view.source.pixels}
                 url={view.source.url}
                 target={target}
+                colors={view.colors}
+                onTarget={setTarget}
                 cancel={cancelPick}
                 t={t}
                 onPick={(id, hex) => {
-                  session?.edit(id, hex);
+                  if (session && session.snapshot().source === view.source) session.edit(id, hex);
                   cancelPick();
                 }}
               />
-              {target && <Button onClick={cancelPick}>{t.cancel}</Button>}
             </>
           ) : (
             !view.busy && <p {...stylex.props(s.muted)}>{t.empty}</p>
           )}
         </div>
-        <div {...stylex.props(s.panel)}>
+        <section aria-label={t.palette} {...stylex.props(s.stack)}>
           <h2 {...stylex.props(s.heading)}>{t.palette}</h2>
-          <label {...stylex.props(s.field)}>
-            {t.mode}
-            <select
-              {...stylex.props(controls.input)}
-              value={view.mode}
-              disabled={!view.source || view.busy}
-              onChange={(e) => extract(e.target.value as Mode, view.count)}
-            >
-              {modes.map((mode) => (
-                <option key={mode} value={mode}>
-                  {t[mode]}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label {...stylex.props(s.field)}>
-            {t.count}
-            <select
-              {...stylex.props(controls.input)}
-              value={view.count}
-              disabled={!view.source || view.busy}
-              onChange={(e) => extract(view.mode, +e.target.value)}
-            >
-              {Array.from({ length: 8 }, (_, i) => (
-                <option key={i} value={i + 3}>
-                  {i + 3}
-                </option>
-              ))}
-            </select>
-          </label>
-          <Button
-            disabled={!view.source || view.busy}
-            onClick={() => extract(view.mode, view.count)}
-          >
-            {t.extract}
-          </Button>
           <ol
             aria-label={t.palette}
-            {...stylex.props(s.stack)}
-            style={{ listStyle: 'none', padding: 0, margin: 0 }}
+            {...stylex.props(s.colorList)}
           >
             {view.colors.map(
               (color, index) =>
@@ -331,11 +239,13 @@ export default function PaletteExtractor({ locale }: ToolProps) {
                     key={color.id}
                     {...{ color, index, session, t, copy }}
                     length={view.colors.length}
+                    selected={target === color.id}
                     pick={setTarget}
                   />
                 ),
             )}
           </ol>
+          <div {...stylex.props(s.row)}>
           <Dialog.Root
             open={adding}
             onOpenChange={(open) => {
@@ -351,8 +261,8 @@ export default function PaletteExtractor({ locale }: ToolProps) {
               {t.add}
             </Dialog.Trigger>
             <Dialog.Portal>
-              <Dialog.Backdrop {...stylex.props(s.backdrop)} />
-              <Dialog.Popup {...stylex.props(s.dialog, s.smallDialog)}>
+              <Dialog.Backdrop {...stylex.props(s.backdrop, motion.backdrop)} />
+              <Dialog.Popup {...stylex.props(s.dialog, s.smallDialog, motion.dialog)}>
                 <Dialog.Title>{t.add}</Dialog.Title>
                 <Dialog.Description>{t.hex}</Dialog.Description>
                 <form
@@ -390,7 +300,8 @@ export default function PaletteExtractor({ locale }: ToolProps) {
             {t.png}
           </Button>
           {session && <ShareDialog session={session} view={view} t={t} />}
-        </div>
+          </div>
+        </section>
       </div>
       <ConfirmDialog
         open={!!pending}

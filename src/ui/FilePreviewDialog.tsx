@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import { CornersInIcon, CornersOutIcon, XIcon } from '@phosphor-icons/react';
 import * as stylex from '@stylexjs/stylex';
+import { motion } from '../styles/motion';
 import { IconButton } from './Button';
 import { Tooltip } from './Tooltip';
 import { tokens as t } from '../styles/tokens.stylex';
@@ -107,7 +108,7 @@ export function FilePreviewDialog({
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Backdrop forceRender {...stylex.props(s.backdrop)} />
+        <Dialog.Backdrop forceRender {...stylex.props(s.backdrop, motion.backdrop)} />
         <Dialog.Popup
           ref={popup}
           initialFocus={close}
@@ -119,7 +120,7 @@ export function FilePreviewDialog({
               void exitFullscreen();
             }
           }}
-          {...stylex.props(s.popup, maximized && s.maximized)}
+          {...stylex.props(s.popup, motion.dialog, maximized && s.maximized)}
         >
           <header {...stylex.props(s.header)}>
             <div {...stylex.props(s.identity)}>

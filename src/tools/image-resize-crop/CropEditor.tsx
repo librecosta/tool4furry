@@ -1,6 +1,7 @@
 import { useId, useRef, useState } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import * as stylex from '@stylexjs/stylex';
+import { motion } from '../../styles/motion';
 import { CheckIcon } from '@phosphor-icons/react';
 import { Button } from '../../ui/Button';
 import type { ResizeView } from './session';
@@ -34,12 +35,12 @@ export function CropEditor({ view, url, t, onCrop, onReset }: {
       {/* A single interactive crop instance: remounting only changes the viewport. */}
       {focused ? <div aria-hidden="true" {...stylex.props(s.placeholder)}/> : workspace(false)}
       <Dialog.Portal>
-        <Dialog.Backdrop {...stylex.props(s.backdrop)}/>
+        <Dialog.Backdrop {...stylex.props(s.backdrop, motion.backdrop)}/>
         <Dialog.Popup
           data-image-resize-crop
           initialFocus={done}
           finalFocus={() => document.getElementById(focusButtonId)}
-          {...stylex.props(s.dialog)}
+          {...stylex.props(s.dialog, motion.dialog)}
         >
           <header {...stylex.props(s.dialogHeader)}>
             <div {...stylex.props(s.identity)}>

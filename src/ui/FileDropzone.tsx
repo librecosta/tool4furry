@@ -207,7 +207,8 @@ const styles = stylex.create({
   },
   accentTransition: {
     transitionProperty: 'color, background-color, border-color, outline-color',
-    transitionDuration: { default: '180ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
+    transitionTimingFunction: 'ease-out',
+    transitionDuration: { default: '200ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
   },
   slateIcon: { color: tokens.supportSlate },
   slateDragging: {

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
 import ReactCrop from 'react-image-crop';
 import * as stylex from '@stylexjs/stylex';
+import { motion } from '../../styles/motion';
 import {
   ArrowCounterClockwiseIcon, ArrowsOutIcon, FrameCornersIcon,
   HandIcon, MinusIcon, NumberSquareOneIcon, PlusIcon,
@@ -179,7 +180,7 @@ export function CropWorkspace({ view, url, t, display, onDisplay, hand, onHand, 
       <div {...stylex.props(s.top)}>
         <div role="group" aria-label={t.cropViews} {...stylex.props(s.modes)}>
           {(['crop', 'preview'] as const).map(mode => (
-            <Button key={mode} variant="ghost" size="sm" aria-pressed={display === mode} xstyle={[s.mode, display === mode && s.selected]} onClick={() => onDisplay(mode)}>
+            <Button key={mode} variant="ghost" size="sm" aria-pressed={display === mode} xstyle={[s.mode, motion.selection, display === mode && s.selected]} onClick={() => onDisplay(mode)}>
               {mode === 'crop' ? t.cropView : t.previewView}
             </Button>
           ))}
@@ -273,7 +274,7 @@ export function CropWorkspace({ view, url, t, display, onDisplay, hand, onHand, 
             <IconButton variant="ghost" label={tool.label} xstyle={s.tool} disabled={tool.disabled} onClick={tool.action}><tool.icon size={20}/></IconButton>
           </Tooltip>)}
           <Tooltip content={t.handMode}>
-            <IconButton variant="ghost" label={t.handMode} aria-pressed={hand} xstyle={[s.tool, hand && s.selected]} onClick={() => onHand(!hand)}><HandIcon size={20}/></IconButton>
+            <IconButton variant="ghost" label={t.handMode} aria-pressed={hand} xstyle={[s.tool, motion.selection, hand && s.selected]} onClick={() => onHand(!hand)}><HandIcon size={20}/></IconButton>
           </Tooltip>
           {!focused && <Tooltip content={t.focusEdit}>
             <IconButton id={focusButtonId} variant="ghost" label={t.focusEdit} xstyle={s.tool} onClick={onFocus}><ArrowsOutIcon size={20}/></IconButton>

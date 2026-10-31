@@ -4,7 +4,8 @@ import * as stylex from '@stylexjs/stylex';
 import { Button } from '../../ui/Button';
 import { CheckboxField } from '../../ui/CheckboxField';
 import { TextField } from '../../ui/TextField';
-import { controls } from '../../styles/controls';
+import { SelectField } from '../../ui/SelectField';
+import { motion } from '../../styles/motion';
 import { styles as s } from './styles';
 import type { Labels } from './messages';
 import type { PaletteSession, PaletteView } from './session';
@@ -109,8 +110,8 @@ export function ShareDialog({
         {t.share}
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Backdrop {...stylex.props(s.backdrop)} />
-        <Dialog.Popup {...stylex.props(s.dialog)}>
+        <Dialog.Backdrop {...stylex.props(s.backdrop, motion.backdrop)} />
+        <Dialog.Popup {...stylex.props(s.dialog, motion.dialog)}>
           <div {...stylex.props(s.row)}>
             <Dialog.Title {...stylex.props(s.heading, s.grow)}>
               {t.share}
@@ -134,23 +135,13 @@ export function ShareDialog({
               )}
             </div>
             <div {...stylex.props(s.stack)}>
-              <label {...stylex.props(s.field)}>
-                {t.template}
-                <select
-                  {...stylex.props(controls.input)}
-                  value={options.template}
-                  onChange={(e) =>
-                    setOptions({
-                      ...options,
-                      template: e.target.value as Template,
-                    })
-                  }
-                >
-                  <option value="character">01 — Character Study</option>
-                  <option value="gallery">02 — Gallery</option>
-                  <option value="story">03 — Color Story</option>
-                </select>
-              </label>
+              <SelectField label={t.template} value={options.template}
+                onValueChange={template => setOptions({ ...options, template: template as Template })}
+                options={[
+                  { value: 'character', label: '01 — Character Study' },
+                  { value: 'gallery', label: '02 — Gallery' },
+                  { value: 'story', label: '03 — Color Story' },
+                ]}/>
               <TextField
                 label={t.title}
                 value={options.title}

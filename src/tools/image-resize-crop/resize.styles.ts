@@ -25,8 +25,9 @@ export const resizeStyles = stylex.create({
     color: { default: t.textSecondary, ':hover': t.textPrimary },
     backgroundColor: { default: 'transparent', ':hover': t.surfaceHover },
     transitionProperty: 'color, background-color',
+    transitionTimingFunction: 'ease-out',
     transitionDuration: {
-      default: '180ms',
+      default: '280ms',
       '@media (prefers-reduced-motion: reduce)': '0ms',
     },
   },

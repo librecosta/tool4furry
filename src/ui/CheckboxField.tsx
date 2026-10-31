@@ -1,6 +1,7 @@
 import { Checkbox } from '@base-ui/react/checkbox';
 import { CheckIcon } from '@phosphor-icons/react';
 import * as stylex from '@stylexjs/stylex';
+import { motion } from '../styles/motion';
 import { tokens } from '../styles/tokens.stylex';
 import { controls } from '../styles/controls';
 import { FieldFeedback, useField, fieldStyles, type FieldProps } from './Field';
@@ -35,6 +36,7 @@ export function CheckboxField({
           aria-invalid={!!field.error || undefined}
           {...stylex.props(
             styles.box,
+            motion.selection,
             checked && styles.checked,
             !!field.error && controls.invalid,
           )}
