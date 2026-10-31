@@ -9,7 +9,7 @@ describe('catalog-only DEV samples', () => {
   it.each(['cn', 'global'] as const)('defaults to real tools under the %s publication gate in both locales', region => {
     for (const locale of ['zh', 'en'] as const) for (const dev of [false, true]) {
       const real = getCatalogEntries(region, tools, dev, locale), sections = getCatalogSections(region, tools, dev, locale);
-      expect(real.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop']);
+      expect(real.map(entry => entry.id)).toEqual(dev ? ['image-converter', 'image-resize-crop', 'palette-extractor'] : ['image-converter', 'image-resize-crop']);
       expect(addCatalogFixture(real, sections, locale)).toEqual({ entries: real, sections, fixtureCount: 0 });
       expect(addCatalogFixture(real, sections, locale, 'off')).toEqual({ entries: real, sections, fixtureCount: 0 });
     }

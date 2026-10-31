@@ -16,6 +16,7 @@ describe('Registry compile-time availability projection', () => {
     expect(toolBuildDefines(tools, region)).toEqual({
       'import.meta.env.T4F_TOOL_IMAGE_CONVERTER_AVAILABLE': 'true',
       'import.meta.env.T4F_TOOL_IMAGE_RESIZE_CROP_AVAILABLE': 'true',
+      'import.meta.env.T4F_TOOL_PALETTE_EXTRACTOR_AVAILABLE': 'false',
     });
   });
   it.each(['cn', 'global'] as const)('projects every registered id in %s without runtime flags', region => {

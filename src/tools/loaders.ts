@@ -3,6 +3,9 @@ import type { ToolProps } from './types';
 export type ToolLoader = () => Promise<{ default: ComponentType<ToolProps> }>;
 // Add a literal () => import('./my-tool/MyTool') when implementing a real tool.
 export const toolLoaders: Readonly<Partial<Record<string, ToolLoader>>> = {
+  'palette-extractor': import.meta.env.DEV || import.meta.env.T4F_TOOL_PALETTE_EXTRACTOR_AVAILABLE
+    ? () => import('./palette-extractor/PaletteExtractor')
+    : undefined,
   'image-resize-crop': import.meta.env.DEV || import.meta.env.T4F_TOOL_IMAGE_RESIZE_CROP_AVAILABLE
     ? () => import('./image-resize-crop/ImageResizeCrop')
     : undefined,

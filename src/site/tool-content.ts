@@ -4,6 +4,7 @@ import type { ToolDefinition } from '../tools/types';
 import { getAvailableTools, getPublishedTools, tools } from '../tools/registry';
 import { imageConverterContent } from './image-converter-content';
 import { imageResizeCropContent } from './image-resize-crop-content';
+import { paletteExtractorContent } from './palette-extractor-content';
 
 // Astro/build only. Never import this content module from React or the registry.
 export type ToolPageContent = {
@@ -21,6 +22,7 @@ export type ToolContentMap = Readonly<
   Record<string, Partial<Record<Locale, ToolPageContent>>>
 >;
 export const toolPageContents: ToolContentMap = {
+  'palette-extractor': paletteExtractorContent,
   'image-resize-crop': imageResizeCropContent,
   'image-converter': imageConverterContent,
 };

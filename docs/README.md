@@ -13,6 +13,7 @@
 - [工作区](workbench-appearance.md)：Canvas/Form/Batch 布局及状态所有权。
 - [首页与站点外壳](site-homepage.md)：静态首页、导航、品牌、主题与受控增强。
 - [Image Converter](image-converter-implementation.md)：正式工具分层、隐私、任务、资源及证据入口。
+- [Palette Extractor](palette-extractor.md)：第三款双语 Draft 的有界提色、编辑、分享模板与验收边界。
 - [Image Resize & Crop](image-resize-crop-implementation.md)：逐文件单图草稿、批量规则、串行导出、ZIP、D2 Beta 资格与人工验收入口。
 - [工具目录](site-tools.md)：当前目录筛选、URL、分页及显式 DEV 夹具。
 - [UI 原语](ui-primitives.md)：受控组件接口；附早期验收记录。
@@ -39,6 +40,7 @@
 
 ## Evidence · 实测与验收证据
 
+- [Palette A2-B](evidence/palette-a2b.json)：Draft 的有界提色、分享 PNG 下载、Chromium 交互及双地区资源隔离；真机触控与系统分享投递尚未验证。
 - [D2 正式资格审计](evidence/image-converter-d2.json)：两地区本地产物、真实 Chromium 用户路径和下载核验。
 - [C2-D](evidence/image-avif-c2d.json)、[C2-C](evidence/image-avif-c2c.json)、[C2-B](evidence/image-metadata-c2b.json)：AVIF、作者版权和默认隐私的阶段实测。
 - [早期原生能力](evidence/image-capabilities-chromium.json)、[V0.4-B 原始记录目录](evidence/converter-v04b/)：保留当时条件和结论。

@@ -997,7 +997,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
     for (const region of ['cn', 'global'] as const) {
       expect(getAvailableTools(region, false)).toEqual(getAvailableTools(region, true).filter(tool => tool.status === 'published'));
       expect(getAvailableTools(region, true).map((tool) => tool.slug)).toEqual([
-        'image-converter', 'image-resize-crop',
+        'image-converter', 'image-resize-crop', 'palette-extractor',
       ]);
       expect(getPublishedTools(region).map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop']);
       const content = toolPageContents['image-converter'][defaultLocale(region)]!;

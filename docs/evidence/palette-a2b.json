@@ -1,0 +1,324 @@
+{
+  "stage": "V0.7-A2-B",
+  "date": "2026-10-31",
+  "status": "draft",
+  "environment": {
+    "os": "Windows",
+    "cpu": "AMD Ryzen 7 5800H, 8 cores/16 threads",
+    "ramGiB": 31.4,
+    "browser": "Codex in-app Chromium; exact browser version not exposed by automation",
+    "viewports": [
+      1440,
+      390,
+      320
+    ],
+    "realTouchDevice": false
+  },
+  "analysisTiming": {
+    "method": "performance.now around analysis getImageData + candidate quantization; excludes source validation/decode and PNG export; individual observations, not a benchmark distribution",
+    "observations": [
+      {
+        "source": "gradient.png",
+        "analysis": [
+          640,
+          320
+        ],
+        "ms": 25.5
+      },
+      {
+        "source": "square.png",
+        "analysis": [
+          600,
+          600
+        ],
+        "ms": 22.6
+      }
+    ]
+  },
+  "inputs": [
+    "PNG",
+    "JPEG",
+    "WebP",
+    "verified static 8-bit SDR AVIF"
+  ],
+  "algorithm": "Color Thief 3.5.0 OKLCH/sRGB, ignoreWhite=false, alpha filtering before quantization, bounded candidates + area/direction/distinctness scoring",
+  "browserFlows": [
+    "automatic extraction",
+    "six directions",
+    "few-color output without padding",
+    "fully transparent rejection",
+    "targeted mouse sampling and transparent-region refusal",
+    "Escape cancellation",
+    "add/cancel/valid HEX",
+    "invalid HEX leaves valid palette intact",
+    "copy HEX/all",
+    "reorder",
+    "overwrite confirmation cancel",
+    "template/title/signature invalidation",
+    "clear/replace",
+    "theme and viewport changes retain swatches"
+  ],
+  "exports": [
+    {
+      "template": "character",
+      "colors": 1,
+      "source": "solid.png",
+      "size": [
+        1080,
+        1350
+      ],
+      "format": "PNG",
+      "bytes": 52350,
+      "sha256": "a0f7d5da32280b0223e2217dc0dea52afa61ade26f99685ea5409937d97140ca"
+    },
+    {
+      "template": "gallery",
+      "colors": 1,
+      "source": "solid.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "format": "PNG",
+      "bytes": 51856,
+      "sha256": "6c77e0a2b692eb49a4189df05a48b8dd1fbc00144621181faf0b8bf0642daeef"
+    },
+    {
+      "template": "story",
+      "colors": 1,
+      "source": "solid.png",
+      "size": [
+        1600,
+        900
+      ],
+      "format": "PNG",
+      "bytes": 50074,
+      "sha256": "c6e1117b280bcaf7152ea9612f5b4a467e82f4617ba1f2cea8e5b6755f1633f9"
+    },
+    {
+      "template": "character",
+      "colors": 6,
+      "source": "portrait.png",
+      "size": [
+        1080,
+        1350
+      ],
+      "format": "PNG",
+      "bytes": 87457,
+      "sha256": "cda329b4b668a79a83b9551faa12f43d53605896e18abad9cb50aaf0d52e5a17"
+    },
+    {
+      "template": "gallery",
+      "colors": 6,
+      "source": "portrait.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "format": "PNG",
+      "bytes": 93147,
+      "sha256": "a3e8643d43467a9b668bf3fa5eaf7fe97d98cb6436e222ab5754db1219416846"
+    },
+    {
+      "template": "story",
+      "colors": 6,
+      "source": "portrait.png",
+      "size": [
+        1600,
+        900
+      ],
+      "format": "PNG",
+      "bytes": 80681,
+      "sha256": "2575bb7dfebe21680566a9edae88e212241a1bee2e495ce84f38bd1259c473c9"
+    },
+    {
+      "template": "character",
+      "colors": 10,
+      "source": "gradient.png",
+      "size": [
+        1080,
+        1350
+      ],
+      "format": "PNG",
+      "bytes": 105243,
+      "sha256": "470bafa5e030f69844e8fe86c86f3be1578298961d3f0c486b9ccff04b00a1fb"
+    },
+    {
+      "template": "gallery",
+      "colors": 10,
+      "source": "gradient.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "format": "PNG",
+      "bytes": 111049,
+      "sha256": "78e75cfecc51dc9ba032f60f554f71075924cbbf357f4f71df14b29ea0f4db42"
+    },
+    {
+      "template": "story",
+      "colors": 10,
+      "source": "gradient.png",
+      "size": [
+        1600,
+        900
+      ],
+      "format": "PNG",
+      "bytes": 103064,
+      "sha256": "c3623375c40dd3b3a2349839e0360ffb5e274195da7a128b0f80baba10b9d154"
+    },
+    {
+      "template": "character",
+      "colors": 6,
+      "source": "square.png",
+      "size": [
+        1080,
+        1350
+      ],
+      "format": "PNG",
+      "bytes": 81261,
+      "sha256": "529ede9e6390622db0caefdf22428873d4674761674465e78f663b80e32f12e6"
+    },
+    {
+      "template": "gallery",
+      "colors": 6,
+      "source": "square.png",
+      "size": [
+        1200,
+        1200
+      ],
+      "format": "PNG",
+      "bytes": 84754,
+      "sha256": "96ded075e5f370976f399fcbce1017fd599f9ebf74832e6768ceba387aad93f9"
+    },
+    {
+      "template": "story",
+      "colors": 6,
+      "source": "square.png",
+      "size": [
+        1600,
+        900
+      ],
+      "format": "PNG",
+      "bytes": 73689,
+      "sha256": "17861bbae8ad797bf0621a5c1e36287f60bef241ce9e08aff2e26049f24e5968"
+    }
+  ],
+  "basicPng": {
+    "colors": 6,
+    "size": [
+      1080,
+      240
+    ],
+    "format": "PNG",
+    "independentlyDecoded": true
+  },
+  "outputValidation": "Application validateOutput: MIME, PNG structure, dimensions, complete browser decode and privacy-v1; downloaded files independently fully decoded with Pillow 12.3.0",
+  "engineering": {
+    "check": "283 files, zero errors/warnings/hints",
+    "test": "68 files, 768 passing tests",
+    "finalTargetedTests": "5 files, 47 passing tests",
+    "buildCn": "passed with built-in guards",
+    "buildGlobal": "passed with built-in guards",
+    "fixtureCn": "baseline, missing loader/content, eager implementation and shared Draft leak contracts passed",
+    "fixtureGlobal": "baseline, promotion, swapped Loader and empty/demotion contracts passed",
+    "frozenLockfileInstall": "passed"
+  },
+  "production": [
+    {
+      "region": "cn",
+      "toolPages": [
+        "en/tools/image-converter/index.html",
+        "en/tools/image-resize-crop/index.html",
+        "tools/image-converter/index.html",
+        "tools/image-resize-crop/index.html"
+      ],
+      "draftRouteAbsent": true,
+      "draftImplementationMarkersAbsent": true,
+      "draftNoticeAbsent": true,
+      "draftLayoutRuleAbsent": true,
+      "draftDiscoveryAbsent": true
+    },
+    {
+      "region": "global",
+      "toolPages": [
+        "tools/image-converter/index.html",
+        "tools/image-resize-crop/index.html",
+        "zh/tools/image-converter/index.html",
+        "zh/tools/image-resize-crop/index.html"
+      ],
+      "draftRouteAbsent": true,
+      "draftImplementationMarkersAbsent": true,
+      "draftNoticeAbsent": true,
+      "draftLayoutRuleAbsent": true,
+      "draftDiscoveryAbsent": true
+    }
+  ],
+  "moduleGraphs": [
+    {
+      "audit": "multi-tool-tJQyn0",
+      "draftBusinessAndColorThiefModuleMatches": []
+    },
+    {
+      "audit": "multi-tool-anhbFL",
+      "draftBusinessAndColorThiefModuleMatches": []
+    }
+  ],
+  "source": "Self-authored geometric/gradient/transparent raster samples, generated outside repository; no user artwork or generated AI image committed",
+  "rawArtifacts": "../.validation/palette; ../.validation/palette-*.log; ../.validation/multi-tool-* (local-only, not guaranteed in fresh checkout)",
+  "limitations": [
+    "No real iOS/Android touch-device test",
+    "System file-sharing capability gate/cancellation/error tested; no external share destination delivery",
+    "No Firefox/Safari or wide-gamut professional color guarantee",
+    "Maintainer approved retaining full-page locale navigation; cross-page image/palette session retention deferred for discussion in A2-C",
+    "Share artwork contains bounded preview bitmap, not original full-resolution pixels",
+    "Representative Furry artwork aesthetics still need maintainer review"
+  ],
+  "deployment": "Neither region deployed; no publication promotion",
+  "devHtml": [
+    {
+      "region": "cn",
+      "locale": "zh",
+      "h1": "图片调色板提取",
+      "title": "图片调色板提取 - 编辑配色与分享图 | Tool4Furry",
+      "h1Count": 1,
+      "robots": "noindex, nofollow",
+      "steps": 3,
+      "limits": 4,
+      "faq": 4
+    },
+    {
+      "region": "cn",
+      "locale": "en",
+      "h1": "Palette Extractor",
+      "title": "Palette Extractor - Edit Colors & Share Artwork | Tool4Furry",
+      "h1Count": 1,
+      "robots": "noindex, nofollow",
+      "steps": 3,
+      "limits": 4,
+      "faq": 4
+    },
+    {
+      "region": "global",
+      "locale": "en",
+      "h1": "Palette Extractor",
+      "title": "Palette Extractor - Edit Colors & Share Artwork | Tool4Furry",
+      "h1Count": 1,
+      "robots": "noindex, nofollow",
+      "steps": 3,
+      "limits": 4,
+      "faq": 4
+    },
+    {
+      "region": "global",
+      "locale": "zh",
+      "h1": "图片调色板提取",
+      "title": "图片调色板提取 - 编辑配色与分享图 | Tool4Furry",
+      "h1Count": 1,
+      "robots": "noindex, nofollow",
+      "steps": 3,
+      "limits": 4,
+      "faq": 4
+    }
+  ]
+}

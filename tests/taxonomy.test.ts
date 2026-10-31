@@ -31,6 +31,7 @@ describe('publication metadata gate', () => {
     expect(tools.map((tool) => [tool.id, tool.status])).toEqual([
       ['image-converter', 'published'],
       ['image-resize-crop', 'published'],
+      ['palette-extractor', 'draft'],
     ]);
     expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop']);
     expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop']);
@@ -48,6 +49,7 @@ describe('publication metadata gate', () => {
       expect(tools.map((tool) => [tool.id, tool.status])).toEqual([
         ['image-converter', 'published'],
         ['image-resize-crop', 'published'],
+        ['palette-extractor', 'draft'],
       ]);
       expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop']);
       expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop']);

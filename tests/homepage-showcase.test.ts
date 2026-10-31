@@ -28,15 +28,15 @@ describe('four-slot featured presentation', () => {
     expect(cards).toHaveLength(Math.min(count, 4));
   });
 
-  it.each(['cn', 'global'] as const)('shows both real Published tools in %s DEV and production', region => {
+  it.each(['cn', 'global'] as const)('shows the Draft only in %s DEV while retaining the two Published cards', region => {
     for (const locale of ['zh', 'en'] as const) {
       const entries = getHomepageEntries(region, undefined, undefined, true, locale);
       const cards = getFeaturedShowcase(entries);
-      expect(cards.map(card => card.id)).toEqual(['image-converter', 'image-resize-crop']);
+      expect(cards.map(card => card.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor']);
       expect(cards[0].description).toBe(imageConverterDefinition.copy[locale].summary);
       expect(entries[0].description).toBe(imageConverterDefinition.copy[locale].description);
       expect(cards[0].href).toBe(entries[0].href);
-      expect(getFeaturedShowcase(getHomepageEntries(region, undefined, undefined, false, locale))).toEqual(cards);
+      expect(getFeaturedShowcase(getHomepageEntries(region, undefined, undefined, false, locale))).toEqual(cards.filter(card => card.status === 'published'));
     }
     expect(imageConverterDefinition.status).toBe('published');
   });
@@ -59,7 +59,13 @@ describe('homepage editorial role projection', () => {
           tool.copy[locale].title, `${expectedPrefix}/tools/${tool.slug}/`, 'published',
         ]));
       }
-      expect(getRoleShowcases(region, locale, true)).toEqual(production);
+      const dev = getRoleShowcases(region, locale, true);
+      for (const role of dev) {
+        const productionRole = production.find(item => item.id === role.id)!;
+        expect(role.entries.filter(entry => entry.status === 'published')).toEqual(productionRole.entries);
+        expect(role.entries.filter(entry => entry.status === 'draft').map(entry => entry.id))
+          .toEqual(['painter', 'animator'].includes(role.id) ? ['palette-extractor'] : []);
+      }
     }
     expect(publishedTools.map(tool => tool.status)).toEqual(['published', 'published']);
   });

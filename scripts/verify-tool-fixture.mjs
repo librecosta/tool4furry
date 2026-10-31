@@ -33,6 +33,7 @@ const resources = { 'image-resizer-fixture': 'resizer', 'character-editor-fixtur
 const expectedEntries = Object.fromEntries([
   ['image-converter', 'src/tools/image-converter/ImageConverter.tsx'],
   ['image-resize-crop', 'src/tools/image-resize-crop/ImageResizeCrop.tsx'],
+  ['palette-extractor', 'src/tools/palette-extractor/PaletteExtractor.tsx'],
   ...fixtureIds.map(id => [id, resources[id] ? `tests/fixtures/build-resources/${resources[id]}.tsx` : 'tests/fixtures/FixtureTool.tsx']),
 ]);
 const publicationPath = join(source, 'tests/fixtures/publication.ts');
@@ -60,8 +61,8 @@ async function configure(phase) {
   assert.notEqual(registry, originals[registryPath], 'Registry seam changed');
   await writeFile(join(source, registryPath), "import { publicationFixtures } from '../../tests/fixtures/publication';\n" + registry);
   const content = originals[contentPath].replace(
-    /export const toolPageContents: ToolContentMap = [\s\S]*?;\r?\n/,
-    "export const toolPageContents: ToolContentMap = { ...fixtureContents, 'image-converter': imageConverterContent };\n",
+    /export const toolPageContents: ToolContentMap = \{/,
+    'export const toolPageContents: ToolContentMap = { ...fixtureContents,',
   );
   assert.notEqual(content, originals[contentPath], 'Static content seam changed');
   await writeFile(join(source, contentPath), "import { fixtureContents } from '../../tests/fixtures/content';\n" + content);
@@ -111,13 +112,13 @@ async function build(phase, failure, graphFailure) {
   const text = Object.fromEntries(await Promise.all(files.filter(file => /\.(js|css|html|xml|txt)$/.test(file))
     .map(async file => [file, await readFile(join(outDir, file), 'utf8')])));
   const allText = Object.values(text).join('\n');
-  const available = phase === 'empty' ? [] : ['image-converter', ...fixtureIds.filter(id =>
+  const available = phase === 'empty' ? [] : ['image-converter', 'image-resize-crop', ...fixtureIds.filter(id =>
     id.startsWith('fixture-') || id === 'cn-only-fixture' && region === 'cn' ||
     id === 'character-editor-fixture' && region === 'global' || id === 'image-resizer-fixture' && ['promoted', 'swapped-loaders'].includes(phase))];
   for (const prefix of ['', region === 'cn' ? 'en/' : 'zh/']) {
     assert.deepEqual(files.filter(file => new RegExp(`^${prefix}tools/[^/]+/index\\.html$`).test(file)).sort(),
       available.map(id => `${prefix}tools/${id}/index.html`).sort(), 'Both locales follow the Registry gate');
-    for (const id of ['image-converter', ...fixtureIds]) {
+    for (const id of ['image-converter', 'image-resize-crop', 'palette-extractor', ...fixtureIds]) {
       const expected = available.includes(id);
       for (const page of [`${prefix}index.html`, `${prefix}tools/index.html`]) {
         if (page.endsWith('tools/index.html')) assert.equal(text[page].includes(`data-tool-card="${id}"`), expected);
