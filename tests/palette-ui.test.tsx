@@ -12,12 +12,20 @@ import PaletteExtractor, { AddColor, ColorRow, PaletteParameters } from '../src/
 import { UiProvider } from '../src/ui/UiProvider';
 import { messages as uiMessages } from '../src/i18n/messages';
 import { ShareDialog } from '../src/tools/palette-extractor/ShareDialog';
+import { ShareCanvas } from '../src/tools/palette-extractor/ShareCanvas';
+import { shareDefaults } from '../src/tools/palette-extractor/render';
 import { messages } from '../src/tools/palette-extractor/messages';
 import type {
   PaletteSession,
   PaletteView,
 } from '../src/tools/palette-extractor/session';
 import { setViewport } from './setup';
+
+vi.mock('../src/tools/palette-extractor/render', async importOriginal => ({
+  ...await importOriginal<typeof import('../src/tools/palette-extractor/render')>(),
+  loadShareAssets: vi.fn(async () => ({})),
+  drawShare: vi.fn(),
+}));
 
 beforeEach(() => {
   setViewport(false);
@@ -39,6 +47,7 @@ beforeEach(() => {
   vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({
     clearRect: vi.fn(),
     putImageData: vi.fn(),
+    setTransform: vi.fn(),
   } as never);
 });
 
@@ -378,7 +387,8 @@ it('invalidates an old share PNG immediately and hides unsupported system sharin
   vi.stubGlobal('navigator', { ...navigator, canShare: () => false });
   const mount = render(<ShareDialog {...{ session, view }} t={messages.en} />);
   await user.click(screen.getByRole('button', { name: 'Create share image' }));
-  await screen.findByRole('img', { name: 'Your palette' });
+  const canvas = await screen.findByRole('img', { name: messages.en.composition }) as HTMLCanvasElement;
+  await waitFor(() => expect((screen.getByRole('button', {name: 'Download PNG'}) as HTMLButtonElement).disabled).toBe(false));
   expect(screen.queryByRole('button', { name: 'Share image' })).toBeNull();
   let resolve!: (blob: Blob) => void;
   owner.export.mockImplementationOnce(
@@ -387,6 +397,7 @@ it('invalidates an old share PNG immediately and hides unsupported system sharin
         resolve = r;
       }),
   );
+  await user.click(screen.getByText(messages.en.information, {selector: 'summary'}));
   fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
     target: { value: 'Changed 🐺' },
   });
@@ -400,8 +411,9 @@ it('invalidates an old share PNG immediately and hides unsupported system sharin
     resolve(new Blob(['late']));
   });
   expect(owner.download).not.toHaveBeenCalled();
-  expect(owner.resources.url).toHaveBeenCalledTimes(1);
-  expect(owner.resources.revoke).toHaveBeenCalledWith('blob:result-1');
+  // The live preview owns one canvas, not a succession of PNG object URLs.
+  expect(owner.resources.url).not.toHaveBeenCalled();
+  expect(canvas.width).toBe(0);
 });
 
 it('prepares a file before system-share activation and treats cancellation as non-failure', async () => {
@@ -426,4 +438,89 @@ it('prepares a file before system-share activation and treats cancellation as no
   expect(screen.queryByRole('alert')).toBeNull();
   await user.click(action);
   expect(await screen.findByRole('alert')).toBeTruthy();
+  expect((screen.getByRole('button', {name: 'Download PNG'}) as HTMLButtonElement).disabled).toBe(false);
+});
+
+it('keeps framing per template and invalidates exports while dragging, then prepares only the settled composition', async () => {
+  const user = userEvent.setup(), {view, session, owner} = shareFixture();
+  view.source!.canvas.width = 1600; view.source!.canvas.height = 900;
+  render(<ShareDialog {...{session, view}} t={messages.en}/>);
+  await user.click(screen.getByRole('button', {name: 'Create share image'}));
+  const download = screen.getByRole('button', {name: 'Download PNG'}) as HTMLButtonElement;
+  await waitFor(() => expect(download.disabled).toBe(false));
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-share-canvas]')!;
+  vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({left: 0, top: 0, width: 108, height: 135} as DOMRect);
+  const hit = document.querySelector('[data-share-image]')!;
+  const before = owner.export.mock.calls.length;
+  fireEvent.pointerDown(hit, {clientX: 50, clientY: 20, pointerId: 1, button: 0});
+  fireEvent.pointerMove(hit, {clientX: 60, clientY: 20, pointerId: 1});
+  expect(download.disabled).toBe(true);
+  await act(async () => { await new Promise(resolve => setTimeout(resolve, 220)); });
+  expect(owner.export).toHaveBeenCalledTimes(before);
+  fireEvent.pointerUp(hit, {clientX: 60, clientY: 20, pointerId: 1});
+  await waitFor(() => expect(download.disabled).toBe(false));
+  const settled = (owner.export.mock.calls.at(-1) as unknown as [ReturnType<typeof shareDefaults>])[0];
+  expect(settled.frames.character.x).toBeGreaterThan(0);
+  await user.click(screen.getByRole('radio', {name: messages.en.gallery}));
+  await waitFor(() => expect(download.disabled).toBe(false));
+  expect((owner.export.mock.calls.at(-1) as unknown as [ReturnType<typeof shareDefaults>])[0].frames.gallery.x).toBe(0);
+  await user.click(screen.getByRole('radio', {name: messages.en.character}));
+  await waitFor(() => expect(download.disabled).toBe(false));
+  expect((owner.export.mock.calls.at(-1) as unknown as [ReturnType<typeof shareDefaults>])[0].frames.character.x).toBe(settled.frames.character.x);
+  expect(document.querySelector('select')).toBeNull();
+});
+
+it('cancels a composer gesture with Escape and discards an old-source drag without changing palette state', () => {
+  const image = document.createElement('canvas'); image.width = 1600; image.height = 900;
+  const onFrame = vi.fn(), onInteraction = vi.fn(), options = shareDefaults();
+  const props = {image, colors: ['#112233'], options, onFrame, onInteraction, onError: vi.fn(), t: messages.en};
+  const mount = render(<ShareCanvas {...props}/>);
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-share-canvas]')!;
+  vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({left: 0, top: 0, width: 108, height: 135} as DOMRect);
+  const hit = document.querySelector('[data-share-image]')!;
+  fireEvent.pointerDown(hit, {clientX: 50, clientY: 20, pointerId: 1, button: 0});
+  fireEvent.pointerMove(hit, {clientX: 60, clientY: 20, pointerId: 1});
+  expect(onFrame.mock.calls.at(-1)?.[0].x).toBeGreaterThan(0);
+  fireEvent.keyDown(window, {key: 'Escape'});
+  expect(onFrame).toHaveBeenLastCalledWith(options.frames.character);
+  expect(onInteraction).toHaveBeenLastCalledWith(false);
+  fireEvent.pointerDown(hit, {clientX: 50, clientY: 20, pointerId: 2, button: 0});
+  const calls = onFrame.mock.calls.length;
+  const replacement = document.createElement('canvas'); replacement.width = 500; replacement.height = 500;
+  mount.rerender(<ShareCanvas {...props} image={replacement}/>);
+  fireEvent.pointerUp(hit, {clientX: 60, clientY: 20, pointerId: 2});
+  expect(onFrame).toHaveBeenCalledTimes(calls);
+  fireEvent.keyDown(canvas, {key: '+'});
+  expect(onFrame.mock.calls.at(-1)?.[0].zoom).toBeGreaterThan(1);
+});
+
+it('exports the chosen information options, rejects a late file after replacement, and keeps the local session date stable', async () => {
+  const user = userEvent.setup(), {view, session, owner} = shareFixture();
+  const mount = render(<ShareDialog {...{session, view}} t={messages.en}/>);
+  await user.click(screen.getByRole('button', {name: 'Create share image'}));
+  const download = () => screen.getByRole('button', {name: 'Download PNG'}) as HTMLButtonElement;
+  await waitFor(() => expect(download().disabled).toBe(false));
+  await user.click(screen.getByText(messages.en.information, {selector: 'summary'}));
+  const dateLabel = screen.getByText(new RegExp(`^${messages.en.showDate}`)).textContent!;
+  await user.click(screen.getByRole('checkbox', {name: dateLabel}));
+  expect(download().disabled).toBe(true);
+  await waitFor(() => expect(download().disabled).toBe(false));
+  let options = (owner.export.mock.calls.at(-1) as unknown as [ReturnType<typeof shareDefaults>])[0];
+  expect(options.showDate).toBe(true);
+  const date = options.date;
+  await user.click(screen.getByRole('checkbox', {name: messages.en.signature}));
+  expect(download().disabled).toBe(true);
+  await waitFor(() => expect(download().disabled).toBe(false));
+  options = (owner.export.mock.calls.at(-1) as unknown as [ReturnType<typeof shareDefaults>])[0];
+  expect(options.signature).toBe(false);
+  expect(options.date).toBe(date);
+  let resolve!: (blob: Blob) => void;
+  owner.export.mockImplementationOnce(() => new Promise<Blob>(done => {resolve = done;}));
+  await user.type(screen.getByRole('textbox', {name: 'Title'}), 'new');
+  await waitFor(() => expect(resolve).toBeTypeOf('function'));
+  view.source = {...view.source!, url: 'blob:replacement'}; view.version++;
+  mount.rerender(<ShareDialog {...{session, view}} t={messages.en}/>);
+  await act(async () => resolve(new Blob(['late'], {type: 'image/png'})));
+  await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+  expect(owner.download).not.toHaveBeenCalled();
 });

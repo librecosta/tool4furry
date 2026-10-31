@@ -9,7 +9,14 @@ import {
   foreground,
 } from '../src/tools/palette-extractor/palette';
 import {
-  contain,
+  cover,
+  constrainFraming,
+  zoomFraming,
+  shareDefaults,
+  swatchGeometry,
+  informationLayout,
+  visibleColors,
+  localDate,
   templateLayout,
   templates,
   titleLines,
@@ -179,7 +186,7 @@ describe('editing and contain-based sampling', () => {
 
 describe('three share template geometries', () => {
   it.each(Object.keys(templates) as (keyof typeof templates)[])(
-    '%s fits 1/6/10 colors and contain artwork',
+    '%s fits 1/6/10 colors and covers the artwork region without gaps',
     (template) => {
       for (const count of [1, 6, 10]) {
         const layout = templateLayout(template, count);
@@ -195,16 +202,64 @@ describe('three share template geometries', () => {
           { width: 500, height: 2000 },
           { width: 800, height: 800 },
         ]) {
-          const r = contain(size, layout.image);
+          const r = cover(size, layout.image, {zoom: 1, x: 0, y: 0});
           expect(r.w / r.h).toBeCloseTo(size.width / size.height);
-          expect(r.x).toBeGreaterThanOrEqual(layout.image.x);
-          expect(r.y).toBeGreaterThanOrEqual(layout.image.y);
-          expect(r.w).toBeLessThanOrEqual(layout.image.w + 0.001);
-          expect(r.h).toBeLessThanOrEqual(layout.image.h + 0.001);
+          expect(r.x).toBeLessThanOrEqual(layout.image.x + .001);
+          expect(r.y).toBeLessThanOrEqual(layout.image.y + .001);
+          expect(r.x + r.w).toBeGreaterThanOrEqual(layout.image.x + layout.image.w - .001);
+          expect(r.y + r.h).toBeGreaterThanOrEqual(layout.image.y + layout.image.h - .001);
         }
       }
     },
   );
+  it('constrains extreme pan/zoom, preserves the center on zoom and keeps all swatch combinations bounded', () => {
+    const source = {width: 1600, height: 900};
+    for (const template of Object.keys(templates) as (keyof typeof templates)[]) {
+      const box = templateLayout(template, 6).image;
+      const frame = constrainFraming(source, box, {zoom: 9, x: 999, y: -999});
+      expect(frame.zoom).toBe(4);
+      const r = cover(source, box, frame);
+      expect(r.x).toBeLessThanOrEqual(box.x + .001);
+      expect(r.y).toBeLessThanOrEqual(box.y + .001);
+      expect(r.x + r.w).toBeGreaterThanOrEqual(box.x + box.w - .001);
+      expect(r.y + r.h).toBeGreaterThanOrEqual(box.y + box.h - .001);
+      const next = zoomFraming(source, box, {zoom: 2, x: .1, y: .1}, 3);
+      expect(next.x).toBeCloseTo(.15); expect(next.y).toBeCloseTo(.15);
+      for (let count = 1; count <= 10; count++) for (const shape of ['square', 'rounded', 'circle'] as const) for (const labels of ['inside', 'outside', 'hidden'] as const) for (const arrangement of ['equal', 'spaced', 'cards', 'band'] as const) for (const spacing of ['compact', 'standard', 'relaxed'] as const) {
+        const options = shareDefaults(); options.template = template; options.swatches = {...options.swatches, shape, labels, arrangement, spacing};
+        const layout = templateLayout(template, count, options.swatches);
+        for (const rect of layout.colors) {
+          const {block, labelY} = swatchGeometry(rect, options);
+          expect(block.w).toBeGreaterThan(0); expect(block.h).toBeGreaterThan(0);
+          expect(block.x).toBeGreaterThanOrEqual(rect.x); expect(block.y).toBeGreaterThanOrEqual(rect.y);
+          expect(block.x + block.w).toBeLessThanOrEqual(rect.x + rect.w + .001);
+          expect(block.y + block.h).toBeLessThanOrEqual(rect.y + rect.h + .001);
+          if (labels === 'outside') expect(labelY).toBeLessThan(rect.y + rect.h);
+          if (shape === 'circle') expect(block.w).toBe(block.h);
+        }
+      }
+    }
+    const options = shareDefaults(); options.swatches.limit = '5';
+    expect(visibleColors(['#FFFFFF'], options)).toHaveLength(1);
+    expect(visibleColors(Array(10).fill('#FFFFFF'), options)).toHaveLength(5);
+    expect(localDate(new Date(2026, 0, 2, 23))).toBe('2026-01-02');
+  });
+  it('keeps all nine-grid collisions inside the information area without overlapping text', () => {
+    const ctx = {font: '', measureText: (text: string) => ({width: Array.from(text).length * 20})};
+    for (const template of Object.keys(templates) as (keyof typeof templates)[]) {
+      const options = shareDefaults(); options.template = template; options.title = '创作 🐺 Character palette '.repeat(5); options.showDate = true;
+      const box = templateLayout(template, 10).info;
+      for (let title = 0; title < 9; title++) for (let brand = 0; brand < 9; brand++) for (let date = 0; date < 9; date++) {
+        options.positions = {title, brand, date} as typeof options.positions;
+        const items = informationLayout(ctx as CanvasRenderingContext2D, options, box);
+        for (const item of items) {
+          expect(item.y).toBeGreaterThanOrEqual(box.y - .001);
+          expect(item.y + item.h).toBeLessThanOrEqual(box.y + box.h + .001);
+          for (const other of items.filter(other => other !== item)) expect(item.x + item.w <= other.x + .001 || other.x + other.w <= item.x + .001 || item.y + item.h <= other.y + .001 || other.y + other.h <= item.y + .001).toBe(true);
+        }
+      }
+    }
+  });
   it('measures and truncates Chinese, English and Emoji without splitting graphemes', () => {
     const ctx = {
       measureText: (text: string) => ({

@@ -1,6 +1,6 @@
 # Palette Extractor · 当前实现
 
-第三款工具，CN/Global、zh/en 均为 **Draft**，只在 DEV 的 `/tools/palette-extractor/`（以及同地区语言前缀路径）可用。A2-B 完成功能，A2-C1/C2/C3 调整工作区、颜色标记与反馈；现有两款 Published 工具、生产页面和部署状态不变，尚未完成 Palette Beta 资格验收。
+第三款工具，CN/Global、zh/en 均为 **Draft**，只在 DEV 的 `/tools/palette-extractor/`（以及同地区语言前缀路径）可用。A2-B 完成功能，A2-C1/C2/C3 调整工作区、颜色标记与反馈，A2-C4 重构 Share Composer；现有两款 Published 工具、生产页面和部署状态不变，尚未完成 Palette Beta 资格验收。
 
 ## 模块与所有权
 
@@ -8,7 +8,7 @@
 - [session](../src/tools/palette-extractor/session.ts)：复用 `acceptImage`、`decodeChecked`、`ImageResources`、设备 `ImageLimits` 与既有 `SerialJobs`；版本隔离、串行原生任务、过期导出作废、资源释放均由工具拥有。不修改 Image Core 或两款正式工具。
 - [palette](../src/tools/palette-extractor/palette.ts)：有界像素过滤、Color Thief 候选量化、六种倾向与近色去重、contain 坐标映射。
 - [ImageSampler](../src/tools/palette-extractor/ImageSampler.tsx)：复用 Image Core 的 `preview-geometry` 视图数学，拥有适应/缩放/平移与单实例专注模态框；鼠标/触摸 Pointer Events、目标色卡、Escape、9×9 预览像素放大镜。移动鼠标不解码、不量化、不创建 Blob。
-- [render](../src/tools/palette-extractor/render.ts) / [ShareDialog](../src/tools/palette-extractor/ShareDialog.tsx)：同一套 Canvas 几何、字体测量、PNG 预览/导出、有效版本下载与可用设备的文件分享。没有全站分享框架、Worker 或持久化。
+- [render](../src/tools/palette-extractor/render.ts) / [ShareDialog](../src/tools/palette-extractor/ShareDialog.tsx)：同一套 Canvas 几何、字体测量、有效版本 PNG 与可用设备的文件分享。[ShareCanvas](../src/tools/palette-extractor/ShareCanvas.tsx) 负责有界实时画布及构图手势，[ComposerControls](../src/tools/palette-extractor/ComposerControls.tsx) 负责局部属性面板；没有全站分享框架、Worker 或持久化。
 - [静态内容](../src/site/palette-extractor-content.ts) / [定义](../src/tools/palette-extractor/definition.ts)：双语 SEO、H1、3 步说明、4 项限制、4 项 FAQ；Registry 与字面量 Loader 沿用统一编译期资格。DEV 画家/动画师展示走既有手选 ID 与发布过滤。
 
 稳定边界见 [图片处理契约](../contracts/image-processing.md)、[发布契约](../contracts/publication.md)。数值和实际行为以源码与测试为准。
@@ -29,15 +29,30 @@ Alpha=0 在调用量化库前始终排除；存在不透明内容时阈值为 19
 
 | 模板 | 尺寸 | 布局 |
 | --- | --- | --- |
-| Character Study | 1080×1350 | 作品在上，标题和完整配色在下；7–10 色为两行 |
-| Gallery | 1200×1200 | 左侧 contain 作品，右侧编号/HEX 纵向色卡 |
-| Color Story | 1600×900 | 宽幅 contain 作品，底部贯穿色带 |
+| Postcard / 明信片（内部 ID `character`） | 1080×1350 | 全宽上图、说明区与底部色卡，对角短线框 |
+| Editorial / 编辑卡（`gallery`） | 1200×1200 | 内缩作品、编辑式说明与编号色卡，保留外缘留白 |
+| Moodboard / 氛围板（`story`） | 1600×900 | 全宽横图、紧凑说明和横向配色，作品权重更高 |
 
-作品来自有界预览，不承诺原始超大图逐像素保真。标题最多 120 个 UTF-16 code units；加载现有本地字体，按实际字宽/字素测量至两行，超长省略。中文、英文与常见系统 Emoji 可用；Emoji 字形受操作系统字体影响。颜色上文字选择对比度更高的黑/白；小型署名默认开启、可关闭。
+作品来自有界预览，不承诺原始超大图逐像素保真。默认 Cover，可拖动、缩放 100–400% 和重置；每个模板独立保存以图片区为单位的偏移，统一计算 Cover 并约束平移，不露出源图外的空白。原图透明部分由中性底承托。构图不修改源图、主工作区镜头或正式色卡。键盘可用 +/-、0 与方向键；Esc、PointerCancel、失焦、页面隐藏取消当前拖动，替换源图丢弃旧手势。
 
-界面预览就是最终完整尺寸 PNG 的缩放展示，避免两套布局分叉。每次输出都通过现有 PNG 格式、尺寸、完整解码与 privacy-v1 校验。图片、颜色、模板、标题或署名变化立即使旧结果失效；最新导出请求替代等待中的请求，原生任务仍遵循单通道收尾。关闭/卸载回收结果 URL。
+有限色卡预设：方/圆角/圆，色号内/外/隐藏，等宽/间距/小卡片/紧凑色带，三档间距，全部/前五/前六色。只引用当前 1–10 个实际颜色；根据可用高度选择行数，避免两行圆形缩成细点。HEX 按真实字宽缩放，内部文字按颜色选择可读前景。
+
+标题可选，最多 120 个 UTF-16 code units；本地字体按字宽/字素测量最多两行（横版一行），超长省略，不拆 Emoji。品牌默认开启，安全加载同源正式路径字标 `/brand/tool4furry-horizontal.svg`，另附小号工具名；日期默认关闭，打开 Composer 时确定本地 YYYY-MM-DD，当前编辑会话内不随重绘变化。三个元素各有说明区九宫格锚点，同格按标题→品牌→日期堆叠，三行按需要分配高度，不覆盖图片区或色卡。四种边角预设只使用中性线条。
+
+实时预览最长边不超过 1000px，不创建预览 Blob；与完整 PNG 调用相同 `drawShare`、布局、构图、字体与装饰函数。拖动按帧重绘，期间不启动完整导出；松手后防抖 180ms，经现有串行通道准备完整文件。每次输出仍通过 PNG 格式、尺寸、完整解码与 privacy-v1 校验。图片/配色版本和完整分享选项构成有效性检查，任何改变立即禁用旧下载；取消拖动恢复原构图，晚到结果不能恢复资格。关闭/卸载丢弃结果和清零实时 Canvas；下载 URL 继续由 Session 拥有并回收，不保留无用的预览 PNG URL。
 
 系统分享仅在 `canShare({files})` 与 `share` 都可用时显示；点击前已准备当前有效 PNG，调用位于用户激活处理内。取消不报失败，真正失败有提示；下载独立可用。不生成链接、不上传分享图、不连接外部账户。
+
+Palette 普通操作使用默认可见的轻中性表面，主要确认与下载使用 Lavender；图标保留弱表面和选中反馈。只改本工具外观，不修改公共按钮及其他工具。以下 C1/C2/C3、A2-B 记录为当时验收事实，旧模板名称与 PNG 预览方式已由上述 C4 实现替代。
+
+## A2-C4 定向验证
+
+- `pnpm check`：287 文件、零错误/警告/提示；`pnpm test`：68 文件、789 项通过。新增 Cover 极端平移/缩放、1–10 色全部有限预设的边界、九宫格全部锚点冲突、拖动暂停导出/松手恢复、模板独立构图、Esc 恢复、替换源图丢弃旧手势与晚到 PNG、信息选项/日期稳定、关闭后 Canvas 清零及无多余预览 URL 的回归。系统分享测试继续覆盖预先准备 File、取消不报错、真正失败不阻断下载。
+- Chromium：CN 中文 Light、1440/1200px 桌面；Global 英文 Dark、390/320px 手机视口。实际完成拖动、键盘缩放、模板切换、Quiet 下拉键盘选择、圆形/独立色卡、内部 HEX、九宫格同格避让、日期、品牌关闭、标题清空与中英/Emoji 长标题省略。修复手机 Grid 压缩画布与属性区导致的重叠；复核自然堆叠、固定导出区、无横向溢出。画布复用 C3 焦点合同：指针无外框，键盘计算轮廓为 2px；Canvas 不添加 CSS 位移过渡，既有控件/弹窗继续复用 Reduced Motion 规则。
+- 下载七份真实 PNG，覆盖三模板、1/6/10 色、横/竖/方图与带透明区域的合成渐变、长标题、正式 Logo、日期与无署名；用独立 Sharp 完整解码确认 1080×1350、1200×1200、1600×900。390px 手机预览截图的 Canvas 区域与当前下载 PNG 缩放对照，RGB 绝对差均值约 1.83/255（包含采样取整与文字抗锯齿），构图及内容位置一致。未将低分辨率预览宣称为逐像素相等。
+- `pnpm build:cn` / `pnpm build:global` 及既有静态/发现/资源守卫通过，各 15 页、两款 Published 工具；额外扫描产物未发现 Composer 特有 DOM/文字/布局标记。Palette 路由、私有实现、Color Thief/NOTICE 仍排除。Registry、Loader、提色算法、主采样工作区、Image Core、SEO 与依赖未改；Session 只同步导出文件名中的新模板名称。
+
+截图、合成素材、下载副本和构建日志保留在仓库外 `../.validation/palette/c4-*`。实际浏览器验收只代表当前 Chromium；未测真实 iOS/Android 触控/多指手感、系统分享目标投递、操作系统 Reduced Motion 切换及 Firefox/Safari，未执行所有预设的真实 PNG 笛卡尔积。仍需维护者用真实作品判断裁切与版式审美。跨语言整页导航的会话限制不变；未部署，未提升 Draft。
 
 ## A2-C1 工作区与过渡
 

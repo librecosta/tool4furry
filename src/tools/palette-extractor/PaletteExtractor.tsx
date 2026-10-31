@@ -62,7 +62,7 @@ export function ColorRow({ color, preview, index, length, session, pick, selecte
       <div {...stylex.props(s.secondaryActions)}>{actions.map(action => <Tooltip key={action.label} content={action.label}><IconButton label={`${action.label} ${index + 1}`} variant="ghost" xstyle={s.tool} disabled={action.disabled} onClick={action.run}>{action.text ?? <action.icon size={18}/>}</IconButton></Tooltip>)}</div>
       <Popover.Root>
         <Popover.Trigger render={<IconButton label={`${t.more} ${index + 1}`} variant="ghost" xstyle={[s.tool, s.more]}><DotsThreeIcon size={22}/></IconButton>}/>
-        <Popover.Portal><Popover.Positioner sideOffset={6} collisionPadding={8} {...stylex.props(s.popoverPositioner)}><Popover.Popup aria-label={t.more} {...stylex.props(s.popover, motion.dialog)}>{actions.map(action => <Popover.Close key={action.label} render={<Button variant="ghost" disabled={action.disabled} onClick={action.run}/>}><action.icon size={18}/>{action.label}</Popover.Close>)}</Popover.Popup></Popover.Positioner></Popover.Portal>
+        <Popover.Portal><Popover.Positioner sideOffset={6} collisionPadding={8} {...stylex.props(s.popoverPositioner)}><Popover.Popup aria-label={t.more} {...stylex.props(s.popover, motion.dialog)}>{actions.map(action => <Popover.Close key={action.label} render={<Button variant="ghost" xstyle={s.secondary} disabled={action.disabled} onClick={action.run}/>}><action.icon size={18}/>{action.label}</Popover.Close>)}</Popover.Popup></Popover.Positioner></Popover.Portal>
       </Popover.Root>
     </div>
   </li>;
@@ -79,7 +79,7 @@ export function PaletteParameters({ mode, count, disabled, extract, t }: {
         <input type="radio" aria-label={String(n)} name="palette-target-count" value={n} checked={count === n} onChange={() => extract(mode, n)} {...stylex.props(s.radio)}/><span aria-hidden="true">{n}</span>
       </label>)}</div>
     </fieldset>
-    <Button variant="ghost" disabled={disabled} onClick={() => extract(mode, count)}>{t.extract}</Button>
+    <Button variant="ghost" xstyle={s.secondary} disabled={disabled} onClick={() => extract(mode, count)}>{t.extract}</Button>
   </div>;
 }
 
@@ -87,7 +87,7 @@ export function AddColor({ disabled, add, t }: { disabled: boolean; add: (hex: s
   const [open, setOpen] = useState(false), [value, setValue] = useState('#808080'), [error, setError] = useState(false);
   const input = useRef<HTMLInputElement>(null);
   return <Popover.Root open={open} onOpenChange={next => { setOpen(next); if (next) { setValue('#808080'); setError(false); } }}>
-    <Popover.Trigger render={<Button variant="ghost" disabled={disabled}/>}>{t.add}</Popover.Trigger>
+    <Popover.Trigger render={<Button variant="ghost" xstyle={s.secondary} disabled={disabled}/>}>{t.add}</Popover.Trigger>
     <Popover.Portal><Popover.Positioner sideOffset={8} collisionPadding={12} {...stylex.props(s.popoverPositioner)}>
       <Popover.Popup aria-label={t.add} initialFocus={input} {...stylex.props(s.popover, s.addColor, motion.dialog)}>
         <form {...stylex.props(s.stack)} onSubmit={event => { event.preventDefault(); if (!normalizeHex(value)) { setError(true); input.current?.focus(); } else if (add(value)) setOpen(false); }}>
@@ -95,7 +95,7 @@ export function AddColor({ disabled, add, t }: { disabled: boolean; add: (hex: s
             <span aria-hidden="true" {...stylex.props(s.addPreview)} style={{ backgroundColor: normalizeHex(value) ?? 'transparent' }}/>
             <div {...stylex.props(s.addInput)}><TextField ref={input} label={t.hex} value={value} maxLength={7} error={error ? t.invalid : undefined} onChange={next => { setValue(next); setError(false); }}/></div>
           </div>
-          <div {...stylex.props(s.row)}><Button type="submit" variant="ghost" xstyle={s.accent}>{t.add}</Button><Popover.Close render={<Button variant="ghost"/>}>{t.cancel}</Popover.Close></div>
+          <div {...stylex.props(s.row)}><Button type="submit" variant="ghost" xstyle={s.accent}>{t.add}</Button><Popover.Close render={<Button variant="ghost" xstyle={s.secondary}/>}>{t.cancel}</Popover.Close></div>
         </form>
       </Popover.Popup>
     </Popover.Positioner></Popover.Portal>
@@ -270,6 +270,7 @@ export default function PaletteExtractor({ locale }: ToolProps) {
           <AddColor disabled={!view.source || view.colors.length >= 10} add={hex => session?.add(hex) ?? false} t={t}/>
           <Button
             variant="ghost"
+            xstyle={s.secondary}
             disabled={!view.colors.length}
             onClick={() => copy(view.colors.map((c) => c.hex).join('\n'))}
           >
@@ -277,6 +278,7 @@ export default function PaletteExtractor({ locale }: ToolProps) {
           </Button>
           <Button
             variant="ghost"
+            xstyle={s.secondary}
             disabled={!view.colors.length}
             loading={saving}
             onClick={() => void png()}

@@ -232,7 +232,7 @@ export class PaletteSession {
     return true;
   }
   filename(kind: 'basic' | ShareOptions['template']) {
-    const label = { basic: 'palette', character: 'character-study', gallery: 'gallery', story: 'color-story' }[kind];
+    const label = { basic: 'palette', character: 'postcard', gallery: 'editorial', story: 'moodboard' }[kind];
     return taskFilename({ time: this.downloadTime, sequence: ++this.downloadSequence, source: this.view.source?.name ?? 'image', label, extension: 'png' }).name;
   }
   add(value: string) {
