@@ -74,6 +74,20 @@ function drag(target: Element, dx: number, dy: number) {
   fireEvent.pointerUp(canvas(), {clientX: x + dx, clientY: y + dy});
 }
 
+it('marks pointer focus without changing crop and restores keyboard focus indication', async () => {
+  const user = userEvent.setup();
+  render(<Example/>); loaded();
+  await user.click(screen.getByRole('button', {name: t.handMode}));
+  fireEvent.pointerDown(canvas(), {button: 0, pointerId: 1, clientX: 200, clientY: 300});
+  expect(canvas().hasAttribute('data-pointer-focus')).toBe(true);
+  expect(document.activeElement).toBe(canvas());
+  fireEvent.pointerUp(canvas(), {pointerId: 1});
+  expect(changed).not.toHaveBeenCalled();
+  fireEvent.keyDown(canvas(), {key: '+'});
+  expect(canvas().hasAttribute('data-pointer-focus')).toBe(false);
+  expect(changed).not.toHaveBeenCalled();
+});
+
 it.each([1, 1.25, 0.8])('maps a crop drag through actual DOM width at preview scale %s', async scale => {
   const user = userEvent.setup();
   render(<Example/>);

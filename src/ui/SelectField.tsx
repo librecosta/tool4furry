@@ -17,6 +17,7 @@ export interface SelectFieldProps extends FieldProps {
   options: readonly SelectOption[];
   placeholder?: string;
   name?: string;
+  appearance?: 'default' | 'quiet';
 }
 export function SelectField({
   value,
@@ -24,6 +25,7 @@ export function SelectField({
   options,
   placeholder,
   name,
+  appearance = 'default',
   ...field
 }: SelectFieldProps) {
   const ids = useField(field);
@@ -45,6 +47,7 @@ export function SelectField({
           {...stylex.props(
             controls.input,
             styles.trigger,
+            appearance === 'quiet' && styles.quiet,
             !!field.error && controls.invalid,
           )}
         >
@@ -61,7 +64,7 @@ export function SelectField({
             collisionPadding={12}
             {...stylex.props(styles.positioner)}
           >
-            <Select.Popup {...stylex.props(styles.popup)}>
+            <Select.Popup {...stylex.props(styles.popup, appearance === 'quiet' && styles.quietPopup)}>
               {options.map((option) => (
                 <Select.Item
                   key={option.value}
@@ -71,8 +74,10 @@ export function SelectField({
                     stylex.props(
                       styles.item,
                       motion.selection,
-                      state.highlighted && styles.highlighted,
+                      state.highlighted && appearance !== 'quiet' && styles.highlighted,
                       state.selected && styles.selected,
+                      appearance === 'quiet' && styles.quietItem,
+                      appearance === 'quiet' && state.selected && styles.quietSelected,
                       state.disabled && styles.disabled,
                     ).className
                   }
@@ -91,6 +96,30 @@ export function SelectField({
   );
 }
 const styles = stylex.create({
+  quiet: {
+    borderWidth: 0,
+    backgroundColor: { default: tokens.surfacePanel, ':hover': tokens.surfaceHover, ':disabled': tokens.surfacePanel },
+    // Replace the input's inset focus with one external keyboard ring.
+    boxShadow: 'none',
+    outlineStyle: { default: 'none', ':focus-visible': 'solid' },
+    outlineWidth: 2,
+    outlineColor: tokens.focus,
+    outlineOffset: 2,
+    ':focus-visible': { boxShadow: 'none' },
+  },
+  quietPopup: { borderWidth: 0, boxShadow: tokens.shadowFloating },
+  quietItem: {
+    ':is([data-highlighted])': { backgroundColor: tokens.surfaceHover, color: tokens.textPrimary },
+    outlineStyle: { default: 'none', ':is([data-highlighted]):focus-visible': 'solid' },
+    outlineWidth: 2,
+    outlineColor: tokens.focus,
+    outlineOffset: -2,
+  },
+  quietSelected: {
+    backgroundColor: `color-mix(in srgb, ${tokens.supportLavender} 14%, ${tokens.surfaceFloating})`,
+    color: tokens.supportLavender,
+    ':is([data-highlighted])': { backgroundColor: `color-mix(in srgb, ${tokens.supportLavender} 22%, ${tokens.surfaceFloating})`, color: tokens.supportLavender },
+  },
   trigger: {
     display: 'flex',
     alignItems: 'center',

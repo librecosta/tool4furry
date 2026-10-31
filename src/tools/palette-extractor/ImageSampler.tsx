@@ -5,16 +5,19 @@ import * as stylex from '@stylexjs/stylex';
 import { Button, IconButton } from '../../ui/Button';
 import { Tooltip } from '../../ui/Tooltip';
 import { motion } from '../../styles/motion';
+import { controls } from '../../styles/controls';
 import { clamp, constrain, fitScale, zoomAt, zoomRange, type PreviewView, type PreviewSize } from '../image/preview-geometry';
 import { samplePoint, type Swatch } from './palette';
 import { styles as s } from './styles';
 import type { Labels } from './messages';
 
 /** Camera only. Sampling uses the already oriented, bounded preview pixels. */
-export function ImageSampler({ pixels, url, target, selected, onPick, cancel, t, colors = [], onTarget, onSelect }: {
+export type SamplePreview = { id: string; hex: string; point: { x: number; y: number }; url: string };
+export function ImageSampler({ pixels, url, target, selected, onPick, onPreview, cancel, t, colors = [], onTarget, onSelect }: {
   pixels: ImageData; url: string; target?: string;
   selected?: string;
   onPick: (id: string, hex: string, point: { x: number; y: number }) => void; cancel: () => void; t: Labels;
+  onPreview?: (preview: SamplePreview | undefined) => void;
   colors?: readonly Swatch[]; onTarget?: (id: string) => void; onSelect?: (id: string) => void;
 }) {
   const [focused, setFocused] = useState(false);
@@ -48,8 +51,16 @@ export function ImageSampler({ pixels, url, target, selected, onPick, cancel, t,
   };
   useEffect(() => {
     release(); blocked.current = false;
-    if (target) host.current?.focus();
+    if (target && host.current) {
+      if (!document.activeElement?.matches(':focus-visible')) host.current.dataset.pointerFocus = '';
+      host.current.focus({ preventScroll: true });
+    }
   }, [target, element]);
+  useEffect(() => {
+    const id = gesture.current?.kind === 'marker' ? gesture.current.target : target;
+    onPreview?.(hover && id ? { id, hex: hover.hex, point: { x: hover.x, y: hover.y }, url } : undefined);
+  }, [hover, target, url, onPreview]);
+  useEffect(() => () => onPreview?.(undefined), [onPreview]);
   useEffect(() => {
     release(); camera.current = undefined; autoFit.current = true; setFocused(false); setOpen(false);
   }, [url, pixels]);
@@ -129,14 +140,16 @@ export function ImageSampler({ pixels, url, target, selected, onPick, cancel, t,
       <span aria-hidden="true" {...stylex.props(s.zoomLabel)}>{Math.round(view.scale * 100)}%</span>
     </div>
     <div ref={bindHost} data-palette-sampler role="region" aria-label={t.workspace} aria-describedby={target ? `${focusId}-hint` : undefined} tabIndex={0}
-      {...stylex.props(s.stage, focused && s.focusedStage, !!target && s.picking)}
+      {...stylex.props(s.stage, controls.workspaceFocus, focused && s.focusedStage, !!target && s.picking)}
+      onKeyDownCapture={event => { delete event.currentTarget.dataset.pointerFocus; }}
+      onBlur={event => { delete event.currentTarget.dataset.pointerFocus; }}
       onPointerDown={event => {
         if (event.button !== 0) return;
         if (gesture.current) { blocked.current = true; setHover(undefined); return; }
         // Page scrolling stays native on small screens outside the focus/pick mode.
         if (!target && !focused && event.pointerType === 'touch') return;
         blocked.current = false;
-        event.preventDefault(); event.currentTarget.focus({ preventScroll: true });
+        event.preventDefault(); event.currentTarget.dataset.pointerFocus = ''; event.currentTarget.focus({ preventScroll: true });
         gesture.current = { id: event.pointerId, x: event.clientX, y: event.clientY, target, url, kind: target ? 'pick' : 'pan', moved: false };
         event.currentTarget.setPointerCapture?.(event.pointerId);
         if (target) sample(event);
@@ -179,7 +192,8 @@ export function ImageSampler({ pixels, url, target, selected, onPick, cancel, t,
       {colors.map((color, index) => {
         const dragging = gesture.current?.kind === 'marker' && gesture.current.target === color.id;
         const active = (selected ?? target) === color.id;
-        const point = dragging && hover && gesture.current?.moved ? hover : color.point;
+        const previewing = !!hover && (dragging ? gesture.current?.moved : gesture.current?.kind !== 'marker' && target === color.id);
+        const point = previewing ? hover : color.point;
         if (!point) return null;
         const left = size.current.width / 2 + view.x + (point.x + 0.5 - pixels.width / 2) * view.scale;
         const top = size.current.height / 2 + view.y + (point.y + 0.5 - pixels.height / 2) * view.scale;
@@ -190,13 +204,13 @@ export function ImageSampler({ pixels, url, target, selected, onPick, cancel, t,
             event.stopPropagation();
             if (event.button !== 0) return;
             if (gesture.current) { blocked.current = true; setHover(undefined); return; }
-            event.preventDefault(); onSelect?.(color.id);
-            host.current?.focus({ preventScroll: true });
+            event.preventDefault(); setHover(undefined); onSelect?.(color.id);
+            if (host.current) { host.current.dataset.pointerFocus = ''; host.current.focus({ preventScroll: true }); }
             blocked.current = false;
             gesture.current = { id: event.pointerId, x: event.clientX, y: event.clientY, target: color.id, url, kind: 'marker', moved: false };
             host.current?.setPointerCapture?.(event.pointerId);
           }}>
-          <span {...stylex.props(s.markerDot, active && s.markerSelected)} style={{ backgroundColor: dragging && hover ? hover.hex : color.hex }}/>
+          <span {...stylex.props(s.markerDot, active && s.markerSelected)} style={{ backgroundColor: previewing ? hover!.hex : color.hex }}/>
         </button>;
       })}
       {(target || gesture.current?.kind === 'marker') && hover && <div aria-hidden="true"><div {...stylex.props(s.loupe)} style={{ left: hover.left, top: hover.top }}><canvas ref={lens} width={9} height={9} {...stylex.props(s.magnified)}/><span {...stylex.props(s.cross)}/></div><span {...stylex.props(s.sampleLabel)} style={{ left: hover.left, top: hover.top + 92 }}>{hover.hex}</span></div>}

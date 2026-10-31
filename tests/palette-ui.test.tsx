@@ -8,7 +8,7 @@ import {
 import userEvent from '@testing-library/user-event';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { ImageSampler } from '../src/tools/palette-extractor/ImageSampler';
-import PaletteExtractor, { ColorRow, PaletteParameters } from '../src/tools/palette-extractor/PaletteExtractor';
+import PaletteExtractor, { AddColor, ColorRow, PaletteParameters } from '../src/tools/palette-extractor/PaletteExtractor';
 import { UiProvider } from '../src/ui/UiProvider';
 import { messages as uiMessages } from '../src/i18n/messages';
 import { ShareDialog } from '../src/tools/palette-extractor/ShareDialog';
@@ -40,6 +40,103 @@ beforeEach(() => {
     clearRect: vi.fn(),
     putImageData: vi.fn(),
   } as never);
+});
+
+it('previews hover/marker colors without committing, then cancels or discards a replaced source', () => {
+  const pixels = { width: 2, height: 1, data: new Uint8ClampedArray([255, 0, 0, 255, 0, 255, 0, 255]) } as ImageData;
+  const onPick = vi.fn(), onPreview = vi.fn();
+  const props = { pixels, url: 'blob:source', target: 'one', colors: [{ id: 'one', hex: '#FF0000', point: { x: 0, y: 0 } }], onPick, onPreview, cancel: vi.fn(), t: messages.en };
+  const mount = render(<ImageSampler {...props}/>);
+  const stage = mount.container.querySelector<HTMLElement>('[data-palette-sampler]')!;
+  vi.spyOn(stage, 'getBoundingClientRect').mockReturnValue({ left: 0, top: 0, width: 200, height: 200 } as DOMRect);
+  fireEvent(window, new Event('resize'));
+  fireEvent.pointerMove(stage, { clientX: 150, clientY: 100, pointerId: 1, pointerType: 'mouse' });
+  expect(onPreview).toHaveBeenLastCalledWith({ id: 'one', hex: '#00FF00', point: { x: 1, y: 0 }, url: 'blob:source' });
+  expect(onPick).not.toHaveBeenCalled();
+  expect(mount.container.querySelector<HTMLElement>('[data-color-marker] span')!.style.backgroundColor).toBe('rgb(0, 255, 0)');
+  fireEvent.keyDown(window, { key: 'Escape' });
+  expect(onPreview).toHaveBeenLastCalledWith(undefined);
+  expect(onPick).not.toHaveBeenCalled();
+  const marker = mount.container.querySelector('[data-color-marker]')!;
+  fireEvent.pointerDown(marker, { clientX: 50, clientY: 100, pointerId: 2, button: 0, pointerType: 'touch' });
+  fireEvent.pointerMove(stage, { clientX: 150, clientY: 100, pointerId: 2, pointerType: 'touch' });
+  expect(onPreview.mock.calls.at(-1)?.[0]?.hex).toBe('#00FF00');
+  fireEvent.pointerCancel(stage, { pointerId: 2 });
+  expect(onPreview).toHaveBeenLastCalledWith(undefined);
+  fireEvent.pointerDown(marker, { clientX: 50, clientY: 100, pointerId: 3, button: 0 });
+  fireEvent.pointerMove(stage, { clientX: 150, clientY: 100, pointerId: 3 });
+  expect(stage.hasAttribute('data-pointer-focus')).toBe(true);
+  fireEvent.keyDown(stage, { key: '+' });
+  expect(stage.hasAttribute('data-pointer-focus')).toBe(false);
+  fireEvent.pointerUp(stage, { clientX: 150, clientY: 100, pointerId: 3 });
+  expect(onPick).toHaveBeenCalledExactlyOnceWith('one', '#00FF00', { x: 1, y: 0 });
+  mount.rerender(<ImageSampler {...props} url="blob:new" target={undefined} colors={[]}/>);
+  expect(onPreview).toHaveBeenLastCalledWith(undefined);
+  expect(mount.container.querySelector('[data-color-marker]')).toBeNull();
+});
+
+it('keeps a HEX draft separate from temporary sampling and restores the committed color on cancel', async () => {
+  const user = userEvent.setup(), edit = vi.fn(() => false);
+  const color = { id: 'one', hex: '#112233' }, session = { edit } as unknown as PaletteSession;
+  const props = { color, index: 0, length: 1, session, pick: vi.fn(), copy: vi.fn(), selected: true, t: messages.en };
+  const preview = { id: 'one', hex: '#FF0000', point: {x: 0, y: 0}, url: 'blob:a' };
+  const mount = render(<ol><ColorRow {...props}/></ol>);
+  mount.rerender(<ol><ColorRow {...props} preview={preview}/></ol>);
+  const input = screen.getByRole('textbox', {name: 'HEX color 1'}) as HTMLInputElement;
+  expect(input.value).toBe('#FF0000');
+  expect(edit).not.toHaveBeenCalled();
+  mount.rerender(<ol><ColorRow {...props}/></ol>);
+  expect(input.value).toBe('#112233');
+  await user.clear(input); await user.type(input, '#12');
+  mount.rerender(<ol><ColorRow {...props} preview={preview}/></ol>);
+  expect(input.value).toBe('#12');
+  await user.tab();
+  expect(input.value).toBe('#12');
+  expect(input.getAttribute('aria-invalid')).toBe('true');
+});
+
+it('previews only the dragged marker when a different eyedropper target is active', () => {
+  const pixels = { width: 2, height: 1, data: new Uint8ClampedArray([255, 0, 0, 255, 0, 255, 0, 255]) } as ImageData;
+  const onPreview = vi.fn(), onPick = vi.fn();
+  const mount = render(<ImageSampler pixels={pixels} url="blob:source" target="one" colors={[
+    { id: 'one', hex: '#FF0000', point: {x: 0, y: 0} },
+    { id: 'two', hex: '#0000FF', point: {x: 0, y: 0} },
+  ]} onPreview={onPreview} onPick={onPick} cancel={vi.fn()} t={messages.en}/>);
+  const stage = mount.container.querySelector<HTMLElement>('[data-palette-sampler]')!;
+  vi.spyOn(stage, 'getBoundingClientRect').mockReturnValue({left: 0, top: 0, width: 200, height: 200} as DOMRect);
+  fireEvent(window, new Event('resize'));
+  fireEvent.pointerMove(stage, {clientX: 150, clientY: 100, pointerId: 1, pointerType: 'mouse'});
+  fireEvent.pointerDown(mount.container.querySelector('[data-color-marker="two"]')!, {clientX: 50, clientY: 100, pointerId: 1, button: 0});
+  expect(onPreview).toHaveBeenLastCalledWith(undefined);
+  fireEvent.pointerMove(stage, {clientX: 150, clientY: 100, pointerId: 1});
+  expect(onPreview.mock.calls.at(-1)?.[0]?.id).toBe('two');
+  expect(mount.container.querySelector<HTMLElement>('[data-color-marker="one"] span')!.style.backgroundColor).toBe('rgb(255, 0, 0)');
+  expect(mount.container.querySelector<HTMLElement>('[data-color-marker="two"] span')!.style.backgroundColor).toBe('rgb(0, 255, 0)');
+  expect(onPick).not.toHaveBeenCalled();
+  fireEvent.pointerUp(stage, {clientX: 150, clientY: 100, pointerId: 1});
+  expect(onPick).toHaveBeenCalledExactlyOnceWith('two', '#00FF00', {x: 1, y: 0});
+});
+
+it('adds a color only after valid Popover submission, cancels safely and returns focus', async () => {
+  const user = userEvent.setup(), add = vi.fn(() => true);
+  render(<><AddColor disabled={false} add={add} t={messages.en}/><button>Outside</button></>);
+  const trigger = screen.getByRole('button', {name: 'Add color'});
+  await user.click(trigger);
+  const input = await screen.findByRole('textbox', {name: 'HEX color'});
+  expect(document.activeElement).toBe(input);
+  await user.clear(input); await user.type(input, '#12'); await user.keyboard('{Enter}');
+  expect(add).not.toHaveBeenCalled();
+  expect(input.getAttribute('aria-invalid')).toBe('true');
+  expect(screen.getByText(messages.en.invalid)).toBeTruthy();
+  await user.keyboard('{Escape}');
+  await waitFor(() => expect(screen.queryByRole('textbox')).toBeNull());
+  expect(document.activeElement).toBe(trigger);
+  await user.click(trigger); await user.clear(screen.getByRole('textbox')); await user.type(screen.getByRole('textbox'), '#abcdef'); await user.keyboard('{Enter}');
+  expect(add).toHaveBeenCalledExactlyOnceWith('#abcdef');
+  await waitFor(() => expect(screen.queryByRole('textbox')).toBeNull());
+  await user.click(trigger); await user.click(screen.getByRole('button', {name: 'Outside'}));
+  await waitFor(() => expect(screen.queryByRole('textbox')).toBeNull());
+  expect(add).toHaveBeenCalledTimes(1);
 });
 
 it('samples only while active, rejects contain/transparent space, follows the target and cancels with Escape', () => {

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Dialog } from '@base-ui/react/dialog';
 import { Popover } from '@base-ui/react/popover';
 import {
   CopyIcon,
@@ -31,15 +30,17 @@ import {
 } from './palette';
 import { messages, type Labels } from './messages';
 import { styles as s } from './styles';
-import { ImageSampler } from './ImageSampler';
+import { ImageSampler, type SamplePreview } from './ImageSampler';
 import { ShareDialog } from './ShareDialog';
 import notice from './colorthief.NOTICE.txt?url';
 
-export function ColorRow({ color, index, length, session, pick, selected, picking, select, copy, t }: {
+export function ColorRow({ color, preview, index, length, session, pick, selected, picking, select, copy, t }: {
   color: Swatch; index: number; length: number; session: PaletteSession;
+  preview?: SamplePreview;
   pick: (id: string) => void; selected: boolean; picking?: boolean; select?: (id: string) => void; copy: (text: string) => void; t: Labels;
 }) {
   const [value, setValue] = useState(color.hex), [error, setError] = useState(false);
+  const [editing, setEditing] = useState(false);
   useEffect(() => { setValue(color.hex); setError(false); }, [color.hex]);
   const actions = [
     { label: t.rgb, icon: CopyIcon, run: () => copy(rgbText(color.hex)), text: 'RGB' },
@@ -48,11 +49,11 @@ export function ColorRow({ color, index, length, session, pick, selected, pickin
     { label: t.remove, icon: TrashIcon, run: () => session.remove(color.id), disabled: length === 1 },
   ];
   return <li data-swatch={color.id} data-selected={selected || undefined} data-picking={picking || undefined} onFocus={() => select?.(color.id)} {...stylex.props(s.colorRow, motion.selection, selected && s.selected)}>
-    <button type="button" {...stylex.props(s.chip)} style={{ backgroundColor: color.hex }} aria-label={`${t.selectColor} ${index + 1} · ${color.hex}`} aria-pressed={selected} onClick={() => select?.(color.id)}/>
+    <button type="button" {...stylex.props(s.chip)} style={{ backgroundColor: preview?.hex ?? color.hex }} aria-label={`${t.selectColor} ${index + 1} · ${color.hex}`} aria-pressed={selected} onClick={() => select?.(color.id)}/>
     <form {...stylex.props(s.hex)} onSubmit={event => { event.preventDefault(); setError(!session.edit(color.id, value)); }}>
-      <input aria-label={`${t.hex} ${index + 1}`} value={value} spellCheck={false} maxLength={7} aria-invalid={error || undefined} aria-description={error ? t.invalid : undefined}
+      <input aria-label={`${t.hex} ${index + 1}`} value={preview && !editing && value === color.hex ? preview.hex : value} spellCheck={false} maxLength={7} aria-invalid={error || undefined} aria-description={error ? t.invalid : undefined}
         {...stylex.props(controls.input, s.hexInput, error && controls.invalid)}
-        onChange={event => { setValue(event.target.value); setError(false); }} onBlur={() => setError(!session.edit(color.id, value))}/>
+        onFocus={() => setEditing(true)} onChange={event => { setValue(event.target.value); setError(false); }} onBlur={() => { setEditing(false); setError(!session.edit(color.id, value)); }}/>
     </form>
     {error && <span role="alert" {...stylex.props(s.srOnly)}>{t.invalid}</span>}
     <div {...stylex.props(s.rowActions)}>
@@ -71,15 +72,34 @@ export function PaletteParameters({ mode, count, disabled, extract, t }: {
   mode: Mode; count: number; disabled: boolean; extract: (mode: Mode, count: number) => void; t: Labels;
 }) {
   return <div {...stylex.props(s.parameters)}>
-    <div {...stylex.props(s.direction)}><SelectField label={t.mode} value={mode} disabled={disabled} onValueChange={value => extract(value as Mode, count)} options={modes.map(value => ({ value, label: t[value] }))}/></div>
+    <div {...stylex.props(s.direction)}><SelectField appearance="quiet" label={t.mode} value={mode} disabled={disabled} onValueChange={value => extract(value as Mode, count)} options={modes.map(value => ({ value, label: t[value] }))}/></div>
     <fieldset disabled={disabled} {...stylex.props(s.counts)}>
       <legend {...stylex.props(s.legend)}>{t.count}</legend>
       <div {...stylex.props(s.row)}>{Array.from({ length: 8 }, (_, i) => i + 3).map(n => <label key={n} {...stylex.props(s.count, motion.selection, count === n && s.selected, disabled && s.disabled)}>
         <input type="radio" aria-label={String(n)} name="palette-target-count" value={n} checked={count === n} onChange={() => extract(mode, n)} {...stylex.props(s.radio)}/><span aria-hidden="true">{n}</span>
       </label>)}</div>
     </fieldset>
-    <Button disabled={disabled} onClick={() => extract(mode, count)}>{t.extract}</Button>
+    <Button variant="ghost" disabled={disabled} onClick={() => extract(mode, count)}>{t.extract}</Button>
   </div>;
+}
+
+export function AddColor({ disabled, add, t }: { disabled: boolean; add: (hex: string) => boolean; t: Labels }) {
+  const [open, setOpen] = useState(false), [value, setValue] = useState('#808080'), [error, setError] = useState(false);
+  const input = useRef<HTMLInputElement>(null);
+  return <Popover.Root open={open} onOpenChange={next => { setOpen(next); if (next) { setValue('#808080'); setError(false); } }}>
+    <Popover.Trigger render={<Button variant="ghost" disabled={disabled}/>}>{t.add}</Popover.Trigger>
+    <Popover.Portal><Popover.Positioner sideOffset={8} collisionPadding={12} {...stylex.props(s.popoverPositioner)}>
+      <Popover.Popup aria-label={t.add} initialFocus={input} {...stylex.props(s.popover, s.addColor, motion.dialog)}>
+        <form {...stylex.props(s.stack)} onSubmit={event => { event.preventDefault(); if (!normalizeHex(value)) { setError(true); input.current?.focus(); } else if (add(value)) setOpen(false); }}>
+          <div {...stylex.props(s.row)}>
+            <span aria-hidden="true" {...stylex.props(s.addPreview)} style={{ backgroundColor: normalizeHex(value) ?? 'transparent' }}/>
+            <div {...stylex.props(s.addInput)}><TextField ref={input} label={t.hex} value={value} maxLength={7} error={error ? t.invalid : undefined} onChange={next => { setValue(next); setError(false); }}/></div>
+          </div>
+          <div {...stylex.props(s.row)}><Button type="submit" variant="ghost" xstyle={s.accent}>{t.add}</Button><Popover.Close render={<Button variant="ghost"/>}>{t.cancel}</Popover.Close></div>
+        </form>
+      </Popover.Popup>
+    </Popover.Positioner></Popover.Portal>
+  </Popover.Root>;
 }
 
 export default function PaletteExtractor({ locale }: ToolProps) {
@@ -96,11 +116,10 @@ export default function PaletteExtractor({ locale }: ToolProps) {
   });
   const [target, setTarget] = useState<string>();
   const [selected, setSelected] = useState<string>();
+  const [samplePreview, setSamplePreview] = useState<SamplePreview>();
   const [pending, setPending] = useState<{ mode: Mode; count: number }>();
-  const [adding, setAdding] = useState(false),
-    [newColor, setNewColor] = useState('#808080');
   const [saving, setSaving] = useState(false);
-  const cancelPick = useCallback(() => setTarget(undefined), []);
+  const cancelPick = useCallback(() => { setTarget(undefined); setSamplePreview(undefined); }, []);
   const startPick = (id: string) => { setSelected(id); setTarget(id); };
   const exportVersion = useRef(0);
   useEffect(() => {
@@ -117,6 +136,7 @@ export default function PaletteExtractor({ locale }: ToolProps) {
   useEffect(() => {
     setTarget(undefined);
     setSelected(undefined);
+    setSamplePreview(undefined);
   }, [view.source]);
   useEffect(() => {
     if (target && !view.colors.some((c) => c.id === target))
@@ -210,6 +230,7 @@ export default function PaletteExtractor({ locale }: ToolProps) {
                 colors={view.colors}
                 onTarget={startPick}
                 onSelect={setSelected}
+                onPreview={setSamplePreview}
                 cancel={cancelPick}
                 t={t}
                 onPick={(id, _hex, point) => {
@@ -237,6 +258,7 @@ export default function PaletteExtractor({ locale }: ToolProps) {
                     {...{ color, index, session, t, copy }}
                     length={view.colors.length}
                     selected={selected === color.id}
+                    preview={samplePreview?.url === view.source?.url && samplePreview?.id === color.id ? samplePreview : undefined}
                     picking={target === color.id}
                     select={setSelected}
                     pick={startPick}
@@ -245,53 +267,16 @@ export default function PaletteExtractor({ locale }: ToolProps) {
             )}
           </ol>
           <div {...stylex.props(s.row)}>
-          <Dialog.Root
-            open={adding}
-            onOpenChange={(open) => {
-              setAdding(open);
-              if (open) setNewColor('#808080');
-            }}
-          >
-            <Dialog.Trigger
-              render={
-                <Button disabled={!view.source || view.colors.length >= 10} />
-              }
-            >
-              {t.add}
-            </Dialog.Trigger>
-            <Dialog.Portal>
-              <Dialog.Backdrop {...stylex.props(s.backdrop, motion.backdrop)} />
-              <Dialog.Popup {...stylex.props(s.dialog, s.smallDialog, motion.dialog)}>
-                <Dialog.Title>{t.add}</Dialog.Title>
-                <Dialog.Description>{t.hex}</Dialog.Description>
-                <form
-                  {...stylex.props(s.stack)}
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (session?.add(newColor)) setAdding(false);
-                  }}
-                >
-                  <TextField
-                    label={t.hex}
-                    value={newColor}
-                    maxLength={7}
-                    onChange={setNewColor}
-                  />
-                  <Button type="submit" disabled={!normalizeHex(newColor)}>
-                    {t.save}
-                  </Button>
-                  <Dialog.Close render={<Button />}>{t.cancel}</Dialog.Close>
-                </form>
-              </Dialog.Popup>
-            </Dialog.Portal>
-          </Dialog.Root>
+          <AddColor disabled={!view.source || view.colors.length >= 10} add={hex => session?.add(hex) ?? false} t={t}/>
           <Button
+            variant="ghost"
             disabled={!view.colors.length}
             onClick={() => copy(view.colors.map((c) => c.hex).join('\n'))}
           >
             {t.all}
           </Button>
           <Button
+            variant="ghost"
             disabled={!view.colors.length}
             loading={saving}
             onClick={() => void png()}

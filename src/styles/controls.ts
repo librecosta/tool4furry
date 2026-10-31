@@ -1,6 +1,16 @@
 import * as stylex from '@stylexjs/stylex';
 import { tokens } from './tokens.stylex';
 export const controls = stylex.create({
+  // Focusable workspaces own one ring. Pointer-driven .focus() is explicitly
+  // marked by the workspace; keyboard entry/commands restore focus-visible.
+  workspaceFocus: {
+    // Use the same longhand in both states: StyleX orders outline shorthand
+    // and outline-style in separate layers, where specificity cannot win.
+    outlineStyle: { default: 'none', ':focus-visible:not([data-pointer-focus])': 'solid' },
+    outlineWidth: 2,
+    outlineColor: tokens.focus,
+    outlineOffset: 2,
+  },
   button: {
     display: 'inline-flex',
     alignItems: 'center',

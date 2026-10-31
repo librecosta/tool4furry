@@ -1,6 +1,6 @@
 # Palette Extractor · 当前实现
 
-第三款工具，CN/Global、zh/en 均为 **Draft**，只在 DEV 的 `/tools/palette-extractor/`（以及同地区语言前缀路径）可用。A2-B 完成功能，A2-C1/C2 调整工作区、颜色标记与反馈；现有两款 Published 工具、生产页面和部署状态不变，尚未完成 Palette Beta 资格验收。
+第三款工具，CN/Global、zh/en 均为 **Draft**，只在 DEV 的 `/tools/palette-extractor/`（以及同地区语言前缀路径）可用。A2-B 完成功能，A2-C1/C2/C3 调整工作区、颜色标记与反馈；现有两款 Published 工具、生产页面和部署状态不变，尚未完成 Palette Beta 资格验收。
 
 ## 模块与所有权
 
@@ -65,6 +65,24 @@ Form Wide 内改为纵向：紧凑导入/参数 → 宽幅取色工作区 → �
 - 基础 PNG 实际下载并完整解码为 1080×240；三模板当前准备的六色 PNG 分别通过 1080×1350 / 1200×1200 / 1600×900 完整解码。模板绘制文件未变，未重复模板完整矩阵。内置浏览器后续连续原生下载未落盘，未更改下载权限；连续唯一命名与下载/系统分享文件名一致性由组件和会话测试验证，三模板文件另由浏览器下载当前预览后检查。
 
 截图与合成样本保留在仓库外 `.validation/palette/`，不进入生产。未测真实触屏标记拖动/放大镜手感、系统分享实际投递、操作系统 Reduced Motion 切换及 Firefox/Safari；手机视口与合成 Pointer 测试不代表真机通过。跨语言整页导航仍不保留内存会话。
+
+## A2-C3 焦点与临时预览
+
+- 数量标签原来的 `:focus-within` 会把鼠标焦点误画成外框；主动 `.focus()` 的图片工作区还会继承输入模态，并叠加局部/基础规则。数量改为投影隐藏单选的 `:focus-visible`；Palette/Resize 画布共用显式指针标记与单层键盘轮廓。保留全局焦点回退、Tab 和画布键盘操作，不全局清除 outline。Resize 的裁剪选区仅在 `:focus-visible` 绘制自身轮廓。
+- `ImageSampler.onPreview` 只发送带源 URL、稳定 ID 和像素位置的临时颜色；色块、展示 HEX 与图片标记同步预览，不修改 Session 版本或使分享结果反复失效。确认才调用原有采样提交；Escape、PointerCancel、移出、窗口失焦与源替换清理临时状态。未完成的 HEX 草稿独立保留。
+- 参数和模板显式使用 `SelectField appearance="quiet"`，普通操作使用 Ghost，分享 CTA 保留 Lavender；选中态不继承描边、下划线或内阴影。新增颜色改为锚定按钮的紧凑 Base UI Popover，只有验证成功才新增，支持 Enter/Escape、外部关闭和焦点返回。
+- 公共 Toast 距顶部改为 16px + 安全区并增强中性表面/阴影；成功仍为 2.4 秒且去重，错误仍可关闭并停留更久。悬停/键盘/窗口暂停交给 Base UI，未新增强制关闭计时器。Converter/Resize 没有工具内 Toast 调用，其原有控件附近错误继续保留。
+
+### A2-C3 定向验证（2026-11-01）
+
+- `pnpm check`：285 文件，零错误/警告/提示；8 个定向文件、106 项通过，包含临时预览/取消/确认/源替换、HEX 草稿隔离、Popover 验证/外部关闭/焦点返回、两款工具 UI 与 Toast 计时/去重/暂停。最终另补「吸管目标与拖动标记不同」回归并复跑 Palette UI，13 项通过（本轮共 107 个不同用例）。契约测试扫描 StyleX 的 `:focus-within` 轮廓误用，不以此替代浏览器证据。
+- Chromium 实际计算样式：数量组鼠标点击无轮廓，Tab 返回标签为 2px solid；Palette/Resize 画布指针主动聚焦为 none、键盘进入为 2px solid。键盘触发吸管的程序聚焦保留轮廓，指针触发不显示；Resize 裁剪选区键盘聚焦时仅自身有 2px 轮廓，父画布不叠加。Quiet 下拉鼠标选中无轮廓，方向键选项为 2px solid，Trigger 为 0px 边框。
+- 鼠标悬停取色时，色块、HEX、放大镜和标记同步预览 `#99BF47`，已提交颜色仍为 `#7DD867`；取消恢复原色。缩放后拖动标记提交 `#93864C`，色卡与标记一致。触摸 PointerCancel、旧源与未完成 HEX 草稿由定向测试覆盖，不宣称真实触屏通过。
+- CN 中文 / Global 英文，Light/Dark、1440/1200px 桌面及 390/320px 手机视口完成局部检查，无横向溢出。320px 新增 Popover 宽 296px、两边各 12px，非法 HEX 就地报错，Escape 返回触发按钮，合法 Enter 才新增。三模板切换会准备当前预览；实际下载基础色卡与 Color Story，并由 Sharp 完整解码为 PNG 1080×240 / 1600×900。未重复模板完整矩阵。
+- Toast 普通成功提示实测约 2.43 秒消失；重复复制保持一条。实际悬停约 31 秒、F6 键盘阅读约 29 秒均保持可见，离开后恢复/支持手动关闭，未发现正常计时失效。原生窗口失焦未完成独立实测，仅核对 Base UI 原有暂停实现；没有用额外定时器规避阅读暂停。DEV 编辑期间曾出现旧 `data-style-src` 行号的水合警告，冷启动复核 Palette/Converter 后没有捕获错误或警告。
+- `pnpm build:cn` / `pnpm build:global` 及现有守卫全部通过，每地区 15 页、两款 Published 工具；Palette 路由、私有实现及 Color Thief/NOTICE 继续排除。Registry、Loader、算法、模板绘制、Image Core、SEO 和依赖未改。
+
+截图与合成样本保留在仓库外 `.validation/palette/c3-*`。未测真实 iOS/Android 触控、系统分享实际投递、操作系统 Reduced Motion 切换、原生窗口失焦暂停及 Firefox/Safari；未部署。跨语言整页导航仍不保留内存会话。
 
 ## A2-C1 定向验证
 

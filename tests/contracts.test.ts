@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
+import ts from 'typescript';
 import { parseRegion, regions } from '../src/config/region';
 import { getAvailableTools, getPublishedTools, tools } from '../src/tools/registry';
 import { toolLoaders } from '../src/tools/loaders';
@@ -22,6 +25,19 @@ const fixture = (
     zh: { title: '测试', description: '测试' },
     en: { title: 'Test', description: 'Test' },
   },
+});
+it('does not draw focus outlines from focus-within in interaction styles', () => {
+  const files = (dir: string): string[] => readdirSync(dir, {withFileTypes: true}).flatMap(entry => entry.isDirectory() ? files(join(dir, entry.name)) : /\.tsx?$/.test(entry.name) ? [join(dir, entry.name)] : []);
+  const violations: string[] = [];
+  for (const path of files('src')) {
+    const source = ts.createSourceFile(path, readFileSync(path, 'utf8'), ts.ScriptTarget.Latest, true);
+    const visit = (node: ts.Node) => {
+      if (ts.isPropertyAssignment(node) && node.name.getText(source).includes(':focus-within') && /\boutline(?:Style|Width|Color|Offset)?\s*:/.test(node.initializer.getText(source))) violations.push(path);
+      ts.forEachChild(node, visit);
+    };
+    visit(source);
+  }
+  expect(violations).toEqual([]);
 });
 describe('published route boundary', () => {
   it('filters drafts and tools unavailable in the build region', () => {

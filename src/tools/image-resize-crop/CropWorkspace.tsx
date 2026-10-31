@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type PointerEvent } from 'react';
 import ReactCrop from 'react-image-crop';
 import * as stylex from '@stylexjs/stylex';
 import { motion } from '../../styles/motion';
+import { controls } from '../../styles/controls';
 import {
   ArrowCounterClockwiseIcon, ArrowsOutIcon, FrameCornersIcon,
   HandIcon, MinusIcon, NumberSquareOneIcon, PlusIcon,
@@ -200,9 +201,12 @@ export function CropWorkspace({ view, url, t, display, onDisplay, hand, onHand, 
           aria-label={t.cropCanvas}
           aria-description={t.instructions}
           tabIndex={0}
-          {...stylex.props(s.canvas, focused && s.focusedCanvas, viewOnly && s.hand)}
+          {...stylex.props(s.canvas, controls.workspaceFocus, focused && s.focusedCanvas, viewOnly && s.hand)}
+          onKeyDownCapture={event => { delete event.currentTarget.dataset.pointerFocus; }}
+          onBlur={event => { delete event.currentTarget.dataset.pointerFocus; }}
           onPointerDownCapture={event => {
             if (disabled || event.button !== 0) { event.stopPropagation(); return; }
+            event.currentTarget.dataset.pointerFocus = '';
             points.current.set(event.pointerId, point(event));
             event.currentTarget.setPointerCapture?.(event.pointerId);
             if (viewOnly) {

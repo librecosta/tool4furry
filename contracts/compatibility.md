@@ -7,7 +7,8 @@
 - 可索引页面唯一 Title、Description、H1 和 self-canonical；同地区实际存在的语言页面使用对称绝对 hreflang。OG/Twitter 复用真实 SEO 数据，域名来自当前地区配置。Noindex 页面不能被当作公开发现入口。
 - Registry 元数据、`status`、`regions` 和实际可访问能力不可在普通重构中静默改变；首页、导航、目录、相关推荐与路由必须采用同一可用性投影，不伪造工具或数量。
 - 已有键盘操作、焦点返回、触控命中区、Reduced Motion、无 JS 静态正文及响应式状态保持属于可观察行为；普通重构不能以视觉复用为由破坏它们。
+- Selected、指针聚焦与键盘 `:focus-visible` 分开：选中态不能借焦点框表达；不使用 `:focus-within` 绘制选择/焦点轮廓。复合控件可用 `:has(input:focus-visible)` 将唯一键盘指示投影到可见容器。工作区指针主动 `.focus()` 需标记输入方式，键盘进入/操作恢复清晰指示；局部替代全局焦点时保留等价反馈，不全局移除 outline。焦点反馈不参与延迟过渡。
 - 文件处理失败、格式不符、过期结果不能伪装为成功或提供误导下载；文件名/扩展名必须对应实际有效输出。
-- 有意的兼容性变化需要明确影响、必要迁移说明和相关测试；重要公开变化记录 CHANGELOG。当前只有一个正式工具，不代表 Registry 永远只能容纳一个。
+- 有意的兼容性变化需要明确影响、必要迁移说明和相关测试；重要公开变化记录 CHANGELOG。Registry 不以当前正式工具数量作为容量上限。
 
-验证入口：[language.test.ts](../tests/language.test.ts)、[taxonomy.test.ts](../tests/taxonomy.test.ts)、[tool-content.test.ts](../tests/tool-content.test.ts)、目录/工作区组件测试及 [verify-build.mjs](../scripts/verify-build.mjs)。不以复制 UI Props 或 SEO 全文代替可执行契约。
+验证入口：[contracts.test.ts](../tests/contracts.test.ts)、[language.test.ts](../tests/language.test.ts)、[taxonomy.test.ts](../tests/taxonomy.test.ts)、[tool-content.test.ts](../tests/tool-content.test.ts)、目录/工作区组件测试及 [verify-build.mjs](../scripts/verify-build.mjs)。不以复制 UI Props 或 SEO 全文代替可执行契约。

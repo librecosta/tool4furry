@@ -102,7 +102,7 @@ export function ShareDialog({
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger
         render={
-          <Button xstyle={s.accent} disabled={!view.source || view.busy} />
+          <Button variant="ghost" xstyle={s.accent} disabled={!view.source || view.busy} />
         }
       >
         {t.share}
@@ -114,7 +114,7 @@ export function ShareDialog({
             <Dialog.Title {...stylex.props(s.heading, s.grow)}>
               {t.share}
             </Dialog.Title>
-            <Dialog.Close render={<Button />}>{t.close}</Dialog.Close>
+            <Dialog.Close render={<Button variant="ghost" />}>{t.close}</Dialog.Close>
           </div>
           <Dialog.Description {...stylex.props(s.muted)}>
             PNG · {templates[options.template].join(' × ')}
@@ -133,7 +133,7 @@ export function ShareDialog({
               )}
             </div>
             <div {...stylex.props(s.stack)}>
-              <SelectField label={t.template} value={options.template}
+              <SelectField appearance="quiet" label={t.template} value={options.template}
                 onValueChange={template => setOptions({ ...options, template: template as Template })}
                 options={[
                   { value: 'character', label: '01 — Character Study' },
@@ -154,6 +154,7 @@ export function ShareDialog({
                 }
               />
               <Button
+                variant="ghost"
                 xstyle={s.accent}
                 disabled={!current}
                 onClick={() => {
@@ -166,7 +167,7 @@ export function ShareDialog({
                 {t.download}
               </Button>
               {current?.canShare && (
-                <Button disabled={sharing} onClick={share}>
+                <Button variant="ghost" disabled={sharing} onClick={share}>
                   {t.systemShare}
                 </Button>
               )}
