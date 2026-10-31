@@ -30,4 +30,4 @@ Resize & Crop 单图编辑额外区分 Source（已验证且方向校正后的�
 - 单项下载与 ZIP 共用有效结果资格；ZIP 快照在实际下载前再校验批次、任务顺序、结果版本和名称/参数。变化时丢弃，不能混入过期 Blob。打包逐项逐块、有界输出，最终 Blob 仍占浏览器内存，不宣称零内存。
 - 工具级 `ImageResources` / URL owner 释放 Bitmap、Canvas、Object URL 和 Worker；替换/删除/卸载清理，仍由缩略图使用的原图 URL 不能随 Dialog 关闭提前撤销。公共 FileTaskList/预览外壳不持有 File/Blob、解码器或任务队列。
 
-实现与验证入口见 [当前 Converter 说明](../docs/image-converter-implementation.md)，架构理由见 [ADR-0002](../docs/decisions/0002-browser-local-image-processing.md)。未测浏览器、真实移动设备和总内存范围按 L3 披露，不将桌面结果推广为全设备保证。
+实现与验证入口见 [当前 Converter 说明](../docs/image-converter-implementation.md) 和 [Resize/Crop 说明](../docs/image-resize-crop-implementation.md)，架构理由见 [ADR-0002](../docs/decisions/0002-browser-local-image-processing.md)。未测浏览器、真实移动设备和总内存范围按 L3 披露，不将桌面结果推广为全设备保证。

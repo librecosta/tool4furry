@@ -15,13 +15,13 @@ export const imageResizeCropDefinition: ToolDefinition = {
       title: '图片尺寸与裁剪',
       summary: '在浏览器本地裁剪图片并调整像素尺寸。',
       description:
-        '单张图片自由或按比例裁剪，精确调整宽高和百分比，预览并导出 PNG、JPEG 或 WebP。图片不上传。',
+        '单张裁剪与精确尺寸调整，多图按宽度、高度、最长边或百分比批量缩放，下载 PNG、JPEG、WebP 或 ZIP。图片不上传。',
     },
     en: {
       title: 'Image Resize & Crop',
       summary: 'Crop and resize an image locally in your browser.',
       description:
-        'Crop one image freely or to an aspect ratio, set exact dimensions or a percentage, preview and export PNG, JPEG or WebP without uploading.',
+        'Crop individual images or batch resize by width, height, longest edge or percentage. Download PNG, JPEG, WebP or ZIP without uploading.',
     },
   },
 };

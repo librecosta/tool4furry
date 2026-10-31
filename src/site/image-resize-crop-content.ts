@@ -3,30 +3,36 @@ import type { Locale } from '../i18n/locale';
 // Astro-only guide. Do not import this module from the interactive editor.
 export const imageResizeCropContent: Record<Locale, ToolPageContent> = {
   zh: {
-    title: '图片尺寸与裁剪 - 本地单张图片编辑 | Tool4Furry',
+    title: '图片尺寸与裁剪 - 本地裁剪与批量缩放 | Tool4Furry',
     h1: '图片尺寸与裁剪',
     description:
-      '在浏览器本地自由裁剪或按比例裁剪单张图片，设置精确像素或百分比，预览并导出 PNG、JPEG、WebP。无需上传。',
+      '在浏览器本地裁剪单张图片或批量缩放多张图片，按宽度、高度、最长边或百分比处理，下载 PNG、JPEG、WebP 和 ZIP。无需上传。',
     intro:
-      '围绕画面主体调整构图，再指定需要的像素尺寸。单张图片在浏览器本地完成裁剪和缩放，导出前可随时查看构图。',
+      '单张模式围绕画面主体调整裁剪与像素尺寸；批量模式按每张完整原图独立计算尺寸。切换模式保留文件和单张草稿，图片只在本地处理。',
     features: [
       '自由裁剪及五种常用比例，支持拖动、触控与键盘微调。',
       '自然裁剪尺寸、精确宽高和百分比缩放；改变输出比例会调整构图，不拉伸画面。',
+      '批量按宽度、高度、最长边或百分比缩放，默认不放大小图；逐项下载或打包 ZIP。',
       '支持 PNG、JPEG、WebP 和受限静态 AVIF 输入，输出 PNG、JPEG 或 WebP。',
     ],
     steps: [
-      '导入一张图片，初始选区和输出尺寸为完整原图。',
-      '拖动选区、边缘或角点，或选择常用裁剪比例。',
+      '选择或拖入图片；首次一张进入单图，多张进入批量，后续追加不会自动切换模式。',
+      '单张模式选择图片，拖动选区、边缘或角点，或选择常用裁剪比例；切换图片保留各自草稿。',
       '保持比例设置像素尺寸，或解锁后应用宽高；也可以按当前裁剪区域的百分比缩放。',
-      '选择格式、质量和 JPEG 背景色，导出后下载经过验证的结果。',
+      '批量模式选择缩放规则、格式、质量和 JPEG 背景，点击开始处理。成功项可独立下载，全部结束后可下载仅含成功项的 ZIP。',
     ],
     limitations: [
-      '本阶段只编辑一张图片，不提供批量、ZIP、旋转、透视、AI 放大、历史记录或持久化。',
+      '批量只缩放完整原图，不使用单图裁剪。不提供旋转、透视、AI 放大、历史记录或持久化。',
       '动画、HDR、高位深或无法可靠验证的容器会被拒绝；AVIF 仅支持现有内核验证过的静态子集，且不提供 AVIF 输出。',
       '输入、输出受设备资源预算约束；不会自动缩小或切换格式绕过限制，放大不会增加真实细节。',
       '默认清理常见隐私元数据，不保留作者/版权编辑或完整来源信息，不保证专业色彩保真。',
     ],
     faq: [
+      {
+        question: '部分批量文件失败怎么办？',
+        answer:
+          '其他文件会继续处理。可重试失败项，或在全部任务结束后下载只包含成功项的 ZIP。修改规则会立即使旧批量结果失效。',
+      },
       {
         question: '图片会上传吗？',
         answer: '不会。图片只在当前浏览器内处理，关闭页面后不会保留编辑草稿。',
@@ -49,30 +55,36 @@ export const imageResizeCropContent: Record<Locale, ToolPageContent> = {
     ],
   },
   en: {
-    title: 'Image Resize & Crop - Local Single Image Editor | Tool4Furry',
+    title: 'Image Resize & Crop - Local Crop & Batch Resize | Tool4Furry',
     h1: 'Image Resize & Crop',
     description:
-      'Crop one image freely or to an aspect ratio, set exact pixels or a percentage, preview and export PNG, JPEG or WebP locally without uploads.',
+      'Crop a single image or batch resize images by width, height, longest edge or percentage. Download PNG, JPEG, WebP and ZIP locally without uploads.',
     intro:
-      'Frame your subject and set the pixel dimensions you need. Crop and resize one image locally in your browser, with a live composition preview before export.',
+      'Crop and resize individual images with a live composition preview, or batch resize each full original. Switching modes keeps your files and single-image drafts. Images stay in your browser.',
     features: [
       'Free cropping and five common aspect ratios with pointer, touch and keyboard controls.',
       'Natural crop dimensions, exact width and height, or percentage scaling. A new output ratio reframes the crop without stretching.',
+      'Batch resize by width, height, longest edge or percentage, with no enlargement by default. Download individual results or ZIP.',
       'PNG, JPEG, WebP and supported static AVIF input; PNG, JPEG or WebP output.',
     ],
     steps: [
-      'Import one image. The initial crop and output dimensions cover the full original.',
-      'Drag the selection, edges or corners, or select a crop aspect ratio.',
+      'Choose or drop images. One initial file opens single mode; multiple files open batch mode. Appending files keeps the current mode.',
+      'In single mode, select an image and drag the selection, edges or corners, or choose an aspect ratio. Each image keeps its own draft.',
       'Set pixels with the ratio locked, unlock and apply dimensions, or scale relative to the current crop.',
-      'Choose a format, quality and JPEG background, then export and download the validated result.',
+      'In batch mode, choose a resize rule, format, quality and JPEG background, then start processing. Download successes individually, or pack successful results into ZIP after all tasks finish.',
     ],
     limitations: [
-      'This stage edits one image only. No batches, ZIP, rotation, perspective, AI enlargement, history or persistence.',
+      'Batch mode resizes full originals and ignores single-image crops. No rotation, perspective, AI enlargement, history or persistence.',
       'Animation, HDR, high bit depth and unverifiable containers are rejected. AVIF input is limited to the existing validated static subset; AVIF output is unavailable.',
       'Device resource budgets apply to input and output. Dimensions or formats are never silently changed to bypass limits. Enlargement adds no original detail.',
       'Common privacy metadata is removed by default. No author/copyright editing, full source metadata preservation or professional color fidelity guarantee.',
     ],
     faq: [
+      {
+        question: 'What if some batch files fail?',
+        answer:
+          'Other files continue. Retry failed files, or download a ZIP containing successful results after every task finishes. Changing rules immediately invalidates old batch results.',
+      },
       {
         question: 'Are images uploaded?',
         answer:

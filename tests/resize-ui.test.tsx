@@ -15,9 +15,11 @@ import { messages } from '../src/i18n/messages';
 const { load, encode } = vi.hoisted(() => ({ load: vi.fn(), encode: vi.fn() }));
 vi.mock('../src/tools/image-resize-crop/render', () => ({
   loadSource: load,
+  previewSource: async () => new Blob(['preview']),
   renderCrop: encode,
 }));
 vi.mock('../src/tools/image/browser-codec', () => ({
+  acceptImage: async (file: File) => (await load(file)).source,
   detectCapabilities: async () => ({
     png: { supported: true },
     jpeg: { supported: true },
@@ -75,6 +77,77 @@ async function mount(name = 'source.png') {
   return { user, ...mounted };
 }
 describe('single image UI wiring (mocked codecs; not layout/browser evidence)', () => {
+  it('imports multiple files into batch, runs explicitly, and preserves single drafts through mode/selection changes', async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <UiProvider labels={messages.en}>
+        <ImageResizeCrop region="global" locale="en" />
+      </UiProvider>,
+    );
+    const input = container.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+    await waitFor(() => expect(input.disabled).toBe(false));
+    await user.upload(input, [
+      new File(['a'], 'a.png', { type: 'image/png' }),
+      new File(['b'], 'b.png', { type: 'image/png' }),
+    ]);
+    const batch = await screen.findByRole('region', { name: 'Batch resize' });
+    expect(encode).not.toHaveBeenCalled();
+    await waitFor(() =>
+      expect(
+        within(batch)
+          .getByRole('button', { name: 'Start batch processing' })
+          .hasAttribute('disabled'),
+      ).toBe(false),
+    );
+    await user.click(
+      within(batch).getByRole('button', { name: 'Start batch processing' }),
+    );
+    await waitFor(() => expect(encode).toHaveBeenCalledTimes(2));
+    expect(
+      within(batch)
+        .getAllByRole('button', { name: 'Download image' })
+        .every((button) => !button.hasAttribute('disabled')),
+    ).toBe(true);
+    await user.click(screen.getByRole('button', { name: 'Single image' }));
+    const width = await screen.findByRole('textbox', {
+      name: 'Width (pixels)',
+    });
+    await user.clear(width);
+    await user.type(width, '400');
+    await user.click(screen.getByRole('button', { name: 'Apply dimensions' }));
+    await user.click(screen.getByRole('button', { name: 'b.png' }));
+    expect(
+      (
+        screen.getByRole('textbox', {
+          name: 'Width (pixels)',
+        }) as HTMLInputElement
+      ).value,
+    ).toBe('1200');
+    await user.click(screen.getByRole('button', { name: 'Batch resize' }));
+    expect(
+      screen
+        .getByRole('button', { name: 'Download ZIP' })
+        .hasAttribute('disabled'),
+    ).toBe(false);
+    await user.click(screen.getByRole('button', { name: 'Single image' }));
+    await user.click(screen.getByRole('button', { name: 'a.png' }));
+    expect(
+      (
+        screen.getByRole('textbox', {
+          name: 'Width (pixels)',
+        }) as HTMLInputElement
+      ).value,
+    ).toBe('400');
+    await user.upload(input, new File(['c'], 'c.png', { type: 'image/png' }));
+    expect(screen.queryByRole('region', { name: 'Batch resize' })).toBeNull();
+    expect(
+      screen
+        .getByRole('button', { name: 'a.png' })
+        .getAttribute('aria-pressed'),
+    ).toBe('true');
+  });
   it('keeps incomplete input out of processing state until a valid explicit submission', async () => {
     const { user } = await mount();
     const width = screen.getByRole('textbox', { name: 'Width (pixels)' });
@@ -111,10 +184,10 @@ describe('single image UI wiring (mocked codecs; not layout/browser evidence)', 
     const dialog = screen.getByRole('alertdialog');
     await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
     expect(load).toHaveBeenCalledOnce();
-    await user.click(screen.getByRole('button', { name: 'Clear image' }));
+    await user.click(screen.getByRole('button', { name: 'Remove image' }));
     await user.click(
       within(screen.getByRole('alertdialog')).getByRole('button', {
-        name: 'Clear image',
+        name: 'Remove image',
       }),
     );
     await waitFor(() =>
@@ -123,7 +196,7 @@ describe('single image UI wiring (mocked codecs; not layout/browser evidence)', 
       ).toBeNull(),
     );
     expect(document.activeElement).toBe(
-      screen.getByRole('button', { name: 'Choose one image or drop it here' }),
+      screen.getByRole('button', { name: 'Choose images or drop them here' }),
     );
     expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:test-1');
     unmount();

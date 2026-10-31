@@ -23,6 +23,13 @@ export async function loadSource(
   limits: ImageLimits,
 ) {
   const source = await acceptImage(file, resources, limits);
+  return { source, preview: await previewSource(source, resources, limits) };
+}
+export async function previewSource(
+  source: ImageSource,
+  resources: ImageResources,
+  limits: ImageLimits,
+) {
   const bitmap = await decodeChecked(
     source.blob,
     source.info,
@@ -40,7 +47,7 @@ export async function loadSource(
     const context = canvas.getContext('2d');
     if (!context) throw new ImageFailure('decode');
     context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    return { source, preview: await toBlob(canvas, mime.png) };
+    return await toBlob(canvas, mime.png);
   } finally {
     resources.close(bitmap);
     if (canvas) resources.release(canvas);

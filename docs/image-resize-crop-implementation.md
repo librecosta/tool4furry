@@ -1,39 +1,58 @@
 # Image Resize & Crop · 当前实现
 
-V0.7-A1-A：`image-resize-crop` 为 CN/Global 双语 **Draft**，仅 DEV 可访问。Image Converter 仍是唯一 Published 工具；两个地区均未部署。
+V0.7-A1-B 完成 A1 首版功能：单张裁剪与批量缩放，CN/Global 双语 **Draft**，仅 DEV 可访问。Image Converter 仍是唯一 Published 工具；未部署。本轮不进行独立 UI 精修，下一阶段集中体验精修与正式资格验收。
 
 ## 模块与数据边界
 
-- `src/tools/image-resize-crop/geometry.ts`：方向校正后的 Source 像素空间、整数 Crop、比例居中/边界约束、百分比投影、Output 尺寸验证。尺寸使用最近整数（半值向上），比例切换尽量保持面积，中心使用稳定半像素格后约束边界，避免奇偶边长反复切换时偏移；无法表示的极端比例拒绝。响应式变化只改变投影，不回写 Source/Crop。
-- `session.ts`：一个活动 Source 与编辑草稿；未自定义输出时跟随 Crop 自然尺寸，自定义后保留宽度并重算高度。解锁提交不同宽高比会围绕当前中心重构裁剪，避免拉伸。输入字符串由 UI 暂存，明确应用时才验证并原子提交；非法/超限值不会写入合法状态。导出和下载在有未应用输入时禁用。
-- `render.ts`：复用 `acceptImage` / `decodeChecked` / `ImageResources` / `limits.ts`。导入时生成最长边不超过 1600 的方向校正 PNG 预览；交互使用原图像素投影与有界 Canvas 构图预览，不反复编码。导出从原图一次 `drawImage` 完成裁剪、缩放，PNG/JPEG/WebP 编码后经过 `validateOutput` 的 `privacy-v1` 清理、格式/MIME/尺寸及完整回解码复检。
-- `CropEditor.tsx`：`react-image-crop 11.1.2`，React peer 范围 `>=16.13.1`。自由比例与五种固定比例、拖动/控制点/键盘；局部 CSS 的变量从 `:root` 移到工具根，动画改名、扩大控制点并尊重 Reduced Motion。原始 ISC 条款与本地修改见 `crop.NOTICE.txt`，由工具按需引用，不放入无条件复制的 public。
-- `ImageResizeCrop.tsx`：复用 `WorkbenchShell mode="form" formWidth="wide"` 和现有受控 UI 原语；桌面左图右参数，≤1050px 单栏、预览在前。替换和清空通过 ConfirmDialog；取消文件选择不改变当前草稿，验证失败的替换保留上一张有效图。
+- `collection.ts`：共享文件集合、稳定 ID/序号、选中项、模式、批量参数/任务、重试/取消与 ZIP 快照。每文件一个轻量 `ResizeSession` 保存单张草稿；所有控制器注入同一个 `SerialJobs` 和 `ImageResources`，不使用 ConverterSession，不建立第二个重型任务池。
+- `session.ts`：原有单张裁剪、尺寸联动和结果版本。切换图片/模式保留合法草稿和单张结果；名称不重新编码。未应用输入由 UI 暂存，明确应用时原子验证。
+- `geometry.ts`：方向校正后的 Source 整数像素 Crop、稳定中心/边界约束及 Output 联动；响应式只投影。`batch.ts` 从各自完整原图计算宽度、高度、最长边或百分比，最近整数、最小 1px，默认不放大；明确拒绝非法/超预算输出，不通过缩小或换格式规避预算。
+- `render.ts`：复用图片内核验证、方向、资源和 `privacy-v1`。只为当前单图选中项按需生成最长边 1600 的预览；切换释放旧预览，其余文件只保留已验证源信息，不保留解码位图。导出从原图一次绘制裁剪/缩放、编码、清理元数据，再核验实际格式/MIME/尺寸与完整解码。批量传入完整原图 Crop，不继承手动裁剪。
+- `ImageResizeCrop.tsx` / `CollectionControls.tsx` / `BatchPanel.tsx`：继续 Form Wide 与现有受控原语；只增加文件管理、模式切换、批量规则、任务与交付。无工具级 Provider、持久化或独立应用根。桌面/移动端均自然流，保留已有单图布局。
+- `CropEditor.tsx`：保留 react-image-crop 11.1.2、局部 CSS 与 ISC `crop.NOTICE.txt`，裁剪算法/控件不重写。
 
-Source 是已验证文件、格式和方向校正尺寸；Crop 是其整数像素矩形；Output 是独立的最终宽高、格式、质量和 JPEG 背景。预览与导出复用同一方向校正入口，不能再次旋转。整数取整允许 Source 裁剪边缘至多一个像素、或 Output 边缘最近整数的比例近似（包括极小缩略图）；不把 CSS 像素存作真实数据。
+Source 是已验证文件、格式和方向校正尺寸；Crop 是其整数像素矩形；Output 是最终宽高、格式、质量和 JPEG 背景。PNG/JPEG/WebP/受限静态 AVIF 输入，输出仅 PNG/JPEG/WebP。默认 PNG，JPEG 按所选背景合成透明像素。
 
-## 生命周期与范围
+## 生命周期与交付
 
-单源 Session 独立于 ConverterSession，只复用其 `SerialJobs` 通道工具。导入、能力检测、导出串行；原生超时不提前释放通道。编辑、替换、清空和卸载使旧结果立即失效，revision/source request 拒绝晚到写回。Canvas/Bitmap 在真实异步工作结束后释放；预览与下载 URL 由工具拥有并在更换、清空或卸载撤销。文件名标签复用 `file-naming.ts`，不触发编码。
+首次一张进入单图、多张进入批量；后续追加不切换模式。格式/单项/累计字节/数量先由既有 `planIntake` 检查，容器与解码串行检查。无效文件明确列出，其他有效项继续。替换先确认，失败保留旧草稿；替换中的输入额度预留，避免并行追加突破累计预算。移除选中项优先选择相邻已验证文件；清空/卸载释放所有草稿与结果。
 
-支持现有内核验证过的 PNG/JPEG/WebP/静态 AVIF 输入；AVIF 输入明确提示仅可输出 PNG/JPEG/WebP。默认 PNG，JPEG 合成用户选择的背景。输出受同一固定设备 profile 的边长和像素上限约束，不以断点改变预算，不自动缩小或换格式；用户主动放大时显示细节不会增加的提示。
+所有导入检查、能力检测、选中项预览、替换、单张与批量导出共用一条 FIFO。每项失败不阻断后续；取消/修改规则/删除/清空/卸载取消等待项，活动原生操作仍占通道直到真实结束，版本检查丢弃晚到结果。单图参数与批量参数/结果版本独立。
 
-本阶段无批量、ZIP、逐文件草稿集合、旋转、透视、AI、历史记录、持久化或作者版权编辑。A1-B 可复用 geometry、单次 render、输出验证、命名、预算与串行通道；不能把当前单源 Session 描述成已实现批量管理。
+单张与批量成功 Blob 共享 `limits.totalBytes` 累计保留上限；超过时明确失败，保留其他成功项，不静默逐出、缩图或改格式。输入额度与结果额度分别有界。Bitmap/Canvas 在原生操作结束后释放；工具持有预览/下载 URL，更换或卸载撤销，下载临时 URL 约一秒后撤销。边界不是全设备峰值内存保证。
+
+成功项可在其他任务处理中下载；失败可逐项重试。ZIP 等所有任务结束，仅包含当前成功且已验证的结果，部分失败在界面明确提示。沿用 `taskFilename` 的序号/清洗/同名处理，显式点击后动态加载既有 `packZip`，保留 ZIP 大小预算与分块打包。文件/规则/结果改变时 Abort + delivery version 使快照失效，过期 ZIP 不下载。打包仍需最终 Blob 内存。
+
+不含旋转、透视、AI、持久化、历史或作者版权编辑。没有更改 Registry/Loader/依赖隔离机制；短元数据与静态双语说明更新，Draft 资格不变。
 
 ## 验证与人工入口
 
-定向测试：`resize-geometry`、`resize-session`、`resize-render`、`resize-ui`、`resize-publication`。原生边界在单测中被模拟，不替代浏览器证据。生产构建内置守卫额外检查 Draft 交互标记、裁剪专属 CSS 和 NOTICE 资产不泄漏；既有多工具夹具继续验证真实依赖图与反例。
+定向测试增加 `resize-batch`、`resize-collection` 和多文件 UI 路径，复用原有 geometry/render/session/publication 测试，不复制格式算法测试。单测原生边界使用模拟，不能代替真实浏览器。工程与浏览器本轮结果见下方验收记录。
 
-本轮本地工程验证：`pnpm check`（0 errors/warnings/hints）、`pnpm test`（61 文件 / 660 测试）、`pnpm build:cn`、`pnpm build:global` 全部通过；frozen-lockfile 安装通过。两地区多工具夹具也通过，包含缺 Loader/内容、提前加载、共享入口携带 Draft 私有依赖、Loader 互换和资格回退到零工具的检查；原始构建图与日志保留于仓库外 `.validation/multi-tool-ih5yV2`（CN）及 `.validation/multi-tool-DFVc5n`（Global），不承诺这些本机目录随克隆分发。未将本地结果称为远端 CI 结果。
-
-运行 `pnpm dev`，以终端打印的 CN/Global 来源（端口以 `src/config/dev-origins.mjs` 为准）拼接下面路径：
+运行 `pnpm dev`，以终端打印的 CN/Global 来源（端口以 `src/config/dev-origins.mjs` 为准）拼接路径：
 
 | 地区 | 中文路径 | English 路径 |
 | --- | --- | --- |
 | CN | `/tools/image-resize-crop/` | `/en/tools/image-resize-crop/` |
 | Global | `/zh/tools/image-resize-crop/` | `/tools/image-resize-crop/` |
 
-人工检查：导入带方向/透明度的图片 → 自由/固定比例、拖动边缘/角点和键盘 → 调整宽高与百分比 → 切换桌面和手机视口 → 导出三种格式并下载 → 修改参数确认旧下载失效 → 替换/取消/失败/清空。检查未应用输入、超限错误、焦点与触控命中区域。
+人工检查：单张导入并裁剪/改尺寸 → 追加不同尺寸图片（保持单张模式）→ 切换图片并返回确认草稿 → 切批量确认使用完整原图 → 四种规则/不放大/格式背景 → 明确开始 → 单项下载 → 全部结束后 ZIP → 非法文件/重试/移除/清空/规则改变 → 回到单图恢复草稿。桌面与手机视口分别操作；真机触摸和跨浏览器另验。
+
+## A1-B 本轮验收记录（2026-10-31）
+
+- `pnpm check`：0 errors / warnings / hints；`pnpm test`：63 文件、704 测试通过；`pnpm build:cn` / `pnpm build:global` 及各自静态产物守卫通过。结果为本地验证，不宣称远端 CI 已通过。未改 Loader/Registry 资格或依赖隔离机制，未重复 E2 专项构建夹具；双地区正式产物继续排除该 Draft。
+- 真实 Chromium IAB：CN 中文 1365×1000 与 390×844，Global 英文 390×844。多选导入、追加不切模式、逐文件草稿/400px 输出及 1:1 裁剪恢复、切批量使用完整原图、修改规则使旧结果失效、失败重试保留其他成功项、移除当前项选邻项、清空和焦点返回均完成。两语言控制台无 warning/error；两视口无横向溢出。桌面/手机视口之间选区百分比保持相同，设备资源 profile 未随视口切换。
+- 四种规则实际执行：最长边 600 得到 600×400、240×600、100×60（默认不放大）；指定宽度 300 保持每图比例；指定高度 200 关闭不放大后，100×60 小图得到 333×200；50% 得到 600×400、200×500、50×30，EXIF 6 源按方向校正后的 48×80 得到 24×40。
+- 实际下载 PNG/JPEG/WebP、逐项文件和 ZIP。ZIP CRC/条目检查通过，无效文件被排除；PNG/JPEG 另用系统解码核对尺寸，JPEG 透明区背景 #123456 得到 RGB 18/52/87（有损误差）。WebP 另核对 RIFF/实际容器尺寸，浏览器内均经过完整解码复检。Global 手机视口的受支持 `private.avif` 256×160 与 PNG 100×60 批量导出 PNG 80×50、80×48，实际 ZIP 核对通过。
+- 截图与合成样本保存在本机仓库外 `.validation/resize-a1b` 和 Codex 可视化目录，不作为生产资源或随仓库分发。单图/批量串行互斥、超时/晚到/取消、ZIP 打包中变更与累计 Blob 上限由定向可控时序测试验证，未声称浏览器中强制制造原生超时或做过峰值内存压力测试。
+
+本轮未测 Firefox/Safari、iOS/Android 真机、真实触摸/原生文件拖拽、低端设备与峰值内存；手机视口不等于真机。CN 英文与 Global 中文未做深入人工交互。文件选择器的多选与追加已实测；拖放沿用既有 FileDropzone 入口与测试。维护者可直接使用上方 DEV 路径进行后续验收。
+
+## 已知非阻断体验事项
+
+批量参数与结果采用自然流，文件多时需较多滚动；单张模式的文件行和编辑区均有移除入口。当前按功能闭环保留，下一阶段统一评估信息密度与操作布局，不在本轮进行视觉精修。
+
+## A1-A 历史浏览器证据（非本轮复测）
 
 2026-10-31 在真实 Chromium IAB 完成 CN 中文 / Global 英文核心路径：桌面 1365×1000、手机视口 390×844；鼠标拖动选区及角点、键盘边缘微调、固定比例、精确宽高、解锁重构图和百分比。跨视口前后百分比坐标相同。实际下载 PNG 400×400、JPEG/WebP 600×300；独立系统解码 PNG/JPEG，WebP 文件头/VP8X 尺寸核验，浏览器内三格式均完整解码复检。JPEG 背景 `#123456` 在透明区域得到 RGB 18/52/87（有损编码误差）。EXIF 6 JPEG 导出 PNG 48×80，左上蓝/右上红像素符合一次顺时针方向校正。受支持 `private.avif` 256×160 可导出 PNG；未声明可靠色彩信号的原始 encoder-alpha.avif 被明确拒绝，保留旧草稿。
 

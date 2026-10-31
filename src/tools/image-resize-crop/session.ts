@@ -33,7 +33,7 @@ export type ResizeView = Readonly<{
   customWidth?: number;
   status: 'empty' | 'loading' | 'editing' | 'exporting' | 'ready' | 'failed';
   result?: Blob;
-  error?: ImageErrorCode;
+  error?: ImageErrorCode | 'resultBudget';
   capabilities?: Capabilities;
   label: string;
   downloaded: boolean;
@@ -62,11 +62,18 @@ const defaults: ResizeServices = {
   render: renderCrop,
   capabilities: detectCapabilities,
 };
+type SharedLane = {
+  resources: ImageResources;
+  jobs: SerialJobs;
+  key: string;
+  acceptResult: (blob: Blob) => boolean;
+  loadSettled?: (file: File) => void;
+};
 
 // Single active source and draft. FIFO is reused, not the Converter's batch model.
 export class ResizeSession {
-  readonly resources = new ImageResources();
-  readonly jobs = new SerialJobs();
+  readonly resources: ImageResources;
+  readonly jobs: SerialJobs;
   private view = initialView();
   private revision = 0;
   private sourceRequest = 0;
@@ -76,7 +83,40 @@ export class ResizeSession {
     private changed: (view: ResizeView) => void,
     private services = defaults,
     readonly limits: ImageLimits = mobileImageLimits,
-  ) {}
+    shared?: SharedLane,
+  ) {
+    this.resources = shared?.resources ?? new ImageResources();
+    this.jobs = shared?.jobs ?? new SerialJobs();
+    this.shared = shared;
+  }
+  private shared?: SharedLane;
+  private key(kind: string) {
+    return `${this.shared?.key ?? 'single'}:${kind}`;
+  }
+  /** Validated collection source; no decode or preview allocation here. */
+  restoreSource(source: ImageSource, capabilities?: Capabilities) {
+    this.edit({
+      source,
+      crop: fullCrop(source),
+      output: {
+        ...initialView().output,
+        width: source.width,
+        height: source.height,
+      },
+      status: 'editing',
+      capabilities,
+    });
+  }
+  capabilities(capabilities: Capabilities) {
+    this.patch({ capabilities });
+  }
+  preview(preview?: Blob) {
+    this.patch({ preview });
+  }
+  reportPreviewError(error: ImageErrorCode) {
+    this.patch({ error });
+  }
+
   get snapshot() {
     return this.view;
   }
@@ -88,7 +128,7 @@ export class ResizeSession {
   }
   private edit(patch: Partial<ResizeView>) {
     this.revision++;
-    this.jobs.cancel('export');
+    this.jobs.cancel(this.key('export'));
     this.patch({
       result: undefined,
       error: undefined,
@@ -99,7 +139,7 @@ export class ResizeSession {
   }
   start() {
     this.jobs.schedule(
-      'capabilities',
+      this.key('capabilities'),
       async () => {
         try {
           this.patch({
@@ -121,7 +161,7 @@ export class ResizeSession {
     this.edit({ status: 'loading' });
     let expired = false;
     this.jobs.schedule(
-      'load',
+      this.key('load'),
       async () => {
         try {
           const loaded = await this.services.load(
@@ -148,6 +188,8 @@ export class ResizeSession {
         } catch (error) {
           if (!expired && request === this.sourceRequest)
             this.patch({ status: 'failed', error: failureCode(error) });
+        } finally {
+          this.shared?.loadSettled?.(file);
         }
       },
       () => {
@@ -281,7 +323,7 @@ export class ResizeSession {
       status: 'exporting',
     });
     this.jobs.schedule(
-      'export',
+      this.key('export'),
       async () => {
         try {
           const result = await this.services.render(
@@ -291,7 +333,12 @@ export class ResizeSession {
             this.resources,
             this.limits,
           );
-          if (current()) this.patch({ result, status: 'ready' });
+          if (current())
+            this.patch(
+              this.shared && !this.shared.acceptResult(result)
+                ? { status: 'failed', error: 'resultBudget' }
+                : { result, status: 'ready' },
+            );
         } catch (error) {
           if (current())
             this.patch({ status: 'failed', error: failureCode(error) });
@@ -320,8 +367,8 @@ export class ResizeSession {
   clear() {
     this.sourceRequest++;
     this.revision++;
-    this.jobs.cancel('load');
-    this.jobs.cancel('export');
+    this.jobs.cancel(this.key('load'));
+    this.jobs.cancel(this.key('export'));
     this.patch({
       ...initialView(),
       source: undefined,
@@ -338,6 +385,10 @@ export class ResizeSession {
     this.sourceRequest++;
     this.revision++;
     this.view = initialView();
-    this.jobs.dispose();
+    if (!this.shared) this.jobs.dispose();
+    else {
+      this.jobs.cancel(this.key('load'));
+      this.jobs.cancel(this.key('export'));
+    }
   }
 }

@@ -12,6 +12,8 @@ export const resizeStyles = stylex.create({
     minWidth: 0,
   },
   stack: { display: 'grid', gap: t.space16, minWidth: 0 },
+  list: { display: 'grid', gap: t.space8, padding: 0, margin: 0, listStyle: 'none', minWidth: 0 },
+  row: { display: 'flex', gap: t.space8, alignItems: 'center', flexWrap: 'wrap', minWidth: 0 },
   panel: {
     display: 'grid',
     gap: t.space16,
