@@ -11,6 +11,7 @@ export type ToolPageContent = {
   description: string;
   h1: string;
   intro: string;
+  headings?: Partial<Record<'steps' | 'limitations' | 'faq', string>>;
   features?: readonly string[];
   steps?: readonly string[];
   limitations?: readonly string[];

@@ -2,6 +2,8 @@
 
 V0.7-A1-B 已完成单张裁剪与批量缩放功能；A1-C1 重组工作区层级，A1-C2 完善缩略图与共享对比，A1-C3 将单张裁剪升级为可缩放/平移、同区预览及专注编辑工作区。CN/Global 双语继续为 **Draft**，仅 DEV 可访问。Image Converter 仍是唯一 Published 工具；未部署，下一步为 A1 最终 UX 与 Beta 资格验收，不再扩展裁剪工作区功能。
 
+A1-D1 静态中英文文案已冻结于 `src/site/image-resize-crop-content.ts`：H1/简介、4 项步骤、4 项限制、6 项 FAQ 及真实相关工具；本工具不再提供独立功能概览。SEO 长文仅由 Astro 使用，Registry 保留短元数据；英文章节标题使用可选文案覆盖，公共 ToolGuide 的默认标题、可选内容及 Converter 文案不变。继续保持 DEV noindex 与正式产物 Draft 隔离，下一步进入最终 Beta 资格审计。
+
 ## 模块与数据边界
 
 - `collection.ts`：共享文件集合、稳定 ID/序号、选中项、模式、批量参数/任务、重试/取消与 ZIP 快照。每文件一个轻量 `ResizeSession` 保存单张草稿；所有控制器注入同一个 `SerialJobs` 和 `ImageResources`，不使用 ConverterSession，不建立第二个重型任务池。
