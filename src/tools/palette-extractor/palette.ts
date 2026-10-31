@@ -18,7 +18,7 @@ export type Candidate = {
   b: number;
   population: number;
 };
-export type Swatch = { id: string; hex: string };
+export type Swatch = { id: string; hex: string; point?: { x: number; y: number } };
 export const normalizeHex = (value: string) => {
   const match = /^#?([\da-f]{3}|[\da-f]{6})$/i.exec(value.trim());
   return match

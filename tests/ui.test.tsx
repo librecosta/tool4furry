@@ -311,7 +311,22 @@ describe('UI primitives', () => {
 });
 
 describe('island toast queue', () => {
-  it('upserts by id, limits to three, labels types and closes manually', async () => {
+  it('coalesces repeated success feedback and dismisses it in 2–2.5 seconds', async () => {
+    const user = userEvent.setup();
+    function Example() {
+      const toast = useToast();
+      return <Button onClick={() => toast.notify({ type: 'success', title: 'Copied' })}>Copy</Button>;
+    }
+    render(<UiProvider labels={labels}><Example/></UiProvider>);
+    await user.click(screen.getByRole('button', { name: 'Copy' }));
+    await user.click(screen.getByRole('button', { name: 'Copy' }));
+    await user.click(screen.getByRole('button', { name: 'Copy' }));
+    expect(document.querySelectorAll('[data-toast]')).toHaveLength(1);
+    expect(screen.getByRole('dialog', { name: 'Copied' })).toBeTruthy();
+    expect(screen.queryByText(labels.toastSuccess)).toBeNull();
+    await waitFor(() => expect(screen.queryByText('Copied')).toBeNull(), { timeout: 2800 });
+  });
+  it('upserts by id, limits to three, avoids duplicate type titles and closes manually', async () => {
     const user = userEvent.setup();
     function Example() {
       const toast = useToast();
@@ -355,7 +370,7 @@ describe('island toast queue', () => {
     expect(
       document.querySelectorAll('[data-toast][data-type="error"]'),
     ).toHaveLength(1);
-    expect(screen.getByText(labels.toastError)).toBeTruthy();
+    expect(screen.queryByText(labels.toastError)).toBeNull();
     await user.tab();
     const firstToast = document.querySelector('[data-toast]')!;
     await user.click(

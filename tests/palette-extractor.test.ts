@@ -20,6 +20,7 @@ import {
   getPublishedTools,
 } from '../src/tools/registry';
 import { getToolPageContent } from '../src/site/tool-content';
+import { locateColors, markerPixels } from '../src/tools/palette-extractor/markers';
 
 class Pixels {
   colorSpace = 'srgb';
@@ -135,6 +136,20 @@ describe('bounded representative colors', () => {
 });
 
 describe('editing and contain-based sampling', () => {
+  it('locates deterministic visible representative pixels without changing palette colors', () => {
+    const data = image([rgba('FF0000', 0), rgba('FF0000', 120), rgba('F02020'), rgba('FFFFFF')]);
+    const colors = [{ id: 'red', hex: '#EF2020' }, { id: 'white', hex: '#FFFFFF' }];
+    const located = locateColors(data, colors);
+    expect(located.map(c => c.hex)).toEqual(colors.map(c => c.hex));
+    expect(located.map(c => c.point)).toEqual([{ x: 2, y: 0 }, { x: 3, y: 0 }]);
+    expect(locateColors(data, colors)).toEqual(located);
+    expect(locateColors(image([rgba('FF0000', 0)]), colors).every(c => !c.point)).toBe(true);
+    expect(locateColors(image([rgba('112233', 80)]), colors)[0].point).toEqual({ x: 0, y: 0 });
+    const large = { width: 1600, height: 1600, data: new Uint8ClampedArray(1600 * 1600 * 4).fill(255) } as ImageData;
+    expect(markerPixels(large).length).toBeLessThanOrEqual(65536);
+    const duplicates = locateColors(large, [{ id: 'a', hex: '#FFFFFF' }, { id: 'b', hex: '#FFFFFF' }]);
+    expect(duplicates[0].point).not.toEqual(duplicates[1].point);
+  });
   it('validates complete HEX submissions only', () => {
     expect(normalizeHex('#aBc')).toBe('#AABBCC');
     expect(normalizeHex('abc123')).toBe('#ABC123');

@@ -35,9 +35,9 @@ import { ImageSampler } from './ImageSampler';
 import { ShareDialog } from './ShareDialog';
 import notice from './colorthief.NOTICE.txt?url';
 
-export function ColorRow({ color, index, length, session, pick, selected, copy, t }: {
+export function ColorRow({ color, index, length, session, pick, selected, picking, select, copy, t }: {
   color: Swatch; index: number; length: number; session: PaletteSession;
-  pick: (id: string) => void; selected: boolean; copy: (text: string) => void; t: Labels;
+  pick: (id: string) => void; selected: boolean; picking?: boolean; select?: (id: string) => void; copy: (text: string) => void; t: Labels;
 }) {
   const [value, setValue] = useState(color.hex), [error, setError] = useState(false);
   useEffect(() => { setValue(color.hex); setError(false); }, [color.hex]);
@@ -47,8 +47,8 @@ export function ColorRow({ color, index, length, session, pick, selected, copy, 
     { label: t.down, icon: ArrowDownIcon, run: () => session.move(color.id, 1), disabled: index === length - 1 },
     { label: t.remove, icon: TrashIcon, run: () => session.remove(color.id), disabled: length === 1 },
   ];
-  return <li data-swatch={color.id} data-picking={selected || undefined} {...stylex.props(s.colorRow, motion.selection, selected && s.selected)}>
-    <div {...stylex.props(s.chip)} style={{ backgroundColor: color.hex }} aria-label={color.hex} role="img"/>
+  return <li data-swatch={color.id} data-selected={selected || undefined} data-picking={picking || undefined} onFocus={() => select?.(color.id)} {...stylex.props(s.colorRow, motion.selection, selected && s.selected)}>
+    <button type="button" {...stylex.props(s.chip)} style={{ backgroundColor: color.hex }} aria-label={`${t.selectColor} ${index + 1} · ${color.hex}`} aria-pressed={selected} onClick={() => select?.(color.id)}/>
     <form {...stylex.props(s.hex)} onSubmit={event => { event.preventDefault(); setError(!session.edit(color.id, value)); }}>
       <input aria-label={`${t.hex} ${index + 1}`} value={value} spellCheck={false} maxLength={7} aria-invalid={error || undefined} aria-description={error ? t.invalid : undefined}
         {...stylex.props(controls.input, s.hexInput, error && controls.invalid)}
@@ -57,7 +57,7 @@ export function ColorRow({ color, index, length, session, pick, selected, copy, 
     {error && <span role="alert" {...stylex.props(s.srOnly)}>{t.invalid}</span>}
     <div {...stylex.props(s.rowActions)}>
       <Tooltip content={t.copy}><IconButton label={`${t.copy} ${index + 1}`} variant="ghost" xstyle={s.tool} onClick={() => copy(color.hex)}><CopyIcon size={20}/></IconButton></Tooltip>
-      <Tooltip content={t.pick}><IconButton label={`${t.pick} ${index + 1}`} variant="ghost" aria-pressed={selected} xstyle={[s.tool, motion.selection, selected && s.selected]} onClick={() => pick(color.id)}><EyedropperIcon size={20}/></IconButton></Tooltip>
+      <Tooltip content={t.pick}><IconButton label={`${t.pick} ${index + 1}`} variant="ghost" aria-pressed={!!picking} xstyle={[s.tool, motion.selection, picking && s.selected]} onClick={() => pick(color.id)}><EyedropperIcon size={20}/></IconButton></Tooltip>
       <div {...stylex.props(s.secondaryActions)}>{actions.map(action => <Tooltip key={action.label} content={action.label}><IconButton label={`${action.label} ${index + 1}`} variant="ghost" xstyle={s.tool} disabled={action.disabled} onClick={action.run}>{action.text ?? <action.icon size={18}/>}</IconButton></Tooltip>)}</div>
       <Popover.Root>
         <Popover.Trigger render={<IconButton label={`${t.more} ${index + 1}`} variant="ghost" xstyle={[s.tool, s.more]}><DotsThreeIcon size={22}/></IconButton>}/>
@@ -95,11 +95,13 @@ export default function PaletteExtractor({ locale }: ToolProps) {
     version: 0,
   });
   const [target, setTarget] = useState<string>();
+  const [selected, setSelected] = useState<string>();
   const [pending, setPending] = useState<{ mode: Mode; count: number }>();
   const [adding, setAdding] = useState(false),
     [newColor, setNewColor] = useState('#808080');
   const [saving, setSaving] = useState(false);
   const cancelPick = useCallback(() => setTarget(undefined), []);
+  const startPick = (id: string) => { setSelected(id); setTarget(id); };
   const exportVersion = useRef(0);
   useEffect(() => {
     const owner = new PaletteSession();
@@ -114,11 +116,13 @@ export default function PaletteExtractor({ locale }: ToolProps) {
   }, []);
   useEffect(() => {
     setTarget(undefined);
+    setSelected(undefined);
   }, [view.source]);
   useEffect(() => {
     if (target && !view.colors.some((c) => c.id === target))
       setTarget(undefined);
-  }, [target, view.colors]);
+    if (selected && !view.colors.some(c => c.id === selected)) setSelected(undefined);
+  }, [target, selected, view.colors]);
   const copy = (text: string) => {
     void navigator.clipboard
       ?.writeText(text)
@@ -144,7 +148,7 @@ export default function PaletteExtractor({ locale }: ToolProps) {
         () => ticket === exportVersion.current,
       );
       if (blob && session.snapshot().version === version)
-        session.download(blob, 't4f-palette.png');
+        session.download(blob, session.filename('basic'));
     } catch {
       notify({ title: t.exportError, type: 'error' });
     } finally {
@@ -178,11 +182,12 @@ export default function PaletteExtractor({ locale }: ToolProps) {
               if (files[0]) session?.import(files[0]);
             }}
           />
-          <p {...stylex.props(s.muted)}>
-            {t.limits}
+          <details {...stylex.props(s.help)}>
+            <summary>{t.fileDetails}</summary>
+            <p {...stylex.props(s.muted)}>{t.limits}</p>
             {session &&
-              ` ≤ ${session.limits.bytes / 1024 ** 2} MiB · ${session.limits.pixels / 1e6} MP · ${session.limits.edge}px`}
-          </p>
+              <p {...stylex.props(s.muted)}>{`≤ ${session.limits.bytes / 1024 ** 2} MiB · ${session.limits.pixels / 1e6} MP · ${session.limits.edge}px`}</p>}
+          </details>
           <PaletteParameters mode={view.mode} count={view.count} disabled={!view.source || view.busy} {...{ extract, t }}/>
           {view.busy && <p role="status">{t.loading}</p>}
           {view.error && (
@@ -196,28 +201,20 @@ export default function PaletteExtractor({ locale }: ToolProps) {
           )}
           {view.source ? (
             <>
-              <div {...stylex.props(s.row)}>
-                <p {...stylex.props(s.muted, s.grow)}>{view.source.name}</p>
-                <Button
-                  onClick={() => {
-                    session?.clear();
-                    cancelPick();
-                  }}
-                >
-                  {t.clear}
-                </Button>
-              </div>
               <ImageSampler
                 key={view.source.url}
                 pixels={view.source.pixels}
                 url={view.source.url}
                 target={target}
+                selected={selected}
                 colors={view.colors}
-                onTarget={setTarget}
+                onTarget={startPick}
+                onSelect={setSelected}
                 cancel={cancelPick}
                 t={t}
-                onPick={(id, hex) => {
-                  if (session && session.snapshot().source === view.source) session.edit(id, hex);
+                onPick={(id, _hex, point) => {
+                  if (session && session.snapshot().source === view.source && point) session.sample(id, point.x, point.y);
+                  setSelected(id);
                   cancelPick();
                 }}
               />
@@ -239,8 +236,10 @@ export default function PaletteExtractor({ locale }: ToolProps) {
                     key={color.id}
                     {...{ color, index, session, t, copy }}
                     length={view.colors.length}
-                    selected={target === color.id}
-                    pick={setTarget}
+                    selected={selected === color.id}
+                    picking={target === color.id}
+                    select={setSelected}
+                    pick={startPick}
                   />
                 ),
             )}

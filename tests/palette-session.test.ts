@@ -56,7 +56,7 @@ beforeEach(() => {
         getImageData: () => ({
           width: 20,
           height: 10,
-          data: new Uint8ClampedArray(800),
+          data: new Uint8ClampedArray(800).fill(255),
         }),
       }) as never,
   );
@@ -115,6 +115,41 @@ it('never removes the final color or adds more than ten', async () => {
   expect(session.snapshot().colors).toHaveLength(10);
   for (const color of session.snapshot().colors) session.remove(color.id);
   expect(session.snapshot().colors).toHaveLength(1);
+  session.dispose();
+});
+it('owns marker provenance across sample, HEX edit, reorder, delete and replacement', async () => {
+  const session = await loaded();
+  const original = session.snapshot().colors[0];
+  expect(original.point).toBeTruthy();
+  expect(session.sample(original.id, 3, 4)).toBe(true);
+  expect(session.snapshot().colors[0]).toMatchObject({ id: original.id, hex: '#FFFFFF', point: { x: 3, y: 4 } });
+  session.move(original.id, 1);
+  expect(session.snapshot().colors[1].point).toEqual({ x: 3, y: 4 });
+  const version = session.snapshot().version;
+  expect(session.sample(original.id, -1, 4)).toBe(false);
+  expect(session.snapshot().version).toBe(version);
+  session.edit(original.id, '#112233');
+  expect(session.snapshot().colors[1].point).toBeUndefined();
+  session.add('#123456');
+  expect(session.snapshot().colors[2].point).toBeUndefined();
+  session.remove(original.id);
+  expect(session.snapshot().colors.some(c => c.id === original.id)).toBe(false);
+  session.extract('balanced', 6);
+  expect(session.snapshot().colors.every(c => c.point && c.id !== original.id)).toBe(true);
+  session.import(new File(['b'], 'replacement.png'));
+  expect(session.sample(original.id, 3, 4)).toBe(false);
+  await tick();
+  expect(session.snapshot().colors.every(c => c.id !== original.id)).toBe(true);
+  session.dispose();
+});
+it('uses one session sequence and the shared safe filename policy for every PNG kind', async () => {
+  const session = await loaded();
+  const names = ['basic', 'basic', 'character', 'character', 'gallery', 'story'].map(kind => session.filename(kind as 'basic'));
+  expect(new Set(names).size).toBe(6);
+  expect(names[0]).toMatch(/^t4f-\d{8}-\d{9}-0001-palette-a\.png$/);
+  expect(names[2]).toContain('-character-study-');
+  expect(names[4]).toContain('-gallery-');
+  expect(names[5]).toContain('-color-story-');
   session.dispose();
 });
 it('discards late imports, serializes replacement and closes temporary resources', async () => {

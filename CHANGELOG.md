@@ -21,6 +21,8 @@
 
 ### Changed
 
+- V0.7-A2-C2 整理 Palette 中央画布与响应式工具栏，加入稳定 ID 的颜色位置标记、选择与拖动取色，折叠限制并移除重复工作区说明；导出复用共享唯一命名。公共 Toast 改为紧凑居中提示与连续成功去重，保留错误、可访问性和 Reduced Motion；量化、分享模板及 Draft 资格不变。
+
 - V0.7-A2-C1 将 Palette 调整为纵向创作工作区和紧凑单行色卡，复用 SelectField、缩放/平移几何及专注取色 Dialog；三款图片工具统一轻量状态过渡，保留立即可见的键盘焦点和 Reduced Motion。提色算法、分享模板与 Draft 资格不变。
 
 - V0.7-A1-D2 完成 Image Resize & Crop L2 Beta 资格审计，并按维护者授权提升为 Published。两地区各包含两款工具、完整双语页面、发现链接、按需裁剪资源及 ISC 声明；验证当前 Chromium 桌面/手机视口与实际输出，修复共享 StyleX 在多 CSS 产物中的注入目标，继续保留 Draft/Lab/Fixture 隔离。A1 首版收尾；源码资格不代表部署，L3 跨浏览器/真机与性能压力验证仍按需跟进。

@@ -32,8 +32,10 @@ export function useToast() {
     notify: ({ type = 'info', timeout, ...message }: ToastMessage) =>
       manager.add({
         ...message,
+        // A short success slot is refreshed in place for repeated copy actions.
+        id: message.id ?? (type === 'success' ? 'feedback-success' : undefined),
         type,
-        timeout: timeout ?? (type === 'error' ? 8000 : 5000),
+        timeout: timeout ?? (type === 'success' ? 2400 : type === 'error' ? 8000 : 5000),
         priority: type === 'error' ? 'high' : 'low',
       }),
     close: manager.close,
@@ -47,12 +49,6 @@ const icons = {
 };
 export function ToastViewport({ labels }: { labels: UiLabels }) {
   const { toasts } = BaseToast.useToastManager();
-  const names = {
-    success: labels.toastSuccess,
-    info: labels.toastInfo,
-    warning: labels.toastWarning,
-    error: labels.toastError,
-  };
   return (
     <BaseToast.Portal>
       <BaseToast.Viewport
@@ -77,9 +73,8 @@ export function ToastViewport({ labels }: { labels: UiLabels }) {
                 ).className
               }
             >
-              <Icon size={22} aria-hidden="true" />
+              <Icon size={20} aria-hidden="true" {...stylex.props(styles.icon)} />
               <div {...stylex.props(styles.content)}>
-                <span {...stylex.props(styles.type)}>{names[type]}</span>
                 <BaseToast.Title {...stylex.props(styles.title)}>
                   {toast.title}
                 </BaseToast.Title>
@@ -111,29 +106,34 @@ const styles = stylex.create({
   viewport: {
     position: 'fixed',
     zIndex: tokens.layerToast,
-    top: 'max(16px, env(safe-area-inset-top))',
-    right: 'max(16px, env(safe-area-inset-right))',
-    width: 'min(360px, calc(100% - 32px))',
+    top: 'calc(80px + env(safe-area-inset-top, 0px))',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: 'min(440px, calc(100% - 32px))',
     maxHeight: 'min(36dvh, 320px)',
     overflowY: 'auto',
     overscrollBehavior: 'contain',
     display: 'grid',
+    justifyItems: 'center',
     gap: tokens.space8,
     pointerEvents: 'none',
   },
   toast: {
     display: 'flex',
     gap: tokens.space8,
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    width: 'fit-content',
+    maxWidth: '100%',
     backgroundColor: tokens.surfaceFloating,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: tokens.border,
-    borderInlineStartWidth: 4,
     borderRadius: tokens.radiusLg,
-    padding: tokens.space12,
-    boxShadow: tokens.shadowFloating,
+    padding: '6px 8px 6px 12px',
+    boxShadow: tokens.shadowSoft,
     pointerEvents: 'auto',
+    opacity: { default: 1, ':is([data-starting-style], [data-ending-style])': 0 },
+    transform: { default: 'translateY(0)', ':is([data-starting-style], [data-ending-style])': 'translateY(-6px)' },
+    transitionProperty: 'opacity, transform',
+    transitionDuration: { default: '200ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
+    transitionTimingFunction: 'ease-out',
   },
   limited: { display: 'none' },
   content: { flex: 1, minWidth: 0, overflowWrap: 'anywhere' },
@@ -144,9 +144,9 @@ const styles = stylex.create({
     margin: 0,
   },
   description: { fontSize: 13, color: tokens.textSecondary, marginTop: 4 },
-  type: { fontSize: 12, fontWeight: 500 },
-  success: { borderInlineStartColor: tokens.positive, color: tokens.positive },
-  info: { borderInlineStartColor: tokens.info, color: tokens.info },
-  warning: { borderInlineStartColor: tokens.warning, color: tokens.warning },
-  error: { borderInlineStartColor: tokens.danger, color: tokens.danger },
+  icon: { flexShrink: 0 },
+  success: { color: tokens.positive },
+  info: { color: tokens.info },
+  warning: { color: tokens.warning },
+  error: { color: tokens.danger },
 });

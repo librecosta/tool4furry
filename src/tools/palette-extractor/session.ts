@@ -1,16 +1,19 @@
 import { acceptImage, decodeChecked, toBlob } from '../image/browser-codec';
 import { ImageResources } from '../image/resources';
 import { resolveImageLimits, type ImageLimits } from '../image/limits';
+import { batchTime, taskFilename } from '../file-naming';
 import { SerialJobs } from '../image-converter/serial-jobs';
 import {
   candidates,
   selectPalette,
   normalizeHex,
+  samplePoint,
   type Candidate,
   type Mode,
   type Swatch,
 } from './palette';
 import { renderPalette, type ShareOptions } from './render';
+import { locateColors, markerPixels } from './markers';
 
 type Source = {
   canvas: HTMLCanvasElement;
@@ -18,6 +21,7 @@ type Source = {
   url: string;
   name: string;
   candidates: Candidate[];
+  markerPixels?: number[];
 };
 export type PaletteView = {
   source?: Source;
@@ -37,6 +41,8 @@ export class PaletteSession {
   private disposed = false;
   private generation = 0;
   private id = 0;
+  private downloadSequence = 0;
+  private readonly downloadTime = batchTime(new Date());
   private downloads = new Map<string, ReturnType<typeof setTimeout>>();
   private exports = new Map<string, () => void>();
   private view: PaletteView = {
@@ -159,6 +165,7 @@ export class PaletteSession {
             url: this.resources.url(blob),
             name: file.name,
             candidates: pool,
+            markerPixels: markerPixels(pixels),
           };
           preview = undefined;
           this.update({ source: ready, busy: false });
@@ -185,10 +192,10 @@ export class PaletteSession {
   }
   extract(mode: Mode, count: number) {
     const colors = this.view.source
-      ? selectPalette(this.view.source.candidates, mode, count).map((hex) => ({
+      ? locateColors(this.view.source.pixels, selectPalette(this.view.source.candidates, mode, count).map((hex) => ({
           id: `swatch-${++this.id}`,
           hex,
-        }))
+        })), this.view.source.markerPixels)
       : [];
     this.update({
       mode,
@@ -206,11 +213,27 @@ export class PaletteSession {
     if (!color) return false;
     if (color.hex === hex) return true;
     this.update({
-      colors: this.view.colors.map((c) => (c.id === id ? { ...c, hex } : c)),
+      colors: this.view.colors.map((c) => (c.id === id ? { id: c.id, hex } : c)),
       dirty: true,
       version: this.view.version + 1,
     });
     return true;
+  }
+  sample(id: string, x: number, y: number) {
+    const source = this.view.source;
+    if (!source || !this.view.colors.some(color => color.id === id)) return false;
+    const point = samplePoint(source.pixels, x, y, source.pixels);
+    if (!point) return false;
+    this.update({
+      colors: this.view.colors.map(color => color.id === id ? { ...color, hex: point.hex, point: { x: point.x, y: point.y } } : color),
+      dirty: true,
+      version: this.view.version + 1,
+    });
+    return true;
+  }
+  filename(kind: 'basic' | ShareOptions['template']) {
+    const label = { basic: 'palette', character: 'character-study', gallery: 'gallery', story: 'color-story' }[kind];
+    return taskFilename({ time: this.downloadTime, sequence: ++this.downloadSequence, source: this.view.source?.name ?? 'image', label, extension: 'png' }).name;
   }
   add(value: string) {
     const hex = normalizeHex(value);

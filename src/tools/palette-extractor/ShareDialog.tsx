@@ -32,6 +32,7 @@ export function ShareDialog({
     version: number;
     key: string;
     canShare: boolean;
+    file: File;
   }>();
   const [error, setError] = useState<string>();
   const [sharing, setSharing] = useState(false);
@@ -61,7 +62,7 @@ export function ShareDialog({
         .then((blob) => {
           if (!blob || !valid()) return;
           url = session.resources.url(blob);
-          const file = new File([blob], 'tool4furry-palette.png', {
+          const file = new File([blob], session.filename(options.template), {
             type: 'image/png',
           });
           let canShare = false;
@@ -71,7 +72,7 @@ export function ShareDialog({
           } catch {
             /* Download remains available. */
           }
-          setResult({ blob, url, version: view.version, key, canShare });
+          setResult({ blob, url, version: view.version, key, canShare, file });
         })
         .catch((error) => {
           if (import.meta.env.DEV) console.warn('Palette export:', error);
@@ -86,13 +87,10 @@ export function ShareDialog({
   }, [open, key, view.version, session, t]);
   const share = async () => {
     if (!current || sharing) return;
-    const file = new File([current.blob], 'tool4furry-palette.png', {
-      type: 'image/png',
-    });
     // Invoke synchronously from activation: PNG is prepared BEFORE this click.
     setSharing(true);
     try {
-      await navigator.share({ files: [file] });
+      await navigator.share({ files: [current.file] });
     } catch (error) {
       if ((error as { name?: string }).name !== 'AbortError')
         setError(t.shareError);
@@ -158,13 +156,12 @@ export function ShareDialog({
               <Button
                 xstyle={s.accent}
                 disabled={!current}
-                onClick={() =>
-                  current &&
-                  session.download(
-                    current.blob,
-                    `t4f-palette-${options.template}.png`,
-                  )
-                }
+                onClick={() => {
+                  if (!current) return;
+                  const file = new File([current.blob], session.filename(options.template), { type: 'image/png' });
+                  setResult({ ...current, file });
+                  session.download(current.blob, file.name);
+                }}
               >
                 {t.download}
               </Button>

@@ -47,7 +47,7 @@ ConfirmDialog 的 Backdrop 使用 `forceRender`，保证位于 Workbench 的 Dia
 
 层级 Token：Toast 15 → Bottom Sheet 遮罩 20 / 面板 30 → ConfirmDialog 50 → Select 60 → Tooltip 70。Select 使用 body Portal，避开面板 overflow，宽度跟随 trigger，留碰撞边距。ConfirmDialog 限制视口高度并允许内部滚动。
 
-Toast 位于顶部 safe-area 内，桌面最大宽度 360px，窄屏留边距，区域高度限制为 36dvh / 320px 并可滚动；层级低于模态面板，不覆盖 Bottom Sheet 的主要操作。Base UI `limit=3`；超限项隐藏，库继续管理生命周期。info/success/warning 默认 5 秒，error 8 秒，允许逐条覆盖（0 表示不自动关闭）。悬停/焦点暂停、离开恢复，提供手动关闭，不另建 live region 或 singleton。
+Toast 位于页面上方中央（80px + safe-area），紧凑中性浮层配状态图标，不重复展示状态标题或彩色左边框。按内容收缩，最大宽度 440px，窄屏两边留 16px；区域高度限制为 36dvh / 320px 并可滚动，层级仍低于模态面板。Base UI `limit=3`；超限项隐藏，库继续管理生命周期。success 默认 2.4 秒、无显式 id 时复用成功提示槽以避免连续复制堆叠；info/warning 默认 5 秒，error 8 秒且保持高优先级，允许逐条覆盖（0 表示不自动关闭）。200ms 透明度/轻位移进入退出，Reduced Motion 为 0ms。悬停/焦点暂停、离开恢复，提供手动关闭，不另建 live region 或 singleton；需要用户处理的错误继续留在对应控件附近。
 
 ## 验收
 
