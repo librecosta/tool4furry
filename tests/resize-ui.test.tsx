@@ -303,7 +303,7 @@ describe('single image UI wiring (mocked codecs; not layout/browser evidence)', 
     await user.click(screen.getByRole('button', {name: 'Pan mode'}));
     await user.click(screen.getByRole('button', {name: 'Preview'}));
     await user.click(screen.getByRole('button', {name: 'Focus editor'}));
-    await user.click(screen.getByRole('button', {name: 'Done editing'}));
+    await user.click(within(screen.getByRole('dialog', {name: 'Focus editor'})).getByRole('button', {name: 'Close'}));
     expect(screen.getByText('Downloaded')).toBeDefined();
     expect((screen.getByRole('textbox', {name: 'Width (pixels)'}) as HTMLInputElement).value).toBe('1200');
     await user.click(screen.getByRole('button', {name: 'Download image'}));

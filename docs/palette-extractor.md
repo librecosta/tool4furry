@@ -41,7 +41,7 @@ Palette 普通操作使用默认可见的轻中性表面，主要确认与下载
 
 ## A2-C4-R2 定向验证
 
-- `pnpm check`：287 文件，0 错误/警告/提示；6 个相关测试文件、61 项全部通过，覆盖 Palette 算法/Session/UI、Crop 工作区、预览 Dialog 和 Workbench。`pnpm install --frozen-lockfile`、`git diff --check` 及受影响 Markdown 文件引用检查通过。未重复历史全套图片实验或本地全量测试；完整测试由既有 CI 执行。
+- `pnpm check`：287 文件，0 错误/警告/提示；6 个相关测试文件、61 项全部通过，覆盖 Palette 算法/Session/UI、Crop 工作区、预览 Dialog 和 Workbench。`pnpm install --frozen-lockfile`、`git diff --check` 及受影响 Markdown 文件引用检查通过。未重复历史全套图片实验或本地全量测试；完整测试由既有 CI 执行。首次 CI 的 787 项中只有 Resize UI 仍查找旧“Done editing”入口，已同步为对话框内的“Close”，保留关闭后结果不失效的断言；该文件 19 项单独复跑通过。
 - `pnpm build:cn` / `pnpm build:global` 及内置守卫通过：各 15 个静态页面、两款真实 Published 工具。另扫描各 160 份产物，Palette 路由、选色器代码/局部 CSS/NOTICE 均未泄漏；证据为仓库外 `r2-production-isolation.json`。Registry、Loader 和构建配置未改。
 - 只收敛分享 Dialog、选色 Popover 与右上关闭外观；未改提色算法、分享布局数学/方向/比例/命名、Session、图片内核、SEO 或发布资格。
 - 固定新增 `react-colorful@5.8.1`，包内 MIT 及 Acknowledgements 保留于 [通知文件](../src/tools/palette-extractor/react-colorful.NOTICE.txt)，随工具入口引用；无额外传递运行依赖。其 React peer 为 `>=16.8.0`，当前 React 19.3.0 下通过检查、组件与 Chromium 验证。局部 [CSS](../src/tools/palette-extractor/color-picker.css) 仅适配尺寸、圆角及唯一键盘焦点，不创建公共选色框架。[上游](https://github.com/omgovich/react-colorful) 提供实际 API；版本/许可以本轮固定包与锁文件为准。
