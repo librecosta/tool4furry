@@ -1,84 +1,101 @@
 import type { ToolPageContent } from './tool-content';
+
 export const paletteExtractorContent: Record<'zh' | 'en', ToolPageContent> = {
   zh: {
-    title: '图片调色板提取 - 编辑配色与分享图 | Tool4Furry',
-    h1: '图片调色板提取',
+    title: '在线图片取色与调色板提取 - 配色分享图 | Tool4Furry',
     description:
-      '从图片中自动发现配色，在浏览器本地编辑色卡、复制 HEX 与 RGB，并使用三套模板制作 PNG 分享图。图片无需上传。',
-    intro:
-      '添加一张作品，发现其中的配色。调整提色倾向、手动取色与编辑色卡，再下载调色板或制作分享图。',
+      '从图片中自动提取配色，手动取色、编辑色卡、复制 HEX 和 RGB，下载调色板或生成图片与色带组合的 PNG 分享图。全部在浏览器本地完成。',
+    h1: '图片调色板提取',
+    intro: '从作品中发现配色，调整每一种颜色，再把图片与色带一起保存下来。',
     steps: [
-      '添加 PNG、JPEG、WebP 或受支持的静态 AVIF，工具会自动提取配色。',
-      '选择提色倾向与 3–10 个目标颜色。可以输入 HEX、从图片取色、新增、删除或调整色卡顺序。',
-      '复制色值、下载基础色卡，或打开“制作分享图”，选择模板、填写标题并下载 PNG。支持的浏览器也可以分享图片。',
+      '**添加图片：** 选择或拖入一张图片，工具会自动提取其中的主要颜色。',
+      '**提取配色：** 选择均衡、鲜明、明亮等提色倾向，设置 3–10 个目标颜色。',
+      '**调整色卡：** 在图片上取色，或通过颜色选择器、HEX 输入修改颜色。还可以新增、删除、调整顺序和复制色值。',
+      '**下载与分享：** 下载基础色卡，或将作品与色带组合成分享图。选择排列方向、输出比例和展示颜色数，最后下载 PNG。',
     ],
     limitations: [
-      '一次处理一张静态图片，数量较少的颜色不会强行补齐。文件大小、像素与单边限制以工具内提示为准。动画与无法可靠验证的特殊格式不支持。',
-      '自动分析最长边不超过 640px，手动取色来自最长边不超过 1600px 的方向校正预览。结果用于创作参考，不承诺专业色彩保真。',
-      '完全透明像素不参与提色，低透明度边缘默认过滤；全图只有半透明内容时会适度降低阈值。',
-      '图片与配色只在浏览器本地处理，不持久保存。分享图使用有界预览作品，导出为固定尺寸 PNG；请保留原图。',
+      '支持 PNG、JPEG、WebP 和部分静态 AVIF 图片。一次处理一张，暂不支持动画及部分特殊图片格式。',
+      '文件大小和分辨率存在设备相关的处理限制，具体可在工具内查看。',
+      '完全透明的图片无法提取颜色。自动提取会忽略透明区域，并尽量减少相近颜色的重复。提取结果适合创作参考，不保证专业级色彩精度。',
+      '所有处理均在浏览器本地完成，编辑内容不会持久保存。分享图用于展示作品配色，不代替原始图片；固定输出比例可能裁剪部分画面。',
     ],
     faq: [
       {
-        question: '作品会上传吗？',
+        question: '图片会上传到服务器吗？',
         answer:
-          '不会。读取图片、提色、编辑及分享图绘制都在你的浏览器中完成。系统分享只会在你主动选择分享图片后交由设备处理。',
+          '不会。图片读取、颜色提取、编辑和分享图生成都在当前浏览器中完成，无需上传。',
       },
       {
-        question: '为什么提取颜色少于目标数量？',
+        question: '为什么提取出的颜色少于设置的数量？',
         answer:
-          '单色或少色图片会返回较少的代表色，避免用近重复颜色凑数。你仍可以手动新增颜色，最终调色板支持 1–10 色。',
+          '如果图片中可区分的颜色较少，工具不会为了凑数添加大量相似色。你可以手动增加颜色，最终调色板支持 1–10 色。',
       },
       {
-        question: '手动编辑后更改提色倾向会怎样？',
+        question: '可以自己选择或修改颜色吗？',
         answer:
-          '重新提取会生成新的自动调色板。有手动编辑时会先确认；取消则保留当前配色。模板和标题变化不会重置色卡。',
+          '可以。你可以在图片上拖动取色标记，直接选取需要的颜色，也可以通过颜色选择器或 HEX 输入修改色卡。',
       },
       {
-        question: '可以生成分享链接吗？',
+        question: '重新提取会覆盖我调整过的颜色吗？',
         answer:
-          '不生成在线链接。你可以下载 PNG，或在支持文件分享的浏览器中使用系统分享。',
+          '会。重新提取会生成新的调色板。如果已经手动修改过颜色，工具会先询问是否覆盖。取消操作即可保留现有配色。',
+      },
+      {
+        question: '制作分享图会裁剪原图吗？',
+        answer:
+          '选择「原图比例」时，在支持的尺寸范围内会完整保留作品画面。选择固定比例时，部分画面可能被裁切，你可以在预览中移动或缩放图片调整构图。分享图会将图片与色带组合后导出为 PNG。',
       },
     ],
   },
   en: {
-    title: 'Palette Extractor - Edit Colors & Share Artwork | Tool4Furry',
-    h1: 'Palette Extractor',
+    title: 'Image Color Palette Extractor & Picker | Tool4Furry',
     description:
-      'Discover colors from images locally, edit swatches, copy HEX and RGB values, and create PNG artwork with three sharing templates. No image uploads.',
+      'Extract colors from images, pick and edit swatches, copy HEX and RGB values, and create PNG palette cards with your artwork. Everything runs locally in your browser.',
+    h1: 'Palette Extractor',
     intro:
-      'Add an artwork to discover its colors. Choose a color direction, sample and edit swatches, then download a palette or create a share image.',
+      'Discover the colors in your artwork, fine-tune your palette, and bring your image and colors together in a shareable card.',
+    headings: {
+      steps: 'How to Use',
+      limitations: 'Supported Formats & Limitations',
+      faq: 'Frequently Asked Questions',
+    },
     steps: [
-      'Add a PNG, JPEG, WebP or supported static AVIF. Colors are extracted automatically.',
-      'Choose a direction and 3–10 target colors. Enter HEX values, sample from the image, add, remove or reorder swatches.',
-      'Copy values, download a basic palette, or choose Create share image to select a template, add a title and download a PNG. Supported browsers can also share the image.',
+      '**Add an image:** Choose or drag in an image. The tool automatically extracts its main colors.',
+      '**Extract your palette:** Choose a color direction, such as Balanced, Colorful or Bright, and select 3–10 target colors.',
+      '**Refine your colors:** Pick colors directly from the image, use the color picker or enter HEX values. Add, remove, reorder or copy swatches as needed.',
+      '**Download your palette:** Save a simple palette card, or combine your artwork with a color strip. Choose the layout, output ratio and number of colors, then download a PNG.',
     ],
     limitations: [
-      'One static image at a time. Images with few distinct colors may return fewer swatches. File, pixel and edge limits are shown in the tool. Animation and unsupported variants are rejected.',
-      'Analysis uses a maximum 640px edge; manual sampling uses an oriented preview up to 1600px. Colors are a creative reference, not a promise of professional color fidelity.',
-      'Fully transparent pixels are ignored. Low-alpha edges are filtered by default; the threshold is lowered for images containing only translucent content.',
-      'Images and palettes are processed locally without persistent storage. Share artwork uses the bounded image preview and fixed PNG dimensions. Keep your original image.',
+      'Supports PNG, JPEG, WebP and selected static AVIF images. One image at a time. Animations and some specialized image formats are not supported.',
+      'File size and resolution limits depend on your device. Check the tool for the applicable limits.',
+      'Fully transparent images cannot be analyzed. Transparent areas are ignored, and similar colors may be combined. Extracted colors are intended for creative reference rather than color-critical work.',
+      'All processing happens locally in your browser, without persistent storage. Share cards are intended to present artwork and its palette, not replace the original image. Fixed output ratios may crop parts of the artwork.',
     ],
     faq: [
       {
-        question: 'Is my artwork uploaded?',
+        question: 'Are my images uploaded to a server?',
         answer:
-          'No. Reading, extracting, editing and drawing all happen in your browser. System sharing only hands the image to your device after you choose to share it.',
+          'No. Your images are read, analyzed, edited and rendered directly in your browser without uploading them.',
       },
       {
-        question: 'Why are there fewer colors than requested?',
+        question: 'Why did I get fewer colors than requested?',
         answer:
-          'Single-color and limited-color images return fewer representative swatches instead of near duplicates. You can manually add colors; the edited palette supports 1–10 colors.',
+          'If an image has only a few distinct colors, the tool avoids filling your palette with near duplicates. You can add colors manually, with up to 10 swatches in your edited palette.',
       },
       {
-        question: 'What happens if I change direction after editing?',
+        question: 'Can I pick or edit colors myself?',
         answer:
-          'Extraction generates a new automatic palette. You will be asked to confirm before replacing manual edits. Cancelling keeps your palette; template and title changes never reset it.',
+          'Yes. Drag the sampling markers over your image to choose colors, or use the color picker and HEX input to adjust individual swatches.',
       },
       {
-        question: 'Can I create a share link?',
+        question: 'Will extracting again overwrite my edits?',
         answer:
-          'No online links are generated. Download a PNG, or use system sharing in a browser that supports sharing image files.',
+          "Yes. Re-extracting generates a new palette. If you've edited your colors, the tool asks for confirmation before replacing them. Cancel to keep your current palette.",
+      },
+      {
+        question: 'Will creating a share card crop my artwork?',
+        answer:
+          'The Original Image option preserves the full composition within supported output limits. Fixed aspect ratios may crop the artwork, but you can move or zoom the image in the preview before downloading your PNG.',
       },
     ],
   },

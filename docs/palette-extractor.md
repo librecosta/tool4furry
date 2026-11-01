@@ -2,6 +2,10 @@
 
 第三款工具，CN/Global、zh/en 均为 **Draft**，只在 DEV 的 `/tools/palette-extractor/`（以及同地区语言前缀路径）可用。A2-B 完成功能，A2-C1/C2/C3 调整工作区、颜色标记与反馈，A2-C4-R1 将 Share Composer 收敛为图片与紧凑色带，R2 改为仅下载 PNG、自然高度设置区与嵌入式选色；现有两款 Published 工具、生产页面和部署状态不变，尚未完成 Palette Beta 资格验收。
 
+A2-D1 已按维护者提供的中英文文案完成 SEO 收尾：Title、Meta Description、H1、Intro、步骤、限制和 FAQ 继续使用 Astro 静态正文；清除旧模板、作品标题编辑和系统分享说明，英文标题通过既有可选 headings 提供。Registry 仅同步短描述，保留原有 ID、地区和 Draft 状态；历史验收中的旧 SEO 待办属于当时记录，不改写为当时已通过。
+
+D1 验证（2026-11-01）：`pnpm check` 288 文件，0 错误/警告/提示；4 个相关测试文件、41 项通过；两地区构建及内置守卫通过，仍各 15 个正式页面、两款 Published 工具。四个地区/语言的实际 DEV HTTP 静态 HTML 逐项核对元数据、H1/简介、4/4/5 正文、原生 FAQ、相关工具链接及 `noindex, nofollow`；未复测图片处理或浏览器交互矩阵。证据位于仓库外 `../.validation/palette/d1-content-check.json`，固定端口 4321/4322 的 DEV 已恢复。
+
 ## 模块与所有权
 
 - [工具实现](../src/tools/palette-extractor/PaletteExtractor.tsx)：Form Wide、单图导入、稳定 ID 色卡、完整 HEX 提交、复制/排序/删除、覆盖确认。
@@ -9,7 +13,7 @@
 - [palette](../src/tools/palette-extractor/palette.ts)：有界像素过滤、Color Thief 候选量化、六种倾向与近色去重、contain 坐标映射。
 - [ImageSampler](../src/tools/palette-extractor/ImageSampler.tsx)：复用 Image Core 的 `preview-geometry` 视图数学，拥有适应/缩放/平移与单实例专注模态框；鼠标/触摸 Pointer Events、目标色卡、Escape、9×9 预览像素放大镜。移动鼠标不解码、不量化、不创建 Blob。
 - [render](../src/tools/palette-extractor/render.ts) / [ShareDialog](../src/tools/palette-extractor/ShareDialog.tsx)：同一套 Canvas 几何、字体测量、有效版本 PNG 与本地下载。[ShareCanvas](../src/tools/palette-extractor/ShareCanvas.tsx) 负责有界实时画布及构图手势，[ComposerControls](../src/tools/palette-extractor/ComposerControls.tsx) 负责局部属性面板；没有全站分享框架、Worker 或持久化。
-- [静态内容](../src/site/palette-extractor-content.ts) / [定义](../src/tools/palette-extractor/definition.ts)：双语 SEO、H1、3 步说明、4 项限制、4 项 FAQ；Registry 与字面量 Loader 沿用统一编译期资格。DEV 画家/动画师展示走既有手选 ID 与发布过滤。
+- [静态内容](../src/site/palette-extractor-content.ts) / [定义](../src/tools/palette-extractor/definition.ts)：双语 SEO、H1、4 步说明、4 项限制、5 项 FAQ；Registry 与字面量 Loader 沿用统一编译期资格。DEV 画家/动画师展示走既有手选 ID 与发布过滤。
 
 稳定边界见 [图片处理契约](../contracts/image-processing.md)、[发布契约](../contracts/publication.md)。数值和实际行为以源码与测试为准。
 

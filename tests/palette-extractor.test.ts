@@ -249,8 +249,8 @@ it('registers a bilingual DEV-only draft without changing the two published tool
     expect(getAvailableTools(region, true)).toContain(tool);
     for (const locale of ['zh', 'en'] as const) {
       const content = getToolPageContent(tool, region, undefined, true, locale);
-      expect(content.steps?.length).toBe(3);
-      expect(content.faq?.length).toBe(4);
+      expect(content.steps?.length).toBe(4);
+      expect(content.faq?.length).toBe(5);
     }
   }
 });
