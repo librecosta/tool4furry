@@ -66,6 +66,28 @@ it('cancels waiting tasks and ignores active completion after deletion/unmount',
   release(result()); await flush(); expect(compressImage).toHaveBeenCalledTimes(1);
   expect(session.snapshot().tasks).toEqual([]); expect(session.resources.urlsCreated).toBe(session.resources.urlsRevoked);
 });
+it.each(['intake', 'encode'] as const)('counts a removed active %s File against admission until its native operation settles', async phase => {
+  const session = create({...limits, totalBytes: 5000}), first = file('first.png');
+  let settle!: () => void;
+  if (phase === 'intake') {
+    vi.mocked(acceptImage).mockImplementationOnce(() => new Promise(resolve => {
+      settle = () => resolve({file: first, blob: first, width: 30, height: 20, info: {format: 'png', width: 30, height: 20, orientation: 1}});
+    }));
+  } else {
+    vi.mocked(compressImage).mockImplementationOnce(() => new Promise(resolve => { settle = () => resolve(result()); }));
+  }
+  session.add([first]); await flush();
+  if (phase === 'encode') { session.start(); await flush(); }
+  session.remove(session.snapshot().tasks[0].id);
+  session.add([file('blocked.png')]);
+  expect(session.snapshot().tasks).toEqual([]);
+  expect(session.snapshot().issues).toEqual(['blocked.png']);
+  settle(); await flush();
+  expect(session.snapshot().tasks).toEqual([]);
+  session.add([file('allowed.png')]); await flush();
+  expect(session.snapshot().tasks.map(task => task.file.name)).toEqual(['allowed.png']);
+  expect(session.snapshot().tasks[0].status).toBe('stale');
+});
 it('keeps cumulative results bounded without discarding other verified files', async () => {
   const session = create({...limits, totalBytes: 6500}); session.add([file('one.png'), file('two.png')]); await flush();
   vi.mocked(compressImage).mockImplementation(async () => ({...result(), blob: new Blob([new Uint8Array(4000)])}));

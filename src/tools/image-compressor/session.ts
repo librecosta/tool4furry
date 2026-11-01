@@ -23,6 +23,7 @@ export class CompressorSession {
   private listeners = new Set<() => void>();
   private disposed = false;
   private sequence = 0;
+  private activeFile?: {id: string; file: File};
   private archive?: AbortController;
   private urls = new Map<string, ReturnType<typeof setTimeout>>();
   private readonly time = batchTime(new Date());
@@ -48,10 +49,13 @@ export class CompressorSession {
   add(files: readonly File[]) {
     if (this.disposed) return;
     const tasks = [...this.view.tasks], issues: string[] = [];
-    let total = tasks.reduce((sum, task) => sum + task.file.size, 0);
+    // Removal cancels publication, not the File retained by native work. Keep
+    // that allocation in admission accounting until the active promise settles.
+    const retained = this.activeFile && !tasks.some(task => task.id === this.activeFile!.id) ? this.activeFile.file : undefined;
+    let total = tasks.reduce((sum, task) => sum + task.file.size, retained?.size ?? 0);
     const accepted: string[] = [];
     for (const file of files) {
-      if (tasks.length >= this.limits.files || file.size > this.limits.bytes || total + file.size > this.limits.totalBytes) {
+      if (tasks.length + (retained ? 1 : 0) >= this.limits.files || file.size > this.limits.bytes || total + file.size > this.limits.totalBytes) {
         if (issues.length < 20) issues.push(file.name);
         continue;
       }
@@ -67,11 +71,13 @@ export class CompressorSession {
     const request = task.request;
     this.jobs.schedule(`intake-${id}`, async () => {
       if (!this.valid(id, request)) return;
+      this.activeFile = {id, file: task.file};
       try {
         const source = await acceptImage(task.file, this.resources, this.limits);
         if (!this.valid(id, request)) return;
         this.patch(id, {source, sourceUrl: this.resources.url(source.blob), status: 'stale'});
       } catch (error) { if (this.valid(id, request)) this.patch(id, {status: 'error', error: error instanceof ImageFailure ? error.code : 'decode'}); }
+      finally { this.activeFile = undefined; }
     }, () => { if (this.valid(id, request)) this.patch(id, {status: 'error', request: request + 1, error: 'timeout'}); });
   }
   configure(patch: Partial<CompressionSettings>) {
@@ -95,6 +101,7 @@ export class CompressorSession {
       const current = () => this.valid(task.id, request);
       this.jobs.schedule(`encode-${task.id}`, async () => {
         if (!current()) return;
+        this.activeFile = {id: task.id, file: task.file};
         this.patch(task.id, {status: 'processing'});
         try {
           const result = await compressImage(task.source!, settings, this.resources, this.limits, current);
@@ -103,6 +110,7 @@ export class CompressorSession {
           if (used + result.blob.size > this.limits.totalBytes) throw new ImageFailure('bytes');
           this.patch(task.id, {status: 'ready', result: {...result, url: this.resources.url(result.blob)}});
         } catch (error) { if (current()) this.patch(task.id, {status: 'error', error: error instanceof ImageFailure ? error.code : 'encode'}); }
+        finally { this.activeFile = undefined; }
       }, () => { if (current()) this.patch(task.id, {request: request + 1, status: 'error', error: 'timeout'}); });
     }
   }
