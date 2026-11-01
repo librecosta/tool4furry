@@ -1,11 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { compressImage, outputSize, recommendedSettings, validSettings } from '../src/tools/image-compressor/compress';
+import { compressImage, outputSize, quickSettings, recommendedSettings, sameCompressionSettings, validSettings } from '../src/tools/image-compressor/compress';
 import { decodeChecked, toBlob, validateOutput } from '../src/tools/image/browser-codec';
 import { ImageResources } from '../src/tools/image/resources';
-import { desktopImageLimits as limits } from '../src/tools/image/limits';
+import { desktopImageLimits as limits, mobileImageLimits } from '../src/tools/image/limits';
+import { qualifyCanvasAvif } from '../src/tools/image/inspect-avif';
+import type { AvifEncoder } from '../src/tools/image/avif-encoder';
 import type { ImageSource } from '../src/tools/image/types';
 
 vi.mock('../src/tools/image/browser-codec', () => ({decodeChecked: vi.fn(), toBlob: vi.fn(), validateOutput: vi.fn()}));
+vi.mock('../src/tools/image/inspect-avif', () => ({qualifyCanvasAvif: vi.fn(async blob => blob)}));
 const source: ImageSource = {file: new File([new Uint8Array(4000)], 'picture.png'), blob: new Blob(['pixels']), width: 100, height: 50, info: {format: 'png', width: 100, height: 50, orientation: 1}};
 let resources: ImageResources, canvas: HTMLCanvasElement, context: {drawImage: ReturnType<typeof vi.fn>; fillRect: ReturnType<typeof vi.fn>; fillStyle: string};
 beforeEach(() => {
@@ -25,7 +28,7 @@ describe('bounded compression and original-aspect geometry', () => {
     for (const bad of [0, -1, 1.2, Infinity, 10001]) expect(() => outputSize(source, bad)).toThrow();
   });
   it('rejects invalid targets, quality, formats, backgrounds and resource sizes', () => {
-    for (const change of [{targetBytes: 0}, {targetBytes: Infinity}, {targetBytes: 129 * 1024 ** 2}, {quality: 0}, {quality: 80.1}, {background: 'transparent'}, {longestEdge: -1}, {format: 'avif'}])
+    for (const change of [{targetBytes: 0}, {targetBytes: Infinity}, {targetBytes: 129 * 1024 ** 2}, {quality: 0}, {quality: 80.1}, {background: 'transparent'}, {longestEdge: -1}, {format: 'gif'}])
       expect(validSettings({...recommendedSettings, ...change} as typeof recommendedSettings)).toBe(false);
   });
   it('draws the original exactly once then finds a sampled fitting quality in at most eight encodes', async () => {
@@ -44,10 +47,11 @@ describe('bounded compression and original-aspect geometry', () => {
     expect(result).toMatchObject({width: 100, height: 50, format: 'webp', targetMet: false, saved: -5000});
     expect(result.attempts).toBe(2);
   });
-  it('keeps PNG explicit, encodes once, and does not pretend quality can reach the target', async () => {
-    const result = await compressImage(source, {...recommendedSettings, format: 'png', mode: 'target', targetBytes: 1024}, resources, limits, () => true);
-    expect(result.format).toBe('png'); expect(result.targetMet).toBe(false); expect(result.attempts).toBe(1);
+  it('keeps PNG explicit, encodes once and refuses unsupported target searches', async () => {
+    const result = await compressImage(source, {...recommendedSettings, format: 'png'}, resources, limits, () => true);
+    expect(result.format).toBe('png'); expect(result.targetMet).toBe(true); expect(result.attempts).toBe(1);
     expect(toBlob).toHaveBeenCalledExactlyOnceWith(canvas, 'image/png', undefined);
+    for (const format of ['png', 'avif'] as const) expect(validSettings({...recommendedSettings, format, mode: 'target'})).toBe(false);
   });
   it('composites JPEG transparency using the chosen background and preserves requested dimensions', async () => {
     const result = await compressImage(source, {...recommendedSettings, format: 'jpeg', longestEdge: 40, background: '#123456'}, resources, limits, () => true);
@@ -67,5 +71,38 @@ describe('bounded compression and original-aspect geometry', () => {
     current = false; finish(new Blob(['webp'], {type: 'image/webp'}));
     await expect(job).rejects.toMatchObject({code: 'cancelled'});
     expect(resources.canvasesReleased).toBe(1); expect(validateOutput).not.toHaveBeenCalled();
+  });
+  it('maps strength per format and treats irrelevant quality/target drafts as non-substantive', () => {
+    for (const [format, balanced] of [['jpeg', 88], ['webp', 85], ['avif', 55]] as const) {
+      expect(quickSettings(format, 'balanced').quality).toBe(balanced);
+      expect(quickSettings(format, 'strong').quality).toBeLessThan(balanced);
+      expect(quickSettings(format, 'light').quality).toBeGreaterThan(balanced);
+    }
+    expect(sameCompressionSettings(recommendedSettings, {...recommendedSettings, targetBytes: 1024})).toBe(true);
+    expect(sameCompressionSettings({...recommendedSettings, format: 'png'}, {...recommendedSettings, format: 'png', quality: 1})).toBe(true);
+    expect(sameCompressionSettings(recommendedSettings, {...recommendedSettings, quality: 50})).toBe(false);
+  });
+  it('rejects unsupported devices and AVIF output budgets before native decode', async () => {
+    vi.stubGlobal('Worker', class {});
+    const settings = quickSettings('avif', 'balanced');
+    await expect(compressImage(source, settings, resources, mobileImageLimits, () => true)).rejects.toMatchObject({code: 'avifDevice'});
+    for (const size of [{width: 4097, height: 1}, {width: 2048, height: 2049}])
+      await expect(compressImage({...source, ...size}, settings, resources, limits, () => true)).rejects.toMatchObject({code: 'avifBudget'});
+    expect(decodeChecked).not.toHaveBeenCalled();
+  });
+  it('draws once with explicit resizing and routes AVIF through qualification and output validation', async () => {
+    vi.stubGlobal('Worker', class {});
+    const getImageData = vi.fn(() => ({data: new Uint8ClampedArray(16)}));
+    Object.assign(context, {getImageData});
+    const encode = vi.fn(async () => new ArrayBuffer(64)), operation = {avif: {encode} as unknown as AvifEncoder, signal: new AbortController().signal};
+    const result = await compressImage(source, {...quickSettings('avif', 'balanced'), longestEdge: 40}, resources, limits, () => true, operation);
+    expect(context.drawImage).toHaveBeenCalledExactlyOnceWith(expect.anything(), 0, 0, 40, 20);
+    expect(getImageData).toHaveBeenCalledWith(0, 0, 40, 20);
+    expect(encode).toHaveBeenCalledWith(expect.any(ArrayBuffer), 40, 20, 55, false, operation.signal);
+    expect(qualifyCanvasAvif).toHaveBeenCalledOnce();
+    expect(validateOutput).toHaveBeenCalledWith(expect.objectContaining({type: 'image/avif'}), 'avif', 40, 20, resources, limits);
+    expect(result).toMatchObject({format: 'avif', attempts: 1, width: 40, height: 20});
+    expect(toBlob).not.toHaveBeenCalled();
+    expect(resources.canvasesReleased).toBe(1); expect(resources.bitmapsClosed).toBe(1);
   });
 });

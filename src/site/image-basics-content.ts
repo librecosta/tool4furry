@@ -6,15 +6,15 @@ export const imageCompressorContent: Content = {
   zh: {
     title: '在线图片压缩 - 质量与目标大小 | Tool4Furry', description: '在浏览器本地压缩 JPEG、PNG、WebP 和受支持静态 AVIF 图片。调整质量、目标大小与最长边，对比实际结果，逐张或 ZIP 下载。',
     h1: '图片压缩', intro: '调整图片质量与大小，比较压缩效果，再按需下载。',
-    steps: ['添加一张或多张图片，选择 JPEG、WebP 或 PNG 输出。', '使用推荐设置，或调整质量、目标大小和最长边，再开始压缩。', '检查实际大小和节省比例，对比原图与结果，逐张下载或打包 ZIP。'],
-    limitations: ['支持 JPEG、PNG、WebP 和受支持的静态 AVIF 输入；不支持动画和部分特殊格式。', '目标大小通过有限次数尝试逼近，不保证一定达到。PNG 保持格式时不使用有损质量参数，结果也可能变大。', '图片仅在本地处理。数量、文件大小和分辨率受设备限制；默认移除常见来源隐私元数据。'],
+    steps: ['添加图片或文件夹，选择 PNG、JPEG、WebP，或受支持设备上的 AVIF 输出。', '快速选择压缩强度，或在高级模式中调整质量、目标大小与最长边，然后压缩全部图片。', '检查每张图片的实际大小和节省比例，对比原图与结果，逐张下载或打包 ZIP。'],
+    limitations: ['支持 JPEG、PNG、WebP 和受支持的静态 AVIF 输入；不支持动画和部分特殊格式。AVIF 输出仅在设备能力与独立尺寸限制内可用。', '目标大小仅用于 JPEG/WebP，通过有限次数尝试逼近，不保证达到。PNG 没有有损质量设置，AVIF 本阶段不支持目标大小搜索；输出也可能变大。', '图片仅在本地处理。数量、文件大小和分辨率受设备限制；默认移除常见来源隐私元数据。'],
     faq: [{question: '能保证压缩到指定 KB 吗？', answer: '不能。画面、格式与尺寸会影响结果，工具会显示实际大小和是否达到目标，不伪造压缩比例。'}, {question: 'PNG 应该选择什么格式？', answer: '需要保持 PNG 时可继续输出 PNG；接受有损压缩时可主动选择 WebP 或 JPEG。JPEG 不支持透明背景。'}, {question: '图片变大了怎么办？', answer: '工具会明确提示变大。可以调整质量、尺寸或主动选择其他输出格式；原始文件不会被修改。'}],
   },
   en: {
     title: 'Image Compressor – Quality & Target Size | Tool4Furry', description: 'Compress JPEG, PNG, WebP and supported static AVIF images locally. Adjust quality, target size or longest side, compare actual results, and download files or a ZIP.',
     h1: 'Image Compressor', intro: 'Adjust image quality and size, compare the results, and download what you need.', headings: englishHeadings,
-    steps: ['Add one or more images and choose JPEG, WebP or PNG output.', 'Use the recommended settings or adjust quality, target size and longest side, then start compression.', 'Check actual sizes and savings, compare original and output, and download files individually or as a ZIP.'],
-    limitations: ['Accepts JPEG, PNG, WebP and supported static AVIF images. Animations and some specialized formats are unsupported.', 'Target sizes use a bounded number of attempts and are not guaranteed. PNG output does not use lossy quality settings and may be larger.', 'Processing stays local. Device limits apply to file count, size and resolution. Common source privacy metadata is removed by default.'],
+    steps: ['Add images or a folder and choose PNG, JPEG, WebP, or AVIF on supported devices.', 'Choose a Quick compression strength, or adjust quality, size targets and longest side in Advanced, then compress all images.', 'Check actual sizes and savings for each image, compare original and output, and download files individually or as a ZIP.'],
+    limitations: ['Accepts JPEG, PNG, WebP and supported static AVIF images. Animations and some specialized formats are unsupported. AVIF output has separate device and dimension limits.', 'Size targets apply only to JPEG/WebP and use bounded attempts without a guarantee. PNG has no lossy quality setting, and AVIF size-target searches are not supported. Outputs may be larger.', 'Processing stays local. Device limits apply to file count, size and resolution. Common source privacy metadata is removed by default.'],
     faq: [{question: 'Can I guarantee a specific file size?', answer: 'No. Image content, format and dimensions affect size. The tool reports actual bytes and whether the target was reached.'}, {question: 'Which format should I use for PNG images?', answer: 'Keep PNG when required, or explicitly choose WebP or JPEG for lossy compression. JPEG does not support transparency.'}, {question: 'What if the result is larger?', answer: 'The tool clearly reports an increase. Adjust quality or dimensions, or explicitly choose another format. Your original file stays unchanged.'}],
   },
 };

@@ -4,7 +4,7 @@
 
 | 工具与 DEV 路径 | 当前能力 |
 | --- | --- |
-| [Image Compressor](../src/tools/image-compressor/ImageCompressor.tsx) · `/tools/image-compressor/` | 单张/批量，推荐或自定质量、目标大小、最长边，PNG/JPEG/WebP 输出，原图/结果比较、实际大小与节省比例、独立下载和 ZIP。目标大小只进行有界尝试，未达到或变大均如实显示。 |
+| [Image Compressor](../src/tools/image-compressor/ImageCompressor.tsx) · `/tools/image-compressor/` | 单张/批量与文件夹，快速强度或高级质量/目标大小/最长边，PNG/JPEG/WebP 与受支持桌面设备上的 AVIF 输出，原图/结果比较、实际大小与节省比例、独立下载和 ZIP。JPEG/WebP 目标大小只进行有界尝试，未达到或变大均如实显示。 |
 | [Comic Page Organizer](../src/tools/comic-page-organizer/ComicPageOrganizer.tsx) · `/tools/comic-page-organizer/` | 多图/文件夹，自然排序、缩略图网格、拖排/移动、多选删除、追加、封面、逐页阅读，稳定零填充页名的 ZIP/CBZ。原始图片字节保持不变，来源元数据也可能保留。 |
 | [Image Watermark](../src/tools/image-watermark/ImageWatermark.tsx) · `/tools/image-watermark/` | 单张/批量文字或图片水印，大小/比例、不透明度、九宫格位置、边距、文字颜色，实时有界预览，PNG/JPEG/WebP 输出、单项下载和 ZIP。使用已有本地字体，不提供图层编辑器。 |
 | [EXIF Metadata](../src/tools/exif-metadata/ExifMetadata.tsx) · `/tools/exif-metadata/` | 单张 JPEG/PNG/WebP，真实存在的受支持 EXIF、设备/时间/方向/GPS 等字段与隐私标记，无损清理、基础前后对比、图片预览和下载。未读取的结构明确提示，不能无损清理则拒绝，不静默重编码。 |
@@ -24,3 +24,13 @@ L3 边界：真实 iOS/Android、Firefox/Safari、低端设备及压力测试未
 真实 Chromium 核心 Smoke 覆盖 CN 中文 / Global 英文、桌面与 390px 手机视口、亮暗主题。压缩 JPEG → WebP 512×512，下载 173,386 B，节省 42.3% 与界面一致；1 KB 不可达目标明确提示，双文件 ZIP 可完整解码。漫画实际文件夹导入、自然排序、封面置顶、移动/阅读和 ZIP/CBZ 下载通过，归档为 `page-001.png` 起始的零填充页名，顺序与每项原始字节逐一相等。文字水印 PNG 的中心文字及 60% 不透明度、图片水印左上 80×40 和来源 alpha × 50% 不透明度均经像素验证，PNG/JPEG 输出完整解码。EXIF JPEG 从 5,102 B 清理至 4,499 B，设备、GPS、作者等字段移除，方向 6 保留，清理前后解码像素完全相同；PNG/WebP 读取与清理由定向真实容器测试补足。
 
 可复查的本地临时证据在仓库外 `../.validation/v07-b/`（下载路径清单、字节/像素复检 JSON、Chromium 截图），不进入源码或正式产物。此记录仅代表本轮核心 Smoke，不代表完整格式/设备矩阵或 Beta 资格通过。
+
+## Image Compressor · B1-C1（2026-11-01）
+
+空列表只显示上传和文件夹入口；导入后顶部追加/清空，桌面约 65% 图片列表与 35% 设置，手机列表在前、设置在后。快速/高级复用现有参数模式样式并保留各自草稿；只有实际编码参数变化才撤销有效结果。快速三档强度按格式映射，均衡值引用 Converter 推荐参数；高级提供质量、JPEG/WebP 单项大小目标、最长边和 JPEG 背景。PNG 不显示有损质量，AVIF 不允许目标搜索。未提交的非法输入不能进入处理状态或误下载旧结果。
+
+继续使用唯一 `CompressorSession` / `SerialJobs`，AVIF 直接复用已有 `AvifEncoder`、ST Worker/WASM、设备/输出预算、Canvas 输出资格与完整复检。普通格式不启动 AVIF Worker；AVIF 取消、改参数、删除、卸载或超时会中止对应操作，原生步骤真实完成前不释放串行通道。超限不会静默缩小或替换格式，用户可主动设置最长边。未改公共编码器、其他工具、Registry/Loader 或固定 DEV 端口，压缩器仍为 Draft。
+
+验证：类型检查通过；压缩计算、Session、UI 与既有 AVIF Worker 的定向测试覆盖格式预设、独立草稿、批量/重试、失效/ZIP 快照、保守设备禁用和取消/超时回收。真实 Chromium 覆盖 CN 中文 / Global 英文、桌面和 390px 手机视口、亮暗主题、文件夹双图批量及单张处理。下载的 PNG/JPEG/WebP/AVIF 均按文件内容识别并完整解码为 320×240；透明区域在 PNG/WebP/AVIF 保留，JPEG 填白。AVIF 下载 898 B，大图 3000×2000 明确拒绝后，主动限制最长边导出为 1000×667。双文件 WebP ZIP 与部分失败时的 AVIF ZIP 均可解压并逐项解码，只包含当前成功项。噪点 JPEG 转 PNG 变大、1 KB 目标实际为 42,726 B 时均如实提示。
+
+本地证据在 `../.validation/compressor-c1/`，不进入源码。本轮未在本地重复全量测试、双地区构建或多工具专项夹具，完整验证沿用推送后的既有 CI。AVIF 取消/超时通过受控 Worker 测试验证；真实手机触控、Firefox/Safari、低端设备与压力范围仍属未测 L3，手机视口不代表真机通过。

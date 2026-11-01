@@ -4,6 +4,7 @@ import { desktopImageLimits as limits } from '../src/tools/image/limits';
 import { acceptImage } from '../src/tools/image/browser-codec';
 import { compressImage } from '../src/tools/image-compressor/compress';
 import { packZip } from '../src/tools/image-converter/zip';
+import { ImageFailure } from '../src/tools/image/types';
 
 vi.mock('../src/tools/image/browser-codec', () => ({acceptImage: vi.fn()}));
 vi.mock('../src/tools/image-compressor/compress', async original => ({...await original<typeof import('../src/tools/image-compressor/compress')>(), compressImage: vi.fn()}));
@@ -106,4 +107,57 @@ it('only packs current finished results, uses unique names and aborts changed ZI
   vi.mocked(packZip).mockImplementationOnce(() => new Promise(resolve => { finish = resolve; }));
   const packing = session.zip(); session.configure({quality: 50}); finish(new Blob(['old zip']));
   await expect(packing).rejects.toThrow('changed'); expect(save).toHaveBeenCalledOnce();
+});
+
+function avifWorkerLane() {
+  const workers: FakeWorker[] = [];
+  class FakeWorker {
+    onmessage?: (event: {data: unknown}) => void;
+    onerror?: () => void;
+    postMessage = vi.fn((_data: {id: number}) => {}); terminate = vi.fn();
+    constructor() { workers.push(this); }
+    finish() { const id = this.postMessage.mock.calls.at(-1)![0].id; this.onmessage?.({data: {id, buffer: new ArrayBuffer(16), heap: 32 * 1024 ** 2}}); }
+  }
+  vi.stubGlobal('Worker', FakeWorker);
+  vi.mocked(compressImage).mockImplementation(async (_source, settings, _resources, _limits, current, operation) => {
+    if (settings.format === 'avif') {
+      await operation!.avif.encode(new ArrayBuffer(16), 2, 2, settings.quality, false, operation!.signal);
+      if (!current()) throw new ImageFailure('cancelled');
+      return {...result(), format: 'avif', blob: new Blob(['avif'], {type: 'image/avif'})};
+    }
+    return result();
+  });
+  return workers;
+}
+it('preserves valid results for presentation-only switches and inactive target values', async () => {
+  const session = create(); session.add([file()]); await flush(); session.start(); await flush();
+  const output = session.snapshot().tasks[0].result;
+  session.configure({targetBytes: 1024});
+  expect(session.snapshot().tasks[0].result).toBe(output);
+  expect(URL.revokeObjectURL).not.toHaveBeenCalledWith(output!.url);
+});
+it.each(['cancel', 'configure', 'remove', 'dispose'] as const)('hard-stops AVIF on %s and never accepts the old worker reply', async action => {
+  const workers = avifWorkerLane(), session = create();
+  session.add([file()]); await flush(); expect(workers).toHaveLength(0);
+  session.configure({format: 'avif', quality: 55}); session.start(); await flush();
+  expect(workers).toHaveLength(1);
+  if (action === 'configure') session.configure({quality: 40});
+  else if (action === 'remove') session.remove(session.snapshot().tasks[0].id);
+  else session[action]();
+  await flush(); expect(workers[0].terminate).toHaveBeenCalledOnce();
+  workers[0].finish(); await flush(); expect(session.snapshot().tasks.every(task => !task.result)).toBe(true);
+  expect(session.jobs.active).toBe(false);
+  session.dispose(); expect(session.resources.urlsCreated).toBe(session.resources.urlsRevoked);
+});
+it('ends an AVIF timeout, continues the batch, and retries on a fresh worker', async () => {
+  vi.useFakeTimers(); const workers = avifWorkerLane(), session = create();
+  session.add([file('one.png'), file('two.png')]); await flush();
+  session.configure({format: 'avif', quality: 55}); session.start(); await flush();
+  await vi.advanceTimersByTimeAsync(30000); await flush();
+  expect(session.snapshot().tasks[0]).toMatchObject({status: 'error', error: 'avifTimeout'});
+  expect(workers[0].terminate).toHaveBeenCalledOnce(); expect(workers).toHaveLength(2);
+  workers[1].finish(); await flush(); expect(session.snapshot().tasks[1].status).toBe('ready');
+  session.retry(session.snapshot().tasks[0].id); await flush(); workers[1].finish(); await flush();
+  expect(session.snapshot().tasks.every(task => task.status === 'ready')).toBe(true);
+  expect(session.jobs.maxActive).toBe(1); session.dispose(); expect(workers[1].terminate).toHaveBeenCalledOnce();
 });

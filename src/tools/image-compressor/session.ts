@@ -1,11 +1,12 @@
 import { acceptImage } from '../image/browser-codec';
 import { ImageResources } from '../image/resources';
-import { resolveImageLimits, type ImageLimits } from '../image/limits';
+import { allowsAvifOutput, avifOutputLimits, resolveImageLimits, type ImageLimits } from '../image/limits';
+import { AvifEncoder } from '../image/avif-encoder';
 import { extension, ImageFailure, type ImageSource } from '../image/types';
 import { SerialJobs } from '../image-converter/serial-jobs';
 import { packZip } from '../image-converter/zip';
 import { batchTime, taskFilename } from '../file-naming';
-import { compressImage, recommendedSettings, validSettings, type CompressionSettings } from './compress';
+import { compressImage, recommendedSettings, sameCompressionSettings, validSettings, type CompressionSettings } from './compress';
 
 export type CompressionResult = Awaited<ReturnType<typeof compressImage>> & {url: string};
 export type CompressionTask = Readonly<{
@@ -20,6 +21,9 @@ export class CompressorSession {
   readonly resources = new ImageResources();
   readonly jobs = new SerialJobs();
   readonly limits: ImageLimits;
+  readonly avifSupported: boolean;
+  private avif = new AvifEncoder();
+  private operations = new Map<string, AbortController>();
   private listeners = new Set<() => void>();
   private disposed = false;
   private sequence = 0;
@@ -32,6 +36,7 @@ export class CompressorSession {
     this.limits = limits ?? resolveImageLimits({userAgent: navigator.userAgent,
       mobile: (navigator as Navigator & {userAgentData?: {mobile?: boolean}}).userAgentData?.mobile,
       coarsePointer: typeof matchMedia === 'undefined' || matchMedia('(pointer: coarse)').matches});
+    this.avifSupported = allowsAvifOutput(this.limits) && typeof Worker !== 'undefined' && typeof WebAssembly !== 'undefined';
   }
   snapshot = () => this.view;
   subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
@@ -84,7 +89,9 @@ export class CompressorSession {
     const settings = {...this.view.settings, ...patch};
     if (!validSettings(settings)) return false;
     if (JSON.stringify(settings) === JSON.stringify(this.view.settings)) return true;
+    if (sameCompressionSettings(settings, this.view.settings)) { this.publish({settings}); return true; }
     const tasks = this.view.tasks.map(task => {
+      this.operations.get(task.id)?.abort();
       this.jobs.cancel(`encode-${task.id}`);
       if (task.result) this.resources.revoke(task.result.url);
       // A still-valid intake is independent of export settings.
@@ -102,16 +109,26 @@ export class CompressorSession {
       this.jobs.schedule(`encode-${task.id}`, async () => {
         if (!current()) return;
         this.activeFile = {id: task.id, file: task.file};
+        const controller = new AbortController(); this.operations.set(task.id, controller);
+        const deadline = settings.format === 'avif' ? setTimeout(() => {
+          if (current()) {
+            controller.abort();
+            this.patch(task.id, {request: request + 1, status: 'error', error: 'avifTimeout'});
+          }
+        }, avifOutputLimits.timeout) : undefined;
         this.patch(task.id, {status: 'processing'});
         try {
-          const result = await compressImage(task.source!, settings, this.resources, this.limits, current);
+          const result = await compressImage(task.source!, settings, this.resources, this.limits, current, {avif: this.avif, signal: controller.signal});
           if (!current()) return;
           const used = this.view.tasks.reduce((sum, entry) => sum + (entry.result?.blob.size ?? 0), 0);
           if (used + result.blob.size > this.limits.totalBytes) throw new ImageFailure('bytes');
           this.patch(task.id, {status: 'ready', result: {...result, url: this.resources.url(result.blob)}});
         } catch (error) { if (current()) this.patch(task.id, {status: 'error', error: error instanceof ImageFailure ? error.code : 'encode'}); }
-        finally { this.activeFile = undefined; }
-      }, () => { if (current()) this.patch(task.id, {request: request + 1, status: 'error', error: 'timeout'}); });
+        finally {
+          clearTimeout(deadline); this.activeFile = undefined;
+          if (this.operations.get(task.id) === controller) this.operations.delete(task.id);
+        }
+      }, () => { if (current()) { this.operations.get(task.id)?.abort(); this.patch(task.id, {request: request + 1, status: 'error', error: 'timeout'}); } });
     }
   }
   retry(id: string) {
@@ -121,6 +138,7 @@ export class CompressorSession {
   }
   cancel() {
     const tasks = this.view.tasks.map(task => {
+      this.operations.get(task.id)?.abort();
       this.jobs.cancel(`encode-${task.id}`);
       this.jobs.cancel(`intake-${task.id}`);
       if (task.status === 'validating') return {...task, status: 'error' as const, request: task.request + 1, error: 'cancelled'};
@@ -130,6 +148,7 @@ export class CompressorSession {
   }
   remove(id: string) {
     const task = this.task(id); if (!task) return;
+    this.operations.get(id)?.abort();
     this.jobs.cancel(`intake-${id}`); this.jobs.cancel(`encode-${id}`);
     if (task.sourceUrl) this.resources.revoke(task.sourceUrl);
     if (task.result) this.resources.revoke(task.result.url);
@@ -166,7 +185,7 @@ export class CompressorSession {
     } finally { if (this.archive === controller) this.archive = undefined; }
   }
   dispose() {
-    this.clear(); this.disposed = true; this.archive?.abort(); this.jobs.dispose(); this.listeners.clear();
+    this.clear(); this.disposed = true; this.archive?.abort(); this.jobs.dispose(); this.avif.dispose(); this.operations.clear(); this.listeners.clear();
     for (const [url, timer] of this.urls) { clearTimeout(timer); this.resources.revoke(url); } this.urls.clear();
   }
 }
