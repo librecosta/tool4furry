@@ -247,6 +247,7 @@ it('registers the third bilingual Published tool in both regions', () => {
       'image-resize-crop',
       'palette-extractor',
       'image-compressor',
+      'exif-metadata',
     ]);
     expect(getAvailableTools(region, true)).toContain(tool);
     for (const locale of ['zh', 'en'] as const) {
