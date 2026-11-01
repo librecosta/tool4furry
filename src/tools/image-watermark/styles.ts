@@ -1,0 +1,26 @@
+import * as stylex from '@stylexjs/stylex';
+import { tokens as t } from '../../styles/tokens.stylex';
+export const s = stylex.create({
+  stack: {display: 'grid', gap: t.space16, minWidth: 0},
+  workspace: {display: 'grid', gridTemplateColumns: {default: 'minmax(0, 1fr) 340px', '@media (max-width: 800px)': 'minmax(0, 1fr)'}, gap: t.space24, alignItems: 'start', minWidth: 0},
+  panel: {display: 'grid', gap: t.space16, minWidth: 0, padding: t.space16, borderRadius: t.radiusLg, backgroundColor: t.surfacePanel},
+  actions: {display: 'flex', alignItems: 'center', gap: t.space8, flexWrap: 'wrap', minWidth: 0},
+  preview: {display: 'grid', placeItems: 'center', minHeight: 280, maxHeight: 520, overflow: 'hidden', borderRadius: t.radiusLg, backgroundColor: t.workspace},
+  canvas: {maxWidth: '100%', maxHeight: {default: 480, '@media (max-width: 600px)': 360}, objectFit: 'contain', width: 'auto', height: 'auto'},
+  title: {fontSize: 18, fontWeight: 600, margin: 0},
+  note: {fontSize: 13, lineHeight: 1.6, color: t.textSecondary, margin: 0, overflowWrap: 'anywhere'},
+  error: {fontSize: 13, lineHeight: 1.6, color: t.danger, margin: 0, overflowWrap: 'anywhere'},
+  list: {display: 'grid', gap: t.space8, listStyleType: 'none', padding: 0, margin: 0},
+  row: {display: 'flex', flexWrap: 'wrap', gap: t.space12, alignItems: 'center', paddingBlock: t.space8, paddingInline: t.space8, borderRadius: t.radiusMd, minWidth: 0},
+  selected: {backgroundColor: `color-mix(in srgb, ${t.supportLavender} 12%, ${t.surface})`},
+  thumb: {width: 48, height: 48, flexShrink: 0},
+  info: {display: 'grid', gap: t.space4, flex: '1 1 180px', minWidth: 0},
+  name: {fontSize: 14, fontWeight: 500, overflowWrap: 'anywhere'},
+  positions: {display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: t.space4},
+  group: {borderWidth: 0, padding: 0, margin: 0, minWidth: 0},
+  legend: {fontWeight: 500, marginBottom: t.space8},
+  choice: {display: 'flex', justifyContent: 'center', alignItems: 'center', gap: t.space4, minHeight: 44, cursor: 'pointer', padding: t.space4, borderRadius: t.radiusSm, backgroundColor: {default: t.surface, ':hover': t.surfaceHover}, color: t.textSecondary, fontSize: 12, ':has(input:focus-visible)': {outlineWidth: 2, outlineStyle: 'solid', outlineColor: t.focus, outlineOffset: 2}},
+  chosen: {color: t.supportLavender, backgroundColor: `color-mix(in srgb, ${t.supportLavender} 15%, ${t.surface})`},
+  radio: {accentColor: t.supportLavender, width: 14, height: 14, margin: 0},
+  accent: {backgroundColor: {default: t.communityAction, ':hover': t.communityActionHover}, color: t.onCommunityAction, borderColor: 'transparent'},
+});

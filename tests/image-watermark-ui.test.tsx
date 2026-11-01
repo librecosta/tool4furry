@@ -1,0 +1,32 @@
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, expect, it, vi } from 'vitest';
+import ImageWatermark from '../src/tools/image-watermark/ImageWatermark';
+import { UiProvider } from '../src/ui/UiProvider';
+import { messages } from '../src/i18n/messages';
+import { acceptImage, decodeChecked, toBlob } from '../src/tools/image/browser-codec';
+import { setViewport } from './setup';
+vi.mock('../src/tools/image/browser-codec',()=>({acceptImage:vi.fn(),decodeChecked:vi.fn(),toBlob:vi.fn(),validateOutput:vi.fn()}));
+vi.mock('../src/tools/image-watermark/render',async original=>({...await original<typeof import('../src/tools/image-watermark/render')>(),loadWatermarkFonts:vi.fn(async()=>{})}));
+beforeEach(()=>{
+ setViewport();
+ vi.mocked(acceptImage).mockImplementation(async file=>({file,blob:file,width:600,height:400,info:{width:600,height:400,format:'png',orientation:1}}));
+ vi.mocked(decodeChecked).mockResolvedValue({width:600,height:400,close:vi.fn()} as unknown as ImageBitmap);
+ vi.mocked(toBlob).mockResolvedValue(new Blob(['png'],{type:'image/png'}));
+ vi.spyOn(HTMLCanvasElement.prototype,'getContext').mockReturnValue({save:vi.fn(),restore:vi.fn(),scale:vi.fn(),clearRect:vi.fn(),drawImage:vi.fn(),measureText:()=>({width:100}),fillText:vi.fn()} as never);
+ vi.stubGlobal('URL',Object.assign(URL,{createObjectURL:vi.fn(()=>`blob:${Math.random()}`),revokeObjectURL:vi.fn()}));
+});
+it.each(['zh','en'] as const)('shows the %s full Draft controls using shared form primitives and all nine positions',async locale=>{
+ const {container}=render(<UiProvider labels={messages[locale]}><ImageWatermark locale={locale} region="cn"/></UiProvider>);
+ await waitFor(()=>expect((screen.getByRole('button',{name:locale==='zh'?'添加图片或拖放到这里':'Choose images or drop them here'}) as HTMLButtonElement).disabled).toBe(false));
+ expect(container.querySelector('select')).toBeNull();
+ expect(container.querySelector('[data-workbench="form"]')).toBeTruthy();
+ expect(screen.getAllByRole('radio')).toHaveLength(9);
+ const input=container.querySelector('input[type="file"]')!;
+ fireEvent.change(input,{target:{files:[new File(['png'],'a.png',{type:'image/png'})]}});
+ await waitFor(()=>expect(screen.getByText('a.png')).toBeTruthy());
+ await waitFor(()=>expect(container.querySelector('canvas[data-watermark-preview]')).toBeTruthy());
+ fireEvent.click(screen.getByRole('radio',{name:locale==='zh'?'左上':'Top left'}));
+ expect((screen.getByRole('radio',{name:locale==='zh'?'左上':'Top left'}) as HTMLInputElement).checked).toBe(true);
+ await act(async()=>fireEvent.click(screen.getByRole('button',{name:locale==='zh'?'清空列表':'Clear list'})));
+ expect(screen.queryByText('a.png')).toBeNull();
+});

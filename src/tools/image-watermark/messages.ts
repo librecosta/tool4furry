@@ -1,0 +1,28 @@
+export const messages = {
+  zh: {
+    title: '图片水印', add: '添加图片或拖放到这里', addMore: '追加图片', limits: '支持格式与限制',
+    limitCopy: '支持 PNG、JPEG、WebP 和部分静态 AVIF。输出 PNG、JPEG、WebP。图片水印最多 4MP、4096px；处理数量和大小受设备限制。图片只在当前浏览器处理。',
+    settings: '水印设置', kind: '水印类型', text: '文字水印', image: '图片水印', content: '水印文字',
+    uploadMark: '选择水印图片', removeMark: '移除水印图片', fontSize: '字体大小', scale: '图片水印宽度', opacity: '透明度',
+    position: '水印位置', positions: ['左上', '上中', '右上', '左中', '正中', '右中', '左下', '下中', '右下'], margin: '边距', color: '文字颜色',
+    format: '输出格式', quality: '编码质量', background: 'JPEG 背景色', process: '处理全部', cancel: '取消处理', clear: '清空列表',
+    preview: '实时预览', previewNote: '构图预览', none: '添加图片后预览水印效果。', select: '编辑', view: '查看图片', download: '下载', retry: '重试', generate: '生成', remove: '移除',
+    zip: '下载 ZIP', packing: '正在打包', result: '已完成', failed: '失败', empty: '暂无图片',
+    status: {checking: '检查中', idle: '待处理', queued: '等待中', processing: '处理中', ready: '已完成', error: '失败', stale: '待重新生成'},
+    errors: {input: '无法读取图片，请检查文件格式、尺寸与大小。', watermark: '无法读取水印图片，请使用支持的静态图片（最多 4MP、4096px）。', output: '无法生成有效结果。浏览器可能不支持所选格式，请重试或主动选择其他格式。', budget: '文件数量、大小或累计结果超过当前设备限制，请减少文件后重试。', timeout: '处理超时，请重试或使用较小图片。', preview: '预览无法加载，请重新选择图片。', settings: '请填写有效参数，并先选择图片水印。', zip: '打包失败或内容已变化，请重试。', invalid: '请填写有效文字或 #RRGGBB 颜色。'},
+    close: '关闭',
+  },
+  en: {
+    title: 'Image Watermark', add: 'Choose images or drop them here', addMore: 'Add images', limits: 'Supported formats & limits',
+    limitCopy: 'Import PNG, JPEG, WebP and selected static AVIF images. Export PNG, JPEG or WebP. Watermark images support up to 4MP / 4096px. Device limits apply to file counts and sizes. Images stay in your browser.',
+    settings: 'Watermark settings', kind: 'Watermark type', text: 'Text watermark', image: 'Image watermark', content: 'Watermark text',
+    uploadMark: 'Choose watermark image', removeMark: 'Remove watermark image', fontSize: 'Font size', scale: 'Watermark image width', opacity: 'Opacity',
+    position: 'Watermark position', positions: ['Top left', 'Top center', 'Top right', 'Center left', 'Center', 'Center right', 'Bottom left', 'Bottom center', 'Bottom right'], margin: 'Margin', color: 'Text color',
+    format: 'Output format', quality: 'Encoding quality', background: 'JPEG background', process: 'Process all', cancel: 'Cancel processing', clear: 'Clear list',
+    preview: 'Live preview', previewNote: 'Composition preview', none: 'Add an image to preview your watermark.', select: 'Edit', view: 'Preview image', download: 'Download', retry: 'Retry', generate: 'Generate', remove: 'Remove',
+    zip: 'Download ZIP', packing: 'Packing', result: 'Completed', failed: 'Failed', empty: 'No images yet',
+    status: {checking: 'Checking', idle: 'Waiting', queued: 'Queued', processing: 'Processing', ready: 'Done', error: 'Failed', stale: 'Out of date'},
+    errors: {input: 'The image could not be read. Check its format, dimensions and size.', watermark: 'The watermark could not be read. Choose a supported static image up to 4MP / 4096px.', output: 'A valid output could not be generated. Your browser may not support this format. Retry or choose another format.', budget: 'The file count, size or accumulated output exceeds this device’s limits. Remove some files and retry.', timeout: 'Processing timed out. Retry or use a smaller image.', preview: 'The preview could not load. Select the image again.', settings: 'Check your settings and choose a watermark image first.', zip: 'Packing failed or the contents changed. Please retry.', invalid: 'Enter valid text or a #RRGGBB color.'},
+    close: 'Close',
+  },
+};
