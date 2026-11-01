@@ -7,7 +7,7 @@ Image Compressor 为 CN/Global、zh/en **Published**；Comic Page Organizer、Im
 | [Image Compressor](../src/tools/image-compressor/ImageCompressor.tsx) · `/tools/image-compressor/` | 单张/批量与文件夹，快速强度或高级质量/目标大小/最长边，PNG/JPEG/WebP 与受支持桌面设备上的 AVIF 输出，原图/结果比较、实际大小与节省比例、独立下载和 ZIP。JPEG/WebP 目标大小只进行有界尝试，未达到或变大均如实显示。 |
 | [Comic Page Organizer](../src/tools/comic-page-organizer/ComicPageOrganizer.tsx) · `/tools/comic-page-organizer/` | 多图/文件夹，自然排序、缩略图网格、拖排/移动、多选删除、追加、封面、逐页阅读，稳定零填充页名的 ZIP/CBZ。原始图片字节保持不变，来源元数据也可能保留。 |
 | [Image Watermark](../src/tools/image-watermark/ImageWatermark.tsx) · `/tools/image-watermark/` | 单张/批量文字或图片水印，大小/比例、不透明度、九宫格位置、边距、文字颜色，实时有界预览，PNG/JPEG/WebP 输出、单项下载和 ZIP。使用已有本地字体，不提供图层编辑器。 |
-| [EXIF Metadata](../src/tools/exif-metadata/ExifMetadata.tsx) · `/tools/exif-metadata/` | 单张 JPEG/PNG/WebP，真实存在的受支持 EXIF、设备/时间/方向/GPS 等字段与隐私标记，无损清理、基础前后对比、图片预览和下载。未读取的结构明确提示，不能无损清理则拒绝，不静默重编码。 |
+| [EXIF Metadata](../src/tools/exif-metadata/ExifMetadata.tsx) · `/tools/exif-metadata/` | 单张/批量 JPEG/PNG/WebP 与文件夹导入，选中文件查看紧凑斑马纹元数据表及隐私标记，逐项或全部无损清理、前后字段对照、单项下载与成功结果 ZIP。未知结构明确失败并支持重试，无需清理的验证结果也可下载；不提供图片预览。 |
 
 四模块分别拥有 Session、稳定任务/结果版本与资源；复用 Image Core、ImageResources、设备 limits、SerialJobs 和既有 ZIP。重型原生操作即使已过期也须真实完成后释放通道；取消、删除、清空和参数改变撤销下载/ZIP 快照，结果累计有界。不同时解码全部原图。原始文件不上传、不持久保存。
 
@@ -50,3 +50,13 @@ L2 复用 B1-C1 四格式、目标未达成、输出变大、设备/尺寸拒绝
 既有 [B1-C1 CI](https://github.com/librecosta/tool4furry/actions/runs/41319862527) 已通过；完整测试由本次推送触发的既有 GitHub Actions 执行，最终结果以对应提交工作流为准。未发现发布阻断项，依据维护者本任务授权提升源码 Published，V0.7-B1 收尾；未部署、未创建 Tag/Release。真实 iOS/Android、Firefox/Safari、低端设备和压力测试仍为未测 L3。
 
 可复查的本地下载复检、产物检查 JSON 与 Chromium 截图位于仓库外 `../.validation/compressor-d1/`，结合 C1/R1 历史证据使用，不进入源码或公开资源。
+
+## EXIF Metadata · B4-C1（2026-11-02）
+
+沿用 Form Wide，顶部追加图片/文件夹与清空，桌面左侧任务、右侧当前文件的元数据详情，手机自然上下排列。原生表格使用主题中性色交替行、统一内边距和列宽，保留隐私标记、长值换行及小屏横向滚动；清理前两列，成功后展示前后值。移除图片预览、比较弹窗和相关原图/结果 URL。
+
+`MetadataSession` 扩展为稳定 ID 的文件集合，检测与清理共用唯一 `SerialJobs`。复用 `cleanImageMetadata()`、格式/方向/尺寸及完整解码复检，不重编码；失败隔离，逐项重试，未改变的验证结果保持下载资格。输入/累计结果受现有设备预算约束，删除中的原生操作仍计入准入，超时不提前释放通道。结果只保留 Blob，下载 URL 短暂持有并在删除/清空/卸载时释放。ZIP 使用既有打包预算与稳定命名，只接受已结束且当前有效的成功项；文件/结果变化中止快照，单纯选择文件不撤销归档。EXIF 局部解析器改用兼容 CommonJS 的默认导入，避免 DEV 服务端命名导入失败回退；解析规则未变。
+
+验收：24 项 EXIF 定向测试与类型检查通过。真实 Chromium 覆盖 CN 中文桌面、Global 英文 390px 手机视口及亮暗主题，文件夹/多选导入、单项/批量清理、失败重试、相邻选择、清空、下载与 ZIP。五文件批次中两项清理、一项无需清理、损坏输入与未知 APP1 清理各失败；ZIP 只包含三项成功文件，逐项解压、真实 MIME/格式、方向和完整解码通过，清理前后像素逐字节一致。`manual-exif.jpg` 从 23,159 B 到 22,933 B，设备/时间/GPS 移除，方向 6 保留；普通 JPEG 保留原始全部字节。下载和截图证据在仓库外 `../.validation/exif-c1/`。
+
+仍为 Draft；未改 SEO 正文、公共图片内核、其他工具或发布架构。本地未重复全量测试、双地区构建或大型矩阵，完整检查沿用既有 CI。手机视口不是实际触控设备；真实 iOS/Android、Firefox/Safari 和压力范围仍未验证。

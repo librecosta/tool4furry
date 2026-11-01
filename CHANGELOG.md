@@ -23,6 +23,8 @@
 
 ### Changed
 
+- V0.7-B4-C1 将 EXIF Metadata 扩展为共享文件列表、文件夹导入、单项/批量无损清理与成功结果 ZIP，加入主题斑马纹元数据表和前后字段对照，移除图片预览。检测/清理复用唯一串行通道、现有安全清理与预算，失败可隔离重试，仍保持 Draft。
+
 - V0.7-B1-D1 完成 Image Compressor 冻结双语 SEO 与 Beta 审计，按维护者授权提升源码 Published，保留 C1-R1 最长边步进器。首页、创作身份和发现文件沿用 Registry 投影，AVIF 复用既有按需 Worker/WASM 及许可；漫画整理、水印和 EXIF 继续保持 Draft。B1 收尾，未部署或创建 Tag/Release。
 
 - V0.7-B1-C1 将 Image Compressor 调整为文件列表 / 设置双栏与移动单栏，增加文件夹入口、独立快速/高级草稿和按格式区分的三档强度。复用既有 AVIF Worker/WASM、输出预算与真实格式复检，取消/超时回收仍受原串行通道管理；目标大小仅用于 JPEG/WebP。保持 Draft，不改其他工具业务或发布资格。

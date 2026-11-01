@@ -1,65 +1,98 @@
 import { useEffect, useRef, useState } from 'react';
 import * as stylex from '@stylexjs/stylex';
+import { ArrowClockwiseIcon, BroomIcon, DownloadSimpleIcon, TrashIcon } from '@phosphor-icons/react';
 import WorkbenchShell from '../../workbench/WorkbenchShell';
-import { Button } from '../../ui/Button';
+import { Button, IconButton } from '../../ui/Button';
 import { FileDropzone } from '../../ui/FileDropzone';
-import { ImageComparisonDialog } from '../image/ImageComparisonDialog';
-import { imagePreviewMessages } from '../image/preview-messages';
-import { tokens } from '../../styles/tokens.stylex';
-import { MetadataSession, type MetadataState } from './session';
+import { FileTaskList } from '../../ui/FileTaskList';
+import { Tooltip } from '../../ui/Tooltip';
+import { controls } from '../../styles/controls';
+import { sortedFolderFiles } from '../image-converter/intake';
+import { MetadataSession, emptyMetadataState, type MetadataTask, type MetadataState } from './session';
 import { fieldNames } from './read-metadata';
+import { messages } from './messages';
+import { s } from './styles';
 import type { ToolProps } from '../types';
 import notice from './exifr.NOTICE.txt?url';
 
-const messages = {
-  zh: {title: '图片信息', pick: '选择图片或拖放到这里', details: '支持格式与限制', limits: 'JPEG / PNG / WebP。仅展示可可靠解析的 EXIF 字段；GPS 等信息标记为隐私。清理不重新编码，保留必要方向与受支持色彩信息，不保证清除所有隐藏信息。', clear: '清空', clean: '清理元数据', download: '下载清理后的图片', preview: '预览与对比', busy: '正在处理…', inputError: '无法读取此图片。请选择受支持的静态 JPEG、PNG 或 WebP，检查文件大小与分辨率。', cleanError: '无法安全无损清理这张图片，未生成替代文件。请尝试其他图片。', timeout: '处理超时，请重试或选择较小的图片。', empty: '添加图片，查看其中的元数据。', noFields: '未发现可展示的 EXIF 字段。', partial: '部分元数据结构未解析；下方仅展示可靠读取的字段。', private: '隐私', field: '字段', before: '清理前', after: '清理后', removed: '已移除', unchanged: '未发现需要清理的已知元数据。', done: '已无损清理并验证图片。', size: '文件大小', dimensions: '像素尺寸', format: '格式', blocks: '检测到的元数据块', none: '无', imageError: '图片预览无法加载。'},
-  en: {title: 'Image information', pick: 'Choose an image or drop it here', details: 'Supported formats & limits', limits: 'JPEG / PNG / WebP. Only reliably parsed EXIF fields are shown; GPS and related private fields are marked. Cleaning does not re-encode pixels and retains necessary orientation and supported color data. It cannot guarantee removal of all hidden information.', clear: 'Clear', clean: 'Remove metadata', download: 'Download cleaned image', preview: 'Preview and compare', busy: 'Processing…', inputError: 'This image could not be read. Choose a supported static JPEG, PNG or WebP within the file and resolution limits.', cleanError: 'This image could not be safely cleaned without re-encoding. No substitute file was generated. Try another image.', timeout: 'Processing timed out. Try again or choose a smaller image.', empty: 'Add an image to inspect its metadata.', noFields: 'No displayable EXIF fields were found.', partial: 'Some metadata structures were not parsed. Only reliably read fields are shown below.', private: 'Private', field: 'Field', before: 'Before', after: 'After', removed: 'Removed', unchanged: 'No known metadata requiring cleanup was found.', done: 'The image was losslessly cleaned and verified.', size: 'File size', dimensions: 'Pixel dimensions', format: 'Format', blocks: 'Detected metadata blocks', none: 'None', imageError: 'The image preview could not load.'},
-};
+const bytes = (value: number) => value < 1024 ** 2 ? `${(value / 1024).toFixed(1)} KB` : `${(value / 1024 ** 2).toFixed(2)} MB`;
 export default function ExifMetadata({locale}: ToolProps) {
-  const t = messages[locale], [owner, setOwner] = useState<MetadataSession>(), [view, setView] = useState<MetadataState>({busy: false});
-  const [open, setOpen] = useState(false), [imageError, setImageError] = useState(false), trigger = useRef<HTMLButtonElement>(null);
-  useEffect(() => { const session = new MetadataSession(); setOwner(session); const off = session.subscribe(() => setView(session.snapshot())); return () => { off(); session.dispose(); }; }, []);
-  useEffect(() => { setOpen(false); setImageError(false); }, [view.source]);
-  const labels = {parameters: t.title, close: t.clear, showParameters: t.title, hideParameters: t.title, showTools: t.title, hideTools: t.title, main: t.title, toolbar: t.title};
-  const source = view.source, output = view.output;
-  return <WorkbenchShell mode="form" formWidth="wide" labels={labels}>
+  const t = messages[locale], [owner, setOwner] = useState<MetadataSession>(), [view, setView] = useState<MetadataState>(emptyMetadataState);
+  const folderInput = useRef<HTMLInputElement>(null), [folderSupported, setFolderSupported] = useState<boolean>();
+  const [packing, setPacking] = useState(false), [zipError, setZipError] = useState(false);
+  useEffect(() => {
+    const session = new MetadataSession(); setOwner(session); setView(session.snapshot());
+    setFolderSupported('webkitdirectory' in document.createElement('input'));
+    const off = session.subscribe(() => setView(session.snapshot()));
+    return () => { off(); session.dispose(); };
+  }, []);
+  const hasFiles = view.tasks.length > 0, selected = view.tasks.find(task => task.id === view.selectedId);
+  const pending = view.tasks.some(task => ['queued', 'processing'].includes(task.status));
+  const unfinished = pending || view.tasks.some(task => task.status === 'stale');
+  const ready = view.tasks.filter(task => task.status === 'ready').length, failed = view.tasks.filter(task => task.status === 'error').length;
+  const canClean = view.tasks.some(task => task.source && ['stale', 'error'].includes(task.status));
+  const error = (code?: MetadataTask['error']) => code === 'input' ? t.inputError : code === 'timeout' ? t.timeout : code === 'budget' ? t.budget : t.cleanError;
+  const status = (task: MetadataTask) => task.status === 'queued' ? task.phase === 'inspect' ? t.inspectWaiting : t.cleanWaiting :
+    task.status === 'processing' ? task.phase === 'inspect' ? t.inspecting : t.cleaning : task.status === 'stale' ? t.pending :
+    task.status === 'ready' ? task.output?.changed ? t.done : t.unchanged : task.phase === 'inspect' ? t.inputFailed : t.cleanFailed;
+  const mutate = (action: () => void) => { setZipError(false); action(); };
+  const rows = selected?.source ? [
+    {key: 'format', label: t.format, before: selected.source.info.format.toUpperCase(), after: selected.source.info.format.toUpperCase()},
+    {key: 'dimensions', label: t.dimensions, before: `${selected.source.width} × ${selected.source.height}`, after: `${selected.source.width} × ${selected.source.height}`},
+    {key: 'size', label: t.size, before: `${selected.source.blob.size.toLocaleString(locale)} B`, after: selected.output ? `${selected.output.blob.size.toLocaleString(locale)} B` : ''},
+    {key: 'blocks', label: t.blocks, before: selected.before?.blocks.join(', ') || t.none, after: selected.output?.after.blocks.join(', ') || t.none},
+    ...selected.before?.fields.map(field => ({key: field.key, label: fieldNames[field.key][locale === 'zh' ? 0 : 1], before: field.value,
+      after: selected.output?.after.fields.find(item => item.key === field.key)?.value ?? t.removed, private: field.private})) ?? [],
+  ] : [];
+  return <WorkbenchShell mode="form" formWidth="wide" labels={{parameters: t.details, main: t.title, toolbar: t.tasks, close: t.clear, showParameters: t.details, hideParameters: t.details, showTools: t.tasks, hideTools: t.tasks}}>
     <link rel="license" href={notice}/>
     <div data-exif-metadata {...stylex.props(s.stack)}>
-      <FileDropzone label={t.pick} disabled={!owner} accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" maxFiles={1} maxSizeBytes={owner?.limits.bytes} issueMessages={{type: t.inputError, count: t.inputError, size: t.inputError}} onFilesReceived={files => { if (files[0]) owner?.import(files[0]); }}/>
-      <details {...stylex.props(s.muted)}><summary>{t.details}</summary><p>{t.limits}</p>{owner && <p>≤ {owner.limits.bytes / 1024 ** 2} MiB · {owner.limits.pixels / 1e6} MP · {owner.limits.edge}px</p>}</details>
-      {view.busy && <p role="status">{t.busy}</p>}
-      {view.error && <p role="alert" {...stylex.props(s.error)}>{view.error === 'input' ? t.inputError : view.error === 'clean' ? t.cleanError : t.timeout}</p>}
-      {!source && !view.busy && <p {...stylex.props(s.muted)}>{t.empty}</p>}
-      {source && <>
-        <div {...stylex.props(s.actions)}>
-          <Button variant="ghost" xstyle={s.accent} disabled={view.busy} onClick={() => owner?.clean()}>{t.clean}</Button>
-          {output && <Button variant="ghost" xstyle={s.accent} onClick={() => owner?.download()}>{t.download}</Button>}
-          <Button ref={trigger} variant="ghost" xstyle={s.secondary} onClick={() => setOpen(true)}>{t.preview}</Button>
-          <Button variant="ghost" xstyle={s.secondary} onClick={() => owner?.clear()}>{t.clear}</Button>
-        </div>
-        <p {...stylex.props(s.filename)}>{source.file.name}</p>
-        {output && <p role="status">{output.changed ? t.done : t.unchanged}</p>}
-        {view.before?.partial && <p {...stylex.props(s.muted)}>{t.partial}</p>}
-        <div {...stylex.props(s.tableScroll)}><table {...stylex.props(s.table)}><thead><tr><th>{t.field}</th><th>{t.before}</th>{output && <th>{t.after}</th>}</tr></thead><tbody>
-          <tr><th>{t.format}</th><td>{source.info.format.toUpperCase()}</td>{output && <td>{source.info.format.toUpperCase()}</td>}</tr>
-          <tr><th>{t.dimensions}</th><td>{source.width} × {source.height}</td>{output && <td>{source.width} × {source.height}</td>}</tr>
-          <tr><th>{t.size}</th><td>{source.blob.size.toLocaleString(locale)} B</td>{output && <td>{output.blob.size.toLocaleString(locale)} B</td>}</tr>
-          <tr><th>{t.blocks}</th><td>{view.before?.blocks.join(', ') || t.none}</td>{output && <td>{output.after.blocks.join(', ') || t.none}</td>}</tr>
-          {view.before?.fields.map(field => <tr key={field.key}><th>{fieldNames[field.key][locale === 'zh' ? 0 : 1]} {field.private && <span {...stylex.props(s.private)}>{t.private}</span>}</th><td>{field.value}</td>{output && <td>{output.after.fields.find(item => item.key === field.key)?.value ?? t.removed}</td>}</tr>)}
-        </tbody></table></div>
-        {!view.before?.fields.length && <p {...stylex.props(s.muted)}>{t.noFields}</p>}
-        {imageError && <p role="alert" {...stylex.props(s.error)}>{t.imageError}</p>}
-        <ImageComparisonDialog open={open} onOpenChange={setOpen} name={source.file.name} source={{url: view.sourceUrl, width: source.width, height: source.height, format: source.info.format, onError: () => setImageError(true)}} output={output ? {url: output.url, width: source.width, height: source.height, format: source.info.format, onError: () => setImageError(true)} : undefined} labels={imagePreviewMessages[locale]} finalFocus={() => trigger.current}/>
-      </>}
+      <div {...stylex.props(hasFiles ? s.intake : s.emptyIntake)}>
+        <FileDropzone id="metadata-source" label={hasFiles ? t.append : t.pick} hint={hasFiles ? undefined : 'JPEG / PNG / WebP'} disabled={!owner} multiple accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" appearance={hasFiles ? 'compact' : 'expanded'} issueMessages={{type: t.inputError, count: t.inputError, size: t.inputError}} onFilesReceived={files => mutate(() => owner?.add(files))}/>
+        <input type="file" hidden multiple ref={node => {folderInput.current = node; node?.setAttribute('webkitdirectory', '');}} aria-label={t.folder} onChange={event => {const input = event.currentTarget; try {const files = Array.from(input.files ?? []); mutate(() => owner?.add(sortedFolderFiles(files)));} finally {input.value = '';}}}/>
+        <Button variant="ghost" xstyle={s.action} disabled={!owner || folderSupported === false} onClick={() => folderInput.current?.click()}>{t.folder}</Button>
+        {hasFiles && <Button variant="ghost" xstyle={s.action} onClick={() => mutate(() => owner?.clear())}>{t.clear}</Button>}
+      </div>
+      {folderSupported === false && <p {...stylex.props(s.note)}>{t.folderUnavailable}</p>}
+      <details {...stylex.props(s.help)}><summary>{t.limits}</summary><p>{t.limitText}</p>{owner && <p>≤ {owner.limits.files} · {bytes(owner.limits.bytes)} {t.perFile} · {owner.limits.pixels / 1e6} MP · {owner.limits.edge}px · {bytes(owner.limits.totalBytes)}</p>}</details>
+      {view.issues.length > 0 && <p role="alert" {...stylex.props(s.error)}>{t.rejected} {view.issues.join('、')}</p>}
+      {hasFiles && <div data-metadata-workspace {...stylex.props(s.workspace)}>
+        <section aria-label={t.tasks} {...stylex.props(s.stack)}>
+          <div {...stylex.props(s.row)}><h2 {...stylex.props(s.heading)}>{t.tasks}</h2><span role="status" {...stylex.props(s.note)}>{t.completed}: {ready} · {t.failed}: {failed}</span></div>
+          <div {...stylex.props(s.row)}>
+            <Button variant="ghost" xstyle={s.main} disabled={!canClean || pending} onClick={() => mutate(() => owner?.clean())}>{t.cleanAll}</Button>
+            {ready > 0 && <Button variant="ghost" xstyle={s.action} disabled={unfinished || packing} onClick={() => {setPacking(true); setZipError(false); void owner?.zip().catch(() => setZipError(true)).finally(() => setPacking(false));}}>{packing ? t.packing : t.zip}</Button>}
+          </div>
+          {ready > 0 && failed > 0 && <p {...stylex.props(s.note)}>{t.partialZip}</p>}
+          {zipError && <p role="alert" {...stylex.props(s.error)}>{t.zipError}</p>}
+          <FileTaskList label={t.tasks}>{view.tasks.map(task => <li key={task.id} data-task-id={task.id} data-task-status={task.status} {...stylex.props(s.task)}>
+            <button type="button" aria-label={task.file.name} aria-describedby={`${task.id}-status ${task.id}-info`} aria-pressed={task.id === view.selectedId} aria-controls="metadata-details" {...stylex.props(controls.button, s.select, task.id === view.selectedId && s.current)} onClick={() => owner?.select(task.id)}>
+              <span {...stylex.props(s.filename)}>{task.file.name}</span>
+              <span id={`${task.id}-status`} {...stylex.props(s.state, task.status === 'ready' && s.success, task.status === 'error' && s.error)}>{status(task)}</span>
+              <span id={`${task.id}-info`} {...stylex.props(s.note)}>{bytes(task.file.size)}{task.source ? ` · ${task.source.width}×${task.source.height}` : ''}{task.output ? ` → ${bytes(task.output.blob.size)}` : ''}</span>
+            </button>
+            <div {...stylex.props(s.actions)}>
+              {task.status === 'stale' && <Tooltip content={t.clean}><IconButton label={`${t.clean}: ${task.file.name}`} variant="ghost" xstyle={s.icon} onClick={() => mutate(() => owner?.clean(task.id))}><BroomIcon size={18}/></IconButton></Tooltip>}
+              {task.status === 'ready' && task.output && <Tooltip content={t.download}><IconButton label={`${t.download}: ${task.file.name}`} variant="ghost" xstyle={s.icon} onClick={() => owner?.download(task.id)}><DownloadSimpleIcon size={18}/></IconButton></Tooltip>}
+              {task.status === 'error' && <Tooltip content={t.retry}><IconButton label={`${t.retry}: ${task.file.name}`} variant="ghost" xstyle={s.icon} onClick={() => mutate(() => owner?.retry(task.id))}><ArrowClockwiseIcon size={18}/></IconButton></Tooltip>}
+              <Tooltip content={t.remove}><IconButton label={`${t.remove}: ${task.file.name}`} variant="ghost" xstyle={s.icon} onClick={() => mutate(() => owner?.remove(task.id))}><TrashIcon size={18}/></IconButton></Tooltip>
+            </div>
+            {task.error && <p role="alert" {...stylex.props(s.error)}>{error(task.error)}</p>}
+          </li>)}</FileTaskList>
+        </section>
+        <section id="metadata-details" aria-label={t.details} {...stylex.props(s.stack)}>
+          <h2 {...stylex.props(s.heading)}>{t.details}</h2>
+          {selected && <p {...stylex.props(s.filename)}>{selected.file.name}</p>}
+          {!selected?.source && <p {...stylex.props(selected?.error ? s.error : s.note)}>{selected?.error ? error(selected.error) : selected ? t.waitingDetails : t.emptyDetails}</p>}
+          {selected?.before?.partial && <p {...stylex.props(s.note)}>{t.partial}</p>}
+          {rows.length > 0 && <div {...stylex.props(s.tableScroll)}><table aria-label={t.details} {...stylex.props(s.table)}>
+            <colgroup><col {...stylex.props(s.fieldColumn)}/><col/>{selected?.output && <col/>}</colgroup>
+            <thead {...stylex.props(s.tableHead)}><tr><th scope="col" {...stylex.props(s.cell)}>{t.field}</th><th scope="col" {...stylex.props(s.cell)}>{selected?.output ? t.before : t.original}</th>{selected?.output && <th scope="col" {...stylex.props(s.cell)}>{t.after}</th>}</tr></thead>
+            <tbody>{rows.map(row => <tr key={row.key} {...stylex.props(s.tableRow)}><th scope="row" {...stylex.props(s.cell, s.field)}>{row.label}{'private' in row && row.private && <span {...stylex.props(s.private)}> {t.private}</span>}</th><td {...stylex.props(s.cell)}>{row.before}</td>{selected?.output && <td {...stylex.props(s.cell)}>{row.after}</td>}</tr>)}</tbody>
+          </table></div>}
+          {selected?.before && !selected.before.fields.length && <p {...stylex.props(s.note)}>{t.noFields}</p>}
+        </section>
+      </div>}
     </div>
   </WorkbenchShell>;
 }
-const s = stylex.create({
-  stack: {display: 'grid', gap: 16, minWidth: 0}, actions: {display: 'flex', gap: 8, flexWrap: 'wrap'},
-  muted: {color: tokens.textSecondary, fontSize: 13, lineHeight: 1.7}, error: {color: tokens.danger},
-  filename: {margin: 0, overflowWrap: 'anywhere', fontWeight: 600},
-  secondary: {borderWidth: 0, backgroundColor: {default: tokens.surfacePanel, ':hover': tokens.surfaceHover}, color: tokens.textPrimary},
-  accent: {borderWidth: 0, backgroundColor: {default: tokens.communityAction, ':hover': tokens.communityActionHover}, color: tokens.onCommunityAction},
-  tableScroll: {overflowX: 'auto', minWidth: 0}, table: {width: '100%', textAlign: 'start', fontSize: 14, borderCollapse: 'collapse', lineHeight: 1.8, overflowWrap: 'anywhere'},
-  private: {fontWeight: 400, fontSize: 12, color: tokens.danger},
-});

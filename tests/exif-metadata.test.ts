@@ -58,11 +58,11 @@ describe('EXIF read and lossless clean integration', () => {
     vi.spyOn(ImageResources.prototype, 'bitmap').mockImplementation(() => new Promise(r => {resolve = r;}));
     const source = new File([await fixture('transparent.png')], 'image.png');
     const session = new MetadataSession(limits);
-    session.import(source);
+    session.add([source]);
     while (!resolve) await new Promise(r => setTimeout(r, 1));
     session.clear(); resolve(bitmap);
     while (session.jobs.active) await new Promise(r => setTimeout(r, 1));
-    expect(session.snapshot().source).toBeUndefined(); expect(close).toHaveBeenCalledOnce();
+    expect(session.snapshot().tasks).toEqual([]); expect(close).toHaveBeenCalledOnce();
     expect(session.resources.urlsCreated).toBe(session.resources.urlsRevoked);
     session.dispose();
   });

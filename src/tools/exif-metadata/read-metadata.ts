@@ -1,4 +1,4 @@
-import { parse } from 'exifr';
+import exifr from 'exifr';
 import { inspectImage } from '../image/inspect-image';
 import type { ImageLimits } from '../image/limits';
 
@@ -50,7 +50,7 @@ export async function readMetadata(blob: Blob, limits: ImageLimits): Promise<Met
     try {
       const payload = await reader.read(data, length);
       const prefix = String.fromCharCode(...payload.subarray(0, 6)) === 'Exif\0\0' ? 6 : 0;
-      const tags: Record<string, unknown> | undefined = await parse(payload.slice(prefix), {
+      const tags: Record<string, unknown> | undefined = await exifr.parse(payload.slice(prefix), {
         pick: Object.keys(fieldNames), tiff: true, ifd1: false, interop: false,
         makerNote: false, userComment: false, xmp: false, icc: false, iptc: false,
         translateValues: false, reviveValues: false, sanitize: true,
