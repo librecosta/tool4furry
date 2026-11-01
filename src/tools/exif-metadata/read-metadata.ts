@@ -34,7 +34,12 @@ export async function readMetadata(blob: Blob, limits: ImageLimits): Promise<Met
       String.fromCharCode(...await reader.read(data, 6)) === 'Exif\0\0';
     const isExif = jpegExif || type === 'eXIf' || type === 'EXIF';
     if (!isExif) {
-      if (type === 0xe1 || type === 'XMP ') { blocks.add('XMP'); partial = true; }
+      if (type === 0xe1) {
+        const prefix = String.fromCharCode(...await reader.read(data, Math.min(length, 35)));
+        blocks.add(prefix.startsWith('http://ns.adobe.com/xap/1.0/\0') || prefix.startsWith('http://ns.adobe.com/xmp/extension/\0') ? 'XMP' : 'APP1');
+        partial = true;
+      }
+      if (type === 'XMP ') { blocks.add('XMP'); partial = true; }
       if (type === 0xed) { blocks.add('IPTC'); partial = true; }
       if (type === 0xfe || ['tEXt', 'iTXt', 'zTXt', 'tIME'].includes(String(type))) { blocks.add('Text'); partial = true; }
       return;

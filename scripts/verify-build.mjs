@@ -30,9 +30,10 @@ async function metadataURL(path) {
 const { imageConverterContent } = await staticData('src/site/image-converter-content.ts');
 const { imageResizeCropContent } = await staticData('src/site/image-resize-crop-content.ts');
 const { paletteExtractorContent } = await staticData('src/site/palette-extractor-content.ts');
+const { imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent } = await staticData('src/site/image-basics-content.ts');
 const { tools } = await staticData('src/tools/registry.ts');
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6) {
@@ -1163,6 +1164,8 @@ for (const font of ['dm-sans', 'noto-sans-sc']) {
 }
 for (const file of files.filter((file) => file.endsWith('.js'))) {
   const js = await readFile(resolve(root, file), 'utf8');
+  for (const id of ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'])
+    if (!files.includes(`tools/${id}/index.html`)) assert(!js.includes(`data-${id}`), `Draft ${id} implementation leaked: ${file}`);
   if (!files.includes('tools/palette-extractor/index.html'))
     assert(!/data-palette-extractor|data-palette-sampler/.test(js), `Draft palette implementation leaked: ${file}`);
   if (!files.includes('tools/image-resize-crop/index.html'))
@@ -1198,6 +1201,14 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
     toolPages.length > 0 || !js.includes('data-workbench'),
     `Unused workbench leaked without published tools: ${file}`,
   );
+}
+if (!files.includes('tools/exif-metadata/index.html')) {
+  const notice = await readFile('src/tools/exif-metadata/exifr.NOTICE.txt');
+  assert(!files.some(file => /ExifMetadata|exifr\.NOTICE/.test(file)), 'Draft EXIF assets leaked');
+  for (const file of files.filter(file => /\.(js|txt)$/.test(file))) {
+    const bytes = await readFile(resolve(root, file));
+    assert(!bytes.equals(notice) && !bytes.toString().includes(notice.toString('base64')), `Draft EXIF notice leaked: ${file}`);
+  }
 }
 if (!files.includes('tools/palette-extractor/index.html')) {
   assert(!files.some(file => /PaletteExtractor|(?:colorthief|react-colorful)\.NOTICE/.test(file)), 'Draft palette asset leaked');

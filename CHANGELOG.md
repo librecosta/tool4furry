@@ -8,6 +8,8 @@
 
 ### Added
 
+- V0.7-B 新增四款双语 Draft：Image Compressor 的有界目标大小压缩/比较/ZIP；Comic Page Organizer 的排序、封面、逐页预览与原字节 ZIP/CBZ；Image Watermark 的文字/图片批量水印与 PNG/JPEG/WebP；EXIF Metadata 的可靠字段读取、隐私标记和无损清理。复用现有资源/串行/输出验证与发布门，集中集成，不提升 Published 或部署。
+
 - V0.7-A2-B 新增 Palette Extractor 完整双语 Draft：有界 OKLCH 候选提色与六种倾向、手动色卡编辑/图片取色、复制及基础 PNG、三套固定分享模板与可用设备的系统文件分享；图片仅在浏览器本地处理，专属依赖、样式和 MIT 通知隔离于生产产物。未提升 Published 或部署。
 
 - V0.7-A1-B 补齐 Image Resize & Crop 首版功能：共享多文件集合、独立单图草稿、单张/批量切换、四种批量缩放规则与默认不放大、逐项失败/重试/取消、独立下载和 ZIP。单图与批量共用重型处理通道，验证结果累计有界，过期任务/ZIP 快照不能交付；继续保持 CN/Global 双语 Draft，未提升资格或部署。下一阶段集中体验精修与正式资格验收。

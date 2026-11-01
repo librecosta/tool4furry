@@ -29,16 +29,16 @@ describe('four-slot featured presentation', () => {
     expect(cards).toHaveLength(Math.min(count, 4));
   });
 
-  it.each(['cn', 'global'] as const)('shows all three Published cards in %s DEV and production', region => {
+  it.each(['cn', 'global'] as const)('shows three Published cards in %s production and includes the next Draft in DEV', region => {
     for (const locale of ['zh', 'en'] as const) {
       const entries = getHomepageEntries(region, undefined, undefined, true, locale);
       const cards = getFeaturedShowcase(entries);
-      expect(cards.map(card => card.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor']);
+      expect(cards.map(card => card.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor']);
       expect(cards[0].description).toBe(imageConverterDefinition.copy[locale].summary);
       expect(entries[0].description).toBe(imageConverterDefinition.copy[locale].description);
       expect(cards[0].href).toBe(entries[0].href);
-      expect(cards.every(card => card.status === 'published')).toBe(true);
-      expect(getFeaturedShowcase(getHomepageEntries(region, undefined, undefined, false, locale))).toEqual(cards);
+      expect(cards.map(card => card.status)).toEqual(['published', 'published', 'published', 'draft']);
+      expect(getFeaturedShowcase(getHomepageEntries(region, undefined, undefined, false, locale))).toEqual(cards.slice(0, 3));
     }
     expect(imageConverterDefinition.status).toBe('published');
   });
@@ -67,7 +67,8 @@ describe('homepage editorial role projection', () => {
       for (const role of dev) {
         const productionRole = production.find(item => item.id === role.id)!;
         expect(role.entries.filter(entry => entry.status === 'published')).toEqual(productionRole.entries);
-        expect(role.entries.filter(entry => entry.status === 'draft')).toEqual([]);
+        const draftByRole: Record<string, string[]> = {painter: ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'], developer: ['image-compressor'], animator: ['image-compressor', 'comic-page-organizer', 'image-watermark'], operations: ['image-compressor', 'image-watermark', 'exif-metadata']};
+        expect(role.entries.filter(entry => entry.status === 'draft').map(entry => entry.id)).toEqual(draftByRole[role.id] ?? []);
       }
     }
     expect(publishedTools.map(tool => tool.status)).toEqual(['published', 'published', 'published']);

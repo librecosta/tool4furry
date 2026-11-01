@@ -17,6 +17,10 @@ describe('Registry compile-time availability projection', () => {
       'import.meta.env.T4F_TOOL_IMAGE_CONVERTER_AVAILABLE': 'true',
       'import.meta.env.T4F_TOOL_IMAGE_RESIZE_CROP_AVAILABLE': 'true',
       'import.meta.env.T4F_TOOL_PALETTE_EXTRACTOR_AVAILABLE': 'true',
+      'import.meta.env.T4F_TOOL_IMAGE_COMPRESSOR_AVAILABLE': 'false',
+      'import.meta.env.T4F_TOOL_COMIC_PAGE_ORGANIZER_AVAILABLE': 'false',
+      'import.meta.env.T4F_TOOL_IMAGE_WATERMARK_AVAILABLE': 'false',
+      'import.meta.env.T4F_TOOL_EXIF_METADATA_AVAILABLE': 'false',
     });
   });
   it.each(['cn', 'global'] as const)('projects every registered id in %s without runtime flags', region => {

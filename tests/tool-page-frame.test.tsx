@@ -249,7 +249,7 @@ describe('product navigation', () => {
     expect(screen.queryByText('overseas')).toBeNull();
     expect(available).toHaveBeenCalledWith('cn', dev, registry.tools);
     expect([...document.querySelectorAll('[data-tool-panel] a[aria-current], [data-tool-panel] a[href$="draft-slug/"]')].map(link => link.getAttribute('href'))).toEqual(dev ? ['/tools/draft-slug/', '/tools/current-slug/'] : ['/tools/current-slug/']);
-    expect(registry.tools).toEqual([imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition]); // Fixtures never populate the real registry.
+    expect(registry.tools.map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata']); // Fixtures never populate the real registry.
     expect(imageConverterDefinition.status).toBe('published');
     expect(original('cn', false)).toEqual([imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition]);
     expect(original('global', false)).toEqual([imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition]);

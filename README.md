@@ -14,6 +14,8 @@
 
 三款工具均在源码层面 **Published**。CN/Global 均可构建完整双语静态站点，**两个地区均未线上部署**。Published 和构建就绪不代表已对公网提供服务。
 
+DEV 另提供四款完整 Draft：**Image Compressor**、**Comic Page Organizer**、**Image Watermark** 和 **EXIF Metadata**。能力与验收入口见 [基础图片工具说明](docs/image-basics.md)；它们不进入正式构建。
+
 ## 技术与架构
 
 Astro 输出页面正文和 SEO，React 只负责工具等必要交互，StyleX 提取静态样式。CN/Global 独立构建，每个地区同时支持中文和英文；Registry 统一控制工具可用性。结构与依赖方向见 [.agents/architecture.md](.agents/architecture.md)。

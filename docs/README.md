@@ -14,6 +14,7 @@
 - [首页与站点外壳](site-homepage.md)：静态首页、导航、品牌、主题与受控增强。
 - [Image Converter](image-converter-implementation.md)：正式工具分层、隐私、任务、资源及证据入口。
 - [Palette Extractor](palette-extractor.md)：第三款 Published 工具的有界提色、色卡编辑、图片取色、PNG 分享卡及 D2 / L3 验收边界。
+- [基础图片工具](image-basics.md)：压缩、漫画页整理、水印与元数据四款 Draft 的能力、资源与验收入口。
 - [Image Resize & Crop](image-resize-crop-implementation.md)：逐文件单图草稿、批量规则、串行导出、ZIP、D2 Beta 资格与人工验收入口。
 - [工具目录](site-tools.md)：当前目录筛选、URL、分页及显式 DEV 夹具。
 - [UI 原语](ui-primitives.md)：受控组件接口；附早期验收记录。

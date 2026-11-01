@@ -39,11 +39,11 @@ export const homepageMedia: {
 };
 
 export const roleShowcases: readonly RoleShowcase[] = [
-  { id: 'painter', label: roleLabel('painter'), description: { zh: '从画布到交付素材', en: 'From the canvas to finished assets' }, toolIds: ['image-converter', 'image-resize-crop', 'palette-extractor'] },
+  { id: 'painter', label: roleLabel('painter'), description: { zh: '从画布到交付素材', en: 'From the canvas to finished assets' }, toolIds: ['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'] },
   { id: 'composer', label: roleLabel('composer'), description: { zh: '围绕声音的创作日常', en: 'The everyday work around sound' }, toolIds: [] },
-  { id: 'developer', label: roleLabel('developer'), description: { zh: '让创作与代码相遇', en: 'Where creative work meets code' }, toolIds: ['image-converter', 'image-resize-crop'] },
-  { id: 'animator', label: roleLabel('animator'), description: { zh: '每一帧都值得打磨', en: 'Every frame deserves care.' }, toolIds: ['image-converter', 'image-resize-crop', 'palette-extractor'] },
-  { id: 'operations', label: { ...roleLabel('operations'), en: 'Community teams' }, description: { zh: '为内容与社群增添色彩', en: 'Bring more color to content and communities.' }, toolIds: ['image-converter', 'image-resize-crop'] },
+  { id: 'developer', label: roleLabel('developer'), description: { zh: '让创作与代码相遇', en: 'Where creative work meets code' }, toolIds: ['image-converter', 'image-resize-crop', 'image-compressor'] },
+  { id: 'animator', label: roleLabel('animator'), description: { zh: '每一帧都值得打磨', en: 'Every frame deserves care.' }, toolIds: ['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark'] },
+  { id: 'operations', label: { ...roleLabel('operations'), en: 'Community teams' }, description: { zh: '为内容与社群增添色彩', en: 'Bring more color to content and communities.' }, toolIds: ['image-converter', 'image-resize-crop', 'image-compressor', 'image-watermark', 'exif-metadata'] },
   { id: 'studio', label: roleLabel('studio'), description: { zh: '工作细节决定成败', en: 'Details make the difference.' }, toolIds: [] },
 ];
 

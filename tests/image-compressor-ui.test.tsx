@@ -31,7 +31,7 @@ it('renders controlled format selection and refuses incomplete numeric drafts be
   const {container} = await mount();
   expect(container.querySelector('select')).toBeNull();
   expect(screen.getByRole('combobox', {name: 'Output format'}).textContent).toContain('WEBP');
-  fireEvent.click(screen.getByRole('button', {name: 'Target size', exact: true}));
+  fireEvent.click(screen.getByRole('button', {name: 'Target size'}));
   fireEvent.change(screen.getByRole('textbox', {name: 'Target size per image'}), {target: {value: '-'}});
   fireEvent.click(screen.getByRole('button', {name: 'Start compression'}));
   expect(compressImage).not.toHaveBeenCalled(); expect(screen.getByRole('alert').textContent).toContain('Enter a valid number');
@@ -44,21 +44,21 @@ it('renders controlled format selection and refuses incomplete numeric drafts be
 it('shows actual savings and current output thumbnail, then invalidates both on a parameter change', async () => {
   const {container} = await mount();
   fireEvent.click(screen.getByRole('button', {name: 'Start compression'}));
-  await waitFor(() => expect(screen.getByRole('button', {name: 'Download', exact: true})).toBeTruthy());
+  await waitFor(() => expect(screen.getByRole('button', {name: 'Download'})).toBeTruthy());
   expect(screen.getByText(/66\.7% saved/)).toBeTruthy();
   expect(container.querySelector('[data-thumbnail-kind="output"]')).not.toBeNull();
-  fireEvent.click(screen.getByRole('button', {name: 'Download', exact: true})); expect(HTMLAnchorElement.prototype.click).toHaveBeenCalled();
-  fireEvent.click(screen.getByRole('button', {name: 'Adjust quality', exact: true}));
-  expect(screen.queryByRole('button', {name: 'Download', exact: true})).toBeNull();
+  fireEvent.click(screen.getByRole('button', {name: 'Download'})); expect(HTMLAnchorElement.prototype.click).toHaveBeenCalled();
+  fireEvent.click(screen.getByRole('button', {name: 'Adjust quality'}));
+  expect(screen.queryByRole('button', {name: 'Download'})).toBeNull();
   expect(container.querySelector('[data-thumbnail-kind="output"]')).toBeNull();
 });
 
 it('offers original, actual output and side-by-side comparison using the shared dialog', async () => {
   await mount('zh');
   fireEvent.click(screen.getByRole('button', {name: '开始压缩'}));
-  await waitFor(() => expect(screen.getByRole('button', {name: '下载', exact: true})).toBeTruthy());
-  fireEvent.click(screen.getByRole('button', {name: '预览', exact: true}));
-  fireEvent.click(screen.getByRole('button', {name: '对比', exact: true}));
+  await waitFor(() => expect(screen.getByRole('button', {name: '下载'})).toBeTruthy());
+  fireEvent.click(screen.getByRole('button', {name: '预览'}));
+  fireEvent.click(screen.getByRole('button', {name: '对比'}));
   expect(document.querySelector('[data-image-comparison="compare"]')).not.toBeNull();
   expect(screen.getByRole('region', {name: '原图'})).toBeTruthy(); expect(screen.getByRole('region', {name: '结果'})).toBeTruthy();
 });

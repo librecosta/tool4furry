@@ -10,6 +10,7 @@ import { fixtureTools } from './fixtures/tools';
 import { assertValidRegistry } from '../src/tools/validate-registry';
 import { imageResizeCropDefinition } from '../src/tools/image-resize-crop/definition';
 import { imageConverterDefinition } from '../src/tools/image-converter/definition';
+import { tools } from '../src/tools/registry';
 import { paletteExtractorDefinition } from '../src/tools/palette-extractor/definition';
 
 // Test-only metadata; never registered as a real tool or given a loader.
@@ -40,13 +41,14 @@ describe('static tool discovery', () => {
   });
 
   it.each(['cn', 'global'] as const)(
-    'discovers the three real Published tools in DEV and production %s without filler entries',
+    'discovers seven real tools in DEV and three Published tools in production %s',
     (region) => {
       const entries = getCatalogEntries(region, undefined, true);
       expect(entries.map((entry) => [entry.id, entry.href, entry.title])).toEqual([
         ['image-converter', '/tools/image-converter/', imageConverterDefinition.copy[defaultLocale(region)].title],
         ['image-resize-crop', '/tools/image-resize-crop/', imageResizeCropDefinition.copy[defaultLocale(region)].title],
         ['palette-extractor', '/tools/palette-extractor/', paletteExtractorDefinition.copy[defaultLocale(region)].title],
+        ...tools.slice(3).map(tool => [tool.id, `/tools/${tool.slug}/`, tool.copy[defaultLocale(region)].title]),
       ]);
       expect(getHomepageEntries(region, undefined, [], true)).toEqual(entries);
       expect(getCatalogSections(region, undefined, true).flatMap((section) =>
