@@ -1,17 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import * as stylex from '@stylexjs/stylex';
-import { ArrowClockwiseIcon, BroomIcon, DownloadSimpleIcon, TrashIcon } from '@phosphor-icons/react';
 import WorkbenchShell from '../../workbench/WorkbenchShell';
-import { Button, IconButton } from '../../ui/Button';
+import { Button } from '../../ui/Button';
 import { FileDropzone } from '../../ui/FileDropzone';
 import { FileTaskList } from '../../ui/FileTaskList';
-import { Tooltip } from '../../ui/Tooltip';
-import { controls } from '../../styles/controls';
 import { sortedFolderFiles } from '../image-converter/intake';
 import { MetadataSession, emptyMetadataState, type MetadataTask, type MetadataState } from './session';
 import { fieldNames } from './read-metadata';
 import { messages } from './messages';
 import { s } from './styles';
+import { MetadataTaskRow, previewButtonId } from './MetadataTaskRow';
+import { SourcePreview } from './SourcePreview';
 import type { ToolProps } from '../types';
 import notice from './exifr.NOTICE.txt?url';
 
@@ -20,6 +19,8 @@ export default function ExifMetadata({locale}: ToolProps) {
   const t = messages[locale], [owner, setOwner] = useState<MetadataSession>(), [view, setView] = useState<MetadataState>(emptyMetadataState);
   const folderInput = useRef<HTMLInputElement>(null), [folderSupported, setFolderSupported] = useState<boolean>();
   const [packing, setPacking] = useState(false), [zipError, setZipError] = useState(false);
+  const [previewId, setPreviewId] = useState<string>();
+  const previewTrigger = useRef('');
   useEffect(() => {
     const session = new MetadataSession(); setOwner(session); setView(session.snapshot());
     setFolderSupported('webkitdirectory' in document.createElement('input'));
@@ -65,24 +66,13 @@ export default function ExifMetadata({locale}: ToolProps) {
           </div>
           {ready > 0 && failed > 0 && <p {...stylex.props(s.note)}>{t.partialZip}</p>}
           {zipError && <p role="alert" {...stylex.props(s.error)}>{t.zipError}</p>}
-          <FileTaskList label={t.tasks}>{view.tasks.map(task => <li key={task.id} data-task-id={task.id} data-task-status={task.status} {...stylex.props(s.task)}>
-            <button type="button" aria-label={task.file.name} aria-describedby={`${task.id}-status ${task.id}-info`} aria-pressed={task.id === view.selectedId} aria-controls="metadata-details" {...stylex.props(controls.button, s.select, task.id === view.selectedId && s.current)} onClick={() => owner?.select(task.id)}>
-              <span {...stylex.props(s.filename)}>{task.file.name}</span>
-              <span id={`${task.id}-status`} {...stylex.props(s.state, task.status === 'ready' && s.success, task.status === 'error' && s.error)}>{status(task)}</span>
-              <span id={`${task.id}-info`} {...stylex.props(s.note)}>{bytes(task.file.size)}{task.source ? ` · ${task.source.width}×${task.source.height}` : ''}{task.output ? ` → ${bytes(task.output.blob.size)}` : ''}</span>
-            </button>
-            <div {...stylex.props(s.actions)}>
-              {task.status === 'stale' && <Tooltip content={t.clean}><IconButton label={`${t.clean}: ${task.file.name}`} variant="ghost" xstyle={s.icon} onClick={() => mutate(() => owner?.clean(task.id))}><BroomIcon size={18}/></IconButton></Tooltip>}
-              {task.status === 'ready' && task.output && <Tooltip content={t.download}><IconButton label={`${t.download}: ${task.file.name}`} variant="ghost" xstyle={s.icon} onClick={() => owner?.download(task.id)}><DownloadSimpleIcon size={18}/></IconButton></Tooltip>}
-              {task.status === 'error' && <Tooltip content={t.retry}><IconButton label={`${t.retry}: ${task.file.name}`} variant="ghost" xstyle={s.icon} onClick={() => mutate(() => owner?.retry(task.id))}><ArrowClockwiseIcon size={18}/></IconButton></Tooltip>}
-              <Tooltip content={t.remove}><IconButton label={`${t.remove}: ${task.file.name}`} variant="ghost" xstyle={s.icon} onClick={() => mutate(() => owner?.remove(task.id))}><TrashIcon size={18}/></IconButton></Tooltip>
-            </div>
-            {task.error && <p role="alert" {...stylex.props(s.error)}>{error(task.error)}</p>}
-          </li>)}</FileTaskList>
+          <FileTaskList label={t.tasks}>{owner && view.tasks.map(task => <MetadataTaskRow key={task.id}
+            task={task} owner={owner} selected={task.id === view.selectedId} t={t} status={status(task)} error={task.error ? error(task.error) : undefined}
+            onMutate={mutate} onPreview={() => { previewTrigger.current = previewButtonId(task.id); setPreviewId(task.id); }}
+          />)}</FileTaskList>
         </section>
         <section id="metadata-details" aria-label={t.details} {...stylex.props(s.stack)}>
           <h2 {...stylex.props(s.heading)}>{t.details}</h2>
-          {selected && <p {...stylex.props(s.filename)}>{selected.file.name}</p>}
           {!selected?.source && <p {...stylex.props(selected?.error ? s.error : s.note)}>{selected?.error ? error(selected.error) : selected ? t.waitingDetails : t.emptyDetails}</p>}
           {selected?.before?.partial && <p {...stylex.props(s.note)}>{t.partial}</p>}
           {rows.length > 0 && <div {...stylex.props(s.tableScroll)}><table aria-label={t.details} {...stylex.props(s.table)}>
@@ -93,6 +83,8 @@ export default function ExifMetadata({locale}: ToolProps) {
           {selected?.before && !selected.before.fields.length && <p {...stylex.props(s.note)}>{t.noFields}</p>}
         </section>
       </div>}
+      <SourcePreview task={view.tasks.find(task => task.id === previewId)} owner={owner} t={t}
+        onClose={() => setPreviewId(undefined)} finalFocus={() => document.getElementById(previewTrigger.current) ?? document.getElementById('metadata-source-button')}/>
     </div>
   </WorkbenchShell>;
 }

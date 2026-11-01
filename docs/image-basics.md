@@ -7,7 +7,7 @@ Image Compressor 为 CN/Global、zh/en **Published**；Comic Page Organizer、Im
 | [Image Compressor](../src/tools/image-compressor/ImageCompressor.tsx) · `/tools/image-compressor/` | 单张/批量与文件夹，快速强度或高级质量/目标大小/最长边，PNG/JPEG/WebP 与受支持桌面设备上的 AVIF 输出，原图/结果比较、实际大小与节省比例、独立下载和 ZIP。JPEG/WebP 目标大小只进行有界尝试，未达到或变大均如实显示。 |
 | [Comic Page Organizer](../src/tools/comic-page-organizer/ComicPageOrganizer.tsx) · `/tools/comic-page-organizer/` | 多图/文件夹，自然排序、缩略图网格、拖排/移动、多选删除、追加、封面、逐页阅读，稳定零填充页名的 ZIP/CBZ。原始图片字节保持不变，来源元数据也可能保留。 |
 | [Image Watermark](../src/tools/image-watermark/ImageWatermark.tsx) · `/tools/image-watermark/` | 单张/批量文字或图片水印，大小/比例、不透明度、九宫格位置、边距、文字颜色，实时有界预览，PNG/JPEG/WebP 输出、单项下载和 ZIP。使用已有本地字体，不提供图层编辑器。 |
-| [EXIF Metadata](../src/tools/exif-metadata/ExifMetadata.tsx) · `/tools/exif-metadata/` | 单张/批量 JPEG/PNG/WebP 与文件夹导入，选中文件查看紧凑斑马纹元数据表及隐私标记，逐项或全部无损清理、前后字段对照、单项下载与成功结果 ZIP。未知结构明确失败并支持重试，无需清理的验证结果也可下载；不提供图片预览。 |
+| [EXIF Metadata](../src/tools/exif-metadata/ExifMetadata.tsx) · `/tools/exif-metadata/` | 单张/批量 JPEG/PNG/WebP 与文件夹导入，选中文件查看紧凑斑马纹元数据表及隐私标记，逐项或全部无损清理、前后字段对照、单项下载与成功结果 ZIP。未知结构明确失败并支持重试，无需清理的验证结果也可下载；列表提供缩略图与原图查看，不提供清理前后视觉对比。 |
 
 四模块分别拥有 Session、稳定任务/结果版本与资源；复用 Image Core、ImageResources、设备 limits、SerialJobs 和既有 ZIP。重型原生操作即使已过期也须真实完成后释放通道；取消、删除、清空和参数改变撤销下载/ZIP 快照，结果累计有界。不同时解码全部原图。原始文件不上传、不持久保存。
 
@@ -60,3 +60,9 @@ L2 复用 B1-C1 四格式、目标未达成、输出变大、设备/尺寸拒绝
 验收：24 项 EXIF 定向测试与类型检查通过。真实 Chromium 覆盖 CN 中文桌面、Global 英文 390px 手机视口及亮暗主题，文件夹/多选导入、单项/批量清理、失败重试、相邻选择、清空、下载与 ZIP。五文件批次中两项清理、一项无需清理、损坏输入与未知 APP1 清理各失败；ZIP 只包含三项成功文件，逐项解压、真实 MIME/格式、方向和完整解码通过，清理前后像素逐字节一致。`manual-exif.jpg` 从 23,159 B 到 22,933 B，设备/时间/GPS 移除，方向 6 保留；普通 JPEG 保留原始全部字节。下载和截图证据在仓库外 `../.validation/exif-c1/`。
 
 仍为 Draft；未改 SEO 正文、公共图片内核、其他工具或发布架构。本地未重复全量测试、双地区构建或大型矩阵，完整检查沿用既有 CI。手机视口不是实际触控设备；真实 iOS/Android、Firefox/Safari 和压力范围仍未验证。
+
+### B4-C1-R1 文件列表精修（2026-11-02）
+
+文件行使用完整 Lavender 浅色选中背景、48px 原图缩略图、截断文件名及状态，操作间隔 8px；大小、尺寸与清理前后字节数只保留在右侧元数据表，移除详情标题下重复文件名。Eye 入口仅在原图检查通过后可用，复用 `FilePreviewDialog` / `ImagePreviewViewport`，只查看原图，支持缩放、平移、适应画面与关闭焦点返回。缩略图和打开中的预览各自通过既有 `useOwnedUrl` / `ImageResources` 持有 URL，关闭不撤销缩略图；删除、清空与卸载释放对应资源，不生成结果预览，不改解析、清理或 ZIP。
+
+验收：19 项 UI/Session 定向测试及类型检查通过；真实 Chromium 验证桌面与 390px 手机视口、亮暗主题、长文件名、整行无边框选中态、检测失败禁用预览、原图缩放/键盘平移/关闭焦点、多文件选择/移除/清空与单项清理下载，控制台无错误。资源测试覆盖预览关闭、打开时删除/清空及卸载后的全部 URL 释放；截图与下载记录在仓库外 `../.validation/exif-c1-r1/`。保持 Draft；未重复全量测试或正式构建，真实触控设备与其他浏览器仍未测。
