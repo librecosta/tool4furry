@@ -40,7 +40,7 @@ describe('static tool discovery', () => {
   });
 
   it.each(['cn', 'global'] as const)(
-    'discovers the real Draft in DEV and only Published tools in production %s without filler entries',
+    'discovers the three real Published tools in DEV and production %s without filler entries',
     (region) => {
       const entries = getCatalogEntries(region, undefined, true);
       expect(entries.map((entry) => [entry.id, entry.href, entry.title])).toEqual([
@@ -58,7 +58,8 @@ describe('static tool discovery', () => {
       expect(getCatalogSections(region).flatMap(section => section.groups.flatMap(group => group.entries))).toEqual(published);
       expect(imageConverterDefinition.status).toBe('published');
       expect(imageResizeCropDefinition.status).toBe('published');
-      expect(published.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop']);
+      expect(paletteExtractorDefinition.status).toBe('published');
+      expect(published.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor']);
     },
   );
 

@@ -8,7 +8,7 @@ export const paletteExtractorDefinition: ToolDefinition = {
   audiences: ['creator'],
   contexts: ['studio'],
   mode: 'form',
-  status: 'draft',
+  status: 'published',
   regions: ['cn', 'global'],
   copy: {
     zh: {

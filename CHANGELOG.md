@@ -21,6 +21,8 @@
 
 ### Changed
 
+- V0.7-A2-D2 完成 Palette Extractor L2 Beta 审计并按维护者授权提升源码为 Published；先同步本地 D1 冻结双语 SEO。CN/Global 正式构建各包含三款工具、17 个 HTML 页面与 16 个公开发现 URL，首页复用画家/动画师既有精选，完整分发 Color Thief / react-colorful MIT 通知。794 项测试与双地区构建通过，真实 Chromium 桌面/手机视口及 9 个 PNG 下载完成核验；L3 真机/跨浏览器与压力范围见模块说明。A2 功能收尾，未部署或创建 Tag/Release。
+
 - V0.7-A2-C4-R2 移除 Palette 系统分享，仅以 PNG 下载交付；分享画布与设置区收敛为自然流，下载跟随设置。新增颜色改用轻量 MIT `react-colorful`；工具模态框右上关闭统一为 44px 轻表面 X，保留键盘焦点与返回。Palette 仍为 Draft。
 
 - V0.7-A2-C4-R1：Palette Extractor（Draft）：分享图收敛为四方向图片与紧凑色带、原图及六种固定比例；移除标题/品牌/日期/装饰等复杂配置。新增颜色支持原生选色与 HEX 同步，专注采样所有色块共用临时预览，色卡操作间距更清晰。

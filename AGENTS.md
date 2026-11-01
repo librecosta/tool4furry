@@ -6,9 +6,10 @@
 
 ## Current State
 
-- Image Converter 与 Image Resize & Crop 均为 Published 工具；CN/Global 双语静态构建可用，**两个地区均未部署**。源码 Published 不代表部署授权。
+- Image Converter、Image Resize & Crop 与 Palette Extractor 三款工具均为 Published；CN/Global 双语静态构建可用，**两个地区均未部署**。源码 Published 不代表部署授权。
 - 当前没有后端、数据库、SSR 服务或用户系统。Lab 仅供 DEV，不能进入生产路由/资源图。
 - Image Resize & Crop 已完成 A1-D2 Beta 资格审计；单张裁剪、批量缩放、双语静态页面与所需资源进入两地区正式构建。实现、资格证据及 L3 未测范围见 [Resize/Crop 说明](docs/image-resize-crop-implementation.md)。A1 已收尾，不继续扩展裁剪工作区。
+- Palette Extractor 已完成 A2-D2 Beta 资格审计；有界提色、色卡编辑/图片取色和 PNG 分享卡进入两地区正式构建，首页复用既有画家/动画师精选。证据与 L3 边界见 [Palette 说明](docs/palette-extractor.md#a2-d2-beta-资格审计2026-11-01)。A2 已收尾，不继续新增功能阶段。
 - 当前能力与 D2 证据见 [Converter 说明](docs/image-converter-implementation.md)；旧阶段的 Draft、零工具、三格式和 CN-only 结论属于历史。
 
 ## Start Here

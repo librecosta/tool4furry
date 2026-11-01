@@ -1,10 +1,28 @@
 # Palette Extractor · 当前实现
 
-第三款工具，CN/Global、zh/en 均为 **Draft**，只在 DEV 的 `/tools/palette-extractor/`（以及同地区语言前缀路径）可用。A2-B 完成功能，A2-C1/C2/C3 调整工作区、颜色标记与反馈，A2-C4-R1 将 Share Composer 收敛为图片与紧凑色带，R2 改为仅下载 PNG、自然高度设置区与嵌入式选色；现有两款 Published 工具、生产页面和部署状态不变，尚未完成 Palette Beta 资格验收。
+第三款 **Published** 工具，CN/Global、zh/en 均进入正式静态构建；默认语言路径为 `/tools/palette-extractor/`，次语言沿用地区前缀。A2-B 完成功能，C 系列完成工作区、颜色标记及 PNG 分享卡体验，D1 冻结双语静态正文，D2 完成 Beta 资格与工程收尾。三个工具均仅获得源码资格，两个地区均未部署；A2 至此收尾，不继续新增功能阶段。
 
-A2-D1 已按维护者提供的中英文文案完成 SEO 收尾：Title、Meta Description、H1、Intro、步骤、限制和 FAQ 继续使用 Astro 静态正文；清除旧模板、作品标题编辑和系统分享说明，英文标题通过既有可选 headings 提供。Registry 仅同步短描述，保留原有 ID、地区和 Draft 状态；历史验收中的旧 SEO 待办属于当时记录，不改写为当时已通过。
+A2-D1 已按维护者提供的中英文文案完成 SEO 收尾：Title、Meta Description、H1、Intro、步骤、限制和 FAQ 继续使用 Astro 静态正文；清除旧模板、作品标题编辑和系统分享说明，英文标题通过既有可选 headings 提供。D1 当时仅同步 Registry 短描述，保留 Draft；历史验收中的旧 SEO 待办属于当时记录，不改写为当时已通过。
 
 D1 验证（2026-11-01）：`pnpm check` 288 文件，0 错误/警告/提示；4 个相关测试文件、41 项通过；两地区构建及内置守卫通过，仍各 15 个正式页面、两款 Published 工具。四个地区/语言的实际 DEV HTTP 静态 HTML 逐项核对元数据、H1/简介、4/4/5 正文、原生 FAQ、相关工具链接及 `noindex, nofollow`；未复测图片处理或浏览器交互矩阵。证据位于仓库外 `../.validation/palette/d1-content-check.json`，固定端口 4321/4322 的 DEV 已恢复。
+
+## A2-D2 Beta 资格审计（2026-11-01）
+
+结论：L2 通过，按维护者本任务的明确授权将 Registry 状态提升为 Published，保留 CN/Global。D1 原已在本地提交 `ec12879`，D2 开始时先推送同步；冻结的双语正文与 4/4/5 结构没有再改。未开发功能、调整 UX 或改动图片内核、Session、Loader 和依赖。
+
+| L2 要求 | 实际证据 |
+| --- | --- |
+| 现有 CI 通过 | D1 提交的 [GitHub Actions](https://github.com/librecosta/tool4furry/actions/runs/41308950704) 成功；D2 推送后的最终提交 CI 在交付报告中核对。沿用原工作流，没有新增 Job。 |
+| 真实 Chromium 核心流程 | 最新代码完成 CN 中文桌面导入/替换、六种倾向、3/10 色、HEX、增删排序、复制、选色器实时拖动/取消/确认、标记拖动、专注窗口缩放/平移/Escape，以及四方向、原图/固定比例、颜色数量、构图缩放/拖动与下载。 |
+| 输出真实有效 | 9 个实际下载 PNG 由独立 Sharp 完整解码；文件头、PNG 格式 / `image/png`、目标尺寸与色带像素正确。基础 1800×240；四方向原图 1080×637 / 1184×520，图片区与来源平均通道差小于 0.12；固定 1080×1350，手机 1600×744 / 1200×1200，白色透明样本 108×145。导出继续经过实际 Blob MIME、容器、尺寸与完整解码复检。 |
+| 桌面与手机可用 | CN 桌面 Light、Global 英文 390×844 Light/Dark 完成核心操作与下载，无横向溢出。正式静态产物分别在固定 4321/4322 端口完成 CN 白色透明分享图及 Global 暗色手机固定比例下载。复用 C4-R2 的 320px、焦点和放大镜实时同步证据，未伪称重新执行完整矩阵。 |
+| 不支持能力安全失败 | 损坏 PNG、全透明图和不支持的 GIF 明确拒绝，之后静态 AVIF 可正常导入；白色保留，透明隐藏 RGB 不进入色卡。仅输出 PNG，原生编码失败/空 Blob/格式或 MIME 不符继续明确失败，不伪装成功。 |
+| 无已知阻断缺陷 | 版本失效、异步晚到、串行收尾和资源释放相关测试通过；源码审计确认单 Session、共享串行通道、有界图像与取消释放。没有发现数据损坏、严重崩溃或无法下载。 |
+| 维护者决策 | 本任务预先授权全部审计通过后直接提升 Published；源码资格不代表生产部署。 |
+
+工程验证：`pnpm check` 288 文件，0 错误/警告/提示；`pnpm test` 69 文件、794 项通过。两地区正式构建及既有守卫通过：各 17 个 HTML 页面、16 个可索引 URL、三款首页精选，Palette 四个地区/语言路由均包含真实工具。冻结静态正文、无 Draft noindex、Canonical/hreflang、目录/相关工具、Sitemap/llms 与实际页面一致。Color Thief / react-colorful 的完整 MIT 通知和局部 CSS 正常分发，长文不进入客户端 JS；其他 Draft/Lab/Fixture 隔离反例保留。首页直接复用既有画家/动画师手选 ID，没有第二套展示名单或发布开关。
+
+新证据位于仓库外 `../.validation/palette/d2-*`（下载记录、PNG 解码/像素核对、正式页面截图）；不会进入生产资源。静态预览结束后恢复固定 4321/4322 DEV，没有修改端口配置。L3 未测：Firefox/Safari/WebKit、真实 iOS/Android 触控、低端设备/大图压力和专业色彩准确性；手机视口模拟不代表真机。未部署、未创建 Tag/Release，A2 功能阶段至此结束。
 
 ## 模块与所有权
 
@@ -13,7 +31,7 @@ D1 验证（2026-11-01）：`pnpm check` 288 文件，0 错误/警告/提示；4
 - [palette](../src/tools/palette-extractor/palette.ts)：有界像素过滤、Color Thief 候选量化、六种倾向与近色去重、contain 坐标映射。
 - [ImageSampler](../src/tools/palette-extractor/ImageSampler.tsx)：复用 Image Core 的 `preview-geometry` 视图数学，拥有适应/缩放/平移与单实例专注模态框；鼠标/触摸 Pointer Events、目标色卡、Escape、9×9 预览像素放大镜。移动鼠标不解码、不量化、不创建 Blob。
 - [render](../src/tools/palette-extractor/render.ts) / [ShareDialog](../src/tools/palette-extractor/ShareDialog.tsx)：同一套 Canvas 几何、字体测量、有效版本 PNG 与本地下载。[ShareCanvas](../src/tools/palette-extractor/ShareCanvas.tsx) 负责有界实时画布及构图手势，[ComposerControls](../src/tools/palette-extractor/ComposerControls.tsx) 负责局部属性面板；没有全站分享框架、Worker 或持久化。
-- [静态内容](../src/site/palette-extractor-content.ts) / [定义](../src/tools/palette-extractor/definition.ts)：双语 SEO、H1、4 步说明、4 项限制、5 项 FAQ；Registry 与字面量 Loader 沿用统一编译期资格。DEV 画家/动画师展示走既有手选 ID 与发布过滤。
+- [静态内容](../src/site/palette-extractor-content.ts) / [定义](../src/tools/palette-extractor/definition.ts)：双语 SEO、H1、4 步说明、4 项限制、5 项 FAQ；Registry 与字面量 Loader 沿用统一编译期资格。首页画家/动画师展示走既有手选 ID 与发布过滤。
 
 稳定边界见 [图片处理契约](../contracts/image-processing.md)、[发布契约](../contracts/publication.md)。数值和实际行为以源码与测试为准。
 
@@ -21,11 +39,11 @@ D1 验证（2026-11-01）：`pnpm check` 288 文件，0 错误/警告/提示；4
 
 只接收一张经过现有内核检查的静态 PNG/JPEG/WebP/受支持 AVIF。方向校正后的显示位图最长边 1600px，分析图最长边 640px；量化前均匀抽取最多约 32768 个有效像素。原图不上传、不修改、不持久保存。导入 AVIF 不加载编码 WASM。
 
-新增固定依赖 `colorthief@3.5.0`，使用已核对的浏览器 ESM `getPaletteSync(ImageData, …)`、OKLCH/sRGB、`ignoreWhite: false`。浏览器入口不引入 Node 的 sharp；锁文件中的可选 sharp peer 复用 Astro 已有依赖，没有新增综合图像引擎。[完整 MIT 通知](../src/tools/palette-extractor/colorthief.NOTICE.txt) 仅由工具懒加载入口引用，生产 Draft 构建排除该文件。
+固定依赖 `colorthief@3.5.0` 使用已核对的浏览器 ESM `getPaletteSync(ImageData, …)`、OKLCH/sRGB、`ignoreWhite: false`。浏览器入口不引入 Node 的 sharp；锁文件中的可选 sharp peer 复用 Astro 已有依赖，没有新增综合图像引擎。[Color Thief MIT 通知](../src/tools/palette-extractor/colorthief.NOTICE.txt) 与 [react-colorful MIT 通知](../src/tools/palette-extractor/react-colorful.NOTICE.txt) 由工具懒加载入口引用，Published 构建完整分发；若降回 Draft，继续随私有入口排除。
 
 Alpha=0 在调用量化库前始终排除；存在不透明内容时阈值为 192，否则降到不超过 96 的有效阈值。全透明图片明确失败，不把隐藏 RGB 当成色彩。候选取较丰富的 20 色，结合真实面积、OKLCH 明度/色度与差异度排序；排除极小噪点与近重复颜色。Balanced/Colorful/Bright/Muted/Deep/Dark 是本工具的倾向，不能视作 Adobe Color 算法。
 
-默认均衡六色，自动目标 3–10，手动结果 1–10；少色图不补造颜色。模式/目标变化复用候选，不重新解码。编辑后的重新提取需要确认；取消保持原结果。新增取消不创建空卡，未完成 HEX 不污染有效颜色。主题、Resize、模板以及组件 locale 属性更新不改变配色。维护者已确认保留现有完整页面语言导航，跨页面会话保留留待 A2-C 讨论，不由本工具另建存储系统实现。
+默认均衡六色，自动目标 3–10，手动结果 1–10；少色图不补造颜色。模式/目标变化复用候选，不重新解码。编辑后的重新提取需要确认；取消保持原结果。新增取消不创建空卡，未完成 HEX 不污染有效颜色。主题、视口尺寸、分享选项及组件 locale 属性更新不改变配色；完整页面语言导航不保留内存会话，不另建持久存储系统。
 
 ## PNG 与分享
 

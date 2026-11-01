@@ -238,17 +238,18 @@ describe('compact image and color-strip geometry', () => {
   });
 });
 
-it('registers a bilingual DEV-only draft without changing the two published tools', () => {
+it('registers the third bilingual Published tool in both regions', () => {
   const tool = tools.find((t) => t.id === 'palette-extractor')!;
-  expect(tool.status).toBe('draft');
+  expect(tool.status).toBe('published');
   for (const region of ['cn', 'global'] as const) {
     expect(getPublishedTools(region).map((t) => t.id)).toEqual([
       'image-converter',
       'image-resize-crop',
+      'palette-extractor',
     ]);
     expect(getAvailableTools(region, true)).toContain(tool);
     for (const locale of ['zh', 'en'] as const) {
-      const content = getToolPageContent(tool, region, undefined, true, locale);
+      const content = getToolPageContent(tool, region, undefined, false, locale);
       expect(content.steps?.length).toBe(4);
       expect(content.faq?.length).toBe(5);
     }

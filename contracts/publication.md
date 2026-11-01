@@ -9,9 +9,11 @@
 | 正式构建 | 生成可独立托管的静态页面与所需资源，不执行上传或上线 |
 | 实际部署 | 将产物发布到托管环境的独立操作，需要明确授权 |
 
-当前 Image Converter 与 Image Resize & Crop 均为 Published 工具，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
+当前 Image Converter、Image Resize & Crop 与 Palette Extractor 三款工具均为 Published，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
 
 Image Resize & Crop (`image-resize-crop`) 已通过 A1-D2 L2 审计，并依据维护者本任务授权提升源码资格。两地区正式构建包含其双语页面、按需实现、局部裁剪 CSS 和完整 ISC 许可声明；其他 Draft、Lab 和 Fixture 继续隔离。审计证据与 L3 边界见 [模块说明](../docs/image-resize-crop-implementation.md#a1-d2-beta-资格审计2026-10-31)。
+
+Palette Extractor (`palette-extractor`) 已通过 A2-D2 L2 审计，依据维护者本任务授权提升源码资格。两地区正式构建包含双语页面、按需实现、局部选色器样式及 Color Thief / react-colorful 完整 MIT 通知；首页既有画家/动画师精选 ID 继续受 Registry 过滤。证据与 L3 范围见 [模块说明](../docs/palette-extractor.md#a2-d2-beta-资格审计2026-11-01)。
 
 ## 唯一可用性来源
 
@@ -24,7 +26,7 @@ Image Resize & Crop (`image-resize-crop`) 已通过 A1-D2 L2 审计，并依据�
 ## 构建与部署隔离
 
 - CN/Global 独立域名、缓存与 `dist/cn` / `dist/global`；同地区包含中英文，不把英文页面自动投向另一地区。
-- Draft、Lab、目录 Fixture、实验代码及其专用资源不得泄漏到正式页面、发现文件或资源图。不可用工具的 Worker/WASM 也应排除；当前两款正式图片工具所需资源则正常生成并按需请求。
+- Draft、Lab、目录 Fixture、实验代码及其专用资源不得泄漏到正式页面、发现文件或资源图。不可用工具的 Worker/WASM 也应排除；当前三款正式图片工具所需资源则正常生成并按需请求。
 - 私有依赖应通过可分析的源码导入链进入构建图，不放入会无条件复制的 `public/`。被合法 Published 工具实际使用的共享模块可以保留；不能只凭库名出现判定 Draft 泄漏。既有正式品牌、字体和授权文件不受此规则要求迁移。
 - robots/Sitemap/llms 从实际公开页面生成，不用 robots 代替 Draft 隔离；不得用假页面、假链接填充空态。
 - 构建产物不是上线证据，localhost HTTP 缓存不等于 CDN/公网 HTTPS 已验证。备案、DNS、CDN 和搜索平台操作均需独立授权。

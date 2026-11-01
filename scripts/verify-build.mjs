@@ -35,7 +35,7 @@ const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
 const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
-function assertToolContent(dom, locale, contents) {
+function assertToolContent(dom, locale, contents, faqCount = 6) {
   const expected = contents[locale];
   assert.equal(dom.title, expected.title);
   assert.equal(dom.querySelector('meta[name="description"]')?.content, expected.description);
@@ -53,9 +53,9 @@ function assertToolContent(dom, locale, contents) {
     assert.deepEqual([...guide.querySelectorAll(`${selector} strong`)].map(node => node.textContent),
       expected[key].flatMap(text => [...text.matchAll(/\*\*([^*]+)\*\*/g)].map(match => match[1])), 'Limited Markdown emphasis stays semantic HTML');
   }
-  assert.equal(expected.faq.length, 6);
+  assert.equal(expected.faq.length, faqCount);
   const faq = [...guide.querySelectorAll('[aria-labelledby="tool-faq"] > details')];
-  assert.equal(faq.length, 6);
+  assert.equal(faq.length, faqCount);
   for (const [index, item] of faq.entries()) {
     assert.equal(item.firstElementChild.tagName, 'SUMMARY');
     assert.equal(item.querySelector('summary span')?.textContent, expected.faq[index].question);
@@ -847,6 +847,7 @@ for (const page of htmlFiles) {
   if (toolPages.includes(page)) {
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
+    if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
     if (page === 'tools/image-converter/index.html')
       assert(!/开发保护值|全设备兼容承诺|development (?:resource )?guardrails/i.test(dom.body.textContent),
         'Converter public copy must describe current limits, not internal guardrails');
@@ -1199,11 +1200,27 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
   );
 }
 if (!files.includes('tools/palette-extractor/index.html')) {
-  assert(!files.some(file => /PaletteExtractor|colorthief\.NOTICE/.test(file)), 'Draft palette asset leaked');
-  const notice = await readFile('src/tools/palette-extractor/colorthief.NOTICE.txt');
-  for (const file of files.filter(file => /\.(js|txt)$/.test(file))) {
-    const bytes = await readFile(resolve(root, file));
-    assert(!bytes.equals(notice) && !bytes.toString().includes(notice.toString('base64')), `Draft palette notice leaked: ${file}`);
+  assert(!files.some(file => /PaletteExtractor|(?:colorthief|react-colorful)\.NOTICE/.test(file)), 'Draft palette asset leaked');
+  for (const name of ['colorthief', 'react-colorful']) {
+    const notice = await readFile(`src/tools/palette-extractor/${name}.NOTICE.txt`);
+    for (const file of files.filter(file => /\.(js|txt)$/.test(file))) {
+      const bytes = await readFile(resolve(root, file));
+      assert(!bytes.equals(notice) && !bytes.toString().includes(notice.toString('base64')), `Draft palette notice leaked: ${file}`);
+    }
+  }
+  for (const file of files.filter(file => file.endsWith('.css')))
+    assert(!(await readFile(resolve(root, file), 'utf8')).includes('[data-palette-color-picker]'), `Draft picker CSS leaked: ${file}`);
+} else {
+  const scripts = await Promise.all(files.filter(file => file.endsWith('.js')).map(file => readFile(resolve(root, file), 'utf8')));
+  const styles = await Promise.all(files.filter(file => file.endsWith('.css')).map(file => readFile(resolve(root, file), 'utf8')));
+  assert(scripts.some(js => js.includes('data-palette-extractor') && js.includes('data-palette-color-picker')), 'Published palette implementation and color picker are included');
+  assert(styles.some(css => css.includes('[data-palette-color-picker]') && css.includes('.react-colorful')), 'Published color picker CSS is included and scoped');
+  for (const name of ['colorthief', 'react-colorful']) {
+    const notice = await readFile(`src/tools/palette-extractor/${name}.NOTICE.txt`);
+    const emitted = files.filter(file => file.includes(`${name}.NOTICE`));
+    const hasNotice = scripts.some(js => js.includes(notice.toString('base64'))) ||
+      (await Promise.all(emitted.map(async file => (await readFile(resolve(root, file))).equals(notice)))).some(Boolean);
+    assert(hasNotice, `Published palette distributes the complete ${name} MIT license and notice`);
   }
 }
 if (!files.includes('tools/image-resize-crop/index.html')) {

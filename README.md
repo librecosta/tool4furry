@@ -10,7 +10,9 @@
 
 **Image Resize & Crop** 支持自由/固定比例裁剪、精确尺寸与百分比、可缩放平移的裁剪工作区，以及批量缩放、文件夹导入、预览对比、独立下载和 ZIP；支持 PNG/JPEG/WebP/受限静态 AVIF 输入，输出 PNG/JPEG/WebP。能力、Beta 资格与未测范围见 [当前模块说明](docs/image-resize-crop-implementation.md)。
 
-两款工具均在源码层面 **Published**。CN/Global 均可构建完整双语静态站点，**两个地区均未线上部署**。Published 和构建就绪不代表已对公网提供服务。
+**Palette Extractor** 支持六种提色倾向、手动取色与色卡编辑、复制 HEX/RGB、基础色卡和图片色带 PNG 分享卡；单张图片在浏览器本地处理。能力、Beta 资格与未测范围见 [当前模块说明](docs/palette-extractor.md)。
+
+三款工具均在源码层面 **Published**。CN/Global 均可构建完整双语静态站点，**两个地区均未线上部署**。Published 和构建就绪不代表已对公网提供服务。
 
 ## 技术与架构
 

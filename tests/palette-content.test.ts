@@ -57,11 +57,14 @@ describe('Palette Extractor finalized bilingual content', () => {
     expect(JSON.stringify(paletteExtractorContent.en)).not.toMatch(/\p{Script=Han}/u);
   });
 
-  it.each(['cn', 'global'] as const)('keeps the updated %s content behind the existing Draft gate', region => {
-    expect(definition).toMatchObject({status: 'draft', regions: ['cn', 'global']});
+  it.each(['cn', 'global'] as const)('publishes the approved %s content while retaining the Draft gate', region => {
+    expect(definition).toMatchObject({status: 'published', regions: ['cn', 'global']});
     for (const locale of ['zh', 'en'] as const) {
       expect(getToolPageContent(definition, region, undefined, true, locale)).toEqual(paletteExtractorContent[locale]);
-      expect(() => getToolPageContent(definition, region, undefined, false, locale)).toThrow('Unpublished');
+      expect(getToolPageContent(definition, region, undefined, false, locale)).toEqual(paletteExtractorContent[locale]);
+      const draft = {...definition, status: 'draft' as const};
+      expect(getToolPageContent(draft, region, undefined, true, locale)).toEqual(paletteExtractorContent[locale]);
+      expect(() => getToolPageContent(draft, region, undefined, false, locale)).toThrow('Unpublished');
     }
   });
 });

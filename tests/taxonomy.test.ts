@@ -31,10 +31,10 @@ describe('publication metadata gate', () => {
     expect(tools.map((tool) => [tool.id, tool.status])).toEqual([
       ['image-converter', 'published'],
       ['image-resize-crop', 'published'],
-      ['palette-extractor', 'draft'],
+      ['palette-extractor', 'published'],
     ]);
-    expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop']);
-    expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop']);
+    expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor']);
+    expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor']);
   });
   it.each([0, 3, 20, 100])(
     'validates %i test-only tools without registering them',
@@ -49,10 +49,10 @@ describe('publication metadata gate', () => {
       expect(tools.map((tool) => [tool.id, tool.status])).toEqual([
         ['image-converter', 'published'],
         ['image-resize-crop', 'published'],
-        ['palette-extractor', 'draft'],
+        ['palette-extractor', 'published'],
       ]);
-      expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop']);
-      expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop']);
+      expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor']);
+      expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor']);
     },
   );
   it.each([
