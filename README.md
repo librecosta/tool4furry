@@ -12,9 +12,11 @@
 
 **Palette Extractor** 支持六种提色倾向、手动取色与色卡编辑、复制 HEX/RGB、基础色卡和图片色带 PNG 分享卡；单张图片在浏览器本地处理。能力、Beta 资格与未测范围见 [当前模块说明](docs/palette-extractor.md)。
 
-三款工具均在源码层面 **Published**。CN/Global 均可构建完整双语静态站点，**两个地区均未线上部署**。Published 和构建就绪不代表已对公网提供服务。
+**Image Compressor** 支持单张/批量与文件夹导入、快速压缩强度、高级质量/目标大小/最长边、四格式输出、预览对比和 ZIP；AVIF 输出受设备与尺寸限制，JPEG/WebP 目标大小不保证达到，结果也可能变大。能力与 Beta 证据见 [当前模块说明](docs/image-basics.md)。
 
-DEV 另提供四款完整 Draft：**Image Compressor**、**Comic Page Organizer**、**Image Watermark** 和 **EXIF Metadata**。能力与验收入口见 [基础图片工具说明](docs/image-basics.md)；它们不进入正式构建。
+四款工具均在源码层面 **Published**。CN/Global 均可构建完整双语静态站点，**两个地区均未线上部署**。Published 和构建就绪不代表已对公网提供服务。
+
+DEV 另提供三款完整 Draft：**Comic Page Organizer**、**Image Watermark** 和 **EXIF Metadata**。能力与验收入口见 [基础图片工具说明](docs/image-basics.md)；它们不进入正式构建。
 
 ## 技术与架构
 

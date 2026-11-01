@@ -32,11 +32,11 @@ describe('publication metadata gate', () => {
       ['image-converter', 'published'],
       ['image-resize-crop', 'published'],
       ['palette-extractor', 'published'],
-      ['image-compressor', 'draft'], ['comic-page-organizer', 'draft'],
+      ['image-compressor', 'published'], ['comic-page-organizer', 'draft'],
       ['image-watermark', 'draft'], ['exif-metadata', 'draft'],
     ]);
-    expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor']);
-    expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor']);
+    expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor']);
+    expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor']);
   });
   it.each([0, 3, 20, 100])(
     'validates %i test-only tools without registering them',
@@ -52,11 +52,11 @@ describe('publication metadata gate', () => {
         ['image-converter', 'published'],
         ['image-resize-crop', 'published'],
         ['palette-extractor', 'published'],
-        ['image-compressor', 'draft'], ['comic-page-organizer', 'draft'],
+        ['image-compressor', 'published'], ['comic-page-organizer', 'draft'],
         ['image-watermark', 'draft'], ['exif-metadata', 'draft'],
       ]);
-      expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor']);
-      expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor']);
+      expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor']);
+      expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor']);
     },
   );
   it.each([

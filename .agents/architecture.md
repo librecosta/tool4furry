@@ -1,6 +1,6 @@
 # 当前架构
 
-Tool4Furry 是单项目的浏览器工具站：Astro SSG + 必要的 React Islands + TypeScript + StyleX。Image Converter、Image Resize & Crop 与 Palette Extractor 是当前三款 Published 工具，两个地区构建就绪但均未部署。来源优先级见 [AGENTS](../AGENTS.md#sources-of-truth)。
+Tool4Furry 是单项目的浏览器工具站：Astro SSG + 必要的 React Islands + TypeScript + StyleX。Image Converter、Image Resize & Crop、Palette Extractor 与 Image Compressor 是当前四款 Published 工具，两个地区构建就绪但均未部署。来源优先级见 [AGENTS](../AGENTS.md#sources-of-truth)。
 
 ## 静态站点层
 

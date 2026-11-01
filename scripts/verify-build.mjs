@@ -36,7 +36,7 @@ const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
 const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
-function assertToolContent(dom, locale, contents, faqCount = 6) {
+function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4) {
   const expected = contents[locale];
   assert.equal(dom.title, expected.title);
   assert.equal(dom.querySelector('meta[name="description"]')?.content, expected.description);
@@ -49,7 +49,7 @@ function assertToolContent(dom, locale, contents, faqCount = 6) {
   assert.equal(guide.querySelectorAll(':scope > details').length, expected.features?.length ? 1 : 0,
     'Only tools with optional feature content receive a feature overview');
   for (const [key, selector] of [['steps', '#tool-steps + ol > li'], ['limitations', '#tool-limitations + ul > li']]) {
-    assert.equal(expected[key].length, 4);
+    assert.equal(expected[key].length, instructionCount);
     assert.deepEqual([...guide.querySelectorAll(selector)].map(node => plain(node.textContent)), expected[key].map(plain));
     assert.deepEqual([...guide.querySelectorAll(`${selector} strong`)].map(node => node.textContent),
       expected[key].flatMap(text => [...text.matchAll(/\*\*([^*]+)\*\*/g)].map(match => match[1])), 'Limited Markdown emphasis stays semantic HTML');
@@ -183,7 +183,7 @@ for (const prefix of ['', region === 'cn' ? 'en/' : 'zh/'])
     'Registry controls exactly the regional published routes in both languages',
   );
 const avifWasm = files.filter(file => /avif_(?:enc|dec).*\.wasm$/.test(file));
-if (files.includes('tools/image-converter/index.html')) {
+if (['image-converter', 'image-compressor'].some(id => files.includes(`tools/${id}/index.html`))) {
   assert.equal(avifWasm.length, 1, 'Exactly one ST AVIF encoder, no decoder/threaded binary');
   assert(/avif_enc-[\w-]+\.wasm$/.test(avifWasm[0]), 'AVIF resource has a build content hash');
   const binary = await readFile(resolve(root, avifWasm[0]));
@@ -193,7 +193,7 @@ if (files.includes('tools/image-converter/index.html')) {
   assert.equal(notices.length, 1, 'Optional encoder ships its third-party notices');
   assert((await readFile(resolve(root, notices[0]), 'utf8')).includes('libaom v3.7.0'));
 } else {
-  assert.equal(avifWasm.length, 0, 'Unavailable Converter AVIF resources must not enter the public site');
+  assert.equal(avifWasm.length, 0, 'Unavailable AVIF output consumers must not bring encoder resources into the public site');
   assert(!files.some(file => /avif\.worker|avif\.NOTICE/.test(file)), 'Unavailable worker/notices must not leak');
 }
 const catalogModules = files.filter(file => /^_astro\/ToolsCatalog\.astro_astro_type_script_index_0_lang\.[\w-]+\.js$/.test(file));
@@ -849,6 +849,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
+    if (page === 'tools/image-compressor/index.html') assertToolContent(dom, locale, imageCompressorContent, 4, 3);
     if (page === 'tools/image-converter/index.html')
       assert(!/开发保护值|全设备兼容承诺|development (?:resource )?guardrails/i.test(dom.body.textContent),
         'Converter public copy must describe current limits, not internal guardrails');
@@ -1201,6 +1202,11 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
     toolPages.length > 0 || !js.includes('data-workbench'),
     `Unused workbench leaked without published tools: ${file}`,
   );
+}
+if (files.includes('tools/image-compressor/index.html')) {
+  const scripts = await Promise.all(files.filter(file => file.endsWith('.js')).map(file => readFile(resolve(root, file), 'utf8')));
+  assert(scripts.some(js => js.includes('data-image-compressor') && js.includes('data-compressor-parameters') && js.includes('spinbutton')),
+    'Published Compressor includes its real implementation, parameter modes and longest-side stepper');
 }
 if (!files.includes('tools/exif-metadata/index.html')) {
   const notice = await readFile('src/tools/exif-metadata/exifr.NOTICE.txt');

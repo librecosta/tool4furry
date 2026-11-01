@@ -23,6 +23,8 @@
 
 ### Changed
 
+- V0.7-B1-D1 完成 Image Compressor 冻结双语 SEO 与 Beta 审计，按维护者授权提升源码 Published，保留 C1-R1 最长边步进器。首页、创作身份和发现文件沿用 Registry 投影，AVIF 复用既有按需 Worker/WASM 及许可；漫画整理、水印和 EXIF 继续保持 Draft。B1 收尾，未部署或创建 Tag/Release。
+
 - V0.7-B1-C1 将 Image Compressor 调整为文件列表 / 设置双栏与移动单栏，增加文件夹入口、独立快速/高级草稿和按格式区分的三档强度。复用既有 AVIF Worker/WASM、输出预算与真实格式复检，取消/超时回收仍受原串行通道管理；目标大小仅用于 JPEG/WebP。保持 Draft，不改其他工具业务或发布资格。
 
 - V0.7-A2-D2 完成 Palette Extractor L2 Beta 审计并按维护者授权提升源码为 Published；先同步本地 D1 冻结双语 SEO。CN/Global 正式构建各包含三款工具、17 个 HTML 页面与 16 个公开发现 URL，首页复用画家/动画师既有精选，完整分发 Color Thief / react-colorful MIT 通知。794 项测试与双地区构建通过，真实 Chromium 桌面/手机视口及 9 个 PNG 下载完成核验；L3 真机/跨浏览器与压力范围见模块说明。A2 功能收尾，未部署或创建 Tag/Release。

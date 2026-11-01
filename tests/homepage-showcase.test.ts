@@ -4,6 +4,7 @@ import { getHomepageEntries } from '../src/site/catalog';
 import { imageConverterDefinition } from '../src/tools/image-converter/definition';
 import { imageResizeCropDefinition } from '../src/tools/image-resize-crop/definition';
 import { paletteExtractorDefinition } from '../src/tools/palette-extractor/definition';
+import { imageCompressorDefinition } from '../src/tools/image-compressor/definition';
 import { fixtureTools } from './fixtures/tools';
 import type { ToolDefinition } from '../src/tools/types';
 
@@ -29,7 +30,7 @@ describe('four-slot featured presentation', () => {
     expect(cards).toHaveLength(Math.min(count, 4));
   });
 
-  it.each(['cn', 'global'] as const)('shows three Published cards in %s production and includes the next Draft in DEV', region => {
+  it.each(['cn', 'global'] as const)('shows four Published cards in %s production and DEV', region => {
     for (const locale of ['zh', 'en'] as const) {
       const entries = getHomepageEntries(region, undefined, undefined, true, locale);
       const cards = getFeaturedShowcase(entries);
@@ -37,8 +38,8 @@ describe('four-slot featured presentation', () => {
       expect(cards[0].description).toBe(imageConverterDefinition.copy[locale].summary);
       expect(entries[0].description).toBe(imageConverterDefinition.copy[locale].description);
       expect(cards[0].href).toBe(entries[0].href);
-      expect(cards.map(card => card.status)).toEqual(['published', 'published', 'published', 'draft']);
-      expect(getFeaturedShowcase(getHomepageEntries(region, undefined, undefined, false, locale))).toEqual(cards.slice(0, 3));
+      expect(cards.map(card => card.status)).toEqual(['published', 'published', 'published', 'published']);
+      expect(getFeaturedShowcase(getHomepageEntries(region, undefined, undefined, false, locale))).toEqual(cards);
     }
     expect(imageConverterDefinition.status).toBe('published');
   });
@@ -46,11 +47,11 @@ describe('four-slot featured presentation', () => {
 
 describe('homepage editorial role projection', () => {
   const associatedRoles = ['painter', 'developer', 'animator', 'operations'];
-  const publishedTools = [imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition];
+  const publishedTools = [imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition];
   const roleTools = (id: string, list = publishedTools) => associatedRoles.includes(id)
     ? list.filter(tool => tool.id !== 'palette-extractor' || ['painter', 'animator'].includes(id)) : [];
 
-  it.each(['cn', 'global'] as const)('projects three Published tools in %s editorial order without filling unrelated roles', region => {
+  it.each(['cn', 'global'] as const)('projects four Published tools in %s editorial order without filling unrelated roles', region => {
     for (const locale of ['zh', 'en'] as const) {
       const production = getRoleShowcases(region, locale);
       expect(production).toHaveLength(6);
@@ -67,11 +68,11 @@ describe('homepage editorial role projection', () => {
       for (const role of dev) {
         const productionRole = production.find(item => item.id === role.id)!;
         expect(role.entries.filter(entry => entry.status === 'published')).toEqual(productionRole.entries);
-        const draftByRole: Record<string, string[]> = {painter: ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'], developer: ['image-compressor'], animator: ['image-compressor', 'comic-page-organizer', 'image-watermark'], operations: ['image-compressor', 'image-watermark', 'exif-metadata']};
+        const draftByRole: Record<string, string[]> = {painter: ['comic-page-organizer', 'image-watermark', 'exif-metadata'], developer: [], animator: ['comic-page-organizer', 'image-watermark'], operations: ['image-watermark', 'exif-metadata']};
         expect(role.entries.filter(entry => entry.status === 'draft').map(entry => entry.id)).toEqual(draftByRole[role.id] ?? []);
       }
     }
-    expect(publishedTools.map(tool => tool.status)).toEqual(['published', 'published', 'published']);
+    expect(publishedTools.map(tool => tool.status)).toEqual(['published', 'published', 'published', 'published']);
   });
 
   it.each(['cn', 'global'] as const)('keeps %s editorial IDs behind Registry Draft and region filtering in both locales', region => {
@@ -95,7 +96,7 @@ describe('homepage editorial role projection', () => {
       expect(getRoleShowcases(region, locale, false, list).flatMap(role => role.entries)).toEqual([]);
       expect(getRoleShowcases(region, locale, true, list).flatMap(role => role.entries)).toEqual([]);
     }
-    expect(publishedTools.map(tool => tool.status)).toEqual(['published', 'published', 'published']);
+    expect(publishedTools.map(tool => tool.status)).toEqual(['published', 'published', 'published', 'published']);
   });
 
   it('deduplicates editorial IDs, ignores unknown/unavailable IDs, and caps each role at twelve', () => {

@@ -4,18 +4,28 @@ type Content = Record<Locale, ToolPageContent>;
 const englishHeadings = {steps: 'How to Use', limitations: 'Supported Formats & Limitations', faq: 'Frequently Asked Questions'} as const;
 export const imageCompressorContent: Content = {
   zh: {
-    title: '在线图片压缩 - 质量与目标大小 | Tool4Furry', description: '在浏览器本地压缩 JPEG、PNG、WebP 和受支持静态 AVIF 图片。调整质量、目标大小与最长边，对比实际结果，逐张或 ZIP 下载。',
-    h1: '图片压缩', intro: '调整图片质量与大小，比较压缩效果，再按需下载。',
-    steps: ['添加图片或文件夹，选择 PNG、JPEG、WebP，或受支持设备上的 AVIF 输出。', '快速选择压缩强度，或在高级模式中调整质量、目标大小与最长边，然后压缩全部图片。', '检查每张图片的实际大小和节省比例，对比原图与结果，逐张下载或打包 ZIP。'],
-    limitations: ['支持 JPEG、PNG、WebP 和受支持的静态 AVIF 输入；不支持动画和部分特殊格式。AVIF 输出仅在设备能力与独立尺寸限制内可用。', '目标大小仅用于 JPEG/WebP，通过有限次数尝试逼近，不保证达到。PNG 没有有损质量设置，AVIF 本阶段不支持目标大小搜索；输出也可能变大。', '图片仅在本地处理。数量、文件大小和分辨率受设备限制；默认移除常见来源隐私元数据。'],
-    faq: [{question: '能保证压缩到指定 KB 吗？', answer: '不能。画面、格式与尺寸会影响结果，工具会显示实际大小和是否达到目标，不伪造压缩比例。'}, {question: 'PNG 应该选择什么格式？', answer: '需要保持 PNG 时可继续输出 PNG；接受有损压缩时可主动选择 WebP 或 JPEG。JPEG 不支持透明背景。'}, {question: '图片变大了怎么办？', answer: '工具会明确提示变大。可以调整质量、尺寸或主动选择其他输出格式；原始文件不会被修改。'}],
+    title: '在线图片压缩工具 - 批量压缩与大小调整 | Tool4Furry', description: '在线批量压缩 JPEG、PNG、WebP 和受支持的静态 AVIF 图片。快速调整压缩强度，或设置质量、目标大小与最长边，预览压缩效果并下载图片或 ZIP。全部在浏览器本地处理。',
+    h1: '图片压缩', intro: '压缩单张或多张图片，比较画质与文件大小，满意后再下载。',
+    steps: ['**添加图片：** 选择图片或文件夹，一次可以处理多张图片。', '**设置压缩：** 在快速模式中选择输出格式和压缩强度，或使用高级模式调整画质、目标大小与最长边。', '**预览与下载：** 查看每张图片的实际大小和压缩效果，对比原图与结果，逐张下载或打包为 ZIP。'],
+    limitations: ['支持 JPEG、PNG、WebP 和部分静态 AVIF 图片输入；输出支持 PNG、JPEG、WebP，以及符合设备和尺寸限制的 AVIF。暂不支持动画图片和部分特殊格式。', '目标大小仅适用于 JPEG/WebP，不保证一定达到。PNG 不提供有损质量设置，部分图片在重新编码后也可能变大。', '图片仅在浏览器本地处理，不会上传到服务器。文件数量、大小和分辨率受设备限制；输出默认清理常见来源隐私元数据。'],
+    faq: [
+      {question: '可以将图片压缩到指定的 KB 吗？', answer: '可以在高级模式中为 JPEG 或 WebP 设置目标大小。工具会尝试生成接近目标的文件，但不能保证一定达到。最终会显示实际大小和压缩结果。'},
+      {question: 'PNG 可以压缩吗？', answer: '可以尝试重新编码 PNG，但不一定会得到更小的文件。如果可以接受有损压缩，可主动选择 WebP 或 JPEG。需要保留透明背景时，不建议选择 JPEG。'},
+      {question: '压缩后图片反而变大怎么办？', answer: '部分图片重新编码后可能变大。可以尝试降低质量、缩小尺寸或更换输出格式。工具会显示实际变化，原始文件不会被修改。'},
+      {question: '图片会上传到服务器吗？', answer: '不会。图片读取、压缩、预览和下载全部在当前浏览器中完成，无需上传。关闭页面后，处理结果不会被持久保存。'},
+    ],
   },
   en: {
-    title: 'Image Compressor – Quality & Target Size | Tool4Furry', description: 'Compress JPEG, PNG, WebP and supported static AVIF images locally. Adjust quality, target size or longest side, compare actual results, and download files or a ZIP.',
-    h1: 'Image Compressor', intro: 'Adjust image quality and size, compare the results, and download what you need.', headings: englishHeadings,
-    steps: ['Add images or a folder and choose PNG, JPEG, WebP, or AVIF on supported devices.', 'Choose a Quick compression strength, or adjust quality, size targets and longest side in Advanced, then compress all images.', 'Check actual sizes and savings for each image, compare original and output, and download files individually or as a ZIP.'],
-    limitations: ['Accepts JPEG, PNG, WebP and supported static AVIF images. Animations and some specialized formats are unsupported. AVIF output has separate device and dimension limits.', 'Size targets apply only to JPEG/WebP and use bounded attempts without a guarantee. PNG has no lossy quality setting, and AVIF size-target searches are not supported. Outputs may be larger.', 'Processing stays local. Device limits apply to file count, size and resolution. Common source privacy metadata is removed by default.'],
-    faq: [{question: 'Can I guarantee a specific file size?', answer: 'No. Image content, format and dimensions affect size. The tool reports actual bytes and whether the target was reached.'}, {question: 'Which format should I use for PNG images?', answer: 'Keep PNG when required, or explicitly choose WebP or JPEG for lossy compression. JPEG does not support transparency.'}, {question: 'What if the result is larger?', answer: 'The tool clearly reports an increase. Adjust quality or dimensions, or explicitly choose another format. Your original file stays unchanged.'}],
+    title: 'Online Image Compressor – Batch Image Compression | Tool4Furry', description: 'Compress JPEG, PNG, WebP and supported static AVIF images in your browser. Adjust compression strength, quality, target file size or dimensions, compare results, and download images or a ZIP. No uploads required.',
+    h1: 'Image Compressor', intro: 'Compress one image or a whole batch, compare quality and file size, and download the results you like.', headings: englishHeadings,
+    steps: ['**Add images:** Choose images or a folder to process multiple files at once.', '**Adjust compression:** Choose an output format and compression strength in Quick mode, or fine-tune quality, target size and longest side in Advanced mode.', '**Preview and download:** Check actual file sizes, compare originals with compressed results, and download images individually or together as a ZIP.'],
+    limitations: ['Supports JPEG, PNG, WebP and selected static AVIF inputs. PNG, JPEG and WebP outputs are available, with AVIF output subject to device and dimension limits. Animated images and some specialized formats are not supported.', 'Target file sizes are available for JPEG and WebP but cannot be guaranteed. PNG has no lossy quality setting, and re-encoding some images may increase their size.', 'Images are processed entirely in your browser without being uploaded. File count, size and resolution limits depend on your device. Common source privacy metadata is removed by default.'],
+    faq: [
+      {question: 'Can I compress an image to a specific file size?', answer: 'You can set a target size for JPEG or WebP in Advanced mode. The tool attempts to get close to that size, but the result is not guaranteed. The actual output size is always shown.'},
+      {question: 'Can PNG images be compressed?', answer: 'PNG images can be re-encoded, although the result may not be smaller. If lossy compression is acceptable, you can choose WebP or JPEG. Avoid JPEG when you need to preserve transparency.'},
+      {question: 'What if the compressed image is larger?', answer: 'Some images become larger after re-encoding. Try a lower quality setting, smaller dimensions or another format. The tool reports the actual size change and leaves your original file untouched.'},
+      {question: 'Are my images uploaded to a server?', answer: 'No. Images are read, compressed, previewed and downloaded directly in your browser without uploading them. Results are not stored permanently after you close the page.'},
+    ],
   },
 };
 export const comicPageOrganizerContent: Content = {

@@ -1,8 +1,8 @@
 # 基础图片工具 · V0.7-B
 
-四款工具均为 CN/Global、zh/en **Draft**，只在 DEV 出现。沿用 Registry、显式字面量 Loader、Astro 静态正文与 Form Wide；没有新发布门、应用根或全局 Store。首页与创作身份使用既有人工精选和 Registry 过滤，正式站点仍为三款 Published 工具。
+Image Compressor 为 CN/Global、zh/en **Published**；Comic Page Organizer、Image Watermark 与 EXIF Metadata 仍为 **Draft**，只在 DEV 出现。沿用 Registry、显式字面量 Loader、Astro 静态正文与 Form Wide；没有新发布门、应用根或全局 Store。首页与创作身份使用既有人工精选和 Registry 过滤，正式站点当前为四款 Published 工具。
 
-| 工具与 DEV 路径 | 当前能力 |
+| 工具与路径（Draft 仅 DEV） | 当前能力 |
 | --- | --- |
 | [Image Compressor](../src/tools/image-compressor/ImageCompressor.tsx) · `/tools/image-compressor/` | 单张/批量与文件夹，快速强度或高级质量/目标大小/最长边，PNG/JPEG/WebP 与受支持桌面设备上的 AVIF 输出，原图/结果比较、实际大小与节省比例、独立下载和 ZIP。JPEG/WebP 目标大小只进行有界尝试，未达到或变大均如实显示。 |
 | [Comic Page Organizer](../src/tools/comic-page-organizer/ComicPageOrganizer.tsx) · `/tools/comic-page-organizer/` | 多图/文件夹，自然排序、缩略图网格、拖排/移动、多选删除、追加、封面、逐页阅读，稳定零填充页名的 ZIP/CBZ。原始图片字节保持不变，来源元数据也可能保留。 |
@@ -17,7 +17,7 @@ EXIF 读取使用固定 `exifr@7.1.3`，仅向解析器传入经现有容器检�
 
 人工入口：`pnpm dev` 后 CN `http://127.0.0.1:4321/tools/{id}/`，Global `http://127.0.0.1:4322/tools/{id}/`；同地区次语言继续使用 `/en/` 或 `/zh/`。固定端口不变。各模块只跑必要局部测试，集成后统一类型检查、跨模块测试与双地区构建；完整测试沿用现有 CI，无新增矩阵或工作流。
 
-L3 边界：真实 iOS/Android、Firefox/Safari、低端设备及压力测试未完成；Chromium 核心 Smoke 不代表这些平台通过。四款 Draft 后续可独立审计，不互相阻塞资格。未部署、未创建 Tag/Release。
+L3 边界：真实 iOS/Android、Firefox/Safari、低端设备及压力测试未完成；Chromium 核心 Smoke 不代表这些平台通过。其余三款 Draft 后续可独立审计，不互相阻塞资格。未部署、未创建 Tag/Release。以下 V0.7-B / B1-C1 为历史阶段记录，最终 B1 资格见文末。
 
 2026-11-01 集成验证：`pnpm check` 零诊断，18 个相关测试文件的 212 项定向断言通过（包含资源补丁复跑）；CN/Global 构建与静态守卫通过，每区仍为 17 HTML、16 个公开 URL、三款 Published。四款新工具、专属实现及 exifr 通知均被生产发布门排除。没有运行无关专项夹具或本地全量测试，完整测试由既有 GitHub Actions 执行。
 
@@ -36,3 +36,15 @@ L3 边界：真实 iOS/Android、Firefox/Safari、低端设备及压力测试未
 本地证据在 `../.validation/compressor-c1/`，不进入源码。本轮未在本地重复全量测试、双地区构建或多工具专项夹具，完整验证沿用推送后的既有 CI。AVIF 取消/超时通过受控 Worker 测试验证；真实手机触控、Firefox/Safari、低端设备与压力范围仍属未测 L3，手机视口不代表真机通过。
 
 B1-C1-R1 将高级最长边改为工具局部的尺寸档位步进器，默认不限制；按钮和方向键立即提交，边界禁用并保留键盘焦点。移除最长边与目标大小的重复提示，仍保留真实异常及未达目标/变大状态。定向测试、类型检查和一次 Chromium 交互验收覆盖档位、草稿恢复与结果失效；实测大图输出 1920×1280，小图保持 320×240。
+
+## Image Compressor · B1-D1 Beta 资格收尾（2026-11-02）
+
+中英文 SEO 按定稿更新，分别保留 3 项步骤、3 项限制与 4 项 FAQ；短元数据明确批量、本地处理、目标大小及 AVIF 的适用边界。C1-R1 步进器完整保留，未改压缩引擎、资源生命周期或其他工具业务。
+
+L2 复用 B1-C1 四格式、目标未达成、输出变大、设备/尺寸拒绝及取消/超时证据，并重新完整解码其实际 PNG/JPEG/WebP/AVIF 下载。最新 Chromium Smoke 覆盖 CN 中文 390px 手机视口的文件夹双图导入、快速批量、原图/结果比较与 ZIP 下载；两项 WebP 均可解压和完整解码。高级步进器按钮及键盘操作正常，改尺寸立即撤销旧结果与 ZIP，文件集合保留，无横向溢出。Global 英文 Published 静态产物实际执行 AVIF 编码、比较与下载：898 B、320×240、透明像素保留，完整解码通过，浏览器无错误。手机视口不代表真实移动设备通过。
+
+最终集成 `pnpm check` 零诊断，151 项相关测试通过；CN/Global 各构建一次，均为 19 HTML、18 个公开 URL、四款 Published 工具及双语页面。实际产物核对首页精选、四个关联创作身份、目录、相关推荐、Canonical/hreflang、Sitemap/llms.txt 与无 Draft noindex；其他三款 Draft 的路由和专属资源继续排除。两地区共享单份按需 AVIF ST Worker/WASM，分发通知与源码完整条款一致，静态正文未进入客户端模块。
+
+既有 [B1-C1 CI](https://github.com/librecosta/tool4furry/actions/runs/41319862527) 已通过；完整测试由本次推送触发的既有 GitHub Actions 执行，最终结果以对应提交工作流为准。未发现发布阻断项，依据维护者本任务授权提升源码 Published，V0.7-B1 收尾；未部署、未创建 Tag/Release。真实 iOS/Android、Firefox/Safari、低端设备和压力测试仍为未测 L3。
+
+可复查的本地下载复检、产物检查 JSON 与 Chromium 截图位于仓库外 `../.validation/compressor-d1/`，结合 C1/R1 历史证据使用，不进入源码或公开资源。
