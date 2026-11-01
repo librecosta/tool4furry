@@ -60,7 +60,7 @@ it('validates incomplete advanced drafts atomically before encoding', async () =
   const input = screen.getByRole('textbox', {name: 'Target size per image'});
   for (const bad of ['-', '0.9999', 'NaN']) {
     fireEvent.change(input, {target: {value: bad}}); fireEvent.click(screen.getByRole('button', {name: 'Compress image'}));
-    expect(compressImage).not.toHaveBeenCalled(); expect(screen.getByRole('alert').textContent).toContain('Enter a valid number');
+    expect(compressImage).not.toHaveBeenCalled(); expect(screen.getByRole('alert').textContent).toContain('Enter a valid size target');
   }
   fireEvent.change(input, {target: {value: '12.5'}});
   fireEvent.click(screen.getByRole('button', {name: 'Compress image'}));
@@ -85,15 +85,46 @@ it('preserves presentation-only mode switches and invalidates actual quality cha
 it('restores independent quick/advanced drafts without applying hidden resize settings', async () => {
   await mount();
   fireEvent.click(screen.getByRole('button', {name: 'Advanced'}));
-  fireEvent.change(screen.getByRole('textbox', {name: 'Longest side (pixels, optional)'}), {target: {value: '40'}});
-  fireEvent.blur(screen.getByRole('textbox', {name: 'Longest side (pixels, optional)'}));
+  fireEvent.click(screen.getByRole('button', {name: 'Decrease longest side'}));
   fireEvent.click(screen.getByRole('button', {name: 'Quick'}));
   fireEvent.click(screen.getByRole('button', {name: 'Compress image'})); await screen.findByRole('button', {name: 'Download'});
   expect(vi.mocked(compressImage).mock.calls.at(-1)![1].longestEdge).toBeUndefined();
   fireEvent.click(screen.getByRole('button', {name: 'Advanced'}));
-  expect((screen.getByRole('textbox', {name: 'Longest side (pixels, optional)'}) as HTMLInputElement).value).toBe('40');
+  expect(screen.getByRole('spinbutton', {name: 'Longest side (optional)'}).getAttribute('aria-valuetext')).toBe('10000 px');
   fireEvent.click(screen.getByRole('button', {name: 'Compress image'})); await screen.findByRole('button', {name: 'Download'});
-  expect(vi.mocked(compressImage).mock.calls.at(-1)![1].longestEdge).toBe(40);
+  expect(vi.mocked(compressImage).mock.calls.at(-1)![1].longestEdge).toBe(10000);
+});
+it('steps valid pixel stops with pointer/keyboard boundaries and immediately invalidates results without losing files', async () => {
+  await mount('en', [file('a.png'), file('b.png')]);
+  fireEvent.click(screen.getByRole('button', {name: 'Advanced'}));
+  const stepper = screen.getByRole('spinbutton', {name: 'Longest side (optional)'});
+  const minus = screen.getByRole('button', {name: 'Decrease longest side'}), plus = screen.getByRole('button', {name: 'Increase longest side'});
+  expect(stepper.getAttribute('aria-valuetext')).toBe('No limit'); expect(plus.hasAttribute('disabled')).toBe(true);
+  expect(screen.queryByRole('textbox', {name: /Longest side/})).toBeNull();
+  expect(screen.queryByText('Leave blank for original dimensions. Images are only reduced, never enlarged.')).toBeNull();
+  fireEvent.click(minus); expect(stepper.getAttribute('aria-valuetext')).toBe('10000 px');
+  fireEvent.click(plus); expect(stepper.getAttribute('aria-valuetext')).toBe('No limit');
+  minus.focus(); fireEvent.keyDown(minus, {key: 'Home'});
+  expect(minus.hasAttribute('disabled')).toBe(true); expect(document.activeElement).toBe(stepper);
+  fireEvent.keyDown(stepper, {key: 'ArrowLeft'}); expect(stepper.getAttribute('aria-valuetext')).toBe('640 px');
+  for (const value of [800, 1024, 1280, 1600, 1920, 2048, 2560, 3840, 4096, 8192, 10000]) {
+    fireEvent.click(plus); expect(stepper.getAttribute('aria-valuetext')).toBe(`${value} px`);
+  }
+  fireEvent.keyDown(stepper, {key: 'ArrowRight'}); expect(stepper.getAttribute('aria-valuetext')).toBe('No limit');
+  fireEvent.keyDown(stepper, {key: 'ArrowRight'}); expect(plus.hasAttribute('disabled')).toBe(true);
+  fireEvent.keyDown(stepper, {key: 'Home'});
+  for (let n = 0; n < 5; n++) fireEvent.keyDown(stepper, {key: 'ArrowRight'});
+  expect(stepper.getAttribute('aria-valuetext')).toBe('1920 px');
+  fireEvent.click(screen.getByRole('button', {name: 'Compress all 2 images'}));
+  await waitFor(() => expect(screen.getAllByRole('button', {name: 'Download'})).toHaveLength(2));
+  expect(vi.mocked(compressImage).mock.calls.every(call => call[1].longestEdge === 1920)).toBe(true);
+  fireEvent.click(minus);
+  expect(screen.queryByRole('button', {name: 'Download'})).toBeNull();
+  expect(screen.queryByRole('button', {name: 'Download all ZIP'})).toBeNull();
+  expect(screen.getAllByRole('listitem')).toHaveLength(2);
+  expect(screen.getByRole('listitem', {name: 'a.png'})).toBeTruthy();
+  expect(screen.getByRole('listitem', {name: 'b.png'})).toBeTruthy();
+  expect(compressImage).toHaveBeenCalledTimes(2);
 });
 it('hides PNG quality and explicitly disables AVIF target search', async () => {
   const {user} = await mount(); await format(user, 'PNG');
@@ -136,14 +167,17 @@ it('shows sequential batch status, isolates failure, retries and delivers only v
   expect(screen.queryByRole('list', {name: 'Image list'})).toBeNull();
 });
 it('blocks output delivery while an advanced draft is incomplete and keeps the shared comparison dialog', async () => {
-  await mount('zh'); fireEvent.click(screen.getByRole('button', {name: '压缩图片'})); await screen.findByRole('button', {name: '下载'});
+  await mount('zh'); fireEvent.click(screen.getByRole('button', {name: '高级'})); fireEvent.click(screen.getByRole('button', {name: '目标大小'}));
+  expect(screen.queryByText('目标大小不保证达到；处理后显示实际结果。')).toBeNull();
+  expect(screen.queryByText('留空保留原始尺寸；只缩小，不放大。')).toBeNull();
+  expect(screen.getByRole('spinbutton', {name: '最长边（可选）'}).getAttribute('aria-valuetext')).toBe('不限制');
+  fireEvent.click(screen.getByRole('button', {name: '压缩图片'})); await screen.findByRole('button', {name: '下载'});
   fireEvent.click(screen.getByRole('button', {name: '预览'})); fireEvent.click(screen.getByRole('button', {name: '对比'}));
   expect(document.querySelector('[data-image-comparison="compare"]')).not.toBeNull();
   expect(screen.getByRole('region', {name: '原图'})).toBeTruthy(); expect(screen.getByRole('region', {name: '结果'})).toBeTruthy();
   fireEvent.click(screen.getByRole('button', {name: '关闭预览'}));
   await waitFor(() => expect(screen.queryByRole('button', {name: '关闭预览'})).toBeNull());
-  fireEvent.click(screen.getByRole('button', {name: '高级'}));
-  fireEvent.change(screen.getByRole('textbox', {name: '最长边（像素，可选）'}), {target: {value: '-'}});
+  fireEvent.change(screen.getByRole('textbox', {name: '每张图片的目标大小'}), {target: {value: '-'}});
   expect(screen.getByRole('button', {name: '下载'}).hasAttribute('disabled')).toBe(true);
   expect(screen.getByRole('button', {name: '下载全部 ZIP'}).hasAttribute('disabled')).toBe(true);
 });

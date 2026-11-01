@@ -16,6 +16,7 @@ import { converterStyles as c } from '../image-converter/converter.styles';
 import { CompressorSession, type CompressionTask, type CompressionView } from './session';
 import { quickSettings, recommendedSettings, sameCompressionSettings, supportsTarget, validSettings, type CompressionSettings, type CompressionStrength } from './compress';
 import { messages, comparisonLabels } from './messages';
+import { LongestSideStepper } from './LongestSideStepper';
 import { s } from './styles';
 
 export const bytesLabel = (bytes: number) => Math.abs(bytes) < 1024 * 1024 ? `${(bytes / 1024).toFixed(1)} KB` : `${(bytes / 1024 ** 2).toFixed(2)} MB`;
@@ -25,7 +26,7 @@ export default function ImageCompressor({locale}: ToolProps) {
   const [view, setView] = useState<CompressionView>({tasks: [], settings: {...recommendedSettings}, issues: [], version: 0});
   const [advanced, setAdvanced] = useState(false), [strength, setStrength] = useState<CompressionStrength>('balanced');
   const drafts = useRef({quick: {...recommendedSettings}, advanced: {...recommendedSettings}});
-  const [target, setTarget] = useState('200'), [unit, setUnit] = useState('KB'), [edge, setEdge] = useState(''), [background, setBackground] = useState('#FFFFFF');
+  const [target, setTarget] = useState('200'), [unit, setUnit] = useState('KB'), [background, setBackground] = useState('#FFFFFF');
   const [invalid, setInvalid] = useState(false), [zipError, setZipError] = useState(false), [packing, setPacking] = useState(false), [previewId, setPreviewId] = useState<string>();
   const folderInput = useRef<HTMLInputElement>(null), [folderSupported, setFolderSupported] = useState<boolean>();
   useEffect(() => {
@@ -47,11 +48,10 @@ export default function ImageCompressor({locale}: ToolProps) {
     setAdvanced(next); setInvalid(false); setZipError(false);
   };
   const targetBytes = Number(target) * (unit === 'KB' ? 1024 : 1024 ** 2);
-  const draft = {...settings, longestEdge: edge === '' ? undefined : Number(edge),
+  const draft = {...settings,
     ...(settings.mode === 'target' ? {targetBytes: Math.round(targetBytes)} : {}),
     ...(settings.format === 'jpeg' ? {background} : {})};
-  const validDraft = (edge === '' || /^\d+$/.test(edge)) &&
-    (settings.mode !== 'target' || /^(?:\d+(?:\.\d+)?|\.\d+)$/.test(target) && targetBytes >= 1024 && targetBytes <= 128 * 1024 ** 2) && validSettings(draft);
+  const validDraft = (settings.mode !== 'target' || /^(?:\d+(?:\.\d+)?|\.\d+)$/.test(target) && targetBytes >= 1024 && targetBytes <= 128 * 1024 ** 2) && validSettings(draft);
   const draftDirty = advanced && (!validDraft || !sameCompressionSettings(settings, draft));
   const commit = () => {
     if (!advanced) return true;
@@ -123,10 +123,9 @@ export default function ImageCompressor({locale}: ToolProps) {
             {settings.format !== 'png' && <fieldset {...stylex.props(c.group)}><legend {...stylex.props(c.legend)}>{t.strategy}</legend><div {...stylex.props(s.row)}>{(['quality', 'target'] as const).map(mode => <button type="button" key={mode} disabled={mode === 'target' && !supportsTarget(settings.format)} aria-pressed={settings.mode === mode} {...stylex.props(c.mode, c.parameterControl, settings.mode === mode && c.currentParameterMode)} onClick={() => {configure({mode}); setInvalid(false);}}>{t[mode]}</button>)}</div></fieldset>}
             {settings.format !== 'png' && <SliderField label={settings.mode === 'target' ? t.maxQuality : t.qualityLabel} value={settings.quality} onValueChange={quality => configure({quality})} min={1} max={100} unit="%" accent="lavender"/>}
             {settings.mode === 'target' && <div {...stylex.props(s.unit)}><TextField label={t.targetLabel} value={target} onChange={value => {setTarget(value); setInvalid(false);}} inputMode="decimal" onBlur={commit} onKeyDown={enter}/><SelectField appearance="quiet" label={t.unit} value={unit} onValueChange={value => {setUnit(value); setTarget(String(settings.targetBytes / (value === 'KB' ? 1024 : 1024 ** 2)));}} options={[{value: 'KB', label: 'KB'}, {value: 'MB', label: 'MB'}]}/></div>}
-            <TextField label={t.longest} hint={t.longestHint} value={edge} onChange={value => {setEdge(value); setInvalid(false);}} inputMode="numeric" onBlur={commit} onKeyDown={enter}/>
+            <LongestSideStepper label={t.longest} value={settings.longestEdge} noLimit={t.noLimit} decrease={t.decreaseLongest} increase={t.increaseLongest} onChange={longestEdge => configure({longestEdge})}/>
             {settings.format === 'jpeg' && <TextField label={t.background} value={background} onChange={value => {setBackground(value); setInvalid(false);}} onBlur={commit} onKeyDown={enter} maxLength={7} spellCheck={false}/>}
           </>}
-          {settings.mode === 'target' && <p {...stylex.props(s.note)}>{t.targetHint}</p>}
           {settings.format === 'avif' && <p {...stylex.props(s.note)}>{t.avifHint}</p>}
           {settings.format === 'png' && <p {...stylex.props(s.note)}>{t.pngHint}</p>}
           {invalid && <p role="alert" {...stylex.props(s.error)}>{t.invalid}</p>}
