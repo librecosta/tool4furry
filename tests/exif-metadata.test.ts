@@ -10,6 +10,26 @@ import { inspectImage } from '../src/tools/image/inspect-image';
 
 const fixture = async (name: string) => new Blob([await readFile(new URL(`./fixtures/images/${name}`, import.meta.url))]);
 describe('EXIF read and lossless clean integration', () => {
+  it('keeps the manual JPEG sample readable and removes its synthetic private fields without losing orientation', async () => {
+    const input = await fixture('metadata/manual-exif.jpg');
+    const before = await readMetadata(input, limits);
+    expect(before.partial).toBe(false);
+    expect(before.fields).toEqual(expect.arrayContaining([
+      {key: 'Make', value: 'Tool4Furry Fixture', private: false},
+      {key: 'Model', value: 'Synthetic Camera', private: false},
+      {key: 'DateTimeOriginal', value: '2020:01:02 03:04:05', private: true},
+      {key: 'Orientation', value: '6', private: false},
+      {key: 'GPSLatitude', value: '1, 2, 3', private: true},
+      {key: 'GPSLatitudeRef', value: 'N', private: true},
+      {key: 'GPSLongitude', value: '4, 5, 6', private: true},
+      {key: 'GPSLongitudeRef', value: 'E', private: true},
+    ]));
+    const clean = await cleanImageMetadata(input, limits.bytes, limits);
+    expect(clean.blob.type).toBe('image/jpeg');
+    expect(clean.changed).toBe(true);
+    expect(await readMetadata(clean.blob, limits)).toEqual({fields: [{key: 'Orientation', value: '6', private: false}], blocks: ['EXIF'], partial: false});
+    expect(clean.info).toMatchObject({format: 'jpeg', width: 640, height: 400, orientation: 6});
+  });
   it.each(['jpg', 'png', 'webp'])('reads bounded TIFF fields from the validated %s container and verifies cleanup', async ext => {
     const input = await fixture(`metadata/private.${ext}`), beforeBytes = new Uint8Array(await input.arrayBuffer());
     const before = await readMetadata(input, limits);

@@ -15,6 +15,8 @@ Image Compressor 为 CN/Global、zh/en **Published**；Comic Page Organizer、Im
 
 EXIF 读取使用固定 `exifr@7.1.3`，仅向解析器传入经现有容器检查的有界 TIFF/EXIF 块，限制读取字段、关闭缩略图与 MakerNote。JPEG/PNG/WebP 共用此路径；它不修改容器。完整 [MIT 通知](../src/tools/exif-metadata/exifr.NOTICE.txt) 仅从工具懒加载入口分发，Draft 正式构建排除。
 
+EXIF 本地手动验收示例及步骤见 [夹具说明](../tests/fixtures/images/metadata/README.md#exif-metadata-手动验收-jpeg)：JPEG 真实包含虚构设备、拍摄时间、方向及 GPS，不进入站点公开资源。
+
 人工入口：`pnpm dev` 后 CN `http://127.0.0.1:4321/tools/{id}/`，Global `http://127.0.0.1:4322/tools/{id}/`；同地区次语言继续使用 `/en/` 或 `/zh/`。固定端口不变。各模块只跑必要局部测试，集成后统一类型检查、跨模块测试与双地区构建；完整测试沿用现有 CI，无新增矩阵或工作流。
 
 L3 边界：真实 iOS/Android、Firefox/Safari、低端设备及压力测试未完成；Chromium 核心 Smoke 不代表这些平台通过。其余三款 Draft 后续可独立审计，不互相阻塞资格。未部署、未创建 Tag/Release。以下 V0.7-B / B1-C1 为历史阶段记录，最终 B1 资格见文末。
