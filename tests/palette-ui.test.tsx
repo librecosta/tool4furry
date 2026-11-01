@@ -13,7 +13,7 @@ import { UiProvider } from '../src/ui/UiProvider';
 import { messages as uiMessages } from '../src/i18n/messages';
 import { ShareDialog } from '../src/tools/palette-extractor/ShareDialog';
 import { ShareCanvas } from '../src/tools/palette-extractor/ShareCanvas';
-import { shareDefaults } from '../src/tools/palette-extractor/render';
+import { shareDefaults, shareLayout } from '../src/tools/palette-extractor/render';
 import { messages } from '../src/tools/palette-extractor/messages';
 import type {
   PaletteSession,
@@ -84,6 +84,47 @@ it('previews hover/marker colors without committing, then cancels or discards a 
   expect(mount.container.querySelector('[data-color-marker]')).toBeNull();
 });
 
+it('uses one live sample for focused swatches, markers and the parent, and cancels on target/delete/close', async () => {
+  const user = userEvent.setup(), onPick = vi.fn(), onPreview = vi.fn();
+  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({left: 0, top: 0, width: 200, height: 200} as DOMRect);
+  const pixels = {width: 2, height: 1, data: new Uint8ClampedArray([255, 0, 0, 255, 0, 255, 0, 255])} as ImageData;
+  const colors = [{id: 'one', hex: '#FF0000', point: {x: 0, y: 0}}, {id: 'two', hex: '#0000FF', point: {x: 0, y: 0}}];
+  const props = {pixels, url: 'blob:focus', colors, target: 'one', onTarget: vi.fn(), onPick, onPreview, cancel: vi.fn(), t: messages.en};
+  const mount = render(<ImageSampler {...props}/>);
+  await user.click(screen.getByRole('button', {name: messages.en.focus}));
+  await screen.findByRole('dialog');
+  const stage = () => document.querySelector('[data-palette-sampler]')!;
+  const color = (selector: string) => document.querySelector<HTMLElement>(selector)!.style.backgroundColor;
+  fireEvent.pointerMove(stage(), {clientX: 150, clientY: 100, pointerId: 1});
+  expect(color('[data-focus-swatch="one"]')).toBe('rgb(0, 255, 0)');
+  expect(color('[data-color-marker="one"] span')).toBe('rgb(0, 255, 0)');
+  expect(color('[data-focus-swatch="two"]')).toBe('rgb(0, 0, 255)');
+  expect(onPreview).toHaveBeenLastCalledWith({id: 'one', hex: '#00FF00', point: {x: 1, y: 0}, url: props.url});
+  expect(onPick).not.toHaveBeenCalled();
+  fireEvent.keyDown(window, {key: 'Escape'});
+  expect(color('[data-focus-swatch="one"]')).toBe('rgb(255, 0, 0)');
+  fireEvent.pointerDown(document.querySelector('[data-color-marker="one"]')!, {clientX: 50, clientY: 100, pointerId: 2, button: 0});
+  fireEvent.pointerMove(stage(), {clientX: 150, clientY: 100, pointerId: 2});
+  expect(color('[data-focus-swatch="one"]')).toBe('rgb(0, 255, 0)');
+  fireEvent.pointerCancel(stage(), {pointerId: 2});
+  expect(color('[data-focus-swatch="one"]')).toBe('rgb(255, 0, 0)');
+  fireEvent.pointerMove(stage(), {clientX: 150, clientY: 100, pointerId: 1});
+  mount.rerender(<ImageSampler {...props} target="two"/>);
+  expect(color('[data-focus-swatch="one"]')).toBe('rgb(255, 0, 0)');
+  expect(onPreview).toHaveBeenLastCalledWith(undefined);
+  fireEvent.pointerMove(stage(), {clientX: 150, clientY: 100, pointerId: 1});
+  mount.rerender(<ImageSampler {...props} target="two" colors={[colors[0]]}/>);
+  expect(document.querySelector('[data-focus-swatch="two"]')).toBeNull();
+  expect(onPreview).toHaveBeenLastCalledWith(undefined);
+  mount.rerender(<ImageSampler {...props}/>);
+  fireEvent.pointerDown(document.querySelector('[data-color-marker="one"]')!, {clientX: 50, clientY: 100, pointerId: 3, button: 0});
+  fireEvent.pointerMove(stage(), {clientX: 150, clientY: 100, pointerId: 3});
+  await user.click(screen.getByRole('button', {name: messages.en.close}));
+  await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+  expect(onPick).not.toHaveBeenCalled();
+  expect(onPreview).toHaveBeenLastCalledWith(undefined);
+});
+
 it('keeps a HEX draft separate from temporary sampling and restores the committed color on cancel', async () => {
   const user = userEvent.setup(), edit = vi.fn(() => false);
   const color = { id: 'one', hex: '#112233' }, session = { edit } as unknown as PaletteSession;
@@ -133,6 +174,15 @@ it('adds a color only after valid Popover submission, cancels safely and returns
   await user.click(trigger);
   const input = await screen.findByRole('textbox', {name: 'HEX color'});
   expect(document.activeElement).toBe(input);
+  expect(screen.queryByText('HEX color')).toBeNull();
+  const picker = screen.getByLabelText('Choose color') as HTMLInputElement;
+  expect(picker.type).toBe('color');
+  expect(picker.form).toBeNull(); // Native picker Enter must never submit or navigate the HEX form.
+  fireEvent.change(picker, {target: {value: '#abc123'}});
+  expect((input as HTMLInputElement).value).toBe('#ABC123');
+  fireEvent.change(input, {target: {value: '#123456'}});
+  expect(picker.value).toBe('#123456');
+  expect(add).not.toHaveBeenCalled();
   await user.clear(input); await user.type(input, '#12'); await user.keyboard('{Enter}');
   expect(add).not.toHaveBeenCalled();
   expect(input.getAttribute('aria-invalid')).toBe('true');
@@ -156,7 +206,7 @@ it('samples only while active, rejects contain/transparent space, follows the ta
   } as ImageData;
   const onPick = vi.fn(),
     cancel = vi.fn();
-  const props = { pixels, url: 'blob:preview', onPick, cancel, t: messages.en };
+  const props = { pixels, colors: ['one', 'two'].map(id => ({id, hex: '#FF0000'})), url: 'blob:preview', onPick, cancel, t: messages.en };
   const mount = render(<ImageSampler {...props} />);
   const stage = mount.container.querySelector('[data-palette-sampler]')!;
   vi.spyOn(stage, 'getBoundingClientRect').mockReturnValue({
@@ -230,7 +280,7 @@ it('maps zoomed and panned coordinates, keeps pan separate, and drops an old-sou
     pixels.data.set(i % 400 < 200 ? [255, 0, 0, 255] : [0, 255, 0, 255], i * 4);
   }
   const onPick = vi.fn(), cancel = vi.fn();
-  const props = { pixels, url: 'blob:one', onPick, cancel, t: messages.en };
+  const props = { pixels, colors: ['red', 'green', 'new'].map(id => ({id, hex: '#00FF00'})), url: 'blob:one', onPick, cancel, t: messages.en };
   const mount = render(<ImageSampler {...props}/>);
   const stage = mount.container.querySelector('[data-palette-sampler]')!;
   vi.spyOn(stage, 'getBoundingClientRect').mockReturnValue({ left: 0, top: 0, width: 200, height: 200 } as DOMRect);
@@ -397,10 +447,7 @@ it('invalidates an old share PNG immediately and hides unsupported system sharin
         resolve = r;
       }),
   );
-  await user.click(screen.getByText(messages.en.information, {selector: 'summary'}));
-  fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
-    target: { value: 'Changed 🐺' },
-  });
+  await user.click(screen.getByRole('radio', {name: messages.en.left}));
   expect(
     (screen.getByRole('button', { name: 'Download PNG' }) as HTMLButtonElement)
       .disabled,
@@ -441,12 +488,15 @@ it('prepares a file before system-share activation and treats cancellation as no
   expect((screen.getByRole('button', {name: 'Download PNG'}) as HTMLButtonElement).disabled).toBe(false);
 });
 
-it('keeps framing per template and invalidates exports while dragging, then prepares only the settled composition', async () => {
+it('invalidates exports while dragging and prepares only the settled fixed-ratio composition', async () => {
   const user = userEvent.setup(), {view, session, owner} = shareFixture();
   view.source!.canvas.width = 1600; view.source!.canvas.height = 900;
   render(<ShareDialog {...{session, view}} t={messages.en}/>);
   await user.click(screen.getByRole('button', {name: 'Create share image'}));
   const download = screen.getByRole('button', {name: 'Download PNG'}) as HTMLButtonElement;
+  await waitFor(() => expect(download.disabled).toBe(false));
+  await user.click(screen.getByRole('combobox', {name: messages.en.outputRatio}));
+  await user.click(screen.getByRole('option', {name: '4:5 · 1080 × 1350'}));
   await waitFor(() => expect(download.disabled).toBe(false));
   const canvas = document.querySelector<HTMLCanvasElement>('[data-share-canvas]')!;
   vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({left: 0, top: 0, width: 108, height: 135} as DOMRect);
@@ -460,20 +510,17 @@ it('keeps framing per template and invalidates exports while dragging, then prep
   fireEvent.pointerUp(hit, {clientX: 60, clientY: 20, pointerId: 1});
   await waitFor(() => expect(download.disabled).toBe(false));
   const settled = (owner.export.mock.calls.at(-1) as unknown as [ReturnType<typeof shareDefaults>])[0];
-  expect(settled.frames.character.x).toBeGreaterThan(0);
-  await user.click(screen.getByRole('radio', {name: messages.en.gallery}));
+  expect(settled.frame.x).toBeGreaterThan(0);
+  await user.click(screen.getByRole('radio', {name: messages.en.left}));
   await waitFor(() => expect(download.disabled).toBe(false));
-  expect((owner.export.mock.calls.at(-1) as unknown as [ReturnType<typeof shareDefaults>])[0].frames.gallery.x).toBe(0);
-  await user.click(screen.getByRole('radio', {name: messages.en.character}));
-  await waitFor(() => expect(download.disabled).toBe(false));
-  expect((owner.export.mock.calls.at(-1) as unknown as [ReturnType<typeof shareDefaults>])[0].frames.character.x).toBe(settled.frames.character.x);
+  expect((owner.export.mock.calls.at(-1) as unknown as [ReturnType<typeof shareDefaults>])[0].frame.x).toBe(0);
   expect(document.querySelector('select')).toBeNull();
 });
 
 it('cancels a composer gesture with Escape and discards an old-source drag without changing palette state', () => {
   const image = document.createElement('canvas'); image.width = 1600; image.height = 900;
-  const onFrame = vi.fn(), onInteraction = vi.fn(), options = shareDefaults();
-  const props = {image, colors: ['#112233'], options, onFrame, onInteraction, onError: vi.fn(), t: messages.en};
+  const onFrame = vi.fn(), onInteraction = vi.fn(), options = {...shareDefaults(), ratio: '4:5' as const};
+  const props = {image, colors: ['#112233'], options, layout: shareLayout(image, 1, options), onFrame, onInteraction, onError: vi.fn(), t: messages.en};
   const mount = render(<ShareCanvas {...props}/>);
   const canvas = document.querySelector<HTMLCanvasElement>('[data-share-canvas]')!;
   vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({left: 0, top: 0, width: 108, height: 135} as DOMRect);
@@ -482,45 +529,51 @@ it('cancels a composer gesture with Escape and discards an old-source drag witho
   fireEvent.pointerMove(hit, {clientX: 60, clientY: 20, pointerId: 1});
   expect(onFrame.mock.calls.at(-1)?.[0].x).toBeGreaterThan(0);
   fireEvent.keyDown(window, {key: 'Escape'});
-  expect(onFrame).toHaveBeenLastCalledWith(options.frames.character);
+  expect(onFrame).toHaveBeenLastCalledWith(options.frame);
   expect(onInteraction).toHaveBeenLastCalledWith(false);
   fireEvent.pointerDown(hit, {clientX: 50, clientY: 20, pointerId: 2, button: 0});
   const calls = onFrame.mock.calls.length;
   const replacement = document.createElement('canvas'); replacement.width = 500; replacement.height = 500;
-  mount.rerender(<ShareCanvas {...props} image={replacement}/>);
+  mount.rerender(<ShareCanvas {...props} image={replacement} layout={shareLayout(replacement, 1, options)}/>);
   fireEvent.pointerUp(hit, {clientX: 60, clientY: 20, pointerId: 2});
   expect(onFrame).toHaveBeenCalledTimes(calls);
   fireEvent.keyDown(canvas, {key: '+'});
   expect(onFrame.mock.calls.at(-1)?.[0].zoom).toBeGreaterThan(1);
 });
 
-it('exports the chosen information options, rejects a late file after replacement, and keeps the local session date stable', async () => {
+it('keeps only compact controls and discards a late PNG after the source is replaced', async () => {
   const user = userEvent.setup(), {view, session, owner} = shareFixture();
   const mount = render(<ShareDialog {...{session, view}} t={messages.en}/>);
   await user.click(screen.getByRole('button', {name: 'Create share image'}));
   const download = () => screen.getByRole('button', {name: 'Download PNG'}) as HTMLButtonElement;
   await waitFor(() => expect(download().disabled).toBe(false));
-  await user.click(screen.getByText(messages.en.information, {selector: 'summary'}));
-  const dateLabel = screen.getByText(new RegExp(`^${messages.en.showDate}`)).textContent!;
-  await user.click(screen.getByRole('checkbox', {name: dateLabel}));
-  expect(download().disabled).toBe(true);
-  await waitFor(() => expect(download().disabled).toBe(false));
-  let options = (owner.export.mock.calls.at(-1) as unknown as [ReturnType<typeof shareDefaults>])[0];
-  expect(options.showDate).toBe(true);
-  const date = options.date;
-  await user.click(screen.getByRole('checkbox', {name: messages.en.signature}));
-  expect(download().disabled).toBe(true);
-  await waitFor(() => expect(download().disabled).toBe(false));
-  options = (owner.export.mock.calls.at(-1) as unknown as [ReturnType<typeof shareDefaults>])[0];
-  expect(options.signature).toBe(false);
-  expect(options.date).toBe(date);
+  expect(screen.getAllByRole('combobox')).toHaveLength(2);
+  expect(screen.queryByRole('textbox')).toBeNull();
+  expect(screen.queryByRole('checkbox')).toBeNull();
+  expect(document.querySelector('[data-share-image]')).toBeNull();
   let resolve!: (blob: Blob) => void;
   owner.export.mockImplementationOnce(() => new Promise<Blob>(done => {resolve = done;}));
-  await user.type(screen.getByRole('textbox', {name: 'Title'}), 'new');
+  await user.click(screen.getByRole('radio', {name: messages.en.bottom}));
+  expect(download().disabled).toBe(true);
   await waitFor(() => expect(resolve).toBeTypeOf('function'));
   view.source = {...view.source!, url: 'blob:replacement'}; view.version++;
   mount.rerender(<ShareDialog {...{session, view}} t={messages.en}/>);
   await act(async () => resolve(new Blob(['late'], {type: 'image/png'})));
   await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
   expect(owner.download).not.toHaveBeenCalled();
+});
+
+it('rejects unreadable extreme original shapes without allocating/exporting and allows a fixed ratio instead', async () => {
+  const user = userEvent.setup(), {view, session, owner} = shareFixture();
+  view.source!.canvas.width = 1; view.source!.canvas.height = 1600;
+  render(<ShareDialog {...{session, view}} t={messages.en}/>);
+  await user.click(screen.getByRole('button', {name: 'Create share image'}));
+  expect(screen.getByRole('alert').textContent).toContain(messages.en.layoutError);
+  expect((screen.getByRole('button', {name: 'Download PNG'}) as HTMLButtonElement).disabled).toBe(true);
+  expect(owner.export).not.toHaveBeenCalled();
+  expect(document.querySelector('[data-share-canvas]')).toBeNull();
+  await user.click(screen.getByRole('combobox', {name: messages.en.outputRatio}));
+  await user.click(screen.getByRole('option', {name: '1:1 · 1200 × 1200'}));
+  await waitFor(() => expect((screen.getByRole('button', {name: 'Download PNG'}) as HTMLButtonElement).disabled).toBe(false));
+  expect(document.querySelector('[data-share-canvas]')).toBeTruthy();
 });

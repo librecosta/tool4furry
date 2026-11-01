@@ -1,3 +1,4 @@
+import { desktopImageLimits } from '../src/tools/image/limits';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   candidates,
@@ -13,13 +14,11 @@ import {
   constrainFraming,
   zoomFraming,
   shareDefaults,
-  swatchGeometry,
-  informationLayout,
+  shareLayout,
+  ratios,
   visibleColors,
-  localDate,
-  templateLayout,
-  templates,
-  titleLines,
+  hexFont,
+  drawShare,
 } from '../src/tools/palette-extractor/render';
 import {
   tools,
@@ -184,109 +183,58 @@ describe('editing and contain-based sampling', () => {
   });
 });
 
-describe('three share template geometries', () => {
-  it.each(Object.keys(templates) as (keyof typeof templates)[])(
-    '%s fits 1/6/10 colors and covers the artwork region without gaps',
-    (template) => {
-      for (const count of [1, 6, 10]) {
-        const layout = templateLayout(template, count);
-        expect([layout.width, layout.height]).toEqual(templates[template]);
-        for (const r of layout.colors) {
-          expect(r.x).toBeGreaterThanOrEqual(0);
-          expect(r.y + r.h).toBeLessThanOrEqual(layout.height);
-          expect(r.x + r.w).toBeLessThanOrEqual(layout.width + 0.001);
-          expect(r.h).toBeGreaterThan(44);
-        }
-        for (const size of [
-          { width: 2000, height: 500 },
-          { width: 500, height: 2000 },
-          { width: 800, height: 800 },
-        ]) {
-          const r = cover(size, layout.image, {zoom: 1, x: 0, y: 0});
-          expect(r.w / r.h).toBeCloseTo(size.width / size.height);
-          expect(r.x).toBeLessThanOrEqual(layout.image.x + .001);
-          expect(r.y).toBeLessThanOrEqual(layout.image.y + .001);
-          expect(r.x + r.w).toBeGreaterThanOrEqual(layout.image.x + layout.image.w - .001);
-          expect(r.y + r.h).toBeGreaterThanOrEqual(layout.image.y + layout.image.h - .001);
-        }
+describe('compact image and color-strip geometry', () => {
+  const shapes = [{width: 1600, height: 900}, {width: 900, height: 1600}, {width: 800, height: 800}];
+  it('partitions every direction/ratio/count without gaps and keeps readable HEX inside every cell', () => {
+    const ctx = {font: '', measureText(text: string) { return {width: text.length * Number(this.font.match(/([0-9]+)px/)?.[1]) * .65}; }} as CanvasRenderingContext2D;
+    for (const direction of ['top', 'bottom', 'left', 'right'] as const) for (const ratio of ['original', ...Object.keys(ratios)] as const) for (const source of shapes) for (let count = 1; count <= 10; count++) {
+      const options = {...shareDefaults(), direction, ratio: ratio as ReturnType<typeof shareDefaults>['ratio']};
+      const layout = shareLayout(source, count, options);
+      if (options.ratio !== 'original') expect([layout.width, layout.height]).toEqual(ratios[options.ratio]);
+      else expect(layout.image.w / layout.image.h).toBeCloseTo(source.width / source.height, 2);
+      expect(layout.image.w * layout.image.h + layout.strip.w * layout.strip.h).toBe(layout.width * layout.height);
+      expect(layout.colors).toHaveLength(count);
+      expect(layout.image.x === 0 || layout.strip.x === 0).toBe(true);
+      for (const cell of layout.colors) {
+        expect(cell.x).toBeGreaterThanOrEqual(0); expect(cell.y).toBeGreaterThanOrEqual(0);
+        expect(cell.x + cell.w).toBeLessThanOrEqual(layout.width + .001);
+        expect(cell.y + cell.h).toBeLessThanOrEqual(layout.height + .001);
+        ctx.font = `${hexFont(ctx, '#AABBCC', cell)}px sans-serif`;
+        expect(Number(ctx.font.match(/([0-9]+)px/)?.[1])).toBeGreaterThanOrEqual(18);
+        expect(ctx.measureText('#AABBCC').width).toBeLessThanOrEqual(cell.w - 16);
       }
-    },
-  );
-  it('constrains extreme pan/zoom, preserves the center on zoom and keeps all swatch combinations bounded', () => {
+      expect(layout.colors.reduce((sum, cell) => sum + cell.w * cell.h, 0)).toBeCloseTo(layout.strip.w * layout.strip.h);
+      const framed = cover(source, layout.image, {zoom: 3, x: 999, y: -999});
+      expect(framed.x).toBeLessThanOrEqual(layout.image.x + .001);
+      expect(framed.y).toBeLessThanOrEqual(layout.image.y + .001);
+      expect(framed.x + framed.w).toBeGreaterThanOrEqual(layout.image.x + layout.image.w - .001);
+      expect(framed.y + framed.h).toBeGreaterThanOrEqual(layout.image.y + layout.image.h - .001);
+    }
+  });
+  it('has exact touching boundaries, full original image, bounded dimensions and no obsolete content', () => {
     const source = {width: 1600, height: 900};
-    for (const template of Object.keys(templates) as (keyof typeof templates)[]) {
-      const box = templateLayout(template, 6).image;
-      const frame = constrainFraming(source, box, {zoom: 9, x: 999, y: -999});
-      expect(frame.zoom).toBe(4);
-      const r = cover(source, box, frame);
-      expect(r.x).toBeLessThanOrEqual(box.x + .001);
-      expect(r.y).toBeLessThanOrEqual(box.y + .001);
-      expect(r.x + r.w).toBeGreaterThanOrEqual(box.x + box.w - .001);
-      expect(r.y + r.h).toBeGreaterThanOrEqual(box.y + box.h - .001);
-      const next = zoomFraming(source, box, {zoom: 2, x: .1, y: .1}, 3);
-      expect(next.x).toBeCloseTo(.15); expect(next.y).toBeCloseTo(.15);
-      for (let count = 1; count <= 10; count++) for (const shape of ['square', 'rounded', 'circle'] as const) for (const labels of ['inside', 'outside', 'hidden'] as const) for (const arrangement of ['equal', 'spaced', 'cards', 'band'] as const) for (const spacing of ['compact', 'standard', 'relaxed'] as const) {
-        const options = shareDefaults(); options.template = template; options.swatches = {...options.swatches, shape, labels, arrangement, spacing};
-        const layout = templateLayout(template, count, options.swatches);
-        for (const rect of layout.colors) {
-          const {block, labelY} = swatchGeometry(rect, options);
-          expect(block.w).toBeGreaterThan(0); expect(block.h).toBeGreaterThan(0);
-          expect(block.x).toBeGreaterThanOrEqual(rect.x); expect(block.y).toBeGreaterThanOrEqual(rect.y);
-          expect(block.x + block.w).toBeLessThanOrEqual(rect.x + rect.w + .001);
-          expect(block.y + block.h).toBeLessThanOrEqual(rect.y + rect.h + .001);
-          if (labels === 'outside') expect(labelY).toBeLessThan(rect.y + rect.h);
-          if (shape === 'circle') expect(block.w).toBe(block.h);
-        }
-      }
-    }
-    const options = shareDefaults(); options.swatches.limit = '5';
-    expect(visibleColors(['#FFFFFF'], options)).toHaveLength(1);
-    expect(visibleColors(Array(10).fill('#FFFFFF'), options)).toHaveLength(5);
-    expect(localDate(new Date(2026, 0, 2, 23))).toBe('2026-01-02');
-  });
-  it('keeps all nine-grid collisions inside the information area without overlapping text', () => {
-    const ctx = {font: '', measureText: (text: string) => ({width: Array.from(text).length * 20})};
-    for (const template of Object.keys(templates) as (keyof typeof templates)[]) {
-      const options = shareDefaults(); options.template = template; options.title = '创作 🐺 Character palette '.repeat(5); options.showDate = true;
-      const box = templateLayout(template, 10).info;
-      for (let title = 0; title < 9; title++) for (let brand = 0; brand < 9; brand++) for (let date = 0; date < 9; date++) {
-        options.positions = {title, brand, date} as typeof options.positions;
-        const items = informationLayout(ctx as CanvasRenderingContext2D, options, box);
-        for (const item of items) {
-          expect(item.y).toBeGreaterThanOrEqual(box.y - .001);
-          expect(item.y + item.h).toBeLessThanOrEqual(box.y + box.h + .001);
-          for (const other of items.filter(other => other !== item)) expect(item.x + item.w <= other.x + .001 || other.x + other.w <= item.x + .001 || item.y + item.h <= other.y + .001 || other.y + other.h <= item.y + .001).toBe(true);
-        }
-      }
-    }
-  });
-  it('measures and truncates Chinese, English and Emoji without splitting graphemes', () => {
-    const ctx = {
-      measureText: (text: string) => ({
-        width:
-          [
-            ...new Intl.Segmenter(undefined, {
-              granularity: 'grapheme',
-            }).segment(text),
-          ].length * 20,
-      }),
-    };
-    for (const title of [
-      '作品配色与灵感'.repeat(10),
-      'Character study '.repeat(10),
-      '🎨🐺👨‍👩‍👧‍👦'.repeat(20),
-    ]) {
-      const lines = titleLines(
-        ctx as unknown as CanvasRenderingContext2D,
-        title,
-        200,
-      );
-      expect(lines.length).toBeLessThanOrEqual(2);
-      expect(lines.every((line) => ctx.measureText(line).width <= 200)).toBe(
-        true,
-      );
-      expect(lines.at(-1)).toContain('…');
-    }
+    const top = shareLayout(source, 6, shareDefaults());
+    expect(top.image).toEqual({x: 0, y: 0, w: 1600, h: 900});
+    expect(top.strip.y).toBe(top.image.h);
+    expect(shareLayout(source, 6, {...shareDefaults(), direction: 'bottom'}).image.y).toBe(top.strip.h);
+    const left = shareLayout(source, 6, {...shareDefaults(), direction: 'left'});
+    expect(left.strip.x).toBe(left.image.w);
+    expect(Object.keys(shareDefaults()).sort()).toEqual(['count', 'direction', 'frame', 'ratio']);
+    expect(visibleColors(Array(10).fill('#FFFFFF'), {...shareDefaults(), count: 1})).toHaveLength(1);
+    expect(visibleColors(['#FFFFFF'], shareDefaults())).toHaveLength(1);
+    expect(() => shareLayout({width: 10000, height: 1}, 10, shareDefaults())).toThrow('share-layout');
+    expect(() => shareLayout(source, 6, shareDefaults(), {...desktopImageLimits, pixels: 100})).toThrow('share-layout');
+    expect(() => shareLayout(source, 0, shareDefaults())).toThrow('share-layout');
+    expect(() => hexFont({font: '', measureText: () => ({width: 200})} as unknown as CanvasRenderingContext2D, '#123456', {x: 0, y: 0, w: 40, h: 30})).toThrow('share-layout');
+    const ctx = {save: vi.fn(), restore: vi.fn(), clearRect: vi.fn(), beginPath: vi.fn(), rect: vi.fn(), clip: vi.fn(), drawImage: vi.fn(), fillRect: vi.fn(), fillText: vi.fn(), measureText: () => ({width: 80})} as unknown as CanvasRenderingContext2D;
+    drawShare(ctx, source as HTMLCanvasElement, ['#112233'], shareDefaults());
+    expect(ctx.drawImage).toHaveBeenCalledWith(source, 0, 0, 1600, 900);
+    expect(ctx.clearRect).toHaveBeenCalledWith(0, 0, 1600, top.height);
+    expect(ctx.fillText).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(ctx.fillText).mock.calls[0][0]).toBe('#112233');
+    const next = zoomFraming(source, top.image, {zoom: 2, x: .1, y: .1}, 3);
+    expect(next.x).toBeCloseTo(.15); expect(next.y).toBeCloseTo(.15);
+    expect(constrainFraming(source, top.image, {zoom: 9, x: 999, y: 999}).zoom).toBe(4);
   });
 });
 

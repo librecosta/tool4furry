@@ -144,12 +144,12 @@ it('owns marker provenance across sample, HEX edit, reorder, delete and replacem
 });
 it('uses one session sequence and the shared safe filename policy for every PNG kind', async () => {
   const session = await loaded();
-  const names = ['basic', 'basic', 'character', 'character', 'gallery', 'story'].map(kind => session.filename(kind as 'basic'));
+  const names = ['basic', 'basic', 'share', 'share', 'share', 'share'].map(kind => session.filename(kind as 'basic' | 'share'));
   expect(new Set(names).size).toBe(6);
   expect(names[0]).toMatch(/^t4f-\d{8}-\d{9}-0001-palette-a\.png$/);
-  expect(names[2]).toContain('-postcard-');
-  expect(names[4]).toContain('-editorial-');
-  expect(names[5]).toContain('-moodboard-');
+  expect(names[2]).toContain('-palette-share-');
+  expect(names[4]).toContain('-palette-share-');
+  expect(names[5]).toContain('-palette-share-');
   session.dispose();
 });
 it('discards late imports, serializes replacement and closes temporary resources', async () => {

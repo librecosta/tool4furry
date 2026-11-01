@@ -231,8 +231,8 @@ export class PaletteSession {
     });
     return true;
   }
-  filename(kind: 'basic' | ShareOptions['template']) {
-    const label = { basic: 'palette', character: 'postcard', gallery: 'editorial', story: 'moodboard' }[kind];
+  filename(kind: 'basic' | 'share') {
+    const label = { basic: 'palette', share: 'palette-share' }[kind];
     return taskFilename({ time: this.downloadTime, sequence: ++this.downloadSequence, source: this.view.source?.name ?? 'image', label, extension: 'png' }).name;
   }
   add(value: string) {

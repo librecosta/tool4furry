@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { Popover } from '@base-ui/react/popover';
 import {
   CopyIcon,
@@ -15,7 +15,6 @@ import { Button, IconButton } from '../../ui/Button';
 import { SelectField } from '../../ui/SelectField';
 import { Tooltip } from '../../ui/Tooltip';
 import { motion } from '../../styles/motion';
-import { TextField } from '../../ui/TextField';
 import { ConfirmDialog } from '../../ui/ConfirmDialog';
 import { useToast } from '../../ui/Toast';
 import { controls } from '../../styles/controls';
@@ -85,18 +84,21 @@ export function PaletteParameters({ mode, count, disabled, extract, t }: {
 
 export function AddColor({ disabled, add, t }: { disabled: boolean; add: (hex: string) => boolean; t: Labels }) {
   const [open, setOpen] = useState(false), [value, setValue] = useState('#808080'), [error, setError] = useState(false);
-  const input = useRef<HTMLInputElement>(null);
+  const input = useRef<HTMLInputElement>(null), formId = useId();
   return <Popover.Root open={open} onOpenChange={next => { setOpen(next); if (next) { setValue('#808080'); setError(false); } }}>
     <Popover.Trigger render={<Button variant="ghost" xstyle={s.secondary} disabled={disabled}/>}>{t.add}</Popover.Trigger>
     <Popover.Portal><Popover.Positioner sideOffset={8} collisionPadding={12} {...stylex.props(s.popoverPositioner)}>
       <Popover.Popup aria-label={t.add} initialFocus={input} {...stylex.props(s.popover, s.addColor, motion.dialog)}>
-        <form {...stylex.props(s.stack)} onSubmit={event => { event.preventDefault(); if (!normalizeHex(value)) { setError(true); input.current?.focus(); } else if (add(value)) setOpen(false); }}>
+        <div {...stylex.props(s.stack)}>
           <div {...stylex.props(s.row)}>
-            <span aria-hidden="true" {...stylex.props(s.addPreview)} style={{ backgroundColor: normalizeHex(value) ?? 'transparent' }}/>
-            <div {...stylex.props(s.addInput)}><TextField ref={input} label={t.hex} value={value} maxLength={7} error={error ? t.invalid : undefined} onChange={next => { setValue(next); setError(false); }}/></div>
+            <input type="color" aria-label={t.chooseColor} value={normalizeHex(value) ?? '#808080'} onChange={event => { setValue(event.target.value.toUpperCase()); setError(false); }} {...stylex.props(s.addPicker)}/>
+            <form id={formId} {...stylex.props(s.addInput)} onSubmit={event => { event.preventDefault(); if (!normalizeHex(value)) { setError(true); input.current?.focus(); } else if (add(value)) setOpen(false); }}>
+              <input ref={input} aria-label={t.hex} value={value} maxLength={7} spellCheck={false} aria-invalid={error || undefined} aria-description={error ? t.invalid : undefined} onChange={event => { setValue(event.target.value); setError(false); }} {...stylex.props(controls.input, error && controls.invalid)}/>
+            </form>
           </div>
-          <div {...stylex.props(s.row)}><Button type="submit" variant="ghost" xstyle={s.accent}>{t.add}</Button><Popover.Close render={<Button variant="ghost" xstyle={s.secondary}/>}>{t.cancel}</Popover.Close></div>
-        </form>
+          {error && <p role="alert" {...stylex.props(s.error)}>{t.invalid}</p>}
+          <div {...stylex.props(s.row)}><Button type="submit" form={formId} variant="ghost" xstyle={s.accent}>{t.add}</Button><Popover.Close render={<Button variant="ghost" xstyle={s.secondary}/>}>{t.cancel}</Popover.Close></div>
+        </div>
       </Popover.Popup>
     </Popover.Positioner></Popover.Portal>
   </Popover.Root>;
@@ -120,7 +122,7 @@ export default function PaletteExtractor({ locale }: ToolProps) {
   const [pending, setPending] = useState<{ mode: Mode; count: number }>();
   const [saving, setSaving] = useState(false);
   const cancelPick = useCallback(() => { setTarget(undefined); setSamplePreview(undefined); }, []);
-  const startPick = (id: string) => { setSelected(id); setTarget(id); };
+  const startPick = (id: string) => { setSamplePreview(undefined); setSelected(id); setTarget(id); };
   const exportVersion = useRef(0);
   useEffect(() => {
     const owner = new PaletteSession();
@@ -142,6 +144,7 @@ export default function PaletteExtractor({ locale }: ToolProps) {
     if (target && !view.colors.some((c) => c.id === target))
       setTarget(undefined);
     if (selected && !view.colors.some(c => c.id === selected)) setSelected(undefined);
+    if (samplePreview && !view.colors.some(c => c.id === samplePreview.id)) setSamplePreview(undefined);
   }, [target, selected, view.colors]);
   const copy = (text: string) => {
     void navigator.clipboard

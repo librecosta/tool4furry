@@ -23,7 +23,7 @@ export function ImageSampler({ pixels, url, target, selected, onPick, onPreview,
   const [focused, setFocused] = useState(false);
   const [open, setOpen] = useState(false);
   const returning = useRef(false);
-  const [hover, setHover] = useState<{ x: number; y: number; hex: string; left: number; top: number }>();
+  const [hover, setHover] = useState<SamplePreview & { left: number; top: number }>();
   const [, repaint] = useState(0);
   const host = useRef<HTMLDivElement>(null), lens = useRef<HTMLCanvasElement>(null);
   const [element, setElement] = useState<HTMLDivElement | null>(null);
@@ -56,10 +56,15 @@ export function ImageSampler({ pixels, url, target, selected, onPick, onPreview,
       host.current.focus({ preventScroll: true });
     }
   }, [target, element]);
+  // A single qualified temporary sample drives every view, never the Session.
+  const activeId = gesture.current?.kind === 'marker' ? gesture.current.target : target;
+  const preview = hover && hover.url === url && hover.id === activeId && !blocked.current && colors.some(color => color.id === hover.id) ? hover : undefined;
   useEffect(() => {
-    const id = gesture.current?.kind === 'marker' ? gesture.current.target : target;
-    onPreview?.(hover && id ? { id, hex: hover.hex, point: { x: hover.x, y: hover.y }, url } : undefined);
-  }, [hover, target, url, onPreview]);
+    onPreview?.(preview ? {id: preview.id, hex: preview.hex, point: preview.point, url: preview.url} : undefined);
+  }, [preview, onPreview]);
+  useEffect(() => {
+    if (gesture.current?.target && !colors.some(color => color.id === gesture.current?.target)) release();
+  }, [colors]);
   useEffect(() => () => onPreview?.(undefined), [onPreview]);
   useEffect(() => {
     release(); camera.current = undefined; autoFit.current = true; setFocused(false); setOpen(false);
@@ -110,17 +115,18 @@ export function ImageSampler({ pixels, url, target, selected, onPick, onPreview,
   }, [element, focused, pixels]);
   useEffect(() => {
     const ctx = lens.current?.getContext('2d');
-    if (!ctx || !hover) return;
+    if (!ctx || !preview) return;
     ctx.clearRect(0, 0, 9, 9);
-    const left = Math.max(0, hover.x - 4), top = Math.max(0, hover.y - 4);
-    ctx.putImageData(pixels, 4 - hover.x, 4 - hover.y, left, top, Math.min(9, pixels.width - left), Math.min(9, pixels.height - top));
-  }, [hover, pixels]);
+    const left = Math.max(0, preview.point.x - 4), top = Math.max(0, preview.point.y - 4);
+    ctx.putImageData(pixels, 4 - preview.point.x, 4 - preview.point.y, left, top, Math.min(9, pixels.width - left), Math.min(9, pixels.height - top));
+  }, [preview, pixels]);
   const sample = (event: PointerEvent<HTMLElement>) => {
     const box = host.current!.getBoundingClientRect(), view = current();
     const x = event.clientX - box.left, y = event.clientY - box.top;
     if (x < 0 || y < 0 || x >= box.width || y >= box.height) { setHover(undefined); return; }
     const point = samplePoint(pixels, (x / box.width * size.current.width - size.current.width / 2 - view.x) / view.scale + pixels.width / 2, (y / box.height * size.current.height - size.current.height / 2 - view.y) / view.scale + pixels.height / 2, pixels);
-    const next = point ? { ...point, left: clamp(x - 44, 4, Math.max(4, box.width - 92)), top: y >= 120 ? y - 116 : Math.min(box.height - 116, y + 32) } : undefined;
+    const id = gesture.current?.kind === 'marker' ? gesture.current.target : target;
+    const next = point && id && colors.some(color => color.id === id) ? { id, url, hex: point.hex, point: {x: point.x, y: point.y}, left: clamp(x - 44, 4, Math.max(4, box.width - 92)), top: y >= 120 ? y - 116 : Math.min(box.height - 116, y + 32) } : undefined;
     setHover(next); return next;
   };
   const view = current(), range = zoomRange(fitScale(pixels, size.current));
@@ -131,7 +137,7 @@ export function ImageSampler({ pixels, url, target, selected, onPick, onPreview,
     { label: t.actual, icon: NumberSquareOneIcon, run: () => zoom(1) },
   ];
   const workspace = () => <div {...stylex.props(s.workspace, focused && s.focusedWorkspace)}>
-    {focused && onTarget && <div role="group" aria-label={t.palette} {...stylex.props(s.toolbar)}>{colors.map((color, index) => <Tooltip key={color.id} content={`${t.pick} ${index + 1} · ${color.hex}`}><IconButton variant="ghost" label={`${t.pick} ${index + 1}`} aria-pressed={target === color.id} xstyle={[s.tool, motion.selection, target === color.id && s.selected]} onClick={() => onTarget(color.id)}><span {...stylex.props(s.sampleColor)} style={{ backgroundColor: color.hex }}/></IconButton></Tooltip>)}</div>}
+    {focused && onTarget && <div role="group" aria-label={t.palette} {...stylex.props(s.toolbar)}>{colors.map((color, index) => <Tooltip key={color.id} content={`${t.pick} ${index + 1} · ${color.hex}`}><IconButton variant="ghost" label={`${t.pick} ${index + 1}`} aria-pressed={target === color.id} xstyle={[s.tool, motion.selection, target === color.id && s.selected]} onClick={() => onTarget(color.id)}><span {...stylex.props(s.sampleColor)} data-focus-swatch={color.id} style={{ backgroundColor: preview?.id === color.id ? preview.hex : color.hex }}/></IconButton></Tooltip>)}</div>}
     <div {...stylex.props(s.workspaceBody, focused && s.focusedBody)}>
     <div {...stylex.props(s.viewTools)} role="toolbar" aria-label={t.viewControls}>
       {tools.map(tool => <Tooltip key={tool.label} content={tool.label}><IconButton variant="ghost" label={tool.label} xstyle={s.tool} disabled={tool.disabled} onClick={tool.run}><tool.icon size={20}/></IconButton></Tooltip>)}
@@ -173,7 +179,7 @@ export function ImageSampler({ pixels, url, target, selected, onPick, onPreview,
         const valid = !blocked.current && drag.url === url && drag.target && (drag.kind === 'marker' ? drag.moved && colors.some(color => color.id === drag.target) : drag.kind === 'pick' && drag.target === target);
         const point = valid ? sample(event) : undefined;
         release(); blocked.current = false;
-        if (point && drag.target) onPick(drag.target, point.hex, { x: point.x, y: point.y });
+        if (point && drag.target) onPick(drag.target, point.hex, point.point);
       }}
       onPointerCancel={() => { release(); blocked.current = false; }}
       onLostPointerCapture={() => { gesture.current = undefined; setHover(undefined); }}
@@ -190,10 +196,9 @@ export function ImageSampler({ pixels, url, target, selected, onPick, onPreview,
       }}>
       <div data-palette-plane {...stylex.props(s.plane)} style={{ width: pixels.width * view.scale, height: pixels.height * view.scale, marginLeft: view.x, marginTop: view.y }}><img src={url} alt="" draggable={false} {...stylex.props(s.image)}/></div>
       {colors.map((color, index) => {
-        const dragging = gesture.current?.kind === 'marker' && gesture.current.target === color.id;
         const active = (selected ?? target) === color.id;
-        const previewing = !!hover && (dragging ? gesture.current?.moved : gesture.current?.kind !== 'marker' && target === color.id);
-        const point = previewing ? hover : color.point;
+        const previewing = preview?.id === color.id;
+        const point = previewing ? preview.point : color.point;
         if (!point) return null;
         const left = size.current.width / 2 + view.x + (point.x + 0.5 - pixels.width / 2) * view.scale;
         const top = size.current.height / 2 + view.y + (point.y + 0.5 - pixels.height / 2) * view.scale;
@@ -210,15 +215,15 @@ export function ImageSampler({ pixels, url, target, selected, onPick, onPreview,
             gesture.current = { id: event.pointerId, x: event.clientX, y: event.clientY, target: color.id, url, kind: 'marker', moved: false };
             host.current?.setPointerCapture?.(event.pointerId);
           }}>
-          <span {...stylex.props(s.markerDot, active && s.markerSelected)} style={{ backgroundColor: previewing ? hover!.hex : color.hex }}/>
+          <span {...stylex.props(s.markerDot, active && s.markerSelected)} style={{ backgroundColor: previewing ? preview.hex : color.hex }}/>
         </button>;
       })}
-      {(target || gesture.current?.kind === 'marker') && hover && <div aria-hidden="true"><div {...stylex.props(s.loupe)} style={{ left: hover.left, top: hover.top }}><canvas ref={lens} width={9} height={9} {...stylex.props(s.magnified)}/><span {...stylex.props(s.cross)}/></div><span {...stylex.props(s.sampleLabel)} style={{ left: hover.left, top: hover.top + 92 }}>{hover.hex}</span></div>}
+      {preview && <div aria-hidden="true"><div {...stylex.props(s.loupe)} style={{ left: preview.left, top: preview.top }}><canvas ref={lens} width={9} height={9} {...stylex.props(s.magnified)}/><span {...stylex.props(s.cross)}/></div><span {...stylex.props(s.sampleLabel)} style={{ left: preview.left, top: preview.top + 92 }}>{preview.hex}</span></div>}
     </div>
     </div>
     {target && <div {...stylex.props(s.row)}><p id={`${focusId}-hint`} role="status" {...stylex.props(s.muted, s.grow)}>{t.picking}</p><Button variant="ghost" size="sm" onClick={() => { release(); cancel(); }}>{t.cancel}</Button></div>}
   </div>;
-  return <Dialog.Root open={open} onOpenChange={next => { release(); setOpen(next); if (next) setFocused(true); }} onOpenChangeComplete={next => { if (!next) { returning.current = true; setFocused(false); } }}>
+  return <Dialog.Root open={open} onOpenChange={next => { release(); if (!next) cancel(); setOpen(next); if (next) setFocused(true); }} onOpenChangeComplete={next => { if (!next) { returning.current = true; setFocused(false); } }}>
     {focused ? <div aria-hidden="true" {...stylex.props(s.placeholder)}/> : workspace()}
     <Dialog.Portal>
       <Dialog.Backdrop {...stylex.props(s.backdrop, motion.backdrop)}/>
