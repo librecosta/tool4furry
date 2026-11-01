@@ -26,4 +26,4 @@ Tests derive all eight JPEG directions, progressive/multi-scan metadata, CRC/ICC
 1. 启动 `pnpm dev`，打开 CN `http://127.0.0.1:4321/tools/exif-metadata/` 或 Global `http://127.0.0.1:4322/tools/exif-metadata/`，选择或拖入此 JPEG。检查拍摄时间、设备品牌/型号、方向及 GPS 字段；拍摄时间和 GPS 应带隐私标记。
 2. 点击文件行的「清理元数据 / Remove metadata」，检查清理后设备、时间和 GPS 均显示「已移除 / Removed」。**方向 6 应保留**，这是避免图片侧倒所需的显示信息。原始像素为 640×400，按方向显示为 400×640。
 3. 下载清理后的 JPEG，再导入该下载文件：应只剩方向字段；用本地图片查看器打开下载文件，确认 `TOP / UPRIGHT` 位于上方，构图和画质不变。保留原始示例重新导入时，全部示例字段应仍存在。
-4. 可追加普通图片或同目录的 `private.png` / `private.webp`，点击「清理全部待处理文件 / Clean all pending files」，检查逐项结果与成功结果 ZIP；无可清理信息的文件应显示「无需清理 / No cleanup needed」，仍可下载。图片工具自身只对照元数据，不再提供图片预览。
+4. 可追加普通图片或同目录的 `private.png` / `private.webp`，点击「清理全部待处理文件 / Clean all pending files」，检查逐项结果与成功结果 ZIP；无可清理信息的文件应显示「无需清理 / No cleanup needed」，仍可下载。Eye 按钮只查看原图；清理前后对照针对元数据字段，不生成结果图片预览。

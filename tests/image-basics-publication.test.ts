@@ -6,13 +6,13 @@ import { assertToolLoaderContract, toolBuildDefines, toolAvailabilityConstant } 
 import { publicPages, llmsText } from '../src/site/discovery';
 
 const ids = ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'];
-describe.each(['cn', 'global'] as const)('%s Compressor publication and three remaining Draft modules', region => {
+describe.each(['cn', 'global'] as const)('%s Compressor/EXIF publication and two remaining Draft modules', region => {
   it('keeps implementations behind their literal Loader and Registry qualifications', () => {
     expect(() => assertToolLoaderContract(tools, readFileSync('src/tools/loaders.ts', 'utf8'))).not.toThrow();
     const available = getAvailableTools(region, true), production = getAvailableTools(region, false);
     for (const id of ids) {
       const tool = tools.find(tool => tool.id === id)!;
-      const published = id === 'image-compressor';
+      const published = id === 'image-compressor' || id === 'exif-metadata';
       expect(tool).toMatchObject({id, slug: id, status: published ? 'published' : 'draft', mode: 'form', regions: ['cn', 'global']});
       expect(available).toContain(tool); expect(production.includes(tool)).toBe(published);
       expect(toolBuildDefines(tools, region)[toolAvailabilityConstant(id)]).toBe(String(published));
@@ -30,7 +30,7 @@ describe.each(['cn', 'global'] as const)('%s Compressor publication and three re
       expect(getRelatedTools(tool, region, undefined, true).length).toBeGreaterThan(0);
       if (published) expect(getRelatedTools(tool, region).map(item => item.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor']);
     }
-    expect(production.map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor']);
+    expect(production.map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'exif-metadata']);
   });
   it('keeps the finalized Compressor metadata and guide bilingual and static', () => {
     const tool = tools.find(tool => tool.id === 'image-compressor')!;
@@ -44,6 +44,24 @@ describe.each(['cn', 'global'] as const)('%s Compressor publication and three re
       expect(content.features).toBeUndefined();
       expect(content.steps?.every(step => step.startsWith('**'))).toBe(true);
       expect(content.faq?.at(-1)?.question).toBe(locale === 'zh' ? '图片会上传到服务器吗？' : 'Are my images uploaded to a server?');
+    }
+  });
+  it('publishes the frozen EXIF guide with three steps, three limits and four FAQs in each locale', () => {
+    const tool = tools.find(tool => tool.id === 'exif-metadata')!;
+    const expected = {
+      zh: {title: '在线 EXIF 查看与批量清理 - 图片元数据 | Tool4Furry', description: '在线查看 JPEG、PNG、WebP 图片的 EXIF、拍摄时间、设备和 GPS 等信息。支持浏览器本地批量无损清理、清理前后字段对照、逐张下载与 ZIP 打包，无需上传图片。', h1: '图片元数据', intro: '查看图片携带的拍摄信息，清理不需要的元数据，安心分享作品。'},
+      en: {title: 'Online EXIF Viewer & Batch Metadata Cleaner | Tool4Furry', description: 'View EXIF, camera, date and GPS metadata in JPEG, PNG and WebP images. Remove supported private metadata in batches without re-encoding pixels. Compare fields and download cleaned images or a ZIP, all in your browser.', h1: 'EXIF Metadata', intro: 'See what information your images carry and remove unwanted metadata before sharing your work.'},
+    };
+    for (const locale of ['zh', 'en'] as const) {
+      const content = getToolPageContent(tool, region, undefined, false, locale);
+      expect(content).toMatchObject(expected[locale]);
+      expect(content.features).toBeUndefined();
+      expect(content.steps).toHaveLength(3); expect(content.limitations).toHaveLength(3); expect(content.faq).toHaveLength(4);
+      expect(content.steps?.every(step => step.startsWith('**'))).toBe(true);
+      expect(content.faq?.[0].question).toBe(locale === 'zh' ? '图片会上传到服务器吗？' : 'Are my images uploaded to a server?');
+      expect(content.faq?.at(-1)?.answer).toContain(locale === 'zh' ? '无法安全清理的图片会明确提示失败。' : 'Files that cannot be safely cleaned are explicitly rejected.');
+      expect(content.limitations?.join(' ')).toContain(locale === 'zh' ? '必要的图片方向和色彩信息可能保留' : 'Necessary orientation and supported color information may remain');
+      expect(JSON.stringify(content)).not.toMatch(/清理前后图片|visual comparison|preview and download a separate/i);
     }
   });
 });

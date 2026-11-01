@@ -49,7 +49,7 @@ describe('catalog state, filtering and pagination', () => {
   it.each(['cn', 'global'] as const)('keeps %s locales and Registry gates independent', region => {
     for (const locale of ['zh', 'en'] as const) {
       const published = getCatalogEntries(region, tools, false, locale);
-      expect(published.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor']);
+      expect(published.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'exif-metadata']);
       const dev = getCatalogEntries(region, tools, true, locale);
       expect(dev.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata']);
       expect(dev.filter(entry => entry.status === 'published')).toEqual(published);

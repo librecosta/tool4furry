@@ -1,6 +1,6 @@
 # 基础图片工具 · V0.7-B
 
-Image Compressor 为 CN/Global、zh/en **Published**；Comic Page Organizer、Image Watermark 与 EXIF Metadata 仍为 **Draft**，只在 DEV 出现。沿用 Registry、显式字面量 Loader、Astro 静态正文与 Form Wide；没有新发布门、应用根或全局 Store。首页与创作身份使用既有人工精选和 Registry 过滤，正式站点当前为四款 Published 工具。
+Image Compressor 与 EXIF Metadata 为 CN/Global、zh/en **Published**；Comic Page Organizer 与 Image Watermark 仍为 **Draft**，只在 DEV 出现。沿用 Registry、显式字面量 Loader、Astro 静态正文与 Form Wide；没有新发布门、应用根或全局 Store。首页与创作身份使用既有人工精选和 Registry 过滤，正式站点当前为五款 Published 工具。
 
 | 工具与路径（Draft 仅 DEV） | 当前能力 |
 | --- | --- |
@@ -66,3 +66,13 @@ L2 复用 B1-C1 四格式、目标未达成、输出变大、设备/尺寸拒绝
 文件行使用完整 Lavender 浅色选中背景、48px 原图缩略图、截断文件名及状态，操作间隔 8px；大小、尺寸与清理前后字节数只保留在右侧元数据表，移除详情标题下重复文件名。Eye 入口仅在原图检查通过后可用，复用 `FilePreviewDialog` / `ImagePreviewViewport`，只查看原图，支持缩放、平移、适应画面与关闭焦点返回。缩略图和打开中的预览各自通过既有 `useOwnedUrl` / `ImageResources` 持有 URL，关闭不撤销缩略图；删除、清空与卸载释放对应资源，不生成结果预览，不改解析、清理或 ZIP。
 
 验收：19 项 UI/Session 定向测试及类型检查通过；真实 Chromium 验证桌面与 390px 手机视口、亮暗主题、长文件名、整行无边框选中态、检测失败禁用预览、原图缩放/键盘平移/关闭焦点、多文件选择/移除/清空与单项清理下载，控制台无错误。资源测试覆盖预览关闭、打开时删除/清空及卸载后的全部 URL 释放；截图与下载记录在仓库外 `../.validation/exif-c1-r1/`。保持 Draft；未重复全量测试或正式构建，真实触控设备与其他浏览器仍未测。
+
+## EXIF Metadata · B4-D1 Beta 资格（2026-11-02）
+
+依据维护者本任务授权通过 L2 审计并提升 CN/Global 源码 Published，V0.7-B4 收尾；未部署。冻结双语 SEO 各为三步骤、三限制、四 FAQ，不新增功能概览；短元数据准确描述受支持字段与本地批量清理。首页维持四张精选卡及原有顺序，既有画家/运营 EXIF ID 经 Registry 自然进入公开展示，其他两款基础工具继续 Draft。
+
+L2 复用 C1/R1 的桌面/手机视口、亮暗主题、文件切换/删除/清空、原图缩放与焦点、过期原生任务和 ZIP 快照资源测试；基线 `479e3e9` 的既有 CI 已通过。本轮 162 项 EXIF/Metadata/发布与发现定向测试、`pnpm check`、CN/Global 正式构建及产物守卫通过，完整 CI 继续由原工作流执行。每地区五款 Published、十个工具语言页面及二十个公开 HTML URL；EXIF 双语正文、H1/Title/Description、OG/Twitter、Canonical/hreflang、目录/相关工具/Sitemap/llms 与实际产物一致，无 Draft noindex，包含按需实现及完整 exifr MIT 通知。其他 Draft/Lab/Fixture 和客户端长文隔离守卫保留。
+
+真实 Chromium 补验 CN 中文桌面文件夹批次：`manual-exif.jpg`、`private.png`、`private.webp` 成功，未知 APP1 安全失败且重试不影响已有结果。逐项下载与 ZIP 解压后复检格式/MIME、完整解码、方向及 ICC；JPEG 23,159→22,933 B、PNG 2,394→1,786 B、WebP 2,296→1,768 B，三项解码像素和压缩图像数据逐字节相同，受支持设备/时间/GPS 字段已移除，JPEG/PNG 方向 6 保留，WebP 方向仍为 1。CN 正式静态预览可加载工具；Global 英文正式预览在 390px 手机视口完成导入、原图预览/缩放、单项清理和下载，输出与已复检 DEV JPEG 字节一致，控制台无错误。未发现阻断问题，不支持/不安全结构明确失败，不回退有损编码。
+
+下载、文件验证 JSON 和截图保存在仓库外 `../.validation/exif-d1/`。L3 未测范围仍为真实 iOS/Android 触控、Firefox/Safari、低端设备及完整性能压力；手机视口不代表真机验证。没有新增工作流、运行大型多工具夹具或改动清理内核。

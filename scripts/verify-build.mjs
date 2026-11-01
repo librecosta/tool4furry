@@ -850,6 +850,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
     if (page === 'tools/image-compressor/index.html') assertToolContent(dom, locale, imageCompressorContent, 4, 3);
+    if (page === 'tools/exif-metadata/index.html') assertToolContent(dom, locale, exifMetadataContent, 4, 3);
     if (page === 'tools/image-converter/index.html')
       assert(!/开发保护值|全设备兼容承诺|development (?:resource )?guardrails/i.test(dom.body.textContent),
         'Converter public copy must describe current limits, not internal guardrails');
@@ -1215,6 +1216,14 @@ if (!files.includes('tools/exif-metadata/index.html')) {
     const bytes = await readFile(resolve(root, file));
     assert(!bytes.equals(notice) && !bytes.toString().includes(notice.toString('base64')), `Draft EXIF notice leaked: ${file}`);
   }
+} else {
+  const scripts = await Promise.all(files.filter(file => file.endsWith('.js')).map(file => readFile(resolve(root, file), 'utf8')));
+  assert(scripts.some(js => js.includes('data-exif-metadata') && js.includes('metadata-details')), 'Published EXIF includes its real metadata workspace');
+  const notice = await readFile('src/tools/exif-metadata/exifr.NOTICE.txt');
+  const emitted = files.filter(file => file.includes('exifr.NOTICE'));
+  const hasNotice = scripts.some(js => js.includes(notice.toString('base64'))) ||
+    (await Promise.all(emitted.map(file => readFile(resolve(root, file))))).some(bytes => bytes.equals(notice));
+  assert(hasNotice, 'Published EXIF distributes the complete exifr MIT notice');
 }
 if (!files.includes('tools/palette-extractor/index.html')) {
   assert(!files.some(file => /PaletteExtractor|(?:colorthief|react-colorful)\.NOTICE/.test(file)), 'Draft palette asset leaked');

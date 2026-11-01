@@ -58,15 +58,25 @@ export const imageWatermarkContent: Content = {
 };
 export const exifMetadataContent: Content = {
   zh: {
-    title: '图片元数据查看与清理 - EXIF 与 GPS | Tool4Furry', description: '在本地查看 JPEG、PNG、WebP 中可解析的设备、拍摄时间、方向和 GPS 信息，无损清理受支持的来源元数据并下载。', h1: '图片元数据', intro: '了解图片携带的信息，无损清理常见隐私元数据。',
-    steps: ['添加一张静态 JPEG、PNG 或 WebP 图片。', '查看真实存在、能够可靠解析的 EXIF 字段及隐私标记。', '清理元数据，对照清理前后的信息，预览并下载独立图片。'],
-    limitations: ['重点支持 JPEG，并读取受支持 PNG/WebP EXIF 块。不是每张图片都有设备、时间或位置等字段。', '仅清理现有内核能够安全处理的结构，不重新编码像素，不静默转换格式；必要方向和受支持色彩信息可能保留。', '不支持任意元数据修改、AVIF 无损清理，也不保证删除所有隐藏信息。文件仅在本地处理并受设备限制。'],
-    faq: [{question: '为什么没有显示 GPS 或拍摄时间？', answer: '来源可能没有这些字段，或其结构不在当前可靠解析范围内。工具不会推测或伪造缺失的信息。'}, {question: '清理会损失画质或改变方向吗？', answer: '受支持的清理不重新编码图片，并保留必要方向信息。无法安全无损处理时会明确报错，不提供替代的有损结果。'}, {question: '能保证删除所有隐私信息吗？', answer: '不能。清理针对可识别的常见来源元数据，不清除像素中的水印、隐写或所有未知私有结构。'}],
+    title: '在线 EXIF 查看与批量清理 - 图片元数据 | Tool4Furry', description: '在线查看 JPEG、PNG、WebP 图片的 EXIF、拍摄时间、设备和 GPS 等信息。支持浏览器本地批量无损清理、清理前后字段对照、逐张下载与 ZIP 打包，无需上传图片。', h1: '图片元数据', intro: '查看图片携带的拍摄信息，清理不需要的元数据，安心分享作品。',
+    steps: ['**添加图片：** 选择图片或文件夹，可以一次导入多张 JPEG、PNG、WebP 图片。', '**查看元数据：** 点击文件，在右侧查看可识别的拍摄时间、设备、GPS 等信息，以及需要注意的隐私字段。', '**清理与下载：** 单独清理或批量清理元数据，查看清理前后的字段变化，逐张下载或打包为 ZIP。'],
+    limitations: ['支持静态 JPEG、PNG、WebP 图片。暂不支持 AVIF 无损清理、动画图片及部分特殊格式。', '清理仅针对能够安全识别和处理的来源元数据，必要的图片方向和色彩信息可能保留。不保证删除所有隐藏信息。', '清理过程不重新编码图片像素，原始文件不会被修改。所有处理均在浏览器本地完成，文件数量、大小及分辨率受设备限制。'],
+    faq: [
+      {question: '图片会上传到服务器吗？', answer: '不会。图片读取、元数据查看、清理和下载都在当前浏览器中完成，无需上传。处理结果不会被持久保存。'},
+      {question: '清理 EXIF 会降低图片画质吗？', answer: '不会。受支持的元数据清理不重新编码图片像素，因此不会引入有损压缩。清理后的文件大小可能变化，必要的方向信息也可能保留。'},
+      {question: '为什么没有显示 GPS 或拍摄时间？', answer: '有些图片本身不包含这些信息，也可能使用了当前工具无法可靠解析的元数据结构。工具只展示实际识别到的字段，不会推测缺失的信息。'},
+      {question: '能保证彻底删除所有隐私信息吗？', answer: '不能。工具会清理受支持的常见 EXIF、GPS 等来源元数据，但无法保证清除所有未知私有字段、隐藏信息或直接存在于图片画面中的内容。无法安全清理的图片会明确提示失败。'},
+    ],
   },
   en: {
-    title: 'EXIF Metadata Viewer & Cleaner | Tool4Furry', description: 'Inspect supported camera, date, orientation and GPS fields in JPEG, PNG and WebP images locally. Remove supported source metadata without re-encoding pixels.', h1: 'EXIF Metadata', intro: 'See what your image carries and remove common private metadata without re-encoding.', headings: englishHeadings,
-    steps: ['Add a static JPEG, PNG or WebP image.', 'Inspect fields that actually exist and can be reliably parsed, with private information marked.', 'Remove metadata, compare before and after, preview and download a separate cleaned image.'],
-    limitations: ['Primarily supports JPEG, plus supported PNG/WebP EXIF blocks. Camera, date and location fields may be absent.', 'Only structures supported by the existing safe cleaner are processed. Pixels are not re-encoded and formats are not silently changed. Necessary orientation and supported color information may remain.', 'Arbitrary metadata editing and lossless AVIF cleanup are not supported. Removal of all hidden information is not guaranteed. Processing is local within device limits.'],
-    faq: [{question: 'Why is GPS or a date missing?', answer: 'The source may not contain those fields, or its structure may not be reliably supported. The tool never invents missing information.'}, {question: 'Does cleaning change quality or orientation?', answer: 'Supported cleanup does not re-encode image pixels and retains necessary orientation. Unsafe cases produce an explicit error instead of a lossy substitute.'}, {question: 'Does it remove every private detail?', answer: 'No. It targets recognizable common source metadata, not pixel watermarks, steganography or every unknown private structure.'}],
+    title: 'Online EXIF Viewer & Batch Metadata Cleaner | Tool4Furry', description: 'View EXIF, camera, date and GPS metadata in JPEG, PNG and WebP images. Remove supported private metadata in batches without re-encoding pixels. Compare fields and download cleaned images or a ZIP, all in your browser.', h1: 'EXIF Metadata', intro: 'See what information your images carry and remove unwanted metadata before sharing your work.', headings: englishHeadings,
+    steps: ['**Add images:** Choose images or a folder to import multiple JPEG, PNG or WebP files.', '**Inspect metadata:** Select a file to view recognizable camera, date, GPS and other metadata fields, including potentially private details.', '**Clean and download:** Remove metadata from individual files or the entire batch, review the changes, and download cleaned images separately or as a ZIP.'],
+    limitations: ['Supports static JPEG, PNG and WebP images. Lossless AVIF metadata cleaning, animated images and some specialized formats are not supported.', 'Only source metadata that can be safely recognized and processed is removed. Necessary orientation and supported color information may remain. Complete removal of all hidden information cannot be guaranteed.', 'Cleanup does not re-encode image pixels or modify your original files. Processing happens locally in your browser, subject to device file-count, size and resolution limits.'],
+    faq: [
+      {question: 'Are my images uploaded to a server?', answer: 'No. Images are read, inspected, cleaned and downloaded directly in your browser without uploading them. Results are not stored permanently.'},
+      {question: 'Does removing EXIF metadata reduce image quality?', answer: 'No. Supported metadata cleanup does not re-encode image pixels, so it introduces no lossy compression. File sizes may change, and necessary orientation information may be preserved.'},
+      {question: "Why can't I see GPS coordinates or the date taken?", answer: 'Some images do not contain these fields, while others use metadata structures that cannot be reliably parsed. The tool only displays information it can actually identify.'},
+      {question: 'Does the tool remove all private information?', answer: 'No. It removes supported common source metadata, including recognizable EXIF and GPS information, but cannot guarantee removal of every unknown private field, hidden detail or information embedded in the image itself. Files that cannot be safely cleaned are explicitly rejected.'},
+    ],
   },
 };

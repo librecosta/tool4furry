@@ -23,6 +23,8 @@
 
 ### Changed
 
+- V0.7-B4-D1 完成 EXIF Metadata 冻结双语 SEO 与 L2 Beta 资格收尾，提升 CN/Global 源码 Published。正式构建包含批量无损清理、字段前后对照、原图查看与完整 exifr MIT 通知，复用既有画家/运营入口及公开发现投影；漫画整理和水印仍为 Draft，未部署。
+
 - V0.7-B4-C1 将 EXIF Metadata 扩展为共享文件列表、文件夹导入、单项/批量无损清理与成功结果 ZIP，加入主题斑马纹元数据表和前后字段对照，移除图片预览。检测/清理复用唯一串行通道、现有安全清理与预算，失败可隔离重试，仍保持 Draft。
 
 - V0.7-B1-D1 完成 Image Compressor 冻结双语 SEO 与 Beta 审计，按维护者授权提升源码 Published，保留 C1-R1 最长边步进器。首页、创作身份和发现文件沿用 Registry 投影，AVIF 复用既有按需 Worker/WASM 及许可；漫画整理、水印和 EXIF 继续保持 Draft。B1 收尾，未部署或创建 Tag/Release。

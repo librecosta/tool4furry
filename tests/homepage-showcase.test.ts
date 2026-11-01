@@ -5,6 +5,7 @@ import { imageConverterDefinition } from '../src/tools/image-converter/definitio
 import { imageResizeCropDefinition } from '../src/tools/image-resize-crop/definition';
 import { paletteExtractorDefinition } from '../src/tools/palette-extractor/definition';
 import { imageCompressorDefinition } from '../src/tools/image-compressor/definition';
+import { exifMetadataDefinition } from '../src/tools/exif-metadata/definition';
 import { fixtureTools } from './fixtures/tools';
 import type { ToolDefinition } from '../src/tools/types';
 
@@ -47,11 +48,12 @@ describe('four-slot featured presentation', () => {
 
 describe('homepage editorial role projection', () => {
   const associatedRoles = ['painter', 'developer', 'animator', 'operations'];
-  const publishedTools = [imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition];
+  const publishedTools = [imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, exifMetadataDefinition];
   const roleTools = (id: string, list = publishedTools) => associatedRoles.includes(id)
-    ? list.filter(tool => tool.id !== 'palette-extractor' || ['painter', 'animator'].includes(id)) : [];
+    ? list.filter(tool => (tool.id !== 'palette-extractor' || ['painter', 'animator'].includes(id)) &&
+      (tool.id !== 'exif-metadata' || ['painter', 'operations'].includes(id))) : [];
 
-  it.each(['cn', 'global'] as const)('projects four Published tools in %s editorial order without filling unrelated roles', region => {
+  it.each(['cn', 'global'] as const)('projects five Published tools in %s editorial order without filling unrelated roles', region => {
     for (const locale of ['zh', 'en'] as const) {
       const production = getRoleShowcases(region, locale);
       expect(production).toHaveLength(6);
@@ -68,11 +70,11 @@ describe('homepage editorial role projection', () => {
       for (const role of dev) {
         const productionRole = production.find(item => item.id === role.id)!;
         expect(role.entries.filter(entry => entry.status === 'published')).toEqual(productionRole.entries);
-        const draftByRole: Record<string, string[]> = {painter: ['comic-page-organizer', 'image-watermark', 'exif-metadata'], developer: [], animator: ['comic-page-organizer', 'image-watermark'], operations: ['image-watermark', 'exif-metadata']};
+        const draftByRole: Record<string, string[]> = {painter: ['comic-page-organizer', 'image-watermark'], developer: [], animator: ['comic-page-organizer', 'image-watermark'], operations: ['image-watermark']};
         expect(role.entries.filter(entry => entry.status === 'draft').map(entry => entry.id)).toEqual(draftByRole[role.id] ?? []);
       }
     }
-    expect(publishedTools.map(tool => tool.status)).toEqual(['published', 'published', 'published', 'published']);
+    expect(publishedTools.map(tool => tool.status)).toEqual(['published', 'published', 'published', 'published', 'published']);
   });
 
   it.each(['cn', 'global'] as const)('keeps %s editorial IDs behind Registry Draft and region filtering in both locales', region => {
@@ -96,7 +98,7 @@ describe('homepage editorial role projection', () => {
       expect(getRoleShowcases(region, locale, false, list).flatMap(role => role.entries)).toEqual([]);
       expect(getRoleShowcases(region, locale, true, list).flatMap(role => role.entries)).toEqual([]);
     }
-    expect(publishedTools.map(tool => tool.status)).toEqual(['published', 'published', 'published', 'published']);
+    expect(publishedTools.map(tool => tool.status)).toEqual(['published', 'published', 'published', 'published', 'published']);
   });
 
   it('deduplicates editorial IDs, ignores unknown/unavailable IDs, and caps each role at twelve', () => {
