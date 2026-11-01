@@ -21,7 +21,9 @@ export class WatermarkSession {
   private disposed = false;
   private previewTicket = 0;
   private assetTicket = 0;
-  private assetBytes = 0;
+  private assetFile?: File;
+  // Cancelled native jobs still own their captured Files until they really settle.
+  private activeFiles = new Set<File>();
   private zipController?: AbortController;
   private downloadURLs = new Map<string, ReturnType<typeof setTimeout>>();
   private state: View = {tasks: [], settings: defaults, assetBusy: false, version: 0};
@@ -39,6 +41,15 @@ export class WatermarkSession {
   private active(id: string, request: number, version = this.state.version) {
     return !this.disposed && version === this.state.version && this.state.tasks.some(task => task.id === id && task.request === request);
   }
+  private retainedFiles(includeAsset = true) {
+    return new Set([...this.state.tasks.map(task => task.file), ...this.activeFiles,
+      ...(includeAsset && this.assetFile ? [this.assetFile] : [])]);
+  }
+  private async holding(files: readonly File[], run: () => Promise<void>) {
+    for (const file of files) this.activeFiles.add(file);
+    try { await run(); }
+    finally { for (const file of files) this.activeFiles.delete(file); }
+  }
   private async bounded(source: ImageSource, edge: number) {
     const bitmap = await decodeChecked(source.blob, source.info, this.resources, this.limits);
     let canvas: HTMLCanvasElement | undefined;
@@ -53,15 +64,17 @@ export class WatermarkSession {
   }
   add(files: readonly File[]) {
     if (this.disposed) return;
-    let bytes = this.state.tasks.reduce((n, task) => n + task.file.size, this.assetBytes), count = this.state.tasks.length;
+    const retained = this.retainedFiles();
+    let bytes = [...retained].reduce((n, file) => n + file.size, 0), count = this.state.tasks.length;
     const added: Task[] = []; let rejected = false;
     for (const file of files) {
-      if (count >= this.limits.files || !file.size || file.size > this.limits.bytes || bytes + file.size > this.limits.totalBytes) { rejected = true; continue; }
+      const extraBytes = retained.has(file) ? 0 : file.size;
+      if (count >= this.limits.files || !file.size || file.size > this.limits.bytes || bytes + extraBytes > this.limits.totalBytes) { rejected = true; continue; }
       const sequence = ++this.sequence;
-      added.push({id: `watermark-${sequence}`, sequence, file, status: 'checking', request: 0}); bytes += file.size; count++;
+      added.push({id: `watermark-${sequence}`, sequence, file, status: 'checking', request: 0}); retained.add(file); bytes += extraBytes; count++;
     }
     this.emit({tasks: [...this.state.tasks, ...added], error: rejected ? 'budget' : undefined});
-    for (const task of added) this.jobs.schedule(`intake:${task.id}`, async () => {
+    for (const task of added) this.jobs.schedule(`intake:${task.id}`, () => this.holding([task.file], async () => {
       let thumb: HTMLCanvasElement | undefined;
       try {
         const source = await acceptImage(task.file, this.resources, this.limits);
@@ -74,7 +87,7 @@ export class WatermarkSession {
         if (!this.state.selected) this.select(task.id);
       } catch { if (this.active(task.id, task.request)) this.patch(task.id, {status: 'error', error: 'input'}); }
       finally { if (thumb) this.resources.release(thumb); }
-    }, () => { this.patch(task.id, {request: task.request + 1, status: 'error', error: 'timeout'}); });
+    }), () => { this.patch(task.id, {request: task.request + 1, status: 'error', error: 'timeout'}); });
   }
   select(id: string) {
     if (this.disposed || !this.state.tasks.some(task => task.id === id && task.source)) return;
@@ -82,14 +95,14 @@ export class WatermarkSession {
     if (this.state.preview) this.resources.release(this.state.preview);
     this.emit({selected: id, preview: undefined});
     const source = this.state.tasks.find(task => task.id === id)!.source!;
-    this.jobs.schedule('preview', async () => {
+    this.jobs.schedule('preview', () => this.holding([source.file], async () => {
       let canvas: HTMLCanvasElement | undefined;
       try {
         canvas = await this.bounded(source, 1200);
         if (ticket !== this.previewTicket || this.disposed) { this.resources.release(canvas); return; }
         this.emit({preview: canvas});
       } catch { if (ticket === this.previewTicket) this.emit({error: 'preview'}); }
-    }, () => { if (ticket === this.previewTicket) { this.previewTicket++; this.emit({error: 'timeout'}); } });
+    }), () => { if (ticket === this.previewTicket) { this.previewTicket++; this.emit({error: 'timeout'}); } });
   }
   update(settings: WatermarkSettings) {
     if (!validSettings(settings)) { this.emit({error: 'settings'}); return false; }
@@ -105,24 +118,25 @@ export class WatermarkSession {
   }
   setWatermark(file: File) {
     if (this.disposed) return;
-    const sourceBytes = this.state.tasks.reduce((n, task) => n + task.file.size, 0);
-    if (!file.size || file.size > this.limits.bytes || file.size + sourceBytes > this.limits.totalBytes) { this.emit({error: 'budget'}); return; }
+    const retained = this.retainedFiles(false); retained.add(file);
+    const sourceBytes = [...retained].reduce((n, entry) => n + entry.size, 0);
+    if (!file.size || file.size > this.limits.bytes || sourceBytes > this.limits.totalBytes) { this.emit({error: 'budget'}); return; }
     const ticket = ++this.assetTicket;
-    this.assetBytes = file.size;
+    this.assetFile = file;
     if (this.state.watermark) this.resources.release(this.state.watermark.preview);
     this.invalidate({watermark: undefined, assetBusy: true, settings: {...this.state.settings, kind: 'image'}, error: undefined});
-    this.jobs.schedule('asset', async () => {
+    this.jobs.schedule('asset', () => this.holding([file], async () => {
       let preview: HTMLCanvasElement | undefined;
       try {
         const source = await acceptImage(file, this.resources, {...this.limits, pixels: Math.min(this.limits.pixels, 4_000_000), edge: Math.min(this.limits.edge, 4096)});
         preview = await this.bounded(source, 1024);
         if (this.disposed || ticket !== this.assetTicket) { this.resources.release(preview); return; }
         this.emit({watermark: {source, preview}, assetBusy: false});
-      } catch { if (ticket === this.assetTicket) { this.assetBytes = 0; this.emit({assetBusy: false, error: 'watermark'}); } }
-    }, () => { if (ticket === this.assetTicket) { this.assetTicket++; this.assetBytes = 0; this.emit({assetBusy: false, error: 'timeout'}); } });
+      } catch { if (ticket === this.assetTicket) { this.assetFile = undefined; this.emit({assetBusy: false, error: 'watermark'}); } }
+    }), () => { if (ticket === this.assetTicket) { this.assetTicket++; this.assetFile = undefined; this.emit({assetBusy: false, error: 'timeout'}); } });
   }
   removeWatermark() {
-    this.assetBytes = 0;
+    this.assetFile = undefined;
     ++this.assetTicket; this.jobs.cancel('asset');
     if (this.state.watermark) this.resources.release(this.state.watermark.preview);
     this.invalidate({watermark: undefined, assetBusy: false, settings: {...this.state.settings, kind: 'text'}});
@@ -134,7 +148,7 @@ export class WatermarkSession {
       const task = this.state.tasks.find(item => item.id === id); if (!task?.source) continue;
       const request = task.request + 1, source = task.source;
       this.patch(id, {request, status: 'queued', result: undefined, error: undefined});
-      this.jobs.schedule(`output:${id}`, async () => {
+      this.jobs.schedule(`output:${id}`, () => this.holding([source.file, ...(mark ? [mark.file] : [])], async () => {
         if (!this.active(id, request, version)) return;
         this.patch(id, {status: 'processing'});
         try {
@@ -144,7 +158,7 @@ export class WatermarkSession {
           if (result.size + total > this.limits.totalBytes) throw new Error('budget');
           this.patch(id, {status: 'ready', result});
         } catch (error) { if (this.active(id, request, version)) this.patch(id, {status: 'error', error: error instanceof Error && error.message === 'budget' ? 'budget' : 'output'}); }
-      }, () => { if (this.active(id, request, version)) this.patch(id, {request: request + 1, status: 'error', error: 'timeout'}); });
+      }), () => { if (this.active(id, request, version)) this.patch(id, {request: request + 1, status: 'error', error: 'timeout'}); });
     }
   }
   cancel() {

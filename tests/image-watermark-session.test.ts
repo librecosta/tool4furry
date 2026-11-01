@@ -68,3 +68,42 @@ it('discards a deleted source, a replaced watermark and all late work after unmo
   expect(session.snapshot.watermark).toBeUndefined();expect(session.snapshot.tasks).toHaveLength(0);
   expect(session.resources.canvasesCreated).toBe(session.resources.canvasesReleased);
 });
+it.each(['intake', 'preview', 'output'] as const)('reserves a removed File during active %s work without counting its visible task twice', async stage => {
+  const session = new WatermarkSession({...mobileImageLimits, totalBytes: 12});
+  const first = file('first.png'), second = file('second.png'), third = file('third.png');
+  const waiting = deferred<Awaited<ReturnType<typeof acceptImage>> | ImageBitmap | Blob>();
+  const bitmap = {width: 600, height: 400, close: vi.fn()} as unknown as ImageBitmap;
+  const source = {file: first, blob: first, info: {format: 'png' as const, width: 600, height: 400, orientation: 1}, width: 600, height: 400};
+  if (stage === 'intake') vi.mocked(acceptImage).mockReturnValueOnce(waiting.promise as ReturnType<typeof acceptImage>);
+  if (stage === 'preview') vi.mocked(decodeChecked).mockResolvedValueOnce(bitmap).mockReturnValueOnce(waiting.promise as ReturnType<typeof decodeChecked>);
+  session.add([first]); await tick(); await tick();
+  if (stage === 'output') { vi.mocked(renderWatermark).mockReturnValueOnce(waiting.promise as Promise<Blob>); session.start(); await tick(); }
+  session.add([second]);
+  expect(session.snapshot.tasks).toHaveLength(2); // First File is also held by the native lane, but only counts once.
+  session.remove(session.snapshot.tasks[0].id);
+  session.add([third]);
+  expect(session.snapshot.error).toBe('budget'); expect(session.snapshot.tasks.map(task => task.file)).toEqual([second]);
+  waiting.resolve(stage === 'intake' ? source : stage === 'preview' ? bitmap : new Blob(['old']));
+  await tick(); await tick();
+  session.add([third]); expect(session.snapshot.tasks.map(task => task.file)).toEqual([second, third]);
+  session.dispose(); await tick();
+});
+it('reserves removed or replaced watermark Files until active asset and export operations settle', async () => {
+  const session = new WatermarkSession({...mobileImageLimits, totalBytes: 12});
+  const sourceFile = file('source.png'), oldMark = file('old-mark.png'), replacement = file('new-mark.png');
+  session.add([sourceFile]); await tick(); await tick();
+  const asset = deferred<Awaited<ReturnType<typeof acceptImage>>>();
+  vi.mocked(acceptImage).mockReturnValueOnce(asset.promise);
+  session.setWatermark(oldMark); session.removeWatermark();
+  session.setWatermark(replacement); expect(session.snapshot.error).toBe('budget');
+  asset.resolve({file: oldMark, blob: oldMark, info: {format: 'png', width: 600, height: 400, orientation: 1}, width: 600, height: 400});
+  await tick(); await tick();
+  session.setWatermark(replacement); await tick(); await tick(); expect(session.snapshot.watermark?.source.file).toBe(replacement);
+  const output = deferred<Blob>(); vi.mocked(renderWatermark).mockReturnValueOnce(output.promise); session.start(); await tick();
+  session.removeWatermark(); session.setWatermark(oldMark); expect(session.snapshot.error).toBe('budget');
+  session.remove(session.snapshot.tasks[0].id);
+  session.setWatermark(oldMark); expect(session.snapshot.error).toBe('budget'); // Both captured source and watermark still occupy the lane.
+  output.resolve(new Blob(['old'])); await tick(); await tick();
+  session.setWatermark(oldMark); await tick(); await tick(); expect(session.snapshot.watermark?.source.file).toBe(oldMark);
+  session.dispose(); await tick();
+});
