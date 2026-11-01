@@ -1,6 +1,6 @@
 # Palette Extractor · 当前实现
 
-第三款工具，CN/Global、zh/en 均为 **Draft**，只在 DEV 的 `/tools/palette-extractor/`（以及同地区语言前缀路径）可用。A2-B 完成功能，A2-C1/C2/C3 调整工作区、颜色标记与反馈，A2-C4-R1 将 Share Composer 收敛为图片与紧凑色带；现有两款 Published 工具、生产页面和部署状态不变，尚未完成 Palette Beta 资格验收。
+第三款工具，CN/Global、zh/en 均为 **Draft**，只在 DEV 的 `/tools/palette-extractor/`（以及同地区语言前缀路径）可用。A2-B 完成功能，A2-C1/C2/C3 调整工作区、颜色标记与反馈，A2-C4-R1 将 Share Composer 收敛为图片与紧凑色带，R2 改为仅下载 PNG、自然高度设置区与嵌入式选色；现有两款 Published 工具、生产页面和部署状态不变，尚未完成 Palette Beta 资格验收。
 
 ## 模块与所有权
 
@@ -8,7 +8,7 @@
 - [session](../src/tools/palette-extractor/session.ts)：复用 `acceptImage`、`decodeChecked`、`ImageResources`、设备 `ImageLimits` 与既有 `SerialJobs`；版本隔离、串行原生任务、过期导出作废、资源释放均由工具拥有。不修改 Image Core 或两款正式工具。
 - [palette](../src/tools/palette-extractor/palette.ts)：有界像素过滤、Color Thief 候选量化、六种倾向与近色去重、contain 坐标映射。
 - [ImageSampler](../src/tools/palette-extractor/ImageSampler.tsx)：复用 Image Core 的 `preview-geometry` 视图数学，拥有适应/缩放/平移与单实例专注模态框；鼠标/触摸 Pointer Events、目标色卡、Escape、9×9 预览像素放大镜。移动鼠标不解码、不量化、不创建 Blob。
-- [render](../src/tools/palette-extractor/render.ts) / [ShareDialog](../src/tools/palette-extractor/ShareDialog.tsx)：同一套 Canvas 几何、字体测量、有效版本 PNG 与可用设备的文件分享。[ShareCanvas](../src/tools/palette-extractor/ShareCanvas.tsx) 负责有界实时画布及构图手势，[ComposerControls](../src/tools/palette-extractor/ComposerControls.tsx) 负责局部属性面板；没有全站分享框架、Worker 或持久化。
+- [render](../src/tools/palette-extractor/render.ts) / [ShareDialog](../src/tools/palette-extractor/ShareDialog.tsx)：同一套 Canvas 几何、字体测量、有效版本 PNG 与本地下载。[ShareCanvas](../src/tools/palette-extractor/ShareCanvas.tsx) 负责有界实时画布及构图手势，[ComposerControls](../src/tools/palette-extractor/ComposerControls.tsx) 负责局部属性面板；没有全站分享框架、Worker 或持久化。
 - [静态内容](../src/site/palette-extractor-content.ts) / [定义](../src/tools/palette-extractor/definition.ts)：双语 SEO、H1、3 步说明、4 项限制、4 项 FAQ；Registry 与字面量 Loader 沿用统一编译期资格。DEV 画家/动画师展示走既有手选 ID 与发布过滤。
 
 稳定边界见 [图片处理契约](../contracts/image-processing.md)、[发布契约](../contracts/publication.md)。数值和实际行为以源码与测试为准。
@@ -33,13 +33,25 @@ Alpha=0 在调用量化库前始终排除；存在不透明内容时阈值为 19
 
 上下拼接使用横向等宽色带，左右拼接使用纵向等高色带。HEX 始终在内部，根据颜色自动选黑/白文字；按真实字体测量，完整导出字号不低于 18px，不靠极小字或裁切容纳。预览最长边 1000px，与完整 PNG 共用 `shareLayout` / `drawShare`，不创建预览 Blob。拖动按帧重绘，期间不启动完整导出；松手防抖 180ms 后通过既有串行通道生成并验证 PNG 格式、尺寸、完整解码与 privacy-v1。图片/配色版本和分享选项共同控制下载资格，改变即失效；关闭/卸载清零实时 Canvas，下载 URL 仍由 Session 回收。
 
-新增颜色用紧凑 Popover 的原生颜色输入和带无障碍名称的 HEX 输入双向同步；只有确认后才写入 Session。色卡图标之间桌面 8px、手机 6px，次级手机菜单保留。专注工具栏、画布标记、放大镜和主色卡共用按稳定 ID / 源 URL 校验的 `SamplePreview`；移动只更新临时颜色，松手提交，取消、换目标、删卡、换图或关闭专注窗口清理预览。HEX 草稿继续独立，不被临时取色覆盖。
+新增颜色用紧凑 Popover 内的 `react-colorful@5.8.1` `HexColorPicker`（饱和度/明度、色相）与带无障碍名称的 HEX 输入双向同步。有效值更新选择器，未完成 HEX 保持输入草稿及上次有效预览；只有确认后才写入 Session。没有原生颜色输入或系统面板。色卡图标之间桌面 8px、手机 6px，次级手机菜单保留。专注工具栏、画布标记、放大镜和主色卡共用按稳定 ID / 源 URL 校验的 `SamplePreview`；移动只更新临时颜色，松手提交，取消、换目标、删卡、换图或关闭专注窗口清理预览。HEX 草稿继续独立，不被临时取色覆盖。
 
-系统分享仅在 `canShare({files})` 与 `share` 都可用时显示；点击前已准备当前有效 PNG，调用位于用户激活处理内。取消不报失败，真正失败有提示；下载独立可用。不生成链接、不上传分享图、不连接外部账户。
+R2 正式移除 Web Share API、能力检测、额外 File/分享状态与错误。下载按钮紧跟属性区内容，以 Loading/Disabled 表达准备状态；错误就地显示。左侧仅画布，无灰色背景床、长期教程或底部状态栏；手机为画布→设置→下载的自然流。文件命名、串行导出、实际 PNG 验证、版本失效及资源所有权保持不变。不生成链接、不上传分享图、不连接外部账户。
 
-Palette 普通操作使用默认可见的轻中性表面，主要确认与下载使用 Lavender；图标保留弱表面和选中反馈。只改本工具外观，不修改公共按钮及其他工具。以下记录为当时验收事实；C4 的三模板、九宫格、标题/品牌/日期与装饰已被上述 R1 实现取代，不能作为当前功能说明。
+Palette 普通操作使用默认可见的轻中性表面，主要确认与下载使用 Lavender；图标保留弱表面和选中反馈。普通操作样式仅用于本工具；右上关闭外观复用公共 `controls.dialogClose`，不改变其他业务操作。以下记录为当时验收事实；C4 的三模板、九宫格、标题/品牌/日期与装饰已被上述 R1 实现取代，不能作为当前功能说明。
 
-## A2-C4-R1 定向验证
+## A2-C4-R2 定向验证
+
+- `pnpm check`：287 文件，0 错误/警告/提示；6 个相关测试文件、61 项全部通过，覆盖 Palette 算法/Session/UI、Crop 工作区、预览 Dialog 和 Workbench。`pnpm install --frozen-lockfile`、`git diff --check` 及受影响 Markdown 文件引用检查通过。未重复历史全套图片实验或本地全量测试；完整测试由既有 CI 执行。
+- `pnpm build:cn` / `pnpm build:global` 及内置守卫通过：各 15 个静态页面、两款真实 Published 工具。另扫描各 160 份产物，Palette 路由、选色器代码/局部 CSS/NOTICE 均未泄漏；证据为仓库外 `r2-production-isolation.json`。Registry、Loader 和构建配置未改。
+- 只收敛分享 Dialog、选色 Popover 与右上关闭外观；未改提色算法、分享布局数学/方向/比例/命名、Session、图片内核、SEO 或发布资格。
+- 固定新增 `react-colorful@5.8.1`，包内 MIT 及 Acknowledgements 保留于 [通知文件](../src/tools/palette-extractor/react-colorful.NOTICE.txt)，随工具入口引用；无额外传递运行依赖。其 React peer 为 `>=16.8.0`，当前 React 19.3.0 下通过检查、组件与 Chromium 验证。局部 [CSS](../src/tools/palette-extractor/color-picker.css) 仅适配尺寸、圆角及唯一键盘焦点，不创建公共选色框架。[上游](https://github.com/omgovich/react-colorful) 提供实际 API；版本/许可以本轮固定包与锁文件为准。
+- Chromium：CN 中文 Light 桌面 1200px 实测原图及 4:5 拖动/缩放、HEX 草稿/错误、可视面板拖动、Hue 方向键同步、取消不提交、新增确认、复制及基础 PNG。Global 英文 Dark 390px / Light 320px 实测选色、取消、原图/固定比例、方向、显示数量与下载；文档无横向溢出。手机视口不等于真实触摸设备。
+- 分享和图片取色 X、Resize 专注编辑 X、两款已发布工具共享预览 X：计算尺寸 44×44px、0px 边框、可见中性背景；键盘轮廓 2px，Escape、点击关闭和焦点返回可用。`controls.dialogClose` 也用于现有 Workbench 参数抽屉；取消/确认业务按钮不改。
+- 四份本轮真实下载（原图 1000×590、拖动缩放 4:5 的 1080×1350、七色基础 1260×240、手机单色侧带 1200×1200）保留在仓库外 `../.validation/palette/r2-*`，独立解码证据随本轮验证记录保存。连续下载文件名不同；下载仅使用当前已验证 Blob，无系统分享入口。
+
+本轮截图、下载路径和输出解码数据均位于仓库外。未测试真实 iOS/Android 触控、Firefox/Safari、操作系统级 Reduced Motion 切换；既有 Reduced Motion 规则未改。静态 SEO 仍包含旧模板/标题/系统分享描述，遵守本轮禁止修改 SEO 的边界，留待维护者后续统一。Palette 仍为 Draft，两地区未部署。
+
+## A2-C4-R1 定向验证（历史，系统分享及原生选色由 R2 移除）
 
 - `pnpm check`：287 文件，零错误/警告/提示；全套 Vitest 68 文件、786 项通过（移除旧模板/九宫格断言，新增紧凑布局与实时同步回归；最终原生选色表单隔离和极端比例提示定向复跑 3 文件、37 项通过）。四方向 × 七比例 × 1–10 色及横/竖/方图的几何、色号字体下限、完整原图、Cover 边界、过期 PNG/源替换/关闭清理、Web Share 预准备 File 与取消语义均有覆盖。
 - Chromium CN 中文 Light 桌面 1440/1200px：真实拖动圆点时，左上色块、圆点、放大镜和主色卡同时经过 `#A9643C`、`#838257`、`#709264` 等颜色，正式颜色一直为 `#BC542E`，松手才变为 `#23CF9A`。再次拖动途中 Escape，临时颜色恢复为正式颜色且放大镜消失；缩放/平移、切换第二目标后的完整 Pointer 手势提交 `#7A885D`，其他色卡保持不变。实时快照保留为仓库外 `r1-live-drag.json`。

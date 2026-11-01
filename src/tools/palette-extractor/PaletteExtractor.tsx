@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { Popover } from '@base-ui/react/popover';
+import { HexColorPicker } from 'react-colorful';
 import {
   CopyIcon,
   EyedropperIcon,
@@ -32,6 +33,8 @@ import { styles as s } from './styles';
 import { ImageSampler, type SamplePreview } from './ImageSampler';
 import { ShareDialog } from './ShareDialog';
 import notice from './colorthief.NOTICE.txt?url';
+import pickerNotice from './react-colorful.NOTICE.txt?url';
+import './color-picker.css';
 
 export function ColorRow({ color, preview, index, length, session, pick, selected, picking, select, copy, t }: {
   color: Swatch; index: number; length: number; session: PaletteSession;
@@ -84,16 +87,20 @@ export function PaletteParameters({ mode, count, disabled, extract, t }: {
 
 export function AddColor({ disabled, add, t }: { disabled: boolean; add: (hex: string) => boolean; t: Labels }) {
   const [open, setOpen] = useState(false), [value, setValue] = useState('#808080'), [error, setError] = useState(false);
+  const [pickerColor, setPickerColor] = useState('#808080');
   const input = useRef<HTMLInputElement>(null), formId = useId();
-  return <Popover.Root open={open} onOpenChange={next => { setOpen(next); if (next) { setValue('#808080'); setError(false); } }}>
+  return <Popover.Root open={open} onOpenChange={next => { setOpen(next); if (next) { setValue('#808080'); setPickerColor('#808080'); setError(false); } }}>
     <Popover.Trigger render={<Button variant="ghost" xstyle={s.secondary} disabled={disabled}/>}>{t.add}</Popover.Trigger>
     <Popover.Portal><Popover.Positioner sideOffset={8} collisionPadding={12} {...stylex.props(s.popoverPositioner)}>
       <Popover.Popup aria-label={t.add} initialFocus={input} {...stylex.props(s.popover, s.addColor, motion.dialog)}>
         <div {...stylex.props(s.stack)}>
+          <div data-palette-color-picker role="group" aria-label={t.chooseColor}>
+            <HexColorPicker color={pickerColor} onChange={color => { setPickerColor(color); setValue(color.toUpperCase()); setError(false); }}/>
+          </div>
           <div {...stylex.props(s.row)}>
-            <input type="color" aria-label={t.chooseColor} value={normalizeHex(value) ?? '#808080'} onChange={event => { setValue(event.target.value.toUpperCase()); setError(false); }} {...stylex.props(s.addPicker)}/>
+            <span aria-hidden="true" {...stylex.props(s.addPreview)} style={{backgroundColor: pickerColor}}/>
             <form id={formId} {...stylex.props(s.addInput)} onSubmit={event => { event.preventDefault(); if (!normalizeHex(value)) { setError(true); input.current?.focus(); } else if (add(value)) setOpen(false); }}>
-              <input ref={input} aria-label={t.hex} value={value} maxLength={7} spellCheck={false} aria-invalid={error || undefined} aria-description={error ? t.invalid : undefined} onChange={event => { setValue(event.target.value); setError(false); }} {...stylex.props(controls.input, error && controls.invalid)}/>
+              <input ref={input} aria-label={t.hex} value={value} maxLength={7} spellCheck={false} aria-invalid={error || undefined} aria-description={error ? t.invalid : undefined} onChange={event => { const next = event.target.value; setValue(next); setError(false); const valid = normalizeHex(next); if (valid) setPickerColor(valid); }} {...stylex.props(controls.input, error && controls.invalid)}/>
             </form>
           </div>
           {error && <p role="alert" {...stylex.props(s.error)}>{t.invalid}</p>}
@@ -191,6 +198,7 @@ export default function PaletteExtractor({ locale }: ToolProps) {
   return (
     <WorkbenchShell mode="form" formWidth="wide" labels={labels}>
       <link rel="license" href={notice} />
+      <link rel="license" href={pickerNotice} />
       <div data-palette-extractor {...stylex.props(s.layout)}>
         <div {...stylex.props(s.stack)}>
           <FileDropzone

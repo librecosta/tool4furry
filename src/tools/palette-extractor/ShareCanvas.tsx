@@ -86,7 +86,7 @@ export function ShareCanvas({ image, colors, options, layout, onFrame, onInterac
   const current = constrainFraming(image, layout.image, options.frame);
   return <div {...stylex.props(s.composerArt)}>
     <div ref={bed} {...stylex.props(s.composerBed)}>
-      <canvas ref={canvas} role="img" aria-label={t.composition} aria-description={editable ? t.fixedHint : t.originalHint} tabIndex={0} data-share-canvas
+      <canvas ref={canvas} role="img" aria-label={t.composition} aria-description={editable ? t.compositionHelp : undefined} tabIndex={0} data-share-canvas
         {...stylex.props(s.composerCanvas, controls.workspaceFocus)} style={{aspectRatio: `${layout.width} / ${layout.height}`}}
         onKeyDownCapture={event => { delete event.currentTarget.dataset.pointerFocus; }}
         onBlur={event => { delete event.currentTarget.dataset.pointerFocus; }}
@@ -129,6 +129,5 @@ export function ShareCanvas({ image, colors, options, layout, onFrame, onInterac
         onPointerCancel={cancel} onLostPointerCapture={() => { if (gesture.current) cancel(); }}
       />}
     </div>
-    <p {...stylex.props(s.composerHint)}>{editable ? t.fixedHint : t.originalHint}</p>
   </div>;
 }

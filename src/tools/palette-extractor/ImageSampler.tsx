@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState, type PointerEvent } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
-import { ArrowsOutIcon, FrameCornersIcon, HandIcon, MinusIcon, NumberSquareOneIcon, PlusIcon } from '@phosphor-icons/react';
+import { ArrowsOutIcon, FrameCornersIcon, HandIcon, MinusIcon, NumberSquareOneIcon, PlusIcon, XIcon } from '@phosphor-icons/react';
 import * as stylex from '@stylexjs/stylex';
 import { Button, IconButton } from '../../ui/Button';
 import { Tooltip } from '../../ui/Tooltip';
@@ -228,7 +228,7 @@ export function ImageSampler({ pixels, url, target, selected, onPick, onPreview,
     <Dialog.Portal>
       <Dialog.Backdrop {...stylex.props(s.backdrop, motion.backdrop)}/>
       <Dialog.Popup initialFocus={done} finalFocus={false} {...stylex.props(s.dialog, s.focusDialog, motion.dialog)}>
-        <header {...stylex.props(s.row)}><Dialog.Title {...stylex.props(s.heading, s.grow)}>{t.focus}</Dialog.Title><Dialog.Close render={<Button ref={done} variant="ghost"/>}>{t.close}</Dialog.Close></header>
+        <header {...stylex.props(s.row)}><Dialog.Title {...stylex.props(s.heading, s.grow)}>{t.focus}</Dialog.Title><Dialog.Close render={<IconButton ref={done} label={t.close} variant="ghost" xstyle={controls.dialogClose}><XIcon size={20} aria-hidden/></IconButton>}/></header>
         {focused && workspace()}
       </Dialog.Popup>
     </Dialog.Portal>

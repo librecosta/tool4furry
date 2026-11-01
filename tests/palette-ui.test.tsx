@@ -175,13 +175,17 @@ it('adds a color only after valid Popover submission, cancels safely and returns
   const input = await screen.findByRole('textbox', {name: 'HEX color'});
   expect(document.activeElement).toBe(input);
   expect(screen.queryByText('HEX color')).toBeNull();
-  const picker = screen.getByLabelText('Choose color') as HTMLInputElement;
-  expect(picker.type).toBe('color');
-  expect(picker.form).toBeNull(); // Native picker Enter must never submit or navigate the HEX form.
-  fireEvent.change(picker, {target: {value: '#abc123'}});
-  expect((input as HTMLInputElement).value).toBe('#ABC123');
+  const picker = screen.getByRole('group', {name: 'Choose color'});
+  expect(picker.querySelector('input[type=color]')).toBeNull();
   fireEvent.change(input, {target: {value: '#123456'}});
-  expect(picker.value).toBe('#123456');
+  const hue = screen.getByRole('slider', {name: 'Hue'});
+  const previousHue = hue.getAttribute('aria-valuenow');
+  await user.clear(input); await user.type(input, '#12');
+  expect((input as HTMLInputElement).value).toBe('#12');
+  expect(hue.getAttribute('aria-valuenow')).toBe(previousHue);
+  fireEvent.keyDown(hue, {key: 'ArrowRight', keyCode: 39});
+  expect((input as HTMLInputElement).value).toMatch(/^#[A-F0-9]{6}$/);
+  expect(hue.getAttribute('aria-valuenow')).not.toBe(previousHue);
   expect(add).not.toHaveBeenCalled();
   await user.clear(input); await user.type(input, '#12'); await user.keyboard('{Enter}');
   expect(add).not.toHaveBeenCalled();
@@ -392,13 +396,13 @@ it('mounts one sampler in the focus portal, retains the camera and restores focu
   render(<ImageSampler pixels={pixels} url="blob:focus" onPick={vi.fn()} cancel={vi.fn()} t={messages.en}/>);
   await user.click(screen.getByRole('button', { name: 'Zoom in' }));
   const before = document.querySelector<HTMLElement>('[data-palette-plane]')!.style.width;
-  await user.click(screen.getByRole('button', { name: 'Focused sampling workspace' }));
-  expect(await screen.findByRole('dialog', { name: 'Focused sampling workspace' })).toBeTruthy();
+  await user.click(screen.getByRole('button', { name: 'Image Sampling' }));
+  expect(await screen.findByRole('dialog', { name: 'Image Sampling' })).toBeTruthy();
   expect(document.querySelectorAll('[data-palette-sampler]')).toHaveLength(1);
   expect(document.querySelector<HTMLElement>('[data-palette-plane]')!.style.width).toBe(before);
   await user.click(screen.getByRole('button', { name: 'Close' }));
   await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
-  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Focused sampling workspace' })));
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Image Sampling' })));
   expect(document.querySelectorAll('[data-palette-sampler]')).toHaveLength(1);
 });
 
@@ -431,15 +435,18 @@ function shareFixture() {
   return { view, owner, session: owner as unknown as PaletteSession };
 }
 
-it('invalidates an old share PNG immediately and hides unsupported system sharing', async () => {
+it('invalidates an old share PNG immediately and releases the closed preview', async () => {
   const user = userEvent.setup(),
     { view, owner, session } = shareFixture();
-  vi.stubGlobal('navigator', { ...navigator, canShare: () => false });
   const mount = render(<ShareDialog {...{ session, view }} t={messages.en} />);
   await user.click(screen.getByRole('button', { name: 'Create share image' }));
   const canvas = await screen.findByRole('img', { name: messages.en.composition }) as HTMLCanvasElement;
   await waitFor(() => expect((screen.getByRole('button', {name: 'Download PNG'}) as HTMLButtonElement).disabled).toBe(false));
-  expect(screen.queryByRole('button', { name: 'Share image' })).toBeNull();
+  const download = screen.getByRole('button', {name: 'Download PNG'});
+  expect(screen.getByRole('complementary', {name: messages.en.composerSettings}).contains(download)).toBe(true);
+  expect(screen.getByRole('dialog').querySelector('footer')).toBeNull();
+  expect(screen.queryByText('PNG ready')).toBeNull();
+  expect(screen.queryByText('The full image joins the color strip without cropping.')).toBeNull();
   let resolve!: (blob: Blob) => void;
   owner.export.mockImplementationOnce(
     () =>
@@ -463,29 +470,30 @@ it('invalidates an old share PNG immediately and hides unsupported system sharin
   expect(canvas.width).toBe(0);
 });
 
-it('prepares a file before system-share activation and treats cancellation as non-failure', async () => {
-  const user = userEvent.setup(),
-    { view, session, owner } = shareFixture();
-  const share = vi
-    .fn()
-    .mockRejectedValueOnce(new DOMException('Cancelled', 'AbortError'))
-    .mockRejectedValueOnce(new Error('Failed'));
-  vi.stubGlobal('navigator', { ...navigator, canShare: () => true, share });
-  render(<ShareDialog {...{ session, view }} t={messages.en} />);
-  await user.click(screen.getByRole('button', { name: 'Create share image' }));
-  const action = await screen.findByRole('button', { name: 'Share image' });
-  await user.click(screen.getByRole('button', { name: 'Download PNG' }));
-  await user.click(screen.getByRole('button', { name: 'Download PNG' }));
+it('downloads only verified PNGs with distinct names and keeps failures next to the action', async () => {
+  const user = userEvent.setup(), {view, session, owner} = shareFixture();
+  render(<ShareDialog {...{session, view}} t={messages.en}/>);
+  await user.click(screen.getByRole('button', {name: 'Create share image'}));
+  const download = screen.getByRole('button', {name: 'Download PNG'}) as HTMLButtonElement;
+  expect(download.disabled).toBe(true);
+  expect(download.getAttribute('aria-busy')).toBe('true');
+  await waitFor(() => expect(download.disabled).toBe(false));
+  await user.click(download); await user.click(download);
   const names = owner.download.mock.calls.map(call => (call as unknown as [Blob, string])[1]);
   expect(new Set(names).size).toBe(2);
-  await user.click(action);
-  expect(share.mock.calls[0][0].files[0]).toBeInstanceOf(File);
-  expect(share.mock.calls[0][0].files[0].type).toBe('image/png');
-  expect(share.mock.calls[0][0].files[0].name).toBe(names.at(-1));
-  expect(screen.queryByRole('alert')).toBeNull();
-  await user.click(action);
-  expect(await screen.findByRole('alert')).toBeTruthy();
-  expect((screen.getByRole('button', {name: 'Download PNG'}) as HTMLButtonElement).disabled).toBe(false);
+  expect(owner.download.mock.calls.every(call => (call as unknown as [Blob])[0].type === 'image/png')).toBe(true);
+  owner.export.mockRejectedValueOnce(new Error('decode'));
+  await user.click(screen.getByRole('radio', {name: messages.en.bottom}));
+  expect(download.disabled).toBe(true);
+  expect(await screen.findByRole('alert')).toHaveProperty('textContent', messages.en.exportError);
+  expect(download.disabled).toBe(true);
+  expect(download.getAttribute('aria-busy')).toBeNull();
+  expect(owner.download).toHaveBeenCalledTimes(2);
+  const close = screen.getByRole('button', {name: 'Close'});
+  expect(close.textContent).toBe('');
+  await user.click(close);
+  await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+  expect(document.activeElement).toBe(screen.getByRole('button', {name: 'Create share image'}));
 });
 
 it('invalidates exports while dragging and prepares only the settled fixed-ratio composition', async () => {

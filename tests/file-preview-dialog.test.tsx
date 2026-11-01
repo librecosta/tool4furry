@@ -44,7 +44,10 @@ describe('reusable preview modal shell', () => {
       await user.click(screen.getByRole('button', { name: 'Open' }));
       await user.click(screen.getByRole('button', { name: 'Fullscreen' }));
       expect(screen.getByRole('button', { name: 'Restore' })).toBeTruthy();
-      await user.click(screen.getByRole('button', { name: 'Close' }));
+      const close = screen.getByRole('button', {name: 'Close'});
+      expect(close.textContent).toBe('');
+      expect(close.querySelector('svg')).toBeTruthy();
+      await user.click(close);
       expect(screen.queryByRole('dialog')).toBeNull();
       await waitFor(() =>
         expect(document.activeElement).toBe(

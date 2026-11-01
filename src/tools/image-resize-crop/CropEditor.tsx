@@ -2,8 +2,9 @@ import { useId, useRef, useState } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import * as stylex from '@stylexjs/stylex';
 import { motion } from '../../styles/motion';
-import { CheckIcon } from '@phosphor-icons/react';
-import { Button } from '../../ui/Button';
+import { XIcon } from '@phosphor-icons/react';
+import { IconButton } from '../../ui/Button';
+import { controls } from '../../styles/controls';
 import type { ResizeView } from './session';
 import type { ResizeMessages } from './ParameterControls';
 import { CropWorkspace, type CropDisplay } from './CropWorkspace';
@@ -47,7 +48,7 @@ export function CropEditor({ view, url, t, onCrop, onReset }: {
               <Dialog.Title {...stylex.props(s.title)}>{t.focusEdit}</Dialog.Title>
               <Dialog.Description {...stylex.props(s.filename)}>{view.source.file.name}</Dialog.Description>
             </div>
-            <Dialog.Close render={<Button ref={done} size="sm" variant="ghost"><CheckIcon size={18}/>{t.doneEditing}</Button>}/>
+            <Dialog.Close render={<IconButton ref={done} label={t.close} variant="ghost" xstyle={controls.dialogClose}><XIcon size={20} aria-hidden/></IconButton>}/>
           </header>
           {focused && workspace(true)}
         </Dialog.Popup>

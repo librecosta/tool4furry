@@ -70,6 +70,19 @@ export const controls = stylex.create({
     },
     borderColor: 'transparent',
   },
+  dialogClose: {
+    width: 44,
+    height: 44,
+    padding: 0,
+    flexShrink: 0,
+    borderWidth: 0,
+    backgroundColor: {
+      default: tokens.surfacePanel,
+      ':hover': tokens.surfaceHover,
+      ':active': tokens.surfaceMuted,
+    },
+    textDecoration: 'none',
+  },
   danger: {
     backgroundColor: {
       default: tokens.danger,

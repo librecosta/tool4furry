@@ -1,4 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
+import type { ReactNode } from 'react';
 import { ArrowCounterClockwiseIcon } from '@phosphor-icons/react';
 import { Button } from '../../ui/Button';
 import { SelectField } from '../../ui/SelectField';
@@ -8,9 +9,9 @@ import { constrainFraming, ratios, zoomFraming, type Framing, type ShareLayout, 
 import { styles as s } from './styles';
 import type { Labels } from './messages';
 
-export function ComposerControls({options, image, colorCount, layout, change, onFrame, t}: {
+export function ComposerControls({options, image, colorCount, layout, change, onFrame, t, children}: {
   options: ShareOptions; image: HTMLCanvasElement; colorCount: number; layout?: ShareLayout;
-  change: (options: ShareOptions) => void; onFrame: (frame: Framing) => void; t: Labels;
+  change: (options: ShareOptions) => void; onFrame: (frame: Framing) => void; t: Labels; children?: ReactNode;
 }) {
   const frame = layout ? constrainFraming(image, layout.image, options.frame) : options.frame;
   return <aside aria-label={t.composerSettings} {...stylex.props(s.composerControls, s.composerFields)}>
@@ -27,5 +28,6 @@ export function ComposerControls({options, image, colorCount, layout, change, on
       <SliderField label={t.imageZoom} value={Math.round(frame.zoom * 100)} min={100} max={400} step={5} unit="%" accent="lavender" onValueChange={value => onFrame(zoomFraming(image, layout.image, frame, value / 100))}/>
       <Button variant="ghost" xstyle={s.secondary} onClick={() => onFrame({zoom: 1, x: 0, y: 0})}><ArrowCounterClockwiseIcon size={18}/>{t.resetComposition}</Button>
     </>}
+    {children}
   </aside>;
 }

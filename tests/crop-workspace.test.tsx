@@ -169,6 +169,9 @@ it('shares one crop adapter through repeated focus dialogs and fits on resize wi
   for (let i = 0; i < 2; i++) {
     await user.click(screen.getByRole('button', {name: t.focusEdit}));
     const dialog = screen.getByRole('dialog', {name: t.focusEdit});
+    const close = within(dialog).getByRole('button', {name: t.close});
+    expect(close.textContent).toBe('');
+    expect(close.querySelector('svg')).toBeTruthy();
     expect(document.querySelectorAll('.ReactCrop')).toHaveLength(1);
     loaded();
     expect(within(dialog).getByText('4000 × 2000', {exact: false})).toBeDefined();

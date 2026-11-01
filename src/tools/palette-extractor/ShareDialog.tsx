@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import * as stylex from '@stylexjs/stylex';
-import { Button } from '../../ui/Button';
+import { XIcon } from '@phosphor-icons/react';
+import { Button, IconButton } from '../../ui/Button';
+import { controls } from '../../styles/controls';
 import { motion } from '../../styles/motion';
 import { styles as s } from './styles';
 import type { Labels } from './messages';
@@ -12,8 +14,8 @@ import { ComposerControls } from './ComposerControls';
 
 export function ShareDialog({session, view, t}: {session: PaletteSession; view: PaletteView; t: Labels}) {
   const [open, setOpen] = useState(false), [options, setOptions] = useState(shareDefaults);
-  const [interacting, setInteracting] = useState(false), [sharing, setSharing] = useState(false);
-  const [result, setResult] = useState<{blob: Blob; version: number; key: string; canShare: boolean; file: File}>();
+  const [interacting, setInteracting] = useState(false);
+  const [result, setResult] = useState<{blob: Blob; version: number; key: string}>();
   const [error, setError] = useState<string>();
   const generation = useRef(0), source = useRef<string | undefined>(undefined);
   const key = JSON.stringify(options), colors = useMemo(() => view.colors.map(color => color.hex), [view.colors]);
@@ -21,7 +23,7 @@ export function ShareDialog({session, view, t}: {session: PaletteSession; view: 
     try { return view.source && colors.length ? shareLayout(view.source.canvas, visibleColors(colors, options).length, options, session.limits) : undefined; }
     catch { return undefined; }
   }, [view.source, colors, key, session]);
-  const current = layout && result?.version === view.version && result.key === key && open && !interacting ? result : undefined;
+  const current = !error && layout && result?.version === view.version && result.key === key && open && !interacting ? result : undefined;
   const active = useRef({open, key, version: view.version, interacting});
   active.current = {open, key, version: view.version, interacting};
   const failPreview = useCallback(() => setError(t.exportError), [t.exportError]);
@@ -43,21 +45,11 @@ export function ShareDialog({session, view, t}: {session: PaletteSession; view: 
     const timer = setTimeout(() => {
       void session.export(options, valid).then(blob => {
         if (!blob || !valid()) return;
-        const file = new File([blob], session.filename('share'), {type: 'image/png'});
-        let canShare = false;
-        try { canShare = !!navigator.share && !!navigator.canShare?.({files: [file]}); } catch { /* Download remains available. */ }
-        setResult({blob, version: view.version, key, canShare, file});
+        setResult({blob, version: view.version, key});
       }).catch(error => { if (valid()) setError(error.message === 'share-layout' ? t.layoutError : t.exportError); });
     }, 180);
     return () => { generation.current++; clearTimeout(timer); };
   }, [open, interacting, key, view.version, session, layout, t.exportError, t.layoutError]);
-  const share = async () => {
-    if (!current || sharing) return;
-    setSharing(true);
-    try { await navigator.share({files: [current.file]}); }
-    catch (error) { if ((error as {name?: string}).name !== 'AbortError') setError(t.shareError); }
-    finally { setSharing(false); }
-  };
   return <Dialog.Root open={open} onOpenChange={changeOpen}>
     <Dialog.Trigger render={<Button variant="ghost" xstyle={s.accent} disabled={!view.source || view.busy}/>}>{t.share}</Dialog.Trigger>
     <Dialog.Portal>
@@ -65,23 +57,17 @@ export function ShareDialog({session, view, t}: {session: PaletteSession; view: 
       <Dialog.Popup {...stylex.props(s.dialog, s.composerDialog, motion.dialog)}>
         <header {...stylex.props(s.row)}>
           <div {...stylex.props(s.grow)}><Dialog.Title {...stylex.props(s.heading)}>{t.composer}</Dialog.Title><Dialog.Description {...stylex.props(s.muted)}>PNG · {layout ? `${layout.width} × ${layout.height}` : '—'}</Dialog.Description></div>
-          <Dialog.Close render={<Button variant="ghost" xstyle={s.secondary}/>}>{t.close}</Dialog.Close>
+          <Dialog.Close render={<IconButton label={t.close} variant="ghost" xstyle={controls.dialogClose}><XIcon size={20} aria-hidden/></IconButton>}/>
         </header>
         {view.source && <div {...stylex.props(s.shareGrid)}>
-          {layout ? <ShareCanvas layout={layout} image={view.source.canvas} colors={colors} options={options} onFrame={onFrame} onInteraction={setInteracting} onError={failPreview} t={t}/> : <p role="alert" {...stylex.props(s.error)}>{t.layoutError}</p>}
-          <ComposerControls image={view.source.canvas} layout={layout} colorCount={colors.length} options={options} change={setOptions} onFrame={onFrame} t={t}/>
-        </div>}
-        <footer {...stylex.props(s.composerFooter)}>
-          <p role={error ? 'alert' : 'status'} {...stylex.props(s.muted, s.grow, !!error && s.error)}>{(!layout ? t.layoutError : error) ?? (interacting ? t.adjusting : current ? t.ready : t.preparing)}</p>
-          <div {...stylex.props(s.row)}>
-            <Button variant="ghost" xstyle={s.accent} disabled={!current} onClick={() => {
-              if (!current) return;
-              const file = new File([current.blob], session.filename('share'), {type: 'image/png'});
-              setResult({...current, file}); session.download(current.blob, file.name);
+          {layout ? <ShareCanvas layout={layout} image={view.source.canvas} colors={colors} options={options} onFrame={onFrame} onInteraction={setInteracting} onError={failPreview} t={t}/> : <div/>}
+          <ComposerControls image={view.source.canvas} layout={layout} colorCount={colors.length} options={options} change={setOptions} onFrame={onFrame} t={t}>
+            {(!layout || error) && <p role="alert" {...stylex.props(s.error)}>{!layout ? t.layoutError : error}</p>}
+            <Button variant="ghost" xstyle={s.accent} disabled={!current} loading={!!layout && !error && !current && !interacting} onClick={() => {
+              if (current) session.download(current.blob, session.filename('share'));
             }}>{t.download}</Button>
-            {current?.canShare && <Button variant="ghost" xstyle={s.secondary} disabled={sharing} onClick={share}>{t.systemShare}</Button>}
-          </div>
-        </footer>
+          </ComposerControls>
+        </div>}
       </Dialog.Popup>
     </Dialog.Portal>
   </Dialog.Root>;

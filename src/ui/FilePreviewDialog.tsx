@@ -3,6 +3,7 @@ import { Dialog } from '@base-ui/react/dialog';
 import { CornersInIcon, CornersOutIcon, XIcon } from '@phosphor-icons/react';
 import * as stylex from '@stylexjs/stylex';
 import { motion } from '../styles/motion';
+import { controls } from '../styles/controls';
 import { IconButton } from './Button';
 import { Tooltip } from './Tooltip';
 import { tokens as t } from '../styles/tokens.stylex';
@@ -157,6 +158,7 @@ export function FilePreviewDialog({
                     label={labels.close}
                     variant="ghost"
                     size="sm"
+                    xstyle={controls.dialogClose}
                   >
                     <XIcon size={20} aria-hidden />
                   </IconButton>

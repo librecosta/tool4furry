@@ -12,6 +12,7 @@ import { tokens } from '../styles/tokens.stylex';
 import { siteStyles as site } from '../styles/site';
 import { useCompact } from './useCompact';
 import { formToolLayout } from './form-tool-layout';
+import { IconButton } from '../ui/Button';
 
 export interface WorkbenchShellProps {
   mode: WorkspaceMode;
@@ -189,11 +190,8 @@ export default function WorkbenchShell({
                       {labels.parameters}
                     </Dialog.Title>
                     <Dialog.Close
-                      {...stylex.props(c.button, s.icon)}
-                      aria-label={labels.close}
-                    >
-                      <XIcon size={20} aria-hidden />
-                    </Dialog.Close>
+                      render={<IconButton label={labels.close} variant="ghost" xstyle={c.dialogClose}><XIcon size={20} aria-hidden /></IconButton>}
+                    />
                   </div>
                   <div {...stylex.props(s.panelContent)}>{right}</div>
                 </Dialog.Popup>

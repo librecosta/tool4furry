@@ -1,0 +1,27 @@
+/* Local adapter for react-colorful 5.8.1 (MIT); see react-colorful.NOTICE.txt. */
+[data-palette-color-picker] .react-colorful {
+  width: 100%;
+  height: 208px;
+  gap: 14px;
+}
+[data-palette-color-picker] .react-colorful__saturation {
+  border-radius: 8px;
+  border-bottom: 0;
+}
+[data-palette-color-picker] .react-colorful__hue {
+  flex: 0 0 24px;
+  border-radius: 12px;
+}
+[data-palette-color-picker] .react-colorful__pointer {
+  width: 24px;
+  height: 24px;
+}
+/* One immediate keyboard ring. Pointer selection is not keyboard focus. */
+[data-palette-color-picker] .react-colorful__interactive:focus-visible {
+  outline: 2px solid var(--t4f-focus);
+  outline-offset: 3px;
+  border-radius: inherit;
+}
+[data-palette-color-picker] .react-colorful__interactive:focus:not(:focus-visible) .react-colorful__pointer {
+  transform: translate(-50%, -50%);
+}
