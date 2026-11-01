@@ -43,7 +43,7 @@ B1-C1-R1 将高级最长边改为工具局部的尺寸档位步进器，默认�
 
 L2 复用 B1-C1 四格式、目标未达成、输出变大、设备/尺寸拒绝及取消/超时证据，并重新完整解码其实际 PNG/JPEG/WebP/AVIF 下载。最新 Chromium Smoke 覆盖 CN 中文 390px 手机视口的文件夹双图导入、快速批量、原图/结果比较与 ZIP 下载；两项 WebP 均可解压和完整解码。高级步进器按钮及键盘操作正常，改尺寸立即撤销旧结果与 ZIP，文件集合保留，无横向溢出。Global 英文 Published 静态产物实际执行 AVIF 编码、比较与下载：898 B、320×240、透明像素保留，完整解码通过，浏览器无错误。手机视口不代表真实移动设备通过。
 
-最终集成 `pnpm check` 零诊断，151 项相关测试通过；CN/Global 各构建一次，均为 19 HTML、18 个公开 URL、四款 Published 工具及双语页面。实际产物核对首页精选、四个关联创作身份、目录、相关推荐、Canonical/hreflang、Sitemap/llms.txt 与无 Draft noindex；其他三款 Draft 的路由和专属资源继续排除。两地区共享单份按需 AVIF ST Worker/WASM，分发通知与源码完整条款一致，静态正文未进入客户端模块。
+最终集成 `pnpm check` 零诊断，170 项相关测试通过（含补齐旧 Published 预期后的 19 项工具导航测试）；CN/Global 各构建一次，均为 19 HTML、18 个公开 URL、四款 Published 工具及双语页面。实际产物核对首页精选、四个关联创作身份、目录、相关推荐、Canonical/hreflang、Sitemap/llms.txt 与无 Draft noindex；其他三款 Draft 的路由和专属资源继续排除。两地区共享单份按需 AVIF ST Worker/WASM，分发通知与源码完整条款一致，静态正文未进入客户端模块。
 
 既有 [B1-C1 CI](https://github.com/librecosta/tool4furry/actions/runs/41319862527) 已通过；完整测试由本次推送触发的既有 GitHub Actions 执行，最终结果以对应提交工作流为准。未发现发布阻断项，依据维护者本任务授权提升源码 Published，V0.7-B1 收尾；未部署、未创建 Tag/Release。真实 iOS/Android、Firefox/Safari、低端设备和压力测试仍为未测 L3。
 
