@@ -32,6 +32,23 @@ const { imageResizeCropContent } = await staticData('src/site/image-resize-crop-
 const { paletteExtractorContent } = await staticData('src/site/palette-extractor-content.ts');
 const { imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent } = await staticData('src/site/image-basics-content.ts');
 const { tools } = await staticData('src/tools/registry.ts');
+const { toolIconPaths, getToolIconPath } = await staticData('src/site/tool-icons.ts');
+function assertToolIcon(container, id, size) {
+  const path = getToolIconPath(id);
+  const icon = container.querySelector(path ? 'img[data-tool-icon]' : 'svg[data-tool-icon-fallback]');
+  assert(icon, `Tool icon is present for ${id}`);
+  assert.equal(icon.getAttribute('width'), String(size), 'Tool icon reserves its display width');
+  assert.equal(icon.getAttribute('height'), String(size), 'Tool icon reserves its display height');
+  if (path) {
+    assert.equal(icon.dataset.toolIcon, id, 'Pixel icon matches the adjacent tool');
+    assert.equal(icon.getAttribute('src'), `${path}-${size <= 32 ? 32 : 128}.png`);
+    assert.equal(icon.getAttribute('srcset'), `${path}-32.png 32w, ${path}-128.png 128w`);
+    assert.equal(icon.getAttribute('sizes'), `${size}px`);
+    assert.equal(icon.getAttribute('alt'), '', 'Decorative icon does not repeat the tool name');
+  } else {
+    assert.equal(icon.getAttribute('aria-hidden'), 'true', 'Unknown tool retains a decorative fallback');
+  }
+}
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
 const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
@@ -528,11 +545,14 @@ for (const image of document.querySelectorAll('img')) {
   const communityQR = region === 'cn' && src === '/community/QQ-Group.avif' && image.closest('[data-home-community] [data-community-card="qq"]');
   const communityLogo = communityLogos.includes(src) && image.closest('[data-home-community] a');
   const editorialArtwork = storyAssets.some(([name]) => src === `/visuals/home/${name}`) && image.closest('[data-home-story]');
+  const iconPath = getToolIconPath(image.dataset.toolIcon);
+  const toolIcon = iconPath && [32, 128].some(size => src === `${iconPath}-${size}.png`)
+    && image.closest('[data-home-tool], [data-home-role-tool]');
   assert(
     image.closest('[data-site-compliance]')
       ? src?.startsWith('/') && !src.startsWith('//')
-      : communityQR || communityLogo || editorialArtwork || src?.startsWith('/brand/') || (src === '/visuals/wavefield/wavefield.avif' && image.closest('[data-wavefield]')),
-    'Homepage images are approved brand/compliance, Wavefield, regional community or exact editorial assets',
+      : communityQR || communityLogo || editorialArtwork || toolIcon || src?.startsWith('/brand/') || (src === '/visuals/wavefield/wavefield.avif' && image.closest('[data-wavefield]')),
+    'Homepage images are approved brand/compliance, Wavefield, regional community, exact editorial assets or mapped pixel tool icons',
   );
   assert.equal(
     image.getAttribute('alt'),
@@ -633,13 +653,17 @@ const toolPages = htmlFiles.filter((file) =>
   /^tools\/[^/]+\/index\.html$/.test(file),
 );
 assert(cards.length <= 4, 'Homepage featured grid must curate at most four tools');
-assert.equal(catalog.querySelectorAll('[data-home-film], [data-home-featured] img, [data-home-featured] picture').length, 0, 'Featured grid has no filmstrip or cover images');
+assert.equal(catalog.querySelectorAll('[data-home-film], [data-home-featured] img:not([data-tool-icon]), [data-home-featured] picture').length, 0, 'Featured grid has no filmstrip or cover images');
 assert.equal(catalog.querySelectorAll('[tabindex]').length, 0, 'No obsolete focusable filmstrip');
 for (const card of cards) {
-  const icon = card.querySelector('svg');
-  assert.equal(icon?.getAttribute('viewBox'), '0 0 256 256', 'Static Phosphor icon canvas');
-  assert.equal(icon?.getAttribute('width'), '40', 'Compact featured icon size');
-  assert.equal(icon?.getAttribute('aria-hidden'), 'true', 'Decorative icon does not repeat the tool name');
+  assertToolIcon(card, card.dataset.toolCard, 48);
+}
+for (const card of allCards) assertToolIcon(card, card.dataset.toolCard, 40);
+for (const path of Object.values(toolIconPaths)) {
+  for (const size of [32, 128]) {
+    const file = `${path.slice(1)}-${size}.png`;
+    assert.deepEqual(await readFile(resolve(root, file)), await readFile(resolve('public', file)), 'Approved pixel PNG is copied without transformation');
+  }
 }
 assert.equal(allCards.length, toolLinks.size, 'Duplicate full catalog URLs');
 assert.equal(
@@ -722,7 +746,7 @@ for (const role of document.querySelectorAll('[data-home-role]')) {
   assert.equal(role.querySelectorAll('[data-home-media="thumbnail"], [data-home-demo]').length, 0, 'Role lists contain no covers or filler tools');
   assert.equal(new Set(links.map(link => link.dataset.homeRoleTool)).size, links.length);
   for (const link of links) {
-    assert.equal(link.querySelector('svg')?.getAttribute('width'), '20', 'Compact role tool icon');
+    assertToolIcon(link, link.dataset.homeRoleTool, 24);
     assert.equal(link.getAttribute('title'), link.textContent.trim(), 'Full tool name is available when truncated');
     const entry = allCards.find(card => card.dataset.toolCard === link.dataset.homeRoleTool);
     assert(entry && entry.getAttribute('href') === link.getAttribute('href'), 'Role tools must exist in the published regional catalog');

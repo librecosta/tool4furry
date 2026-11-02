@@ -34,7 +34,7 @@ const c = homepageCopy[locale];
         {role.entries.length > 0 ? <div {...stylex.attrs(h.roleToolArea)}><ul {...stylex.attrs(h.roleTools)}>
           {role.entries.map(tool => <li>
             <a href={tool.href} title={tool.title} data-home-role-tool={tool.id} {...stylex.attrs(h.roleTool)}>
-              <FeaturedToolIcon id={tool.id} size={20} />
+              <FeaturedToolIcon id={tool.id} size={24} />
               <span {...stylex.attrs(h.roleToolTitle)}>{tool.title}</span>
             </a>
           </li>)}

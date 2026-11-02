@@ -351,17 +351,24 @@ The final result must look like authentic hand-placed pixel art, not a downsampl
 - 仅有 128×128 图而缺少原生 32×32 时，先检查严格的 4× 像素块一致性；满足才可以通过最近邻缩小恢复 32×32。不满足时报告问题，不擅自修图。
 - 本归档不自动替换首页或工具箱图标，不修改 Registry、工具业务或发布状态，不新增生成服务、资源框架或依赖。
 
-### 本次素材检查（2026-11-02）
+### 首次归档检查（2026-11-02）
 
-本次请求未附带 PNG 文件，当前仓库也未找到以下六款工具已确认的 Pixel Icon V1 PNG。现有品牌、社区、测试夹具和验证截图不作为本批图标素材。尚无候选文件可进行尺寸、透明通道或 4× 像素一致性验收；未生成、恢复、复制或替换任何图标。
+首次归档时，请求未附带 PNG 文件，仓库未找到六款工具已确认的 Pixel Icon V1 PNG，因此只归档 Prompt，未生成或替换图标。后续素材提供和接入结果如下；品牌、社区、测试夹具和验证截图不作为本批图标素材。
 
-| 工具 ID | 32×32 | 128×128 |
+### 七款工具素材接入（2026-11-02）
+
+维护者随后提供七组 32px / 128px PNG，全部验证为 8-bit RGBA、真实透明背景、精确最近邻 4× 像素关系。14 个文件按下表映射原样复制至 `public/assets/tool-icons/`，保留原始文件字节、色彩和 Alpha，没有重编码或重新生成。EXIF 附件实际包含 32px 文件，核对通过后直接复用，无需恢复生成。
+
+| 工具 ID / 正式文件前缀 | 附件前缀 | 已交付 |
 | --- | --- | --- |
-| `image-resize-crop` | 待提供 | 待提供 |
-| `palette-extractor` | 待提供 | 待提供 |
-| `image-compressor` | 待提供 | 待提供 |
-| `comic-page-organizer` | 待提供 | 待提供 |
-| `image-watermark` | 待提供 | 待提供 |
-| `exif-metadata` | 待提供 | 待提供 |
+| `image-converter` | `image-format-conversion` | `-32.png`、`-128.png` |
+| `image-resize-crop` | `image-resize-crop` | `-32.png`、`-128.png` |
+| `palette-extractor` | `color-palette-extraction` | `-32.png`、`-128.png` |
+| `image-compressor` | `image-compression` | `-32.png`、`-128.png` |
+| `comic-page-organizer` | `comic-page-organization` | `-32.png`、`-128.png` |
+| `image-watermark` | `image-watermarking` | `-32.png`、`-128.png` |
+| `exif-metadata` | `image-metadata` | `-32.png`、`-128.png` |
 
-六条 Prompt 已归档不代表上述 12 张 PNG 已交付。Image Converter 不在本次六条 Prompt 范围内，不以旧 Prompt A 补入，也不补写新的生成 Prompt。
+Image Converter 的素材已提供，但它不在本页六条原始 Prompt 范围内；不以旧 Prompt A 补入，也不补写新的生成 Prompt。上述六条英文 Prompt 保持不变。
+
+首页精选、创作身份中的工具入口和工具目录共用 `FeaturedToolIcon.astro`，路径映射统一维护在 `src/site/tool-icons.ts`，供组件与产物检查复用。通过 `srcset` 和显示尺寸选择 32px / 128px，显式宽高、空 `alt`、`object-fit: contain` 与 `image-rendering: pixelated`。未知 ID / DEV Fixture 使用原有中性四宫格回退，不请求不存在的 PNG。身份、分类、Logo、操作按钮与纯文字链接不变。

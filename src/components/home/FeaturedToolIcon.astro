@@ -1,10 +1,20 @@
 ---
 import * as stylex from '@stylexjs/stylex';
-import { ImageIcon, CropIcon, ArrowsInIcon, EyedropperIcon, SquaresFourIcon } from '@phosphor-icons/react/ssr';
+import { SquaresFourIcon } from '@phosphor-icons/react/ssr';
 import { homeStyles as h } from '../../styles/homepage';
+import { getToolIconPath } from '../../site/tool-icons';
 interface Props { id: string; size?: number }
 const { id, size = 40 } = Astro.props;
-const icons = { 'image-converter': ImageIcon, 'image-crop': CropIcon, 'image-compress': ArrowsInIcon, 'color-picker': EyedropperIcon };
-const Icon = Object.hasOwn(icons, id) ? icons[id as keyof typeof icons] : SquaresFourIcon;
+const path = getToolIconPath(id);
 ---
-<Icon size={size} weight="regular" color="currentColor" aria-hidden="true" focusable="false" className={stylex.attrs(h.featuredIcon).class} />
+{path ? <img
+  data-tool-icon={id}
+  src={`${path}-${size <= 32 ? 32 : 128}.png`}
+  srcset={`${path}-32.png 32w, ${path}-128.png 128w`}
+  sizes={`${size}px`}
+  width={size}
+  height={size}
+  alt=""
+  decoding="async"
+  {...stylex.attrs(h.pixelToolIcon)}
+/> : <SquaresFourIcon data-tool-icon-fallback size={size} weight="regular" color="currentColor" aria-hidden="true" focusable="false" className={stylex.attrs(h.featuredIcon).class} />}

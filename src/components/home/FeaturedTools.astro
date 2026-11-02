@@ -34,7 +34,7 @@ const presentDecor = decor && /^\/(?!\/)(?!.*\.\.)[^?#]+$/.test(decor.src)
   {cards.length > 0 ? <ul data-home-featured {...stylex.attrs(h.featuredGrid)}>
     {cards.map(card => <li {...stylex.attrs(h.featuredItem)}>
         <a href={card.href} data-home-tool={card.id} data-tool-card={card.id} {...stylex.attrs(h.featuredCard, h.featuredInteractive)}>
-          <span {...stylex.attrs(h.featuredIconPlate)}><FeaturedToolIcon id={card.id} /></span>
+          <span {...stylex.attrs(h.featuredIconPlate)}><FeaturedToolIcon id={card.id} size={48} /></span>
           <div {...stylex.attrs(h.featuredText)}>
             <h3 {...stylex.attrs(h.featuredTitle)}>{card.title}{import.meta.env.DEV && registry.find(tool => tool.id === card.id)?.status === 'draft' && <span {...stylex.attrs(h.featuredStatus)}>{c.draft}</span>}</h3>
             <p {...stylex.attrs(h.featuredDescription)}>{card.description}</p>

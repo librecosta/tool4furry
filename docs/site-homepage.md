@@ -29,7 +29,7 @@ Footer 唯一例外是 [目录工作台](site-tools.md)：固定视口，无 Foo
 ## 五区视觉与渐进增强
 
 1. **Hero**：审核文案/五层 CSS Reveal、固定 Tag Wavefield v1.0.0 移植与真实 AVIF poster。GPU 首帧成功才淡入；不支持、初始化失败/丢设备、Reduced Motion/Save-Data 等按既有策略静态降级。静态/动态裁切共锚点，手机最小尺度后裁切；每次完整进入一个安全随机 Seed，resize/主题/恢复不重抽，提交有上限。`src/visuals/wavefield/` 与旧 HSN-1 Lab 无依赖。
-2. **精选与角色**：Phosphor Regular、真实 Registry 条目，无封面带、假工具或无意义几何占位；素材槽未来替换能力保留。
+2. **精选与角色**：真实 Registry 条目；七款工具的透明像素 PNG 由共享 `FeaturedToolIcon.astro` 映射，首页、角色工具入口与目录复用，未知 ID 保留 Phosphor 四宫格回退。身份图标仍为原设计，不对工具 PNG 做主题着色或加底板。素材规范与原始 Prompt 见 [Pixel Icon V1](visual/tool-icon-prompts.md)。无封面带、假工具或无意义几何占位。
 3. **社群与理念**：CN 的 QQ/Telegram/GoFurry 爱发电，Global 的 Discord/Telegram/GoFurry Ko-fi；使用批准的 QR/Logo 原文件和真实链接。三栏标题嵌入封顶线，01/02/03、环绕图标正文、桌面斜线/单列隐藏，不新增账户/支付功能。
 4. **图文故事**：两张 Luminous 5:4 原始 AVIF，柔边矩形且不可原生拖动；大屏并排共享标题/正文/链接基线，中屏交错，手机文字优先。双语文案与链接由维护者冻结。
 5. **技术与工程**：现有顶部对齐 35:65 双栏、英文标题局部字号、中文英文副标题、两段正文及唯一 GitHub 链接；桌面链接在左，手机「标题→正文→链接」。局部实/虚线角标及现有 Reveal 保持，不恢复旧占位图或三个链接。
