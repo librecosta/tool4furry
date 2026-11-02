@@ -3,6 +3,7 @@ import { act, fireEvent, render, screen, waitFor, within } from '@testing-librar
 import ComicPageOrganizer from '../src/tools/comic-page-organizer/ComicPageOrganizer';
 import { inspectComic as acceptImage } from '../src/tools/comic-page-organizer/source';
 import { setViewport } from './setup';
+import userEvent from '@testing-library/user-event';
 
 vi.mock('../src/tools/comic-page-organizer/source', () => ({inspectComic: vi.fn(), comicThumbnail: vi.fn(async source => source.blob), verifyComic: vi.fn(async () => {})}));
 vi.mock('../src/tools/image/ImagePreviewViewport', () => ({ImagePreviewViewport: ({src, alt}: {src: string; alt: string}) => <img src={src} alt={alt}/>}));
@@ -50,6 +51,48 @@ it('shows only image overlays, three actions and actual page numbers, with no co
   fireEvent.click(screen.getByRole('radio', {name: 'PDF'})); expect(screen.getByRole('button', {name: 'Export PDF'})).not.toBeNull();
   fireEvent.keyDown(screen.getByRole('radio', {name: 'PDF'}), {key: 'ArrowLeft'}); expect(screen.getByRole('radio', {name: 'CBZ'}).getAttribute('aria-checked')).toBe('true');
   expect(screen.getByRole('button', {name: 'Package & download'})).not.toBeNull();
+});
+
+it('validates prefix drafts, preserves mode settings and ignores archive parameters for PDF', async () => {
+  await load(); const user=userEvent.setup();
+  expect((screen.getByLabelText('Page name prefix') as HTMLInputElement).value).toBe('page');
+  expect(screen.getByRole('combobox',{name:'Image format'}).textContent).toContain('Keep original format');
+  fireEvent.change(screen.getByLabelText('Page name prefix'),{target:{value:'../bad'}});
+  expect(screen.getByRole('button',{name:'Package & download'}).hasAttribute('disabled')).toBe(true);
+  expect(screen.getByRole('alert').textContent).toContain('safe filename prefix');
+  fireEvent.change(screen.getByLabelText('Page name prefix'),{target:{value:'漫画'}});
+  await user.click(screen.getByRole('combobox',{name:'Image format'}));
+  await user.click(await screen.findByRole('option',{name:'JPEG'}));
+  expect(screen.getByRole('button',{name:'Balanced'}).getAttribute('aria-pressed')).toBe('true');
+  fireEvent.click(screen.getByRole('button',{name:'Stronger'}));
+  fireEvent.click(screen.getByRole('button',{name:'Advanced'}));
+  expect(screen.getByRole('slider',{name:'Image quality'}).getAttribute('aria-valuenow')).toBe('70');
+  fireEvent.change(screen.getByLabelText('JPEG background'),{target:{value:'#112233'}});
+  fireEvent.click(screen.getByRole('button',{name:'Restore recommended quality'}));
+  fireEvent.click(screen.getByRole('button',{name:'Quick'}));
+  expect(screen.getByRole('button',{name:'Balanced'}).getAttribute('aria-pressed')).toBe('true');
+  fireEvent.click(screen.getByRole('button',{name:'Advanced'}));
+  expect((screen.getByLabelText('JPEG background') as HTMLInputElement).value).toBe('#112233');
+  fireEvent.change(screen.getByLabelText('JPEG background'),{target:{value:'#12'}});
+  fireEvent.click(screen.getByRole('button',{name:'Quick'}));
+  expect(screen.getByRole('alert').textContent).toContain('six-digit HEX');
+  expect(screen.getByRole('button',{name:'Package & download'}).hasAttribute('disabled')).toBe(true);
+  fireEvent.click(screen.getByRole('button',{name:'Advanced'}));
+  fireEvent.change(screen.getByLabelText('JPEG background'),{target:{value:'#112233'}});
+  fireEvent.change(screen.getByLabelText('Page name prefix'),{target:{value:'../bad'}});
+  fireEvent.click(screen.getByRole('radio',{name:'PDF'}));
+  expect(screen.queryByLabelText('Page name prefix')).toBeNull(); expect(screen.getByRole('button',{name:'Export PDF'}).hasAttribute('disabled')).toBe(false);
+  fireEvent.click(screen.getByRole('radio',{name:'ZIP'}));
+  expect(screen.getByRole('button',{name:'Advanced'}).getAttribute('aria-pressed')).toBe('true'); expect(names()).toEqual(['1.png','2.png','10.png']);
+});
+
+it('hides lossy quality for PNG and shows CBZ reader compatibility only when applicable', async () => {
+  await load(); const user=userEvent.setup();
+  await user.click(screen.getByRole('combobox',{name:'Image format'})); await user.click(await screen.findByRole('option',{name:'PNG'}));
+  fireEvent.click(screen.getByRole('button',{name:'Advanced'})); expect(screen.queryByRole('slider')).toBeNull(); expect(screen.queryByLabelText('JPEG background')).toBeNull();
+  await user.click(screen.getByRole('combobox',{name:'Image format'})); await user.click(await screen.findByRole('option',{name:'WEBP'}));
+  expect(screen.queryByText('Some comic readers cannot display WebP or AVIF pages.')).toBeNull();
+  fireEvent.click(screen.getByRole('radio',{name:'CBZ'})); expect(screen.getByText('Some comic readers cannot display WebP or AVIF pages.')).not.toBeNull();
 });
 
 it('reorders by image pointer gestures, preserves stable identity and resets order', async () => {
@@ -133,7 +176,7 @@ it('keeps folder import and privacy disclosure; errors have no invented image an
   fireEvent.change(folder, {target: {files: [file('page20.png'), file('page3.png')]}});
   await waitFor(() => expect(screen.getByRole('button', {name: 'Package & download'}).hasAttribute('disabled')).toBe(false));
   expect(names()).toEqual(['broken.png', 'valid.png', 'page3.png', 'page20.png']);
-  expect(screen.getByText('ZIP/CBZ keep original image bytes and source metadata. PDF may convert images; this tool does not guarantee removal of private metadata.').closest('details')?.hasAttribute('open')).toBe(false);
+  expect(screen.getByText(/^Keep original format preserves source bytes and metadata/).closest('details')?.hasAttribute('open')).toBe(false);
   expect(document.querySelectorAll('select')).toHaveLength(0); const created = vi.mocked(URL.createObjectURL).mock.calls.length;
   unmount(); expect(URL.revokeObjectURL).toHaveBeenCalledTimes(created);
 });

@@ -3,6 +3,8 @@ import { tokens as t } from '../../styles/tokens.stylex';
 
 export const comicStyles = stylex.create({
   stack: {display: 'grid', gap: t.space16, minWidth: 0},
+  exportFields: {display: 'grid', gridTemplateColumns: {default: 'repeat(2, minmax(0, 1fr))', '@media (max-width: 600px)': 'minmax(0, 1fr)'}, gap: t.space12, minWidth: 0},
+  parameterModes: {justifySelf: 'start'},
   row: {display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: t.space8, minWidth: 0},
   toolbar: {display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: t.space12},
   note: {margin: 0, color: t.textSecondary, fontSize: 13, lineHeight: 1.7, overflowWrap: 'anywhere'},

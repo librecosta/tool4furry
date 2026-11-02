@@ -5,7 +5,7 @@ Image Compressor、Image Watermark 与 EXIF Metadata 为 CN/Global、zh/en **Pub
 | 工具与路径（Draft 仅 DEV） | 当前能力 |
 | --- | --- |
 | [Image Compressor](../src/tools/image-compressor/ImageCompressor.tsx) · `/tools/image-compressor/` | 单张/批量与文件夹，快速强度或高级质量/目标大小/最长边，PNG/JPEG/WebP 与受支持桌面设备上的 AVIF 输出，原图/结果比较、实际大小与节省比例、独立下载和 ZIP。JPEG/WebP 目标大小只进行有界尝试，未达到或变大均如实显示。 |
-| [Comic Page Organizer](../src/tools/comic-page-organizer/ComicPageOrganizer.tsx) · `/tools/comic-page-organizer/` | 多图/文件夹，行优先紧凑画廊、拖排/键盘排序、稳定自然顺序重置、多选删除与逐页阅读。漫画专用文件预算和可视范围有界缩略图；ZIP/CBZ 保留原始字节，受支持浏览器可流式保存大归档；PDF 按实际顺序和图片比例导出，有独立预算，部分格式转换。来源元数据可能保留。 |
+| [Comic Page Organizer](../src/tools/comic-page-organizer/ComicPageOrganizer.tsx) · `/tools/comic-page-organizer/` | 多图/文件夹，行优先紧凑画廊、拖排/键盘排序、稳定自然顺序重置、多选删除与逐页阅读。漫画专用预算和有界缩略图；ZIP/CBZ 默认保留原字节，支持自定义页名前缀及可选 JPEG/PNG/WebP/受限 AVIF 逐页转换、快速/高级质量设置及流式写入；PDF 独立按原图比例导出。默认来源元数据可能保留。 |
 | [Image Watermark](../src/tools/image-watermark/ImageWatermark.tsx) · `/tools/image-watermark/` | 快速/高级共用参数草稿和重置，单张/批量文字或位图/安全静态 SVG Logo，单点旋转与三档密度平铺，实时有界预览及颜色弹层，PNG/JPEG/WebP/受限 AVIF 输出、单项下载和 ZIP。使用已有本地字体，不提供图层编辑器。 |
 | [EXIF Metadata](../src/tools/exif-metadata/ExifMetadata.tsx) · `/tools/exif-metadata/` | 单张/批量 JPEG/PNG/WebP 与文件夹导入，选中文件查看紧凑斑马纹元数据表及隐私标记，逐项或全部无损清理、前后字段对照、单项下载与成功结果 ZIP。未知结构明确失败并支持重试，无需清理的验证结果也可下载；列表提供缩略图与原图查看，不提供清理前后视觉对比。 |
 
@@ -46,6 +46,14 @@ PDF 仅在导出时加载固定 `pdf-lib@1.17.1`，由独立页数、来源字�
 最终 7 个定向测试文件共 81 项通过，`pnpm check`（343 文件）零诊断，`pnpm install --frozen-lockfile` 通过。未重复本地全量测试、双地区构建或无关专项夹具；完整 CI 沿用既有 GitHub Actions。
 
 本轮实际 Chromium 已导入 320 页约 267MiB JPEG，普通画廊只挂载附近的 28 个缩略图。系统保存选择器写出的 279,568,554 B ZIP 可解压，320 页名称、页序、CRC 与原文件字节逐项一致。普通 Blob ZIP/CBZ 均包含五张有效原图，按调整后顺序逐项保持原字节。真实五页 PDF 覆盖 JPEG 旋转/镜像、透明 PNG、WebP 和受支持 AVIF；Poppler 完整渲染，顺序、尺寸和方向经像素对比验证。原始编码器色彩声明不符合输入子集的 AVIF 明确拒绝，不伪造预览或加入输出。390px 手机视口下格式选择和主按钮无横向溢出。最后的 160 页大 CBZ 保存流程被维护者按 Escape 停止，未继续操作浏览器；大 CBZ 实际落盘、真实系统写入失败/取消后的磁盘状态尚未实测，受控取消、写入失败、快照失效和同一 ZIP 写入路径由定向测试覆盖。证据保存在仓库外 `../.validation/comic-r1/`。真实移动设备、其他浏览器、接近最大预算和长时间压力范围未测；手机视口不代表真机触控或 File System Access 支持。
+
+### B2-C1-R2 · 页名与可选转换
+
+ZIP/CBZ 默认仍为 `page-001.ext` 和原始字节，Unicode 前缀经长度、路径、控制字符及 Windows 名称校验。底部快速/高级只切换参数展示，保留前缀、逐格式质量与 JPEG 背景草稿；无效输入阻止归档。推荐质量引用 Converter 参数，PNG 不显示有损质量，AVIF 按固定设备和全体页面尺寸禁用，CBZ 的 WebP/AVIF 仅作阅读器兼容提示。PDF 忽略归档前缀及统一图片设置，继续原有嵌入与预算。
+
+`writeZip()` 在原有存储 ZIP 写入器上增加逐页 Blob 工厂，不预生成整批转换结果。生成、实际输出复检与逐块写入共用 Session 串行通道；等待当前页面写完后才生成下一页。转换调用现有 `encodeImage()`、`privacy-v1` 与 `AvifEncoder`，不缩放图片；PNG/JPEG/WebP 的 Bitmap/Canvas 及时释放，AVIF 取消/超时终止既有 Worker，卸载清理编码器。实际累计字节和 ZIP32 上限控制输出，不能以来源大小估计转换归档。支持直接保存时转换主动经保存选择器流式写入；无该能力时仅提供受限 Blob 路径，实际超限中止。参数或顺序变更撤销旧 ZIP/CBZ 快照，PDF 仅响应页面变更；原子 close 的提交边界不变。
+
+本轮 6 个 Comic 定向测试文件共 94 项通过，`pnpm check`（346 文件）零诊断，未重复本地全量测试或两地区构建。真实 Chromium 已导入并重排 33 张含透明 PNG、方向 JPEG、EXIF JPEG 和静态 AVIF 的图片，非法前缀明确禁用，中文前缀 ZIP 实际下载后逐项检查 UTF-8 页名、顺序、CRC 和原始字节一致。快速/高级、质量与 JPEG 背景字段已在实际页面操作；统一转换的系统保存验收尚未完成时，维护者按 Escape 停止浏览器操作，之后未继续。JPEG/PNG/WebP/AVIF 转换归档的真实落盘、透明背景/方向像素结果、桌面与手机布局完整验收仍待确认，不能将复用内核的历史证据或 mock 测试视为本轮真实转换通过。定向测试覆盖 30 页转换、按页背压、实际字节预算、取消、失效、AVIF 资格、Unicode 名称及 PDF 独立性；样本及下载核对证据在仓库外 `../.validation/comic-r2/`。正式 SEO 本轮未改，Comic 继续 Draft。
 
 ## Image Compressor · B1-C1（2026-11-01）
 

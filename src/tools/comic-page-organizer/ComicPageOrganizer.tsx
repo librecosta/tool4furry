@@ -16,6 +16,8 @@ import pdfNotice from './pdf-lib.NOTICE.txt?url';
 import { ComicGallery } from './ComicGallery';
 import { comicMessages } from './messages';
 import { comicStyles as s } from './styles';
+import { ComicExportSettings } from './ExportSettings';
+import { validExportSettings } from './export-settings';
 
 export default function ComicPageOrganizer({locale}: ToolProps) {
   const t = comicMessages[locale];
@@ -47,10 +49,12 @@ export default function ComicPageOrganizer({locale}: ToolProps) {
   const errors = view.pages.filter(page => page.status === 'error').length;
   const rejected = view.intake ? Object.values(view.intake.rejected).reduce((sum, count) => sum + count, 0) : 0;
   const budget = session?.budget ?? mobileComicBudget, limits = budget.input;
-  const large = format !== 'pdf' && (session?.archiveBytes() ?? 0) > budget.blobBytes;
+  const settings = view.settings, validSettings = validExportSettings(settings), avifIssue = session?.avifIssue();
+  const converted = settings.format !== 'original';
+  const large = format !== 'pdf' && !converted && validSettings && (session?.archiveBytes() ?? 0) > budget.blobBytes;
   const archive = async () => {
     if (!session || view.packing) return;
-    const target = large && streaming ? chooseArchiveFile(session.filename(format), format) : undefined;
+    const target = format !== 'pdf' && (large || converted) && streaming ? chooseArchiveFile(session.filename(format), format) : undefined;
     const result = await session.pack(format, target);
     if (result) session?.download(result);
   };
@@ -75,6 +79,7 @@ export default function ComicPageOrganizer({locale}: ToolProps) {
           onSelect={(id, selected) => session?.select(id, selected)} onRemove={id => session?.remove([id])}
           onRead={(id, trigger) => {previewTrigger.current = trigger; setReading(id);}}/>
         {errors > 0 && <p role="status" {...stylex.props(s.note, s.error)}>{errors} · {t.failedExcluded}</p>}
+        <ComicExportSettings settings={settings} configure={patch => session?.configure(patch)} pdf={format === 'pdf'} cbz={format === 'cbz'} avifIssue={avifIssue} t={t}/>
         <div {...stylex.props(s.row)}>
           <div role="radiogroup" aria-label={t.exportFormat} {...stylex.props(c.modes)} onKeyDown={event => {
             if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key) || view.packing) return;
@@ -82,7 +87,7 @@ export default function ComicPageOrganizer({locale}: ToolProps) {
             const next = event.key === 'Home' ? 0 : event.key === 'End' ? 2 : (i + (event.key === 'ArrowLeft' ? 2 : 1)) % 3;
             setFormat(values[next]); (event.currentTarget.children[next] as HTMLElement).focus();
           }}>{(['zip','cbz','pdf'] as const).map(value => <button key={value} type="button" role="radio" aria-checked={format === value} tabIndex={format === value ? 0 : -1} disabled={view.packing} {...stylex.props(c.mode, c.parameterControl, format === value && c.currentParameterMode)} onClick={() => setFormat(value)}>{value.toUpperCase()}</button>)}</div>
-          <Button xstyle={s.primary} loading={view.packing} disabled={!ready.length || pending || large && !streaming} onClick={() => void archive()}>{format === 'pdf' ? t.pdf : t.download}</Button>
+          <Button xstyle={s.primary} loading={view.packing} disabled={!ready.length || pending || large && !streaming || format !== 'pdf' && (!validSettings || settings.format === 'avif' && !!avifIssue)} onClick={() => void archive()}>{format === 'pdf' ? t.pdf : t.download}</Button>
           {view.packing && <><span role="status" {...stylex.props(s.note)}>{t.packing} {view.progress}/{ready.length}</span><Button xstyle={s.action} onClick={() => session?.cancelExport()}>{t.cancel}</Button></>}
         </div>
         {large && <p role={streaming ? 'status' : 'alert'} {...stylex.props(s.note, !streaming && s.error)}>{streaming ? t.stream : t.noStream}</p>}
