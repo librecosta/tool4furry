@@ -32,11 +32,11 @@ describe('publication metadata gate', () => {
       ['image-converter', 'published'],
       ['image-resize-crop', 'published'],
       ['palette-extractor', 'published'],
-      ['image-compressor', 'published'], ['comic-page-organizer', 'draft'],
+      ['image-compressor', 'published'], ['comic-page-organizer', 'published'],
       ['image-watermark', 'published'], ['exif-metadata', 'published'],
     ]);
-    expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'image-watermark', 'exif-metadata']);
-    expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'image-watermark', 'exif-metadata']);
+    expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata']);
+    expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata']);
   });
   it.each([0, 3, 20, 100])(
     'validates %i test-only tools without registering them',
@@ -52,11 +52,11 @@ describe('publication metadata gate', () => {
         ['image-converter', 'published'],
         ['image-resize-crop', 'published'],
         ['palette-extractor', 'published'],
-        ['image-compressor', 'published'], ['comic-page-organizer', 'draft'],
+        ['image-compressor', 'published'], ['comic-page-organizer', 'published'],
         ['image-watermark', 'published'], ['exif-metadata', 'published'],
       ]);
-      expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'image-watermark', 'exif-metadata']);
-      expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'image-watermark', 'exif-metadata']);
+      expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata']);
+      expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata']);
     },
   );
   it.each([
