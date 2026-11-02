@@ -152,6 +152,7 @@ const styles = stylex.create({
     minHeight: 44,
     paddingBlock: tokens.space8,
     paddingInline: tokens.space12,
+    marginBlock: 2,
     borderRadius: tokens.radiusSm,
     fontSize: 14,
     fontWeight: 500,

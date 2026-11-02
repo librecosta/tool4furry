@@ -6,7 +6,7 @@ Image Compressor 与 EXIF Metadata 为 CN/Global、zh/en **Published**；Comic P
 | --- | --- |
 | [Image Compressor](../src/tools/image-compressor/ImageCompressor.tsx) · `/tools/image-compressor/` | 单张/批量与文件夹，快速强度或高级质量/目标大小/最长边，PNG/JPEG/WebP 与受支持桌面设备上的 AVIF 输出，原图/结果比较、实际大小与节省比例、独立下载和 ZIP。JPEG/WebP 目标大小只进行有界尝试，未达到或变大均如实显示。 |
 | [Comic Page Organizer](../src/tools/comic-page-organizer/ComicPageOrganizer.tsx) · `/tools/comic-page-organizer/` | 多图/文件夹，自然排序、缩略图网格、拖排/移动、多选删除、追加、封面、逐页阅读，稳定零填充页名的 ZIP/CBZ。原始图片字节保持不变，来源元数据也可能保留。 |
-| [Image Watermark](../src/tools/image-watermark/ImageWatermark.tsx) · `/tools/image-watermark/` | 单张/批量文字或图片水印，大小/比例、不透明度、九宫格位置、边距、文字颜色，实时有界预览，PNG/JPEG/WebP 输出、单项下载和 ZIP。使用已有本地字体，不提供图层编辑器。 |
+| [Image Watermark](../src/tools/image-watermark/ImageWatermark.tsx) · `/tools/image-watermark/` | 快速/高级共用参数草稿和重置，单张/批量文字或位图/安全静态 SVG Logo，单点旋转与三档密度平铺，实时有界预览及颜色弹层，PNG/JPEG/WebP/受限 AVIF 输出、单项下载和 ZIP。使用已有本地字体，不提供图层编辑器。 |
 | [EXIF Metadata](../src/tools/exif-metadata/ExifMetadata.tsx) · `/tools/exif-metadata/` | 单张/批量 JPEG/PNG/WebP 与文件夹导入，选中文件查看紧凑斑马纹元数据表及隐私标记，逐项或全部无损清理、前后字段对照、单项下载与成功结果 ZIP。未知结构明确失败并支持重试，无需清理的验证结果也可下载；列表提供缩略图与原图查看，不提供清理前后视觉对比。 |
 
 四模块分别拥有 Session、稳定任务/结果版本与资源；复用 Image Core、ImageResources、设备 limits、SerialJobs 和既有 ZIP。重型原生操作即使已过期也须真实完成后释放通道；取消、删除、清空和参数改变撤销下载/ZIP 快照，结果累计有界。不同时解码全部原图。原始文件不上传、不持久保存。
@@ -76,3 +76,19 @@ L2 复用 C1/R1 的桌面/手机视口、亮暗主题、文件切换/删除/清�
 真实 Chromium 补验 CN 中文桌面文件夹批次：`manual-exif.jpg`、`private.png`、`private.webp` 成功，未知 APP1 安全失败且重试不影响已有结果。逐项下载与 ZIP 解压后复检格式/MIME、完整解码、方向及 ICC；JPEG 23,159→22,933 B、PNG 2,394→1,786 B、WebP 2,296→1,768 B，三项解码像素和压缩图像数据逐字节相同，受支持设备/时间/GPS 字段已移除，JPEG/PNG 方向 6 保留，WebP 方向仍为 1。CN 正式静态预览可加载工具；Global 英文正式预览在 390px 手机视口完成导入、原图预览/缩放、单项清理和下载，输出与已复检 DEV JPEG 字节一致，控制台无错误。未发现阻断问题，不支持/不安全结构明确失败，不回退有损编码。
 
 下载、文件验证 JSON 和截图保存在仓库外 `../.validation/exif-d1/`。L3 未测范围仍为真实 iOS/Android 触控、Firefox/Safari、低端设备及完整性能压力；手机视口不代表真机验证。没有新增工作流、运行大型多工具夹具或改动清理内核。
+
+## Image Watermark · B3-C1（2026-11-02）
+
+快速/高级仅改变参数展示，共用唯一 Settings；模式切换不改参数或撤销有效结果，快速模式提示已配置的高级参数。高级「重置参数」恢复初始设置与字符串草稿，保留图片、选中项和已验证 Logo，实质变更撤销旧结果。文件主内容即选择入口，不再重复提供编辑按钮；文字颜色复用 react-colorful/Popover、局部样式和 MIT 通知，未完成 HEX 不进入有效设置，取消不改已提交颜色。
+
+`drawComposition()` 同时服务预览和最终输出。单点围绕自身中心旋转并按旋转包围盒约束九宫格；平铺在旋转坐标内覆盖原图四角，三档间距，最多 1024 次绘制，超出时增大间距而不改变 Logo 大小。图片仍从方向校正后的原图一次绘制，不改变输出尺寸。
+
+位图 Logo 沿用现有设备分级输入限制，取消旧的独立 4MP/4096px 上限；最终绘制还检查原图位图、输出画布和 Logo 的合计解码额度。仅保留选中原图和 Logo 的有界预览，不持有全部原图 Bitmap。SVG 仅为 Logo：工具局部 XML 白名单重建形状/路径/变换/本地渐变/裁切，限制 256 KiB、512 元素、16 层与路径/数值复杂度；不支持脚本、事件、HTML、动画、image/use、CSS、DTD/实体、外链及其他未列入子集的结构。只向脱离 DOM 的 Image 载入校验后的本地 Blob，按设备预算校验栅格尺寸，绘制后释放临时 URL；失败不使用原始 SVG。复杂 SVG 需先转为受支持位图。
+
+AVIF 直接复用既有 AvifEncoder、ST Worker/WASM、输出资格和完整复检，不加载第二套编码器。设备/尺寸不符明确禁用或失败；参数变更、取消、删除、Logo 替换和卸载中止对应 Worker 操作，原生解码/验证真实结束前仍占用唯一 SerialJobs。普通图片操作不启动 AVIF Worker。保持 privacy-v1、累计结果上限和 ZIP 当前快照，未改 Registry/Loader、SEO 或其他工具业务，仍为 Draft。
+
+本轮验证：`pnpm check` 332 文件零诊断；7 个水印/安全/Session/AVIF Worker/公共 UI/压缩器 UI 定向文件共 122 项通过。真实 Chromium 覆盖 CN 中文和 Global 英文，桌面与 390px 手机视口、亮暗主题、颜色确认/取消、重置与 Logo 保留、文件主内容选择，以及公共 SelectField 在压缩器的键盘关闭和选项间距。两视口无横向溢出。SVG 结构危险输入与超预算素材明确失败，旧结果下载立即撤销。
+
+实际 PNG/JPEG/WebP/AVIF 下载均按文件头识别并完整解码；JPEG 透明角填白，其他格式保留透明度。横竖两图的旋转文字 ZIP、旋转 SVG 平铺 AVIF ZIP 均可解压且尺寸正确，6MP/5000px PNG Logo 导出通过；60% 文字、PNG 来源 alpha×60% 与 SVG 透明度均经像素复检。SVG 只使用校验后的受控 Image 载入，解决 Chromium Blob→ImageBitmap 对 SVG 的读取差异。取消/超时、晚到结果与释放由受控 Worker 和 Session 测试覆盖，不冒称真实设备压力测试。
+
+本地证据在仓库外 `../.validation/watermark-c1/`（实际下载清单、完整解码/像素 JSON 与亮暗截图），不进入公开资源。按任务范围不在本地重复双地区正式构建或全量矩阵，完整 CI 沿用本次推送触发的既有工作流。真实 iOS/Android、Firefox/Safari、低端设备与压力范围仍为未测 L3；手机视口不代表真机触控通过。未提升 Published、未部署或创建 Tag/Release。

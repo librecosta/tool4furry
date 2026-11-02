@@ -2,7 +2,7 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { WatermarkSession } from '../src/tools/image-watermark/session';
 import { defaults, renderWatermark } from '../src/tools/image-watermark/render';
 import { acceptImage, decodeChecked, toBlob } from '../src/tools/image/browser-codec';
-import { mobileImageLimits } from '../src/tools/image/limits';
+import { desktopImageLimits, mobileImageLimits, avifOutputLimits } from '../src/tools/image/limits';
 import { packZip } from '../src/tools/image-converter/zip';
 vi.mock('../src/tools/image/browser-codec', () => ({acceptImage:vi.fn(),decodeChecked:vi.fn(),toBlob:vi.fn()}));
 vi.mock('../src/tools/image-watermark/render', async original => ({...(await original<typeof import('../src/tools/image-watermark/render')>()),renderWatermark:vi.fn()}));
@@ -106,4 +106,50 @@ it('reserves removed or replaced watermark Files until active asset and export o
   output.resolve(new Blob(['old'])); await tick(); await tick();
   session.setWatermark(oldMark); await tick(); await tick(); expect(session.snapshot.watermark?.source.file).toBe(oldMark);
   session.dispose(); await tick();
+});
+it('accepts high-resolution logos under the existing device profile and keeps only a bounded preview', async () => {
+  const session=new WatermarkSession(desktopImageLimits), logo=file('large-logo.png');
+  vi.mocked(acceptImage).mockResolvedValueOnce({file:logo,blob:logo,width:5000,height:2000,info:{format:'png',width:5000,height:2000,orientation:1}});
+  session.setWatermark(logo); await tick(); await tick();
+  expect(acceptImage).toHaveBeenCalledWith(logo,session.resources,desktopImageLimits);
+  expect(session.snapshot.watermark?.source.width).toBe(5000); expect(session.snapshot.watermark?.preview.width).toBe(1024);
+  session.removeWatermark(); session.dispose(); expect(session.resources.canvasesCreated).toBe(session.resources.canvasesReleased);
+});
+it('resetting settings preserves selected sources and the validated logo while invalidating old results', async () => {
+  const session=await loaded(['a.png']); session.setWatermark(file('logo.png')); await tick(); await tick();
+  session.update({...session.snapshot.settings,layout:'tile',angle:30,opacity:20}); session.start(); await tick();
+  const {selected,watermark}=session.snapshot;
+  expect(session.snapshot.tasks[0].status).toBe('ready'); session.update({...defaults});
+  expect(session.snapshot).toMatchObject({selected,watermark,settings:defaults});
+  expect(session.snapshot.tasks[0]).toMatchObject({status:'stale',result:undefined});
+  session.dispose();
+});
+it.each(['settings','cancel','delete','logo','dispose'] as const)('aborts active AVIF on %s and never publishes late bytes', async action => {
+  const session=await loaded(['a.png']), pending=deferred<Blob>();
+  session.update({...defaults,format:'avif',quality:50});
+  vi.mocked(renderWatermark).mockReturnValueOnce(pending.promise); session.start(); await tick();
+  const signal=vi.mocked(renderWatermark).mock.calls[0][5]!.signal;
+  expect(signal.aborted).toBe(false);
+  if(action==='settings') session.update({...session.snapshot.settings,angle:30,layout:'tile'});
+  if(action==='cancel') session.cancel();
+  if(action==='delete') session.remove(session.snapshot.tasks[0].id);
+  if(action==='logo') session.removeWatermark();
+  if(action==='dispose') session.dispose();
+  expect(signal.aborted).toBe(true); expect(session.jobs.active).toBe(true);
+  pending.resolve(new Blob(['late'])); await tick();
+  expect(session.snapshot.tasks.every(task=>!task.result)).toBe(true); session.dispose();
+});
+it('AVIF deadline aborts the worker operation without releasing the serial lane before settlement', async () => {
+  const session=await loaded(), pending=deferred<Blob>();
+  session.update({...defaults,format:'avif',quality:50}); vi.useFakeTimers();
+  try {
+    vi.mocked(renderWatermark).mockReturnValueOnce(pending.promise); session.start();
+    await vi.advanceTimersByTimeAsync(0);
+    const signal=vi.mocked(renderWatermark).mock.calls[0][5]!.signal;
+    await vi.advanceTimersByTimeAsync(avifOutputLimits.timeout + 1);
+    expect(signal.aborted).toBe(true); expect(session.snapshot.tasks[0]).toMatchObject({status:'error',error:'avifTimeout'});
+    expect(renderWatermark).toHaveBeenCalledTimes(1); expect(session.jobs.active).toBe(true);
+    pending.resolve(new Blob(['late'])); await vi.advanceTimersByTimeAsync(0);
+    expect(session.snapshot.tasks.map(task=>task.status)).toEqual(['error','ready']); expect(session.jobs.maxActive).toBe(1);
+  } finally {session.dispose(); vi.useRealTimers();}
 });

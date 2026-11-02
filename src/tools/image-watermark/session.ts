@@ -1,20 +1,25 @@
-import { acceptImage, decodeChecked, toBlob } from '../image/browser-codec';
+import { acceptImage, toBlob } from '../image/browser-codec';
 import { ImageResources } from '../image/resources';
-import { resolveImageLimits, type ImageLimits } from '../image/limits';
+import { allowsAvifOutput, avifOutputLimits, resolveImageLimits, type ImageLimits } from '../image/limits';
+import { AvifEncoder } from '../image/avif-encoder';
 import { SerialJobs } from '../image-converter/serial-jobs';
 import { packZip } from '../image-converter/zip';
 import { batchTime, taskFilename } from '../file-naming';
-import { extension, type ImageSource } from '../image/types';
+import { extension, ImageFailure, type ImageSource } from '../image/types';
 import { defaults, renderWatermark, validSettings, type WatermarkSettings } from './render';
+import { acceptWatermark, decodeWatermark, type WatermarkSource } from './asset';
 
 export type Task = Readonly<{id: string; sequence: number; file: File; source?: ImageSource; thumbnail?: string;
   status: 'checking' | 'idle' | 'queued' | 'processing' | 'ready' | 'error' | 'stale'; error?: string; result?: Blob; request: number}>;
 export type View = Readonly<{tasks: readonly Task[]; settings: WatermarkSettings; selected?: string;
-  preview?: HTMLCanvasElement; watermark?: {source: ImageSource; preview: HTMLCanvasElement}; assetBusy: boolean; error?: string; version: number}>;
+  preview?: HTMLCanvasElement; watermark?: {source: WatermarkSource; preview: HTMLCanvasElement}; assetBusy: boolean; error?: string; version: number}>;
 export class WatermarkSession {
   readonly resources = new ImageResources();
   readonly jobs = new SerialJobs();
   readonly limits: ImageLimits;
+  readonly avifSupported: boolean;
+  private avif = new AvifEncoder();
+  private operations = new Map<string, AbortController>();
   readonly time = batchTime(new Date());
   private listeners = new Set<() => void>();
   private sequence = 0;
@@ -28,7 +33,10 @@ export class WatermarkSession {
   private downloadURLs = new Map<string, ReturnType<typeof setTimeout>>();
   private state: View = {tasks: [], settings: defaults, assetBusy: false, version: 0};
   constructor(limits?: ImageLimits) {
-    this.limits = limits ?? resolveImageLimits({userAgent: navigator.userAgent, coarsePointer: matchMedia('(pointer: coarse)').matches});
+    this.limits = limits ?? resolveImageLimits({userAgent: navigator.userAgent,
+      mobile: (navigator as Navigator & {userAgentData?: {mobile?: boolean}}).userAgentData?.mobile,
+      coarsePointer: typeof matchMedia === 'undefined' || matchMedia('(pointer: coarse)').matches});
+    this.avifSupported = allowsAvifOutput(this.limits) && typeof Worker !== 'undefined' && typeof WebAssembly !== 'undefined';
   }
   get snapshot() { return this.state; }
   subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
@@ -50,17 +58,17 @@ export class WatermarkSession {
     try { await run(); }
     finally { for (const file of files) this.activeFiles.delete(file); }
   }
-  private async bounded(source: ImageSource, edge: number) {
-    const bitmap = await decodeChecked(source.blob, source.info, this.resources, this.limits);
+  private async bounded(source: WatermarkSource, edge: number) {
+    const bitmap = await decodeWatermark(source, this.resources, this.limits);
     let canvas: HTMLCanvasElement | undefined;
     try {
       const scale = Math.min(1, edge / Math.max(source.width, source.height));
       canvas = this.resources.canvas(Math.max(1, Math.round(source.width * scale)), Math.max(1, Math.round(source.height * scale)));
       const ctx = canvas.getContext('2d'); if (!ctx) throw new Error('draw');
-      ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(bitmap.image, 0, 0, canvas.width, canvas.height);
       return canvas;
     } catch (error) { if (canvas) this.resources.release(canvas); throw error; }
-    finally { this.resources.close(bitmap); }
+    finally { bitmap.close(); }
   }
   add(files: readonly File[]) {
     if (this.disposed) return;
@@ -91,6 +99,7 @@ export class WatermarkSession {
   }
   select(id: string) {
     if (this.disposed || !this.state.tasks.some(task => task.id === id && task.source)) return;
+    if (this.state.selected === id && this.state.preview) return;
     const ticket = ++this.previewTicket;
     if (this.state.preview) this.resources.release(this.state.preview);
     this.emit({selected: id, preview: undefined});
@@ -111,6 +120,7 @@ export class WatermarkSession {
   }
   private invalidate(patch: Partial<View> = {}) {
     const tasks = this.state.tasks.map(task => {
+      this.operations.get(task.id)?.abort();
       this.jobs.cancel(`output:${task.id}`);
       return task.source ? {...task, request: task.request + 1, result: undefined, status: 'stale' as const, error: undefined} : task;
     });
@@ -128,11 +138,12 @@ export class WatermarkSession {
     this.jobs.schedule('asset', () => this.holding([file], async () => {
       let preview: HTMLCanvasElement | undefined;
       try {
-        const source = await acceptImage(file, this.resources, {...this.limits, pixels: Math.min(this.limits.pixels, 4_000_000), edge: Math.min(this.limits.edge, 4096)});
+        const source = await acceptWatermark(file, this.resources, this.limits);
+        if (this.disposed || ticket !== this.assetTicket) return;
         preview = await this.bounded(source, 1024);
         if (this.disposed || ticket !== this.assetTicket) { this.resources.release(preview); return; }
         this.emit({watermark: {source, preview}, assetBusy: false});
-      } catch { if (ticket === this.assetTicket) { this.assetFile = undefined; this.emit({assetBusy: false, error: 'watermark'}); } }
+      } catch (error) { if (ticket === this.assetTicket) { this.assetFile = undefined; this.emit({assetBusy: false, error: error instanceof ImageFailure && ['dimensions','bytes'].includes(error.code) ? 'budget' : error instanceof Error && error.message === 'svg' ? 'svg' : 'watermark'}); } }
     }), () => { if (ticket === this.assetTicket) { this.assetTicket++; this.assetFile = undefined; this.emit({assetBusy: false, error: 'timeout'}); } });
   }
   removeWatermark() {
@@ -150,20 +161,26 @@ export class WatermarkSession {
       this.patch(id, {request, status: 'queued', result: undefined, error: undefined});
       this.jobs.schedule(`output:${id}`, () => this.holding([source.file, ...(mark ? [mark.file] : [])], async () => {
         if (!this.active(id, request, version)) return;
+        const controller = new AbortController(); this.operations.set(id, controller);
+        const deadline = settings.format === 'avif' ? setTimeout(() => {
+          if (this.active(id, request, version)) { controller.abort(); this.patch(id, {request: request + 1, status: 'error', error: 'avifTimeout'}); }
+        }, avifOutputLimits.timeout) : undefined;
         this.patch(id, {status: 'processing'});
         try {
-          const result = await renderWatermark(source, settings, mark, this.resources, this.limits);
+          const result = await renderWatermark(source, settings, mark, this.resources, this.limits, {avif: this.avif, signal: controller.signal});
           if (!this.active(id, request, version)) return;
           const total = this.state.tasks.reduce((n, item) => n + (item.result?.size ?? 0), 0);
           if (result.size + total > this.limits.totalBytes) throw new Error('budget');
           this.patch(id, {status: 'ready', result});
-        } catch (error) { if (this.active(id, request, version)) this.patch(id, {status: 'error', error: error instanceof Error && error.message === 'budget' ? 'budget' : 'output'}); }
-      }), () => { if (this.active(id, request, version)) this.patch(id, {request: request + 1, status: 'error', error: 'timeout'}); });
+        } catch (error) { if (this.active(id, request, version)) this.patch(id, {status: 'error', error: error instanceof ImageFailure ? error.code : error instanceof Error && error.message === 'budget' ? 'budget' : 'output'}); }
+        finally { clearTimeout(deadline); if (this.operations.get(id) === controller) this.operations.delete(id); }
+      }), () => { if (this.active(id, request, version)) { this.operations.get(id)?.abort(); this.patch(id, {request: request + 1, status: 'error', error: 'timeout'}); } });
     }
   }
   cancel() {
     const tasks = this.state.tasks.map(task => {
       if (!['queued', 'processing'].includes(task.status)) return task;
+      this.operations.get(task.id)?.abort();
       this.jobs.cancel(`output:${task.id}`);
       return {...task, request: task.request + 1, status: 'stale' as const, result: undefined};
     });
@@ -171,6 +188,7 @@ export class WatermarkSession {
   }
   remove(id: string) {
     const task = this.state.tasks.find(item => item.id === id); if (!task) return;
+    this.operations.get(id)?.abort();
     this.jobs.cancel(`intake:${id}`); this.jobs.cancel(`output:${id}`);
     if (task.thumbnail) this.resources.revoke(task.thumbnail);
     const index = this.state.tasks.indexOf(task), tasks = this.state.tasks.filter(item => item.id !== id);
@@ -203,7 +221,7 @@ export class WatermarkSession {
   }
   dispose() {
     this.clear(); this.removeWatermark(); ++this.previewTicket; ++this.assetTicket;
-    this.zipController?.abort(); this.disposed = true; this.jobs.dispose(); this.listeners.clear();
+    this.zipController?.abort(); this.disposed = true; this.jobs.dispose(); this.avif.dispose(); this.operations.clear(); this.listeners.clear();
     for (const [url, timer] of this.downloadURLs) { clearTimeout(timer); this.resources.revoke(url); }
     this.downloadURLs.clear();
   }
