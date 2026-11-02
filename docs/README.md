@@ -20,6 +20,7 @@
 - [UI 原语](ui-primitives.md)：受控组件接口；附早期验收记录。
 - [文件交互](file-interactions.md)：FileDropzone 与滚动原语边界；附历史验收。
 - [视觉基础](visual-foundation.md)：当前主题/品牌入口与历代视觉变更；色值以源码为准。
+- [Pixel Icon V1](visual/tool-icon-prompts.md)：六条维护者确认的原始 Prompt、共同母本与透明 PNG 交付规则；素材是否已提供见文内检查记录。
 
 ## Contracts · 稳定约束
 
