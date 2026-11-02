@@ -1,14 +1,12 @@
 ---
 import * as stylex from '@stylexjs/stylex';
-import { statSync } from 'node:fs';
-import { resolve } from 'node:path';
 import type { Locale } from '../../i18n/locale';
 import { localizedPath } from '../../i18n/locale';
 import type { Region } from '../../config/region';
 import type { CatalogEntry } from '../../site/catalog';
 import { messages } from '../../i18n/messages';
 import { tools as registry } from '../../tools/registry';
-import { homepageCopy, homepageMedia, getFeaturedShowcase } from '../../site/homepage-showcase';
+import { homepageCopy, homepageMedia, getFeaturedShowcase, hasHomeMedia } from '../../site/homepage-showcase';
 import { homeStyles as h } from '../../styles/homepage';
 import FeaturedToolIcon from './FeaturedToolIcon.astro';
 interface Props { region: Region; locale: Locale; entries: readonly CatalogEntry[] }
@@ -17,9 +15,7 @@ const t = messages[locale];
 const c = homepageCopy[locale];
 const cards = getFeaturedShowcase(entries);
 const decor = homepageMedia.featuredDecor;
-const presentDecor = decor && /^\/(?!\/)(?!.*\.\.)[^?#]+$/.test(decor.src)
-  && Number.isInteger(decor.width) && decor.width > 0 && Number.isInteger(decor.height) && decor.height > 0
-  && statSync(resolve('public', decor.src.slice(1)), { throwIfNoEntry: false })?.isFile();
+const presentDecor = hasHomeMedia(decor);
 ---
 <div data-home-section="featured" {...stylex.attrs(h.inner, h.featuredSection)}>
   <div data-featured-layout {...stylex.attrs(h.featuredLayout, presentDecor && h.featuredWithDecor)}>

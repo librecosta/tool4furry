@@ -11,6 +11,7 @@ Tool4Furry 是单项目的浏览器工具站：Astro SSG + 必要的 React Islan
 | `src/components/site/`、`src/components/home/` | 站点与首页的 Astro 静态 UI 组合 |
 | `src/site/` | 分类、目录/精选/相关工具投影、静态长文和发现文件生成 |
 | `src/config/`、`src/i18n/` | 地区域名与配置、独立的语言与路径规则 |
+| `src/assets/` | 组件内部素材，静态导入生成构建 URL；`public/` 只保留固定公开地址或独立分发的例外 |
 
 正文、H1、说明和 FAQ 在 Astro 层静态生成；`Registry.copy` 只放工具短元数据。`tool-content.ts` 与具体工具长文不能进入交互组件依赖图。首页无 React Island；受控主题/导航/滚动与首页独有 Reveal/Wavefield 增强由 [现行站点说明](../docs/site-homepage.md) 和构建守卫约束，不意味着任意页面都可以加脚本。
 

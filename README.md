@@ -73,7 +73,8 @@ pnpm build:global
 | `src/styles/`、`src/visuals/` | StyleX、受控页面增强与 Wavefield |
 | `src/lab/` | DEV-only 演示 |
 | `tests/`、`scripts/` | 行为测试、隔离夹具与构建审计 |
-| `public/` | 品牌、正式素材和静态授权文件 |
+| `src/assets/` | 组件内部图片、插画与工具图标，通过静态导入参与构建 |
+| `public/` | 固定公开 URL 的品牌、Favicon、OG、独立许可与 NOTICE |
 
 ## 文档与贡献
 

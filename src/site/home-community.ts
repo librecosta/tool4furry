@@ -1,5 +1,10 @@
 import type { Region } from '../config/region';
 import type { Locale } from '../i18n/locale';
+import qq from '../assets/community/QQ-Group.avif?url&no-inline';
+import discord from '../assets/community/discord.png?url&no-inline';
+import telegram from '../assets/community/telegram.png?url&no-inline';
+import afdian from '../assets/community/afdian.png?url&no-inline';
+import kofi from '../assets/community/ko-fi.png?url&no-inline';
 
 type CommunityCard = {
   id: 'qq' | 'discord' | 'telegram' | 'support';
@@ -35,11 +40,11 @@ export function getCommunityCards(region: Region, locale: Locale): readonly Comm
   const c = copy[locale];
   return [
     region === 'cn'
-      ? { id: 'qq', title: c.qq, description: c.qqDescription, note: c.qqHint, qr: { src: '/community/QQ-Group.avif', width: 128, height: 128, alt: c.qqAlt } }
-      : { id: 'discord', title: c.discord, description: c.discordHint, href: 'https://discord.gg/gEEgV8pkS', action: c.discordAction, logo: '/community/discord.png' },
-    { id: 'telegram', title: c.telegram, description: c.telegramHint, href: 'https://t.me/+-Fn3F3hprS8wY2M9', action: c.telegramAction, logo: '/community/telegram.png' },
+      ? { id: 'qq', title: c.qq, description: c.qqDescription, note: c.qqHint, qr: { src: qq, width: 128, height: 128, alt: c.qqAlt } }
+      : { id: 'discord', title: c.discord, description: c.discordHint, href: 'https://discord.gg/gEEgV8pkS', action: c.discordAction, logo: discord },
+    { id: 'telegram', title: c.telegram, description: c.telegramHint, href: 'https://t.me/+-Fn3F3hprS8wY2M9', action: c.telegramAction, logo: telegram },
     region === 'cn'
-      ? { id: 'support', title: c.support, description: c.supportDescription, note: c.afdianNote, href: 'https://afdian.com/a/gofurry', action: c.afdianAction, logo: '/community/afdian.png' }
-      : { id: 'support', title: c.support, description: c.supportDescription, note: c.kofiNote, href: 'https://ko-fi.com/gofurry', action: c.kofiAction, logo: '/community/ko-fi.png' },
+      ? { id: 'support', title: c.support, description: c.supportDescription, note: c.afdianNote, href: 'https://afdian.com/a/gofurry', action: c.afdianAction, logo: afdian }
+      : { id: 'support', title: c.support, description: c.supportDescription, note: c.kofiNote, href: 'https://ko-fi.com/gofurry', action: c.kofiAction, logo: kofi },
   ];
 }

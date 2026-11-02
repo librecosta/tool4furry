@@ -17,6 +17,12 @@
 
 ## 品牌、Header、Footer 与主题
 
+组件内部素材默认放在 `src/assets/`，通过静态导入参与构建；只有确实需要固定公开 URL 或原样分发的资源才放在 `public/`。工具像素 PNG、首页两张 AVIF 插画、社群图标/QQ 二维码及 Wavefield 海报分别归入 `tool-icons/`、`illustrations/`、`community/`、`visuals/`；`?url&no-inline` 保留字节并生成带哈希 URL，不在组件中检查 `public/` 文件是否存在。可选媒体未配置时仍不显示。
+
+公开例外为品牌图形/横向字标和母版、OG、Favicon、字体/参考许可及 `/visuals/wavefield/NOTICE.txt`；自托管字体继续由现有 Fontsource CSS 导入。无引用的旧 Hero 装饰和与 PNG 字节相同的 Ko-fi `.ico` 副本已删除，测试夹具、历史证据与工具 Worker/WASM/局部 CSS/按需许可保持原位置。
+
+本次迁移验证（2026-11-03）：`pnpm check` 零诊断，7 文件 / 82 项定向测试及 CN/Global 各一次正式构建与产物守卫通过。真实 Chromium 检查 CN 中文亮色、Global 英文暗色的静态首页/工具箱，海报、全部工具图标、社群图片及插画正常；每地区 22 个迁移素材各仅一份且与原件 SHA-256 一致，10 个固定公开资源保持原字节，旧路径返回 404。没有运行全量测试矩阵或部署。
+
 - 已审核 [双兽首 Master](../public/brand/tool4furry-symbol.svg) 保留路径、两眼与负空间；Header/Footer/React 导航使用一个图形和一份字标，不重绘、不重复名称。正式横向字标为路径，Favicon 使用 ICO/PNG。源稿、正式 OG、字体和授权见 [视觉说明](visual-foundation.md)。
 - Astro 静态导航与 React ToolPageFrame 共用样式/控制语义，普通工具只出现一个产品导航；Canvas 保留浮动入口。移动端保留非交互账户位，隐藏顶部 GitHub；不伪造登录。
 - 精选面板保持原生 details、真实工具链接、Hover/Click/键盘与安全退出；现有面板/Chevron/主题揭幕时长以导航样式和控制脚本为准，不为文档治理改动。

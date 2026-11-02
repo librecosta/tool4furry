@@ -2,15 +2,15 @@
 import * as stylex from '@stylexjs/stylex';
 import { SquaresFourIcon } from '@phosphor-icons/react/ssr';
 import { homeStyles as h } from '../../styles/homepage';
-import { getToolIconPath } from '../../site/tool-icons';
+import { getToolIcon } from '../../site/tool-icons';
 interface Props { id: string; size?: number }
 const { id, size = 40 } = Astro.props;
-const path = getToolIconPath(id);
+const icon = getToolIcon(id);
 ---
-{path ? <img
+{icon ? <img
   data-tool-icon={id}
-  src={`${path}-${size <= 32 ? 32 : 128}.png`}
-  srcset={`${path}-32.png 32w, ${path}-128.png 128w`}
+  src={icon[size <= 32 ? 32 : 128]}
+  srcset={`${icon[32]} 32w, ${icon[128]} 128w`}
   sizes={`${size}px`}
   width={size}
   height={size}

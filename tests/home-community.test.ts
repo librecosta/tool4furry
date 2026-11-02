@@ -1,18 +1,23 @@
 import { describe, expect, it } from 'vitest';
 import { getCommunityCards } from '../src/site/home-community';
+import qq from '../src/assets/community/QQ-Group.avif?url&no-inline';
+import discord from '../src/assets/community/discord.png?url&no-inline';
+import telegram from '../src/assets/community/telegram.png?url&no-inline';
+import afdian from '../src/assets/community/afdian.png?url&no-inline';
+import kofi from '../src/assets/community/ko-fi.png?url&no-inline';
 
 describe('regional community platforms with independent locale copy', () => {
   it.each(['zh', 'en'] as const)('keeps QQ and the disclosed GoFurry support destination on CN/%s', locale => {
     const cards = getCommunityCards('cn', locale);
     expect(cards.map(card => card.id)).toEqual(['qq', 'telegram', 'support']);
     expect(cards[0].title).toBe(locale === 'zh' ? 'QQ 交流群' : 'QQ Group');
-    expect(cards[0].qr).toMatchObject({ src: '/community/QQ-Group.avif', width: 128, height: 128 });
+    expect(cards[0].qr).toMatchObject({ src: qq, width: 128, height: 128 });
     expect(cards[0].href).toBeUndefined();
     expect(cards.filter(card => card.href).map(card => card.href)).toEqual(['https://t.me/+-Fn3F3hprS8wY2M9', 'https://afdian.com/a/gofurry']);
     expect(cards[2].note).toBe(locale === 'zh' ? '通过 GoFurry 的赞助页面' : "Via GoFurry's Afdian page");
     expect(cards[2].description).not.toContain('GoFurry');
     expect(cards[2].title).toBe(locale === 'zh' ? '赞助与支持' : 'Support the Project');
-    expect(cards.map(card => card.logo)).toEqual([undefined, '/community/telegram.png', '/community/afdian.png']);
+    expect(cards.map(card => card.logo)).toEqual([undefined, telegram, afdian]);
     expect(cards[0].description).toBe(locale === 'zh' ? '聊聊工具的使用体验，分享创作中的灵感，也欢迎提出建议。' : 'Talk about tools, share creative ideas, and send feedback.');
     expect(cards[0].note).toBe(locale === 'zh' ? '使用 QQ 扫码加入' : 'Scan with QQ to join');
     expect(cards[2].action).toBe(locale === 'zh' ? '前往爱发电' : 'Open Afdian');
@@ -24,7 +29,7 @@ describe('regional community platforms with independent locale copy', () => {
     expect(cards.every(card => !card.qr)).toBe(true);
     expect(cards.filter(card => card.href).map(card => card.href)).toEqual(['https://discord.gg/gEEgV8pkS', 'https://t.me/+-Fn3F3hprS8wY2M9', 'https://ko-fi.com/gofurry']);
     expect(cards[2].note).toBe(locale === 'zh' ? '通过 GoFurry 的赞助页面' : "Via GoFurry's Ko-fi page");
-    expect(cards.map(card => card.logo)).toEqual(['/community/discord.png', '/community/telegram.png', '/community/ko-fi.png']);
+    expect(cards.map(card => card.logo)).toEqual([discord, telegram, kofi]);
     expect(cards[0].description).toBe(locale === 'zh' ? '聊聊工具的使用体验，分享创作中的灵感，也欢迎提出建议。' : 'Talk tools, share creative ideas, and give feedback alongside fellow creators.');
     expect(cards[2].action).toBe(locale === 'zh' ? '在 Ko-fi 支持我们' : 'Support on Ko-fi');
   });

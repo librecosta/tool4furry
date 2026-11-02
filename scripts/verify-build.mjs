@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { readFile, readdir, stat } from 'node:fs/promises';
-import { dirname, extname, resolve } from 'node:path';
+import { dirname, extname, relative, resolve } from 'node:path';
 import { JSDOM } from 'jsdom';
 import { createHash } from 'node:crypto';
 import ts from 'typescript';
 
 // Read the same pure metadata graph as Astro, without importing React/tool code.
 // Local TS imports are resolved for this Node audit only; no generated sources.
+// URL imports become source paths here, then final HTML URLs are byte-verified.
 async function staticData(path) {
   return import(await metadataURL(resolve(path)));
 }
@@ -20,8 +21,16 @@ async function metadataURL(path) {
     const specifier = statement.moduleSpecifier;
     if (!specifier) continue;
     assert(ts.isStringLiteral(specifier) && specifier.text.startsWith('.'), 'Metadata must use pure local imports');
-    const dependency = resolve(dirname(path), specifier.text + (extname(specifier.text) ? '' : '.ts'));
-    js = js.slice(0, specifier.getStart(parsed)) + JSON.stringify(await metadataURL(dependency)) + js.slice(specifier.end);
+    let dependencyURL;
+    if (/\.(?:png|avif|svg|webp|jpe?g|ico)\?url&no-inline$/.test(specifier.text)) {
+      const source = relative(process.cwd(), resolve(dirname(path), specifier.text.split('?')[0])).replaceAll('\\', '/');
+      assert(source.startsWith('src/assets/'), 'Component URL imports belong to src/assets');
+      dependencyURL = 'data:text/javascript;base64,' + Buffer.from(`export default ${JSON.stringify(source)};`).toString('base64');
+    } else {
+      const dependency = resolve(dirname(path), specifier.text + (extname(specifier.text) ? '' : '.ts'));
+      dependencyURL = await metadataURL(dependency);
+    }
+    js = js.slice(0, specifier.getStart(parsed)) + JSON.stringify(dependencyURL) + js.slice(specifier.end);
   }
   const url = 'data:text/javascript;base64,' + Buffer.from(js).toString('base64');
   metadataURLs.set(path, url);
@@ -32,17 +41,33 @@ const { imageResizeCropContent } = await staticData('src/site/image-resize-crop-
 const { paletteExtractorContent } = await staticData('src/site/palette-extractor-content.ts');
 const { imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent } = await staticData('src/site/image-basics-content.ts');
 const { tools } = await staticData('src/tools/registry.ts');
-const { toolIconPaths, getToolIconPath } = await staticData('src/site/tool-icons.ts');
-function assertToolIcon(container, id, size) {
-  const path = getToolIconPath(id);
-  const icon = container.querySelector(path ? 'img[data-tool-icon]' : 'svg[data-tool-icon-fallback]');
+const { getToolIcon } = await staticData('src/site/tool-icons.ts');
+const verifiedAssets = new Map();
+async function assertImportedAsset(url, source) {
+  assert(source.startsWith('src/assets/'), 'Only component-owned sources are audited as imported assets');
+  assert(/^\/_astro\/[^/?#]+\.(?:png|avif|svg|webp|jpe?g|ico)$/.test(url), `Local emitted asset URL: ${url}`);
+  assert(!url.includes('..') && files.includes(url.slice(1)), `Asset exists in this regional output: ${url}`);
+  assert.notEqual(url.slice(url.lastIndexOf('/') + 1), source.slice(source.lastIndexOf('/') + 1), 'Imported assets carry a build hash');
+  const key = `${url}\0${source}`;
+  if (!verifiedAssets.has(key)) {
+    const bytes = await readFile(resolve(root, url.slice(1)));
+    assert.deepEqual(bytes, await readFile(resolve(source)), `Approved source bytes unchanged: ${source}`);
+    verifiedAssets.set(key, bytes);
+  }
+  return verifiedAssets.get(key);
+}
+async function assertToolIcon(container, id, size) {
+  const paths = getToolIcon(id);
+  const icon = container.querySelector(paths ? 'img[data-tool-icon]' : 'svg[data-tool-icon-fallback]');
   assert(icon, `Tool icon is present for ${id}`);
   assert.equal(icon.getAttribute('width'), String(size), 'Tool icon reserves its display width');
   assert.equal(icon.getAttribute('height'), String(size), 'Tool icon reserves its display height');
-  if (path) {
+  if (paths) {
     assert.equal(icon.dataset.toolIcon, id, 'Pixel icon matches the adjacent tool');
-    assert.equal(icon.getAttribute('src'), `${path}-${size <= 32 ? 32 : 128}.png`);
-    assert.equal(icon.getAttribute('srcset'), `${path}-32.png 32w, ${path}-128.png 128w`);
+    await assertImportedAsset(icon.getAttribute('src'), paths[size <= 32 ? 32 : 128]);
+    const candidates = icon.getAttribute('srcset')?.split(',').map(value => value.trim().split(/\s+/));
+    assert.deepEqual(candidates?.map(([, width]) => width), ['32w', '128w']);
+    for (const [url, width] of candidates) await assertImportedAsset(url, paths[Number.parseInt(width)]);
     assert.equal(icon.getAttribute('sizes'), `${size}px`);
     assert.equal(icon.getAttribute('alt'), '', 'Decorative icon does not repeat the tool name');
   } else {
@@ -192,6 +217,7 @@ if (fixtureMode)
 const files = (await readdir(root, { recursive: true })).map((file) =>
   file.replaceAll('\\', '/'),
 );
+assert(!files.some(file => /^(?:assets\/tool-icons\/|community\/|visuals\/home\/|visuals\/wavefield\/wavefield\.avif$|brand\/creative-fragments\.svg$)/.test(file)), 'Migrated/unused component assets are not duplicated at old public URLs');
 const published = tools.filter(tool => tool.status === 'published' && tool.regions.includes(region));
 for (const prefix of ['', region === 'cn' ? 'en/' : 'zh/'])
   assert.deepEqual(
@@ -237,16 +263,6 @@ assert(runtimeImport && files.includes('_astro/' + runtimeImport[2]), 'GPU runti
 const waveRuntime = await readFile(resolve(root, '_astro', runtimeImport[2]), 'utf8');
 assert(waveRuntime.includes('createShaderModule') && waveRuntime.includes('sampleNodes') && waveRuntime.includes('premultiplied'));
 assert(!/waveReference|waveSeed|waveFail|waveDpr|3592\.922|react-particle-orb/.test(waveRuntime), 'No article reference/DEV controls in production GPU core');
-const wavePoster = await readFile(resolve(root, 'visuals/wavefield/wavefield.avif'));
-assert.deepEqual(wavePoster, await readFile('public/visuals/wavefield/wavefield.avif'), 'Approved poster bytes are unchanged');
-assert.equal(wavePoster.length, 16651);
-assert.equal(createHash('sha256').update(wavePoster).digest('hex'), '27593852d0a627510e4fe304f63ffdec91707bf26692f5cb567f9d8bd09a72e7');
-assert.equal(wavePoster.toString('ascii', 4, 8), 'ftyp');
-assert(wavePoster.subarray(8, 32).toString('ascii').includes('avif'), 'Real AVIF poster');
-const ispe = wavePoster.indexOf('ispe');
-assert(ispe > 0);
-assert.equal(wavePoster.readUInt32BE(ispe + 8), 1440);
-assert.equal(wavePoster.readUInt32BE(ispe + 12), 576);
 assert(files.includes('visuals/wavefield/NOTICE.txt'), 'Redistributed core retains its license and reference notices');
 const allHTMLFiles = files.filter((file) => file.endsWith('.html'));
 if (!fixtureMode)
@@ -301,6 +317,16 @@ for (const kind of Object.keys(informationPages))
   assert(htmlFiles.includes(`${kind}/index.html`), `Missing static information page: ${kind}`);
 const home = await readHTML('index.html');
 const document = new JSDOM(home).window.document;
+const wavePosterURL = document.querySelector('[data-wavefield] img')?.getAttribute('src');
+const wavePoster = await assertImportedAsset(wavePosterURL, 'src/assets/visuals/wavefield.avif');
+assert.equal(wavePoster.length, 16651);
+assert.equal(createHash('sha256').update(wavePoster).digest('hex'), '27593852d0a627510e4fe304f63ffdec91707bf26692f5cb567f9d8bd09a72e7');
+assert.equal(wavePoster.toString('ascii', 4, 8), 'ftyp');
+assert(wavePoster.subarray(8, 32).toString('ascii').includes('avif'), 'Real AVIF poster');
+const ispe = wavePoster.indexOf('ispe');
+assert(ispe > 0);
+assert.equal(wavePoster.readUInt32BE(ispe + 8), 1440);
+assert.equal(wavePoster.readUInt32BE(ispe + 12), 576);
 const site = origin + '/' + prefix;
 assert.equal(document.documentElement.lang, locale === 'zh' ? 'zh-CN' : 'en');
 assert.equal(
@@ -372,7 +398,8 @@ for (const [index, story] of stories.entries()) {
   assert.equal(story.querySelector('a')?.textContent, (locale === 'zh' ? ['提交反馈', '联系我们'] : ['Submit feedback', 'Contact us'])[index]);
   assert.equal(story.querySelector('a')?.getAttribute('href'), ['https://github.com/librecosta/tool4furry/issues', 'mailto:contact@librecosta.com'][index]);
   const img = story.querySelector('img');
-  assert.equal(img?.getAttribute('src'), `/visuals/home/${storyAssets[index][0]}`);
+  const source = `src/assets/illustrations/${storyAssets[index][0]}`;
+  const bytes = await assertImportedAsset(img?.getAttribute('src'), source);
   assert.equal(img.width, 500); assert.equal(img.height, 400);
   assert.equal(img.alt, ''); assert.equal(img.getAttribute('loading'), 'lazy'); assert.equal(img.getAttribute('decoding'), 'async');
   assert.equal(img.getAttribute('draggable'), 'false', 'Only these decorative images explicitly disable native dragging');
@@ -380,7 +407,6 @@ for (const [index, story] of stories.entries()) {
   assert(!story.hasAttribute('data-story-reveal'), 'Static stories remain visible without JavaScript');
   assert(!(story.querySelector('script, astro-island, canvas, video, button')));
   assert(story.firstElementChild.contains(heading) && !story.firstElementChild.contains(img), 'Reading order is text before decorative artwork');
-  const bytes = await readFile(resolve(root, `visuals/home/${storyAssets[index][0]}`));
   assert.equal(createHash('sha256').update(bytes).digest('hex'), storyAssets[index][1], 'Approved AVIF is copied without re-encoding');
 }
 assert.equal(stories[0].querySelector('a').target, '_blank');
@@ -398,23 +424,20 @@ assert.deepEqual(communityLinks.map(a => a.getAttribute('href')), region === 'cn
   ? ['https://t.me/+-Fn3F3hprS8wY2M9', 'https://afdian.com/a/gofurry']
   : ['https://discord.gg/gEEgV8pkS', 'https://t.me/+-Fn3F3hprS8wY2M9', 'https://ko-fi.com/gofurry']);
 assert(communityLinks.every(a => a.target === '_blank' && a.rel === 'noopener noreferrer'), 'Community destinations are native external links');
-const communityLogos = region === 'cn' ? ['/community/telegram.png', '/community/afdian.png'] : ['/community/discord.png', '/community/telegram.png', '/community/ko-fi.png'];
-assert.deepEqual(communityLinks.map(a => a.querySelector('img')?.getAttribute('src')), communityLogos);
+const communitySources = region === 'cn' ? ['telegram.png', 'afdian.png'] : ['discord.png', 'telegram.png', 'ko-fi.png'];
+const communityLogos = communityLinks.map(a => a.querySelector('img')?.getAttribute('src'));
+for (const [index, url] of communityLogos.entries()) await assertImportedAsset(url, `src/assets/community/${communitySources[index]}`);
 assert(communityLinks.every(a => a.querySelector('img')?.getAttribute('alt') === '' && a.querySelector('img')?.getAttribute('aria-hidden') === 'true'), 'Link text owns the accessible name');
-for (const name of ['discord.png', 'telegram.png', 'afdian.png', 'ko-fi.ico', 'ko-fi.png'])
-  assert.deepEqual(await readFile(resolve(root, 'community', name)), await readFile(resolve('public/community', name)), 'Platform assets are copied unchanged');
 assert.equal(community.querySelectorAll('button, script, astro-island').length, 0, 'Community cards add no scripts or fake actions');
 if (region === 'cn') {
   const qr = community.querySelector('img');
-  assert.equal(qr?.getAttribute('src'), '/community/QQ-Group.avif');
   assert.equal(qr.width, 128); assert.equal(qr.height, 128);
   assert.equal(communityCards[0].querySelectorAll('a').length, 0, 'QQ has no invented direct link');
-  const qrBytes = await readFile(resolve(root, 'community/QQ-Group.avif'));
-  assert.deepEqual(qrBytes, await readFile('public/community/QQ-Group.avif'));
+  const qrBytes = await assertImportedAsset(qr?.getAttribute('src'), 'src/assets/community/QQ-Group.avif');
   assert.equal(createHash('sha256').update(qrBytes).digest('hex'), '3cd0e1d70b2a0153024d13212cce2844bc0ff5ed00b6b634e4b57ad9748fc3b4', 'Approved QR bytes remain unchanged');
   assert(communityCards[2].textContent.includes('GoFurry'), 'Support identifies the actual Afdian account');
 } else {
-  assert.equal(community.querySelectorAll('img[src="/community/QQ-Group.avif"]').length, 0, 'Global pages never request the CN QR image');
+  assert.equal(community.querySelectorAll('[data-community-card="qq"]').length, 0, 'Global pages never request the CN QR image');
   assert.equal(communityCards[2].querySelectorAll('a').length, 1, 'One real Ko-fi sponsorship entry');
   assert.equal(communityCards[2].querySelector('a').textContent.trim(), locale === 'zh' ? '在 Ko-fi 支持我们' : 'Support on Ko-fi');
   assert(communityCards[2].textContent.includes('GoFurry'), 'Support identifies the actual Ko-fi account');
@@ -516,7 +539,7 @@ const png = await readFile(resolve(root, 'brand/tool4furry-favicon.png'));
 assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a', 'Real PNG favicon');
 assert.equal(png.readUInt32BE(16), 96);
 assert.equal(png.readUInt32BE(20), 96);
-for (const path of [symbol, horizontal, '/brand/tool4furry-og-master.svg', '/brand/creative-fragments.svg']) {
+for (const path of [symbol, horizontal, '/brand/tool4furry-og-master.svg']) {
   const svg = await readFile(resolve(root, path.slice(1)), 'utf8');
   const asset = new JSDOM(svg, { contentType: 'image/svg+xml' }).window
     .document;
@@ -535,23 +558,23 @@ for (const path of [symbol, horizontal, '/brand/tool4furry-og-master.svg', '/bra
     !/\son\w+\s*=|(?:href|url)\s*[(=]/i.test(svg),
     `${path}: external resources or event handlers`,
   );
-  if (path !== '/brand/creative-fragments.svg') {
-    assert.equal(asset.querySelectorAll('text, filter, use, style').length, 0, 'Brand vectors use actual paths, without fonts or effects');
-    assert.equal(svg.replace(/\r\n?/g, '\n'), (await readFile(resolve('public', path.slice(1)), 'utf8')).replace(/\r\n?/g, '\n'), 'Approved brand assets copied without transformation');
-  }
+  assert.equal(asset.querySelectorAll('text, filter, use, style').length, 0, 'Brand vectors use actual paths, without fonts or effects');
+  assert.equal(svg.replace(/\r\n?/g, '\n'), (await readFile(resolve('public', path.slice(1)), 'utf8')).replace(/\r\n?/g, '\n'), 'Approved brand assets copied without transformation');
 }
 for (const image of document.querySelectorAll('img')) {
   const src = image.getAttribute('src');
-  const communityQR = region === 'cn' && src === '/community/QQ-Group.avif' && image.closest('[data-home-community] [data-community-card="qq"]');
+  const communityQR = region === 'cn' && src === communityCards[0].querySelector('img')?.getAttribute('src')
+    && image.closest('[data-home-community] [data-community-card="qq"]');
   const communityLogo = communityLogos.includes(src) && image.closest('[data-home-community] a');
-  const editorialArtwork = storyAssets.some(([name]) => src === `/visuals/home/${name}`) && image.closest('[data-home-story]');
-  const iconPath = getToolIconPath(image.dataset.toolIcon);
-  const toolIcon = iconPath && [32, 128].some(size => src === `${iconPath}-${size}.png`)
-    && image.closest('[data-home-tool], [data-home-role-tool]');
+  const editorialArtwork = stories.some(story => story.querySelector('img')?.getAttribute('src') === src) && image.closest('[data-home-story]');
+  const owner = image.closest('[data-home-tool], [data-home-role-tool]');
+  const id = owner?.dataset.homeTool ?? owner?.dataset.homeRoleTool;
+  const toolIcon = id && image.dataset.toolIcon === id && getToolIcon(id);
+  if (toolIcon) await assertImportedAsset(src, toolIcon[Number(image.getAttribute('width')) <= 32 ? 32 : 128]);
   assert(
     image.closest('[data-site-compliance]')
       ? src?.startsWith('/') && !src.startsWith('//')
-      : communityQR || communityLogo || editorialArtwork || toolIcon || src?.startsWith('/brand/') || (src === '/visuals/wavefield/wavefield.avif' && image.closest('[data-wavefield]')),
+      : communityQR || communityLogo || editorialArtwork || toolIcon || src?.startsWith('/brand/') || (src === wavePosterURL && image.closest('[data-wavefield]')),
     'Homepage images are approved brand/compliance, Wavefield, regional community, exact editorial assets or mapped pixel tool icons',
   );
   assert.equal(
@@ -568,7 +591,7 @@ assertStaticNavigation(document, true);
 const waveRoot = document.querySelector('[data-home-section="hero"] [data-wavefield="static"]');
 assert(waveRoot, 'Hero enhancement starts as complete static content');
 const poster = waveRoot.querySelector('img'), waveCanvas = waveRoot.querySelector('canvas');
-assert.equal(poster?.getAttribute('src'), '/visuals/wavefield/wavefield.avif');
+assert.equal(poster?.getAttribute('src'), wavePosterURL);
 assert.equal(poster.getAttribute('width'), '1440'); assert.equal(poster.getAttribute('height'), '576');
 assert.equal(poster.getAttribute('aria-hidden'), 'true'); assert.equal(waveCanvas?.getAttribute('aria-hidden'), 'true');
 assert.equal(waveRoot.querySelectorAll('img, canvas').length, 2, 'One decorative poster and one visible-size enhancement canvas');
@@ -656,15 +679,9 @@ assert(cards.length <= 4, 'Homepage featured grid must curate at most four tools
 assert.equal(catalog.querySelectorAll('[data-home-film], [data-home-featured] img:not([data-tool-icon]), [data-home-featured] picture').length, 0, 'Featured grid has no filmstrip or cover images');
 assert.equal(catalog.querySelectorAll('[tabindex]').length, 0, 'No obsolete focusable filmstrip');
 for (const card of cards) {
-  assertToolIcon(card, card.dataset.toolCard, 48);
+  await assertToolIcon(card, card.dataset.toolCard, 48);
 }
-for (const card of allCards) assertToolIcon(card, card.dataset.toolCard, 40);
-for (const path of Object.values(toolIconPaths)) {
-  for (const size of [32, 128]) {
-    const file = `${path.slice(1)}-${size}.png`;
-    assert.deepEqual(await readFile(resolve(root, file)), await readFile(resolve('public', file)), 'Approved pixel PNG is copied without transformation');
-  }
-}
+for (const card of allCards) await assertToolIcon(card, card.dataset.toolCard, 40);
 assert.equal(allCards.length, toolLinks.size, 'Duplicate full catalog URLs');
 assert.equal(
   allCards.length,
@@ -746,7 +763,7 @@ for (const role of document.querySelectorAll('[data-home-role]')) {
   assert.equal(role.querySelectorAll('[data-home-media="thumbnail"], [data-home-demo]').length, 0, 'Role lists contain no covers or filler tools');
   assert.equal(new Set(links.map(link => link.dataset.homeRoleTool)).size, links.length);
   for (const link of links) {
-    assertToolIcon(link, link.dataset.homeRoleTool, 24);
+    await assertToolIcon(link, link.dataset.homeRoleTool, 24);
     assert.equal(link.getAttribute('title'), link.textContent.trim(), 'Full tool name is available when truncated');
     const entry = allCards.find(card => card.dataset.toolCard === link.dataset.homeRoleTool);
     assert(entry && entry.getAttribute('href') === link.getAttribute('href'), 'Role tools must exist in the published regional catalog');

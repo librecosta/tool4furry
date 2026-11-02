@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getRoleShowcases, getFeaturedShowcase, roleShowcases, homepageCopy, homepageStories } from '../src/site/homepage-showcase';
+import { getRoleShowcases, getFeaturedShowcase, roleShowcases, homepageCopy, homepageStories, homepageMedia, hasHomeMedia } from '../src/site/homepage-showcase';
 import { getHomepageEntries } from '../src/site/catalog';
 import { imageConverterDefinition } from '../src/tools/image-converter/definition';
 import { imageResizeCropDefinition } from '../src/tools/image-resize-crop/definition';
@@ -12,6 +12,13 @@ import { fixtureTools } from './fixtures/tools';
 import type { ToolDefinition } from '../src/tools/types';
 
 describe('four-slot featured presentation', () => {
+  it('keeps delivered imported artwork and leaves optional media absent', () => {
+    expect(hasHomeMedia(homepageMedia.feedback), homepageMedia.feedback.src).toBe(true);
+    expect(hasHomeMedia(homepageMedia.collaboration)).toBe(true);
+    expect(hasHomeMedia(homepageMedia.featuredDecor)).toBe(false);
+    expect(hasHomeMedia({ ...homepageMedia.feedback, src: 'https://example.com/art.avif' })).toBe(false);
+    expect(hasHomeMedia({ ...homepageMedia.feedback, width: 0 })).toBe(false);
+  });
   it.each(['cn', 'global'] as const)('preserves %s editorial order and locale without reducing the navigation limit', region => {
     const list = [
       { ...imageConverterDefinition, regions: [region] },

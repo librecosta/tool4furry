@@ -1,8 +1,6 @@
 ---
-import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
 import * as stylex from '@stylexjs/stylex';
-import type { HomeMedia } from '../../site/homepage-showcase';
+import { hasHomeMedia, hasHomeMediaSource, type HomeMedia } from '../../site/homepage-showcase';
 import type { Locale } from '../../i18n/locale';
 import { homeStyles as h } from '../../styles/homepage';
 interface Props {
@@ -12,14 +10,13 @@ interface Props {
   decorative?: boolean;
 }
 const { media, locale, kind = 'cover', decorative = false } = Astro.props;
-// Only delivered local public assets are emitted. No absent-file requests.
-const present = (src?: string) => !!src && /^\/(?!\/)(?!.*\.\.)[^?#]+$/.test(src) && existsSync(resolve('public', src.slice(1)));
+// Files are verified by static imports; omitted optional media stays absent.
 const sources = (['avif', 'webp'] as const).map(format => ({
   type: `image/${format}`,
-  srcset: media?.[format]?.filter(candidate => present(candidate.src)).map(candidate => `${candidate.src} ${candidate.width}w`).join(', '),
+  srcset: media?.[format]?.filter(hasHomeMediaSource).map(candidate => `${candidate.src} ${candidate.width}w`).join(', '),
 })).filter(source => source.srcset);
 ---
-{media && present(media.src) && <div data-home-media={kind} {...stylex.attrs(h.media, h[kind])}>
+{hasHomeMedia(media) && <div data-home-media={kind} {...stylex.attrs(h.media, h[kind])}>
   <picture {...stylex.attrs(h.picture)}>
     {sources.map(source => <source type={source.type} srcset={source.srcset} sizes={media.sizes ?? '100vw'} />)}
     <img src={media.src} alt={decorative ? '' : media.alt[locale]} width={media.width} height={media.height} loading="lazy" decoding="async" style={{objectPosition: media.focus ?? 'center'}} {...stylex.attrs(h.image)} />

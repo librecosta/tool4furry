@@ -1,11 +1,9 @@
 ---
 import * as stylex from '@stylexjs/stylex';
-import { statSync } from 'node:fs';
-import { resolve } from 'node:path';
 import type { Locale } from '../../i18n/locale';
 import { localizedPath } from '../../i18n/locale';
 import type { Region } from '../../config/region';
-import { homepageCopy, getRoleShowcases } from '../../site/homepage-showcase';
+import { homepageCopy, getRoleShowcases, hasHomeMedia } from '../../site/homepage-showcase';
 import { homeStyles as h } from '../../styles/homepage';
 import HomeMedia from './HomeMedia.astro';
 import RoleIcon from './RoleIcon.astro';
@@ -14,9 +12,7 @@ interface Props { region: Region; locale: Locale }
 const { region, locale } = Astro.props;
 const roles = getRoleShowcases(region, locale, import.meta.env.DEV).map(role => ({
   ...role,
-  showArtwork: role.media && /^\/(?!\/)(?!.*\.\.)[^?#]+$/.test(role.media.src)
-    && Number.isInteger(role.media.width) && role.media.width > 0 && Number.isInteger(role.media.height) && role.media.height > 0
-    && statSync(resolve('public', role.media.src.slice(1)), { throwIfNoEntry: false })?.isFile(),
+  showArtwork: hasHomeMedia(role.media),
 }));
 const c = homepageCopy[locale];
 ---

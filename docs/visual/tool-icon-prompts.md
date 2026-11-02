@@ -335,7 +335,7 @@ The final result must look like authentic hand-placed pixel art, not a downsampl
 
 ## 四、PNG 素材交付规则
 
-每款工具最终交付两张 PNG，建议统一存放在 `public/assets/tool-icons/`，使用 Registry 工具 ID 命名：
+每款工具最终交付两张 PNG，统一存放在 `src/assets/tool-icons/`，通过静态导入参与构建，使用 Registry 工具 ID 命名：
 
 | 文件 | 用途 |
 | --- | --- |
@@ -357,7 +357,7 @@ The final result must look like authentic hand-placed pixel art, not a downsampl
 
 ### 七款工具素材接入（2026-11-02）
 
-维护者随后提供七组 32px / 128px PNG，全部验证为 8-bit RGBA、真实透明背景、精确最近邻 4× 像素关系。14 个文件按下表映射原样复制至 `public/assets/tool-icons/`，保留原始文件字节、色彩和 Alpha，没有重编码或重新生成。EXIF 附件实际包含 32px 文件，核对通过后直接复用，无需恢复生成。
+维护者随后提供七组 32px / 128px PNG，全部验证为 8-bit RGBA、真实透明背景、精确最近邻 4× 像素关系。14 个文件按下表映射接入，后随全站素材整理迁至 `src/assets/tool-icons/`，保留原始文件字节、色彩和 Alpha，没有重编码或重新生成。EXIF 附件实际包含 32px 文件，核对通过后直接复用，无需恢复生成。
 
 | 工具 ID / 正式文件前缀 | 附件前缀 | 已交付 |
 | --- | --- | --- |

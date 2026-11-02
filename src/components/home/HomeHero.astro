@@ -5,13 +5,14 @@ import { localizedPath } from '../../i18n/locale';
 import type { Region } from '../../config/region';
 import { messages } from '../../i18n/messages';
 import { homeStyles as h } from '../../styles/homepage';
+import wavefieldPoster from '../../assets/visuals/wavefield.avif?url&no-inline';
 interface Props { region: Region; locale: Locale }
 const { region, locale } = Astro.props;
 const t = messages[locale];
 ---
 <section data-home-section="hero" aria-labelledby="hero-heading" {...stylex.attrs(h.hero)}>
   <div data-hero-media data-wavefield="static" {...stylex.attrs(h.heroScene)}>
-    <img src="/visuals/wavefield/wavefield.avif" width="1440" height="576" alt="" aria-hidden="true" fetchpriority="high" decoding="async" {...stylex.attrs(h.wavePoster)} />
+    <img src={wavefieldPoster} width="1440" height="576" alt="" aria-hidden="true" fetchpriority="high" decoding="async" {...stylex.attrs(h.wavePoster)} />
     <canvas data-wavefield-canvas aria-hidden="true" {...stylex.attrs(h.waveCanvas)}></canvas>
     <div aria-hidden="true" {...stylex.attrs(h.waveVeil)}></div>
   </div>

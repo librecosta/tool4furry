@@ -3,11 +3,13 @@ import type { Locale } from '../i18n/locale';
 import { getCatalogEntries, type CatalogEntry } from './catalog';
 import { tools } from '../tools/registry';
 import { roleLabel, type RoleId } from './roles';
+import luminousBlue from '../assets/illustrations/luminous-blue.avif?url&no-inline';
+import luminousPurple from '../assets/illustrations/luminous-purple.avif?url&no-inline';
 
 type Localized = Record<Locale, string>;
-type MediaCandidate = { src: `/${string}`; width: number };
+type MediaCandidate = { src: string; width: number };
 export type HomeMedia = {
-  src: `/${string}`;
+  src: string;
   alt: Localized;
   width: number;
   height: number;
@@ -25,18 +27,29 @@ export type RoleShowcase = {
   icon?: HomeMedia;
 };
 
-// Local editorial slots only, never a publication list. Set a path after the
-// approved file is delivered; absent files render no artwork or empty column.
+// Local editorial slots only, never a publication list. Add a static asset
+// import after delivery; an omitted optional slot renders no artwork/column.
 export const homepageMedia: {
   featuredDecor?: HomeMedia;
   feedback: HomeMedia;
   collaboration: HomeMedia;
   tools: Readonly<Record<string, HomeMedia>>;
 } = {
-  feedback: { src: '/visuals/home/luminous-blue.avif', width: 500, height: 400, alt: { zh: '', en: '' } },
-  collaboration: { src: '/visuals/home/luminous-purple.avif', width: 500, height: 400, alt: { zh: '', en: '' } },
+  feedback: { src: luminousBlue, width: 500, height: 400, alt: { zh: '', en: '' } },
+  collaboration: { src: luminousPurple, width: 500, height: 400, alt: { zh: '', en: '' } },
   tools: {},
 };
+
+export function hasHomeMediaSource(media?: Pick<HomeMedia, 'src' | 'width'>): boolean {
+  // Vite DEV asset URLs can retain ?no-inline; production URLs carry a hash.
+  return !!media && /^\/(?!\/)(?!.*\.\.)[^?#]+(?:\?[^#]*)?$/.test(media.src)
+    && Number.isInteger(media.width) && media.width > 0;
+}
+
+export function hasHomeMedia(media?: HomeMedia): media is HomeMedia {
+  return !!media && hasHomeMediaSource(media)
+    && Number.isInteger(media.height) && media.height > 0;
+}
 
 export const roleShowcases: readonly RoleShowcase[] = [
   { id: 'painter', label: roleLabel('painter'), description: { zh: '从画布到交付素材', en: 'From the canvas to finished assets' }, toolIds: ['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'] },
