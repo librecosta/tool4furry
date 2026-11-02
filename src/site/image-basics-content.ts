@@ -44,16 +44,73 @@ export const comicPageOrganizerContent: Content = {
 };
 export const imageWatermarkContent: Content = {
   zh: {
-    title: '在线图片水印 - 文字与图片批量水印 | Tool4Furry', description: '在浏览器本地为图片添加文字或图片水印，调整位置、大小、透明度和边距，预览并下载 PNG、JPEG、WebP 或 ZIP。', h1: '图片水印', intro: '为作品添加文字或图片水印，预览后批量保存。',
-    steps: ['添加一张或多张图片，选择文字水印或导入水印图片。', '设置文字颜色、大小或图片比例、透明度、九宫格位置和边距。', '预览构图，开始处理，并下载有效结果或 ZIP。'],
-    limitations: ['输出 PNG、JPEG、WebP；JPEG 的透明区域会使用背景色填充。', '批量处理按每张原图的尺寸计算相同的水印规则，保留图片比例；水印不能保证阻止作品被复制。', '图片只在本地处理，受设备及水印图片限制；使用本站本地字体，不支持字体上传或远程字体。默认清理常见来源隐私元数据。'],
-    faq: [{question: '能批量添加相同水印吗？', answer: '可以。所有文件共用当前文字或图片水印设置，逐张生成并验证输出。'}, {question: '透明图片水印会保留透明度吗？', answer: '会按水印图片的透明度与设置的不透明度组合绘制，最终背景还取决于所选输出格式。'}, {question: '原始图片会被修改吗？', answer: '不会。工具生成独立结果，原始文件保持不变。'}],
+    title: '在线图片加水印 - 文字、Logo 与批量平铺 | Tool4Furry',
+    description: '在线为图片添加文字或 Logo 水印，支持批量处理、旋转平铺、位置与透明度调整。支持安全静态 SVG 水印素材，导出 PNG、JPEG、WebP 或受限 AVIF，全部在浏览器本地完成。',
+    h1: '图片水印',
+    intro: '为作品添加文字或 Logo 水印，实时调整效果，轻松批量保存。',
+    steps: [
+      '**添加图片：** 选择一张或多张图片，支持 PNG、JPEG、WebP 和部分静态 AVIF。',
+      '**设置水印：** 添加文字或上传 Logo，调整颜色、透明度和位置。高级模式还可以设置旋转角度、平铺密度与水印大小。',
+      '**预览与下载：** 实时查看水印效果，选择输出格式，批量生成后逐张下载或打包为 ZIP。',
+    ],
+    limitations: [
+      '支持文字水印和 PNG、JPEG、WebP、部分静态 AVIF 图片水印，也支持符合安全限制的静态 SVG Logo。复杂 SVG、动画和部分特殊格式暂不支持。',
+      '输出支持 PNG、JPEG、WebP，以及符合设备与尺寸限制的 AVIF。JPEG 不支持透明背景，透明区域将使用设置的背景色填充。',
+      '图片只在浏览器本地处理，文件数量、大小及分辨率受设备限制。输出默认清理常见来源隐私元数据。水印可以帮助标识作品，但不能保证阻止复制或移除。',
+    ],
+    faq: [
+      {
+        question: '可以一次给多张图片添加相同水印吗？',
+        answer: '可以。导入多张图片后，统一设置文字或 Logo 水印，工具会逐张处理。完成后可以单独下载，也可以打包为 ZIP。',
+      },
+      {
+        question: '可以制作倾斜、平铺的水印吗？',
+        answer: '可以。在高级模式中选择单个或平铺水印，调整旋转角度。平铺模式提供稀疏、标准和密集三种密度，适用于文字与图片水印。',
+      },
+      {
+        question: '可以使用 SVG Logo 作为水印吗？',
+        answer: '可以使用符合安全限制的静态 SVG 图形。工具支持部分常见的矢量形状、路径和渐变，但不支持脚本、动画、外部资源或复杂 SVG 结构。如果文件无法读取，可以先将 Logo 转换为 PNG。',
+      },
+      {
+        question: '图片会上传到服务器吗？',
+        answer: '不会。图片读取、水印预览、绘制和导出都在当前浏览器中完成，无需上传。原始图片不会被修改，生成的文件由你自行下载保存。',
+      },
+    ],
   },
   en: {
-    title: 'Image Watermark – Text & Batch Watermarks | Tool4Furry', description: 'Add text or image watermarks locally. Adjust placement, size, opacity and margins, preview the composition, then download PNG, JPEG, WebP or a ZIP.', h1: 'Image Watermark', intro: 'Add a text or image watermark, preview it, and save your images in a batch.', headings: englishHeadings,
-    steps: ['Add one or more images and choose text or an uploaded watermark image.', 'Set text color, size or image scale, opacity, a nine-position placement and margins.', 'Preview the composition, start processing, and download verified results individually or as a ZIP.'],
-    limitations: ['Exports PNG, JPEG and WebP. Transparent areas in JPEG output are filled with a background color.', 'Batch settings are calculated for each source image while retaining its aspect ratio. Watermarks cannot guarantee protection against copying.', 'Processing is local and device limits apply, including a separate watermark-image limit. Uses local site fonts without font uploads or remote fonts. Common source privacy metadata is removed by default.'],
-    faq: [{question: 'Can I apply the same watermark to several images?', answer: 'Yes. All files use the current text or image watermark settings and are processed and verified one at a time.'}, {question: 'Does an image watermark keep transparency?', answer: 'Its alpha channel is combined with the selected opacity. Final background behavior also depends on the output format.'}, {question: 'Is my original image changed?', answer: 'No. The tool generates a separate output and leaves the original file unchanged.'}],
+    title: 'Online Image Watermark Tool – Text, Logo & Batch | Tool4Furry',
+    description: 'Add text or logo watermarks to images in your browser. Apply watermarks in batches, adjust rotation, tiled patterns, position and opacity, and export PNG, JPEG, WebP or supported AVIF images. Safe static SVG logos are supported.',
+    h1: 'Image Watermark',
+    intro: 'Add text or logo watermarks to your artwork, fine-tune the result, and save multiple images with ease.',
+    headings: englishHeadings,
+    steps: [
+      '**Add images:** Choose one or more PNG, JPEG, WebP or supported static AVIF images.',
+      '**Customize your watermark:** Add text or upload a logo, then adjust color, opacity and placement. Advanced mode also offers rotation, tiled patterns and watermark sizing.',
+      '**Preview and download:** See the result live, choose an output format, and process your images. Download files individually or together as a ZIP.',
+    ],
+    limitations: [
+      'Supports text watermarks and image watermarks using PNG, JPEG, WebP, selected static AVIF and supported safe static SVG logos. Complex SVG files, animations and some specialized formats are not supported.',
+      'Exports PNG, JPEG, WebP and AVIF on supported devices within output limits. JPEG does not support transparency, so transparent areas are filled with the selected background color.',
+      'Processing takes place locally in your browser, subject to device file-count, size and resolution limits. Common source privacy metadata is removed by default. Watermarks can identify your work but cannot guarantee protection against copying or removal.',
+    ],
+    faq: [
+      {
+        question: 'Can I watermark multiple images at once?',
+        answer: 'Yes. Add multiple images and apply the same text or logo watermark settings to the batch. Download individual results or save them together as a ZIP.',
+      },
+      {
+        question: 'Can I create rotated or tiled watermarks?',
+        answer: 'Yes. Advanced mode supports single and tiled layouts, rotation, and three tiling densities: Sparse, Standard and Dense. These options work with both text and image watermarks.',
+      },
+      {
+        question: 'Can I use an SVG logo as a watermark?',
+        answer: 'Supported static SVG graphics can be used as logos. Common shapes, paths and some gradients are supported, while scripts, animations, external resources and complex SVG structures are rejected. If your SVG is unsupported, convert it to PNG first.',
+      },
+      {
+        question: 'Are my images uploaded to a server?',
+        answer: 'No. Images are read, previewed, processed and exported directly in your browser without uploading them. Your original files remain unchanged, and you choose where to save the results.',
+      },
+    ],
   },
 };
 export const exifMetadataContent: Content = {

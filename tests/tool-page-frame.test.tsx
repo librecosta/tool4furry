@@ -10,6 +10,7 @@ import { imageResizeCropDefinition } from '../src/tools/image-resize-crop/defini
 import { imageConverterDefinition } from '../src/tools/image-converter/definition';
 import { paletteExtractorDefinition } from '../src/tools/palette-extractor/definition';
 import { imageCompressorDefinition } from '../src/tools/image-compressor/definition';
+import { imageWatermarkDefinition } from '../src/tools/image-watermark/definition';
 import { exifMetadataDefinition } from '../src/tools/exif-metadata/definition';
 import type { ToolDefinition } from '../src/tools/types';
 import { renderToString } from 'react-dom/server';
@@ -253,8 +254,8 @@ describe('product navigation', () => {
     expect([...document.querySelectorAll('[data-tool-panel] a[aria-current], [data-tool-panel] a[href$="draft-slug/"]')].map(link => link.getAttribute('href'))).toEqual(dev ? ['/tools/draft-slug/', '/tools/current-slug/'] : ['/tools/current-slug/']);
     expect(registry.tools.map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata']); // Fixtures never populate the real registry.
     expect(imageConverterDefinition.status).toBe('published');
-    expect(original('cn', false)).toEqual([imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, exifMetadataDefinition]);
-    expect(original('global', false)).toEqual([imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, exifMetadataDefinition]);
+    expect(original('cn', false)).toEqual([imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, imageWatermarkDefinition, exifMetadataDefinition]);
+    expect(original('global', false)).toEqual([imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, imageWatermarkDefinition, exifMetadataDefinition]);
   });
 
   it.each([{ region: 'cn', dev: false }, { region: 'global', dev: false }, { region: 'cn', dev: true }, { region: 'global', dev: true }] as const)('links the real Published Converter in the $region toolbox (DEV=$dev)', async ({ region, dev }) => {

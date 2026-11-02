@@ -14,11 +14,13 @@
 
 **Image Compressor** 支持单张/批量与文件夹导入、快速压缩强度、高级质量/目标大小/最长边、四格式输出、预览对比和 ZIP；AVIF 输出受设备与尺寸限制，JPEG/WebP 目标大小不保证达到，结果也可能变大。能力与 Beta 证据见 [当前模块说明](docs/image-basics.md)。
 
+**Image Watermark** 支持批量文字或 Logo 水印、单点旋转与三档平铺、安全静态 SVG 素材，以及 PNG/JPEG/WebP/受限 AVIF 导出和 ZIP。图片在浏览器本地处理，水印不能保证阻止复制或移除。能力与 Beta 证据见 [当前模块说明](docs/image-basics.md)。
+
 **EXIF Metadata** 支持 JPEG/PNG/WebP 元数据查看、文件夹与批量无损清理、清理前后字段对照、原图预览、单项下载与 ZIP；必要方向和受支持色彩信息可能保留，不保证清除所有隐藏信息。能力与 Beta 证据见 [当前模块说明](docs/image-basics.md)。
 
-五款工具均在源码层面 **Published**。CN/Global 均可构建完整双语静态站点，**两个地区均未线上部署**。Published 和构建就绪不代表已对公网提供服务。
+六款工具均在源码层面 **Published**。CN/Global 均可构建完整双语静态站点，**两个地区均未线上部署**。Published 和构建就绪不代表已对公网提供服务。
 
-DEV 另提供两款完整 Draft：**Comic Page Organizer** 和 **Image Watermark**。能力与验收入口见 [基础图片工具说明](docs/image-basics.md)；它们不进入正式构建。
+DEV 另提供完整 Draft：**Comic Page Organizer**。能力与验收入口见 [基础图片工具说明](docs/image-basics.md)；该工具不进入正式构建。
 
 ## 技术与架构
 

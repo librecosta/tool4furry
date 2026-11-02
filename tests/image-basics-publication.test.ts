@@ -6,13 +6,13 @@ import { assertToolLoaderContract, toolBuildDefines, toolAvailabilityConstant } 
 import { publicPages, llmsText } from '../src/site/discovery';
 
 const ids = ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'];
-describe.each(['cn', 'global'] as const)('%s Compressor/EXIF publication and two remaining Draft modules', region => {
+describe.each(['cn', 'global'] as const)('%s Compressor/Watermark/EXIF publication and the remaining Comic Draft module', region => {
   it('keeps implementations behind their literal Loader and Registry qualifications', () => {
     expect(() => assertToolLoaderContract(tools, readFileSync('src/tools/loaders.ts', 'utf8'))).not.toThrow();
     const available = getAvailableTools(region, true), production = getAvailableTools(region, false);
     for (const id of ids) {
       const tool = tools.find(tool => tool.id === id)!;
-      const published = id === 'image-compressor' || id === 'exif-metadata';
+      const published = id === 'image-compressor' || id === 'image-watermark' || id === 'exif-metadata';
       expect(tool).toMatchObject({id, slug: id, status: published ? 'published' : 'draft', mode: 'form', regions: ['cn', 'global']});
       expect(available).toContain(tool); expect(production.includes(tool)).toBe(published);
       expect(toolBuildDefines(tools, region)[toolAvailabilityConstant(id)]).toBe(String(published));
@@ -30,7 +30,7 @@ describe.each(['cn', 'global'] as const)('%s Compressor/EXIF publication and two
       expect(getRelatedTools(tool, region, undefined, true).length).toBeGreaterThan(0);
       if (published) expect(getRelatedTools(tool, region).map(item => item.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor']);
     }
-    expect(production.map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'exif-metadata']);
+    expect(production.map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'image-watermark', 'exif-metadata']);
   });
   it('keeps the finalized Compressor metadata and guide bilingual and static', () => {
     const tool = tools.find(tool => tool.id === 'image-compressor')!;
@@ -43,6 +43,33 @@ describe.each(['cn', 'global'] as const)('%s Compressor/EXIF publication and two
       expect(content).toMatchObject(expected[locale]);
       expect(content.features).toBeUndefined();
       expect(content.steps?.every(step => step.startsWith('**'))).toBe(true);
+      expect(content.faq?.at(-1)?.question).toBe(locale === 'zh' ? '图片会上传到服务器吗？' : 'Are my images uploaded to a server?');
+    }
+  });
+  it('publishes the frozen Watermark SEO without an extra feature overview', () => {
+    const tool = tools.find(tool => tool.id === 'image-watermark')!;
+    const expected = {
+      zh: {
+        title: '在线图片加水印 - 文字、Logo 与批量平铺 | Tool4Furry',
+        description: '在线为图片添加文字或 Logo 水印，支持批量处理、旋转平铺、位置与透明度调整。支持安全静态 SVG 水印素材，导出 PNG、JPEG、WebP 或受限 AVIF，全部在浏览器本地完成。',
+        h1: '图片水印',
+        intro: '为作品添加文字或 Logo 水印，实时调整效果，轻松批量保存。',
+      },
+      en: {
+        title: 'Online Image Watermark Tool – Text, Logo & Batch | Tool4Furry',
+        description: 'Add text or logo watermarks to images in your browser. Apply watermarks in batches, adjust rotation, tiled patterns, position and opacity, and export PNG, JPEG, WebP or supported AVIF images. Safe static SVG logos are supported.',
+        h1: 'Image Watermark',
+        intro: 'Add text or logo watermarks to your artwork, fine-tune the result, and save multiple images with ease.',
+      },
+    };
+    for (const locale of ['zh', 'en'] as const) {
+      const content = getToolPageContent(tool, region, undefined, false, locale);
+      expect(content).toMatchObject(expected[locale]);
+      expect(content.features).toBeUndefined();
+      expect(content.steps).toHaveLength(3); expect(content.limitations).toHaveLength(3); expect(content.faq).toHaveLength(4);
+      expect(content.steps?.every(step => step.startsWith('**'))).toBe(true);
+      expect(content.limitations?.join(' ')).toContain(locale === 'zh' ? '符合设备与尺寸限制的 AVIF' : 'AVIF on supported devices within output limits');
+      expect(content.faq?.[2].answer).toContain(locale === 'zh' ? '不支持脚本、动画、外部资源或复杂 SVG 结构' : 'scripts, animations, external resources and complex SVG structures are rejected');
       expect(content.faq?.at(-1)?.question).toBe(locale === 'zh' ? '图片会上传到服务器吗？' : 'Are my images uploaded to a server?');
     }
   });

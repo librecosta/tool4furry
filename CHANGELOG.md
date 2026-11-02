@@ -23,6 +23,8 @@
 
 ### Changed
 
+- V0.7-B3-D1 完成 Image Watermark 冻结双语 SEO 与 L2 Beta 资格收尾，提升 CN/Global 源码 Published。正式产物包含文字/Logo 批量水印、旋转平铺、安全静态 SVG、按需 AVIF 与完整 react-colorful MIT 通知，沿用既有首页身份与发现投影；Comic Page Organizer 继续 Draft，未部署。
+
 - V0.7-B3-C1 完善 Image Watermark 快速/高级参数、显式重置、单点旋转和有界平铺，支持设备预算内的高清 Logo、严格白名单静态 SVG 与现有按需 AVIF 编码。预览/导出共用绘制，取消和参数变更继续隔离旧结果；颜色弹层复用 react-colorful，文件主内容可选择预览，公共下拉选项增加间隔。保留 Draft，未部署。
 
 - V0.7-B4-D1 完成 EXIF Metadata 冻结双语 SEO 与 L2 Beta 资格收尾，提升 CN/Global 源码 Published。正式构建包含批量无损清理、字段前后对照、原图查看与完整 exifr MIT 通知，复用既有画家/运营入口及公开发现投影；漫画整理和水印仍为 Draft，未部署。

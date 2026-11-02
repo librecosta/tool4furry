@@ -183,7 +183,7 @@ for (const prefix of ['', region === 'cn' ? 'en/' : 'zh/'])
     'Registry controls exactly the regional published routes in both languages',
   );
 const avifWasm = files.filter(file => /avif_(?:enc|dec).*\.wasm$/.test(file));
-if (['image-converter', 'image-compressor'].some(id => files.includes(`tools/${id}/index.html`))) {
+if (['image-converter', 'image-compressor', 'image-watermark'].some(id => files.includes(`tools/${id}/index.html`))) {
   assert.equal(avifWasm.length, 1, 'Exactly one ST AVIF encoder, no decoder/threaded binary');
   assert(/avif_enc-[\w-]+\.wasm$/.test(avifWasm[0]), 'AVIF resource has a build content hash');
   const binary = await readFile(resolve(root, avifWasm[0]));
@@ -850,6 +850,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
     if (page === 'tools/image-compressor/index.html') assertToolContent(dom, locale, imageCompressorContent, 4, 3);
+    if (page === 'tools/image-watermark/index.html') assertToolContent(dom, locale, imageWatermarkContent, 4, 3);
     if (page === 'tools/exif-metadata/index.html') assertToolContent(dom, locale, exifMetadataContent, 4, 3);
     if (page === 'tools/image-converter/index.html')
       assert(!/开发保护值|全设备兼容承诺|development (?:resource )?guardrails/i.test(dom.body.textContent),
@@ -1209,6 +1210,17 @@ if (files.includes('tools/image-compressor/index.html')) {
   assert(scripts.some(js => js.includes('data-image-compressor') && js.includes('data-compressor-parameters') && js.includes('spinbutton')),
     'Published Compressor includes its real implementation, parameter modes and longest-side stepper');
 }
+if (files.includes('tools/image-watermark/index.html')) {
+  const scripts = await Promise.all(files.filter(file => file.endsWith('.js')).map(file => readFile(resolve(root, file), 'utf8')));
+  const styles = await Promise.all(files.filter(file => file.endsWith('.css')).map(file => readFile(resolve(root, file), 'utf8')));
+  assert(scripts.some(js => js.includes('data-image-watermark') && js.includes('data-watermark-preview')), 'Published Watermark includes its real workspace and composition preview');
+  assert(styles.some(css => css.includes('[data-palette-color-picker]') && css.includes('.react-colorful')), 'Published Watermark includes scoped color picker CSS');
+  const notice = await readFile('src/tools/palette-extractor/react-colorful.NOTICE.txt');
+  const emitted = files.filter(file => file.includes('react-colorful.NOTICE'));
+  const hasNotice = scripts.some(js => js.includes(notice.toString('base64'))) ||
+    (await Promise.all(emitted.map(file => readFile(resolve(root, file))))).some(bytes => bytes.equals(notice));
+  assert(hasNotice, 'Published Watermark distributes the complete react-colorful MIT notice');
+}
 if (!files.includes('tools/exif-metadata/index.html')) {
   const notice = await readFile('src/tools/exif-metadata/exifr.NOTICE.txt');
   assert(!files.some(file => /ExifMetadata|exifr\.NOTICE/.test(file)), 'Draft EXIF assets leaked');
@@ -1226,16 +1238,19 @@ if (!files.includes('tools/exif-metadata/index.html')) {
   assert(hasNotice, 'Published EXIF distributes the complete exifr MIT notice');
 }
 if (!files.includes('tools/palette-extractor/index.html')) {
-  assert(!files.some(file => /PaletteExtractor|(?:colorthief|react-colorful)\.NOTICE/.test(file)), 'Draft palette asset leaked');
+  assert(!files.some(file => /PaletteExtractor|colorthief\.NOTICE/.test(file)), 'Draft palette asset leaked');
   for (const name of ['colorthief', 'react-colorful']) {
+    if (name === 'react-colorful' && files.includes('tools/image-watermark/index.html')) continue;
     const notice = await readFile(`src/tools/palette-extractor/${name}.NOTICE.txt`);
+    assert(!files.some(file => file.includes(`${name}.NOTICE`)), `Draft-only ${name} notice asset leaked`);
     for (const file of files.filter(file => /\.(js|txt)$/.test(file))) {
       const bytes = await readFile(resolve(root, file));
       assert(!bytes.equals(notice) && !bytes.toString().includes(notice.toString('base64')), `Draft palette notice leaked: ${file}`);
     }
   }
-  for (const file of files.filter(file => file.endsWith('.css')))
-    assert(!(await readFile(resolve(root, file), 'utf8')).includes('[data-palette-color-picker]'), `Draft picker CSS leaked: ${file}`);
+  if (!files.includes('tools/image-watermark/index.html'))
+    for (const file of files.filter(file => file.endsWith('.css')))
+      assert(!(await readFile(resolve(root, file), 'utf8')).includes('[data-palette-color-picker]'), `Draft picker CSS leaked: ${file}`);
 } else {
   const scripts = await Promise.all(files.filter(file => file.endsWith('.js')).map(file => readFile(resolve(root, file), 'utf8')));
   const styles = await Promise.all(files.filter(file => file.endsWith('.css')).map(file => readFile(resolve(root, file), 'utf8')));

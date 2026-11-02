@@ -1,6 +1,6 @@
 # 基础图片工具 · V0.7-B
 
-Image Compressor 与 EXIF Metadata 为 CN/Global、zh/en **Published**；Comic Page Organizer 与 Image Watermark 仍为 **Draft**，只在 DEV 出现。沿用 Registry、显式字面量 Loader、Astro 静态正文与 Form Wide；没有新发布门、应用根或全局 Store。首页与创作身份使用既有人工精选和 Registry 过滤，正式站点当前为五款 Published 工具。
+Image Compressor、Image Watermark 与 EXIF Metadata 为 CN/Global、zh/en **Published**；Comic Page Organizer 仍为 **Draft**，只在 DEV 出现。沿用 Registry、显式字面量 Loader、Astro 静态正文与 Form Wide；没有新发布门、应用根或全局 Store。首页与创作身份使用既有人工精选和 Registry 过滤，正式站点当前为六款 Published 工具。
 
 | 工具与路径（Draft 仅 DEV） | 当前能力 |
 | --- | --- |
@@ -13,13 +13,13 @@ Image Compressor 与 EXIF Metadata 为 CN/Global、zh/en **Published**；Comic P
 
 压缩和水印输出遵守 `privacy-v1` 并复检实际格式/MIME、尺寸与完整可解码性。漫画归档按用户选择保留原字节，不能宣称清除了元数据；CBZ 是标准 ZIP，阅读器的 AVIF/WebP 支持仍取决于阅读器。元数据清理直接使用 `cleanImageMetadata()`，保留方向及受支持色彩信息，不保证清除全部隐藏信息、隐写或像素水印。
 
-EXIF 读取使用固定 `exifr@7.1.3`，仅向解析器传入经现有容器检查的有界 TIFF/EXIF 块，限制读取字段、关闭缩略图与 MakerNote。JPEG/PNG/WebP 共用此路径；它不修改容器。完整 [MIT 通知](../src/tools/exif-metadata/exifr.NOTICE.txt) 仅从工具懒加载入口分发，Draft 正式构建排除。
+EXIF 读取使用固定 `exifr@7.1.3`，仅向解析器传入经现有容器检查的有界 TIFF/EXIF 块，限制读取字段、关闭缩略图与 MakerNote。JPEG/PNG/WebP 共用此路径；它不修改容器。完整 [MIT 通知](../src/tools/exif-metadata/exifr.NOTICE.txt) 仅从工具懒加载入口分发。
 
 EXIF 本地手动验收示例及步骤见 [夹具说明](../tests/fixtures/images/metadata/README.md#exif-metadata-手动验收-jpeg)：JPEG 真实包含虚构设备、拍摄时间、方向及 GPS，不进入站点公开资源。
 
 人工入口：`pnpm dev` 后 CN `http://127.0.0.1:4321/tools/{id}/`，Global `http://127.0.0.1:4322/tools/{id}/`；同地区次语言继续使用 `/en/` 或 `/zh/`。固定端口不变。各模块只跑必要局部测试，集成后统一类型检查、跨模块测试与双地区构建；完整测试沿用现有 CI，无新增矩阵或工作流。
 
-L3 边界：真实 iOS/Android、Firefox/Safari、低端设备及压力测试未完成；Chromium 核心 Smoke 不代表这些平台通过。其余三款 Draft 后续可独立审计，不互相阻塞资格。未部署、未创建 Tag/Release。以下 V0.7-B / B1-C1 为历史阶段记录，最终 B1 资格见文末。
+L3 边界：真实 iOS/Android、Firefox/Safari、低端设备及压力测试未完成；Chromium 核心 Smoke 不代表这些平台通过。Comic Page Organizer 后续可独立审计。未部署、未创建 Tag/Release。以下保留历史阶段记录，各工具最终资格见对应 D1 小节。
 
 2026-11-01 集成验证：`pnpm check` 零诊断，18 个相关测试文件的 212 项定向断言通过（包含资源补丁复跑）；CN/Global 构建与静态守卫通过，每区仍为 17 HTML、16 个公开 URL、三款 Published。四款新工具、专属实现及 exifr 通知均被生产发布门排除。没有运行无关专项夹具或本地全量测试，完整测试由既有 GitHub Actions 执行。
 
@@ -92,3 +92,13 @@ AVIF 直接复用既有 AvifEncoder、ST Worker/WASM、输出资格和完整复�
 实际 PNG/JPEG/WebP/AVIF 下载均按文件头识别并完整解码；JPEG 透明角填白，其他格式保留透明度。横竖两图的旋转文字 ZIP、旋转 SVG 平铺 AVIF ZIP 均可解压且尺寸正确，6MP/5000px PNG Logo 导出通过；60% 文字、PNG 来源 alpha×60% 与 SVG 透明度均经像素复检。SVG 只使用校验后的受控 Image 载入，解决 Chromium Blob→ImageBitmap 对 SVG 的读取差异。取消/超时、晚到结果与释放由受控 Worker 和 Session 测试覆盖，不冒称真实设备压力测试。
 
 本地证据在仓库外 `../.validation/watermark-c1/`（实际下载清单、完整解码/像素 JSON 与亮暗截图），不进入公开资源。按任务范围不在本地重复双地区正式构建或全量矩阵，完整 CI 沿用本次推送触发的既有工作流。真实 iOS/Android、Firefox/Safari、低端设备与压力范围仍为未测 L3；手机视口不代表真机触控通过。未提升 Published、未部署或创建 Tag/Release。
+
+## Image Watermark · B3-D1 Beta 资格（2026-11-02）
+
+冻结中英文 SEO 各含三步骤、三限制、四 FAQ；短元数据准确说明文字/Logo、旋转平铺、安全静态 SVG 和受限 AVIF，不承诺兼容全部 SVG 或防止水印移除。复用 C1 的 122 项测试、四格式实际下载、三档密度、高清 PNG Logo、安全拒绝、取消/超时、版本隔离与资源释放证据；基线 `0077fd4` 的 [完整 CI](https://github.com/librecosta/tool4furry/actions/runs/41403639697) 已通过。本轮不改绘制、安全过滤、编码或任务流程。
+
+最新 266 项水印/AVIF/发布与发现定向测试、`pnpm check`（332 文件零诊断）、CN/Global 各一次正式构建及守卫通过。每区六款 Published、十二个工具语言页面、二十二个公开 HTML URL；水印双语静态正文、H1/Title/Description、无 Draft noindex、Canonical/hreflang、目录/相关推荐/Sitemap/llms 均与实际产物一致。首页四张精选与顺序不变，既有画家/动画师/运营水印 ID 由 Registry 自然公开。react-colorful 的共享 CSS/完整 MIT 通知与按需单份 AVIF Worker/WASM 正常分发；Comic 的 Draft 页面/专属实现、Lab/Fixture 及客户端长文继续排除。共享选色器守卫仅识别合法 Published 消费者，不放宽 Draft 私有资源边界。
+
+真实 Chromium 补验 DEV 中文横竖双图 45° 文字平铺与 ZIP；CN Published 静态页面完成快速批量文字 PNG/ZIP、WebP Logo 透明度、原图/结果比较和焦点返回。ZIP 两项分别为 640×400、400×640，均按文件头识别并完整解码；PNG/AVIF 保留透明角，WebP 来源 alpha×60% 的 PNG 中心像素为 `[136,56,87,255]`，符合预期。Global 英文正式产物实际执行安全 SVG、45° 平铺和按需 AVIF：下载 3,213 B、640×400、完整解码通过。390px 手机视口及亮暗主题可用，无横向溢出；对比上下排列、两张实际图片完整加载，切换快速/高级保留有效结果，改透明度立即撤销旧下载/ZIP，重新处理成功。控制台未发现错误。
+
+依据维护者本任务授权完成 L2 源码 Published，V0.7-B3 收尾；完整测试继续由本次提交的既有 GitHub Actions 执行，最终结果以对应提交工作流为准。可复查的下载复检 JSON、构建日志与截图在仓库外 `../.validation/watermark-d1/`，不进入公开资源。L3 未测仍为真实 iOS/Android、Firefox/Safari、低端设备和压力范围，手机视口不代表真机触控通过。没有部署、PR、合并、Tag 或 Release。

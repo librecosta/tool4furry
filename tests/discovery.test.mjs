@@ -30,8 +30,8 @@ describe.each(['cn', 'global'])('%s discovery', region => {
     const changed = registry.map(tool => tool.id === 'shared' ? { ...tool, status: 'draft' } : tool);
     expect(publicPages(region, changed).map(page => page.url)).not.toContain(`${origin}/tools/shared/`);
     const actualPages = publicPages(region);
-    expect(actualPages).toHaveLength(20);
-    for (const slug of ['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'exif-metadata']) {
+    expect(actualPages).toHaveLength(22);
+    for (const slug of ['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'image-watermark', 'exif-metadata']) {
       const toolURLs = [`${origin}/${region === 'cn' ? '' : 'zh/'}tools/${slug}/`, `${origin}/${region === 'cn' ? 'en/' : ''}tools/${slug}/`];
       expect(actualPages.filter(page => page.url.includes(`/tools/${slug}/`)).map(page => page.url)).toEqual(toolURLs);
       const sitemapURLs = [...parseXML(sitemapXML(region)).querySelectorAll('url > loc')].map(node => node.textContent);
