@@ -21,6 +21,8 @@ EXIF Metadata (`exif-metadata`) 依据 B4-D1 授权通过 L2 审计后提升源�
 
 Image Watermark (`image-watermark`) 依据 B3-D1 授权通过 L2 审计并提升源码资格；双语静态 SEO、批量文字/Logo、旋转平铺、严格安全 SVG、按需 AVIF 与完整 react-colorful MIT 通知进入两地区正式构建。复用既有首页身份配置，不新增精选或发布名单。实际证据与 L3 边界见 [基础图片工具说明](../docs/image-basics.md#image-watermark--b3-d1-beta-资格2026-11-02)。
 
+Comic Page Organizer (`comic-page-organizer`) 的 B2-D1 双语 SEO 已更新，仍为 Draft：原格式 ZIP/CBZ 已实际下载复检，但转换归档的真实落盘验收受浏览器安全检查阻断，L2 尚未完成。维护者的通过后 Published 授权有效，但不能替代缺失的实际文件证据。当前进展与待验项见 [基础图片工具说明](../docs/image-basics.md#b2-d1--seo-与-beta-审计进展)。
+
 ## 唯一可用性来源
 
 - [registry.ts](../src/tools/registry.ts) 的工具定义、`status` 和 `regions` 决定可用性：DEV 为当前地区 Draft + Published，生产为当前地区 Published。

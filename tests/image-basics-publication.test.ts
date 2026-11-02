@@ -22,7 +22,7 @@ describe.each(['cn', 'global'] as const)('%s Compressor/Watermark/EXIF publicati
         const content = getToolPageContent(tool, region, undefined, true, locale);
         expect(content.title.match(/Tool4Furry/g)).toHaveLength(1);
         expect(content.h1).toBe(tool.copy[locale].title);
-        expect(content.steps).toHaveLength(3); expect(content.limitations).toHaveLength(3); expect(content.faq).toHaveLength(published ? 4 : 3);
+        expect(content.steps).toHaveLength(3); expect(content.limitations).toHaveLength(3); expect(content.faq).toHaveLength(4);
         if (locale === 'en') expect(JSON.stringify(content)).not.toMatch(/\p{Script=Han}/u);
         if (published) expect(getToolPageContent(tool, region, undefined, false, locale)).toEqual(content);
         else expect(() => getToolPageContent(tool, region, undefined, false, locale)).toThrow('Unpublished');
@@ -46,13 +46,27 @@ describe.each(['cn', 'global'] as const)('%s Compressor/Watermark/EXIF publicati
       expect(content.faq?.at(-1)?.question).toBe(locale === 'zh' ? '图片会上传到服务器吗？' : 'Are my images uploaded to a server?');
     }
   });
-  it('describes the Comic gallery order without obsolete cover controls', () => {
+  it('finalizes Comic SEO while distinguishing original archives, conversion and independent PDF export', () => {
     const tool = tools.find(tool => tool.id === 'comic-page-organizer')!;
+    const expected = {
+      zh: {title: '漫画页整理 - 图片排序与 ZIP/CBZ/PDF 导出 | Tool4Furry', description: '在浏览器本地整理漫画页与连续插画。支持拖动排序、自定义页面命名、可选统一图片格式和质量设置，导出 ZIP、CBZ 或 PDF。', h1: '漫画页整理', intro: '排好漫画与插画的顺序，按需要打包归档或保存为 PDF。'},
+      en: {title: 'Comic Page Organizer - ZIP, CBZ & PDF | Tool4Furry', description: 'Organize comic pages locally in your browser. Reorder images, customize page names, optionally convert formats and adjust quality, then export ZIP, CBZ or PDF.', h1: 'Comic Page Organizer', intro: 'Arrange your comic pages and illustrations, then save an image archive or a PDF.'},
+    };
     for (const locale of ['zh', 'en'] as const) {
       const content = getToolPageContent(tool, region, undefined, true, locale);
+      expect(content).toMatchObject(expected[locale]);
+      expect(content.features).toBeUndefined();
+      expect(content.steps).toHaveLength(3); expect(content.limitations).toHaveLength(3); expect(content.faq).toHaveLength(4);
+      expect(content.steps?.every(step => step.startsWith('**'))).toBe(true);
       expect(content.steps?.join(' ')).toContain(locale === 'zh' ? '重置排序' : 'Reset Order');
       expect(content.faq?.[1].answer).toContain(locale === 'zh' ? '第一张有效图片' : 'first valid image');
-      expect(content.limitations?.join(' ')).toContain(locale === 'zh' ? '不清理来源元数据' : 'without re-encoding or removing source metadata');
+      expect(content.limitations?.[0]).toContain(locale === 'zh' ? '默认保留原始字节，不清理来源元数据' : 'keep original bytes without removing source metadata by default');
+      expect(content.limitations?.[0]).toContain(locale === 'zh' ? '质量设置仅适用于 JPEG、WebP 和 AVIF' : 'Quality applies to JPEG, WebP and AVIF');
+      expect(content.limitations?.[1]).toContain(locale === 'zh' ? '不应用归档命名前缀、统一图片格式或质量设置' : 'Archive prefixes, uniform image formats and quality settings do not apply');
+      expect(content.limitations?.[1]).toContain(locale === 'zh' ? '不能保证移除全部隐私信息' : 'Neither format conversion nor PDF can guarantee removal of all private information');
+      expect(content.limitations?.[2]).toContain(locale === 'zh' ? '受设备、浏览器和导出模式限制' : 'within device, browser and export-mode limits');
+      expect(content.faq?.at(-1)?.answer).toContain(locale === 'zh' ? '不会上传至 Tool4Furry 服务端' : 'not uploaded to Tool4Furry');
+      expect(tool.copy[locale].summary).toContain('PDF');
       expect(JSON.stringify([content, tool.copy[locale]])).not.toMatch(/设置封面|选择封面|箭头按钮|choose a cover|set a cover|arrow buttons/i);
     }
   });

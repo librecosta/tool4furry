@@ -6,7 +6,7 @@ export const comicPageOrganizerDefinition: ToolDefinition = {
   roles: ['painter', 'animator'], audiences: ['creator'], contexts: ['studio'],
   mode: 'form', status: 'draft', regions: ['cn', 'global'],
   copy: {
-    zh: { title: '漫画页整理', summary: '整理图片顺序，导出 ZIP 或 CBZ 漫画归档。', description: '在浏览器本地导入漫画页或文件夹，在画廊中拖动排序、多选删除、重置排序和逐页预览，并保留原始图片字节导出 ZIP 或 CBZ。' },
-    en: { title: 'Comic Page Organizer', summary: 'Arrange image pages and export ZIP or CBZ archives.', description: 'Import images or folders locally, reorder them in a gallery, reset their order, select and remove pages, preview your comic, and export original image bytes as ZIP or CBZ.' },
+    zh: { title: '漫画页整理', summary: '本地整理漫画页，导出 ZIP、CBZ 或 PDF。', description: '在浏览器本地拖动排序漫画与插画，自定义页面命名，按需统一图片格式和质量，导出 ZIP、CBZ 或独立 PDF。' },
+    en: { title: 'Comic Page Organizer', summary: 'Arrange comic pages locally and export ZIP, CBZ or PDF.', description: 'Reorder comic pages and illustrations in your browser, customize archive page names, optionally convert image formats and adjust quality, or export a separate PDF.' },
   },
 };

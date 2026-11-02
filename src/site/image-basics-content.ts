@@ -30,16 +30,46 @@ export const imageCompressorContent: Content = {
 };
 export const comicPageOrganizerContent: Content = {
   zh: {
-    title: '漫画页整理 - 排序与 CBZ 打包 | Tool4Furry', description: '本地整理漫画和连续插画，导入图片或文件夹，在画廊中拖动页面、重置排序和多选删除，生成有序 ZIP 或 CBZ 归档。', h1: '漫画页整理', intro: '把连续画面排好顺序，打包带走。',
-    steps: ['添加多张图片或选择文件夹，按文件名自然排序。', '在画廊中拖动图片调整顺序，可多选删除；重置排序会按文件名与相对路径重新整理全部图片。', '逐页预览后选择 ZIP、CBZ 或 PDF 并下载，当前第一张就是首页。ZIP/CBZ 文件名自动零填充。'],
-    limitations: ['接收经过验证的静态图片，文件数量、大小和分辨率受当前设备限制。', 'ZIP/CBZ 保留原始图片字节，不重新编码，也不清理来源元数据；请先确认作品中没有不希望分享的隐私信息。', 'CBZ 是标准 ZIP 容器，阅读器格式支持各异。大归档需要浏览器支持直接保存文件；PDF 有独立处理上限，部分格式需要转换。'],
-    faq: [{question: '整理页面会降低图片质量吗？', answer: '不会。ZIP 和 CBZ 内保留来源文件的原始字节，只调整顺序和归档文件名。'}, {question: '归档首页如何决定？', answer: '归档使用当前画廊顺序，第一张有效图片就是首页。拖动图片即可调整。'}, {question: 'CBZ 可以在哪里打开？', answer: '可用支持 CBZ 和对应图片格式的漫画阅读器，也可以用 ZIP 解压工具打开。'}],
+    title: '漫画页整理 - 图片排序与 ZIP/CBZ/PDF 导出 | Tool4Furry',
+    description: '在浏览器本地整理漫画页与连续插画。支持拖动排序、自定义页面命名、可选统一图片格式和质量设置，导出 ZIP、CBZ 或 PDF。',
+    h1: '漫画页整理', intro: '排好漫画与插画的顺序，按需要打包归档或保存为 PDF。',
+    steps: [
+      '**添加图片：** 选择多张图片或文件夹，工具会按文件名自然排序。',
+      '**整理页面：** 在画廊中拖动图片调整顺序，逐页预览或多选删除；重置排序可按文件名与相对路径重新排列。',
+      '**设置与导出：** 选择 ZIP、CBZ 或 PDF。ZIP/CBZ 可自定义页面名前缀、保留原格式或统一图片格式，再打包下载。',
+    ],
+    limitations: [
+      '支持 PNG、JPEG、WebP 和部分静态 AVIF 输入。ZIP/CBZ 默认保留原始字节，不清理来源元数据；主动选择统一格式后才重新编码，质量设置仅适用于 JPEG、WebP 和 AVIF。AVIF 输出受设备与尺寸限制，部分 CBZ 阅读器不支持 WebP 或 AVIF。',
+      'PDF 使用独立导出管线与资源预算，按图片比例生成页面，不应用归档命名前缀、统一图片格式或质量设置；部分来源格式需要转换。格式转换和 PDF 都不能保证移除全部隐私信息。',
+      '用户文件只在当前浏览器本地处理，不上传至 Tool4Furry 服务端。支持大量页面，但文件数量、大小、分辨率及导出容量受设备、浏览器和导出模式限制；较大 ZIP/CBZ 需要浏览器支持直接保存文件。',
+    ],
+    faq: [
+      {question: '整理页面会降低图片质量吗？', answer: 'ZIP/CBZ 默认保持原格式，原始图片字节完全不变。选择统一格式后会重新编码，适用的有损格式可调整质量，文件也可能变大。PDF 有独立的图片嵌入处理，不承诺所有格式零重编码。'},
+      {question: '归档首页和页面文件名如何决定？', answer: '当前画廊中的第一张有效图片就是首页，导出顺序与画廊一致。ZIP/CBZ 默认生成 page-001 等零填充文件名，也可以自定义安全的中英文前缀；PDF 不使用这些文件名设置。'},
+      {question: 'ZIP、CBZ 和 PDF 有什么区别？', answer: 'ZIP 是有序图片归档；CBZ 使用同样的标准 ZIP 容器，适合支持对应图片格式的漫画阅读器。PDF 将每张图片排成独立页面，便于直接阅读，使用单独的处理限制。'},
+      {question: '图片会上传或自动清理隐私信息吗？', answer: '图片不会上传至 Tool4Furry 服务端，原始文件不会被修改。保持原格式的归档会保留来源元数据；选择格式转换或 PDF 也不能保证清除全部隐私信息，请在分享前检查文件与画面内容。'},
+    ],
   },
   en: {
-    title: 'Comic Page Organizer – ZIP & CBZ | Tool4Furry', description: 'Organize comic pages locally. Import images or folders, drag pages in a gallery, reset their order, remove selected pages, and export an ordered ZIP or CBZ archive.', h1: 'Comic Page Organizer', intro: 'Put your pages in order and take the archive with you.', headings: englishHeadings,
-    steps: ['Add multiple images or a folder and sort naturally by filename.', 'Drag images in the gallery to reorder them or select several to remove. Reset Order naturally sorts all current filenames and folder paths.', 'Read the pages, choose ZIP, CBZ or PDF, and download in the same order. ZIP/CBZ entries use zero-padded filenames.'],
-    limitations: ['Accepts validated static images within device file-count, size and resolution limits.', 'ZIP/CBZ preserve original image bytes without re-encoding or removing source metadata. Check for private information before sharing.', 'CBZ uses a standard ZIP container; reader format support varies. Large archives require direct file saving support. PDF has separate limits and may convert some image formats.'],
-    faq: [{question: 'Does organizing reduce image quality?', answer: 'No. ZIP and CBZ entries preserve the original file bytes. Only ordering and archive filenames change.'}, {question: 'Which image comes first in the archive?', answer: 'The archive follows the gallery order. Its first valid image is the first page. Drag images to change that order.'}, {question: 'How do I open a CBZ?', answer: 'Use a comic reader that supports CBZ and the included image formats, or open it with a ZIP extraction tool.'}],
+    title: 'Comic Page Organizer - ZIP, CBZ & PDF | Tool4Furry',
+    description: 'Organize comic pages locally in your browser. Reorder images, customize page names, optionally convert formats and adjust quality, then export ZIP, CBZ or PDF.',
+    h1: 'Comic Page Organizer', intro: 'Arrange your comic pages and illustrations, then save an image archive or a PDF.', headings: englishHeadings,
+    steps: [
+      '**Add images:** Choose multiple images or a folder. Files are naturally sorted by name.',
+      '**Arrange pages:** Drag images to reorder them, preview individual pages or remove a selection. Reset Order sorts all current filenames and relative paths again.',
+      '**Set up and export:** Choose ZIP, CBZ or PDF. For ZIP/CBZ, customize the page name prefix and keep original formats or convert images before downloading.',
+    ],
+    limitations: [
+      'Supports PNG, JPEG, WebP and selected static AVIF inputs. ZIP/CBZ keep original bytes without removing source metadata by default; images are re-encoded only when you choose a uniform format. Quality applies to JPEG, WebP and AVIF. AVIF output requires a supported device and dimensions; some CBZ readers do not support WebP or AVIF.',
+      'PDF uses a separate export pipeline and resource budget, with pages sized to the image aspect ratio. Archive prefixes, uniform image formats and quality settings do not apply. Some source formats require conversion. Neither format conversion nor PDF can guarantee removal of all private information.',
+      'Your files are processed locally in the current browser without uploading them to Tool4Furry. Large page collections are supported within device, browser and export-mode limits on file count, size, resolution and output capacity. Larger ZIP/CBZ archives require direct file saving support.',
+    ],
+    faq: [
+      {question: 'Does organizing reduce image quality?', answer: 'ZIP/CBZ keep original formats and preserve every original byte by default. Choosing a uniform format re-encodes images; applicable lossy formats offer quality settings, and files may become larger. PDF uses its own image embedding process and does not guarantee zero re-encoding for every format.'},
+      {question: 'How are the first page and filenames chosen?', answer: 'The first valid image in the gallery becomes the first page, and exports follow the gallery order. ZIP/CBZ use zero-padded filenames such as page-001 by default, with an optional safe custom prefix. PDF does not use these filename settings.'},
+      {question: 'What is the difference between ZIP, CBZ and PDF?', answer: 'ZIP is an ordered image archive. CBZ uses the same standard ZIP container for comic readers that support the included image formats. PDF places each image on a separate page for direct reading and has its own processing limits.'},
+      {question: 'Are images uploaded or private details automatically removed?', answer: 'Images are not uploaded to Tool4Furry, and your original files remain unchanged. Original-format archives retain source metadata. Format conversion and PDF cannot guarantee removal of all private information either, so check both the files and their visible contents before sharing.'},
+    ],
   },
 };
 export const imageWatermarkContent: Content = {
