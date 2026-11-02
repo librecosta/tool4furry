@@ -1,0 +1,52 @@
+// @vitest-environment node
+import {expect, it, vi} from 'vitest';
+import {unzipSync} from 'fflate';
+import {archiveSize, writeZip, zipBlob, type ArchiveSink} from '../src/tools/archive/stream-zip';
+
+const entries = [new Blob(['EXIF original']), new Blob([new Uint8Array(2 * 1024 ** 2 + 17).fill(71)])].map((blob, i) => ({name: `page-00${i+1}.jpg`, blob}));
+it('writes a standard stored ZIP in order with exact original bytes and bounded chunks', async () => {
+  const parts: Uint8Array[] = [], progress = vi.fn(), close = vi.fn(), abort = vi.fn();
+  let active = 0, peak = 0;
+  await writeZip(entries, {async write(data) {active++; peak = Math.max(peak, active); await Promise.resolve(); parts.push(data); active--;}, close, abort}, {signal: new AbortController().signal, maxBytes: 4 * 1024 ** 2, progress});
+  const bytes = new Uint8Array(await new Blob(parts as BlobPart[]).arrayBuffer()), result = unzipSync(bytes);
+  expect(Object.keys(result)).toEqual(entries.map(e => e.name));
+  for (const entry of entries) expect(Buffer.from(result[entry.name]).equals(Buffer.from(await entry.blob.arrayBuffer()))).toBe(true);
+  expect(peak).toBe(1); expect(Math.max(...parts.map(p => p.length))).toBeLessThanOrEqual(1024 ** 2);
+  expect(progress.mock.calls.map(c => c[0])).toEqual([1,2]); expect(close).toHaveBeenCalledOnce(); expect(abort).not.toHaveBeenCalled();
+  expect(bytes.length).toBeLessThanOrEqual(archiveSize(entries));
+});
+it('respects disk backpressure before reading the next chunk', async () => {
+  let release!: () => void; const blocked = new Promise<void>(r => {release = r;});
+  const read = vi.spyOn(entries[1].blob, 'slice'), controller = new AbortController();
+  let writes = 0;
+  const task = writeZip(entries, {async write() {if (++writes === 1) await blocked;}, async close() {}, async abort() {}}, {signal: controller.signal, maxBytes: 4 * 1024 ** 2});
+  await Promise.resolve(); await Promise.resolve(); expect(read).not.toHaveBeenCalled();
+  release(); await task; read.mockRestore();
+});
+it.each(['../x','dir/x','A\\b','..','bad\u0000.jpg'])('rejects unsafe ZIP name %s', name => {
+  expect(() => archiveSize([{name, blob: entries[0].blob}])).toThrow('failed');
+});
+it('rejects ZIP32 size/count boundaries and duplicate names before reading', async () => {
+  const large = new Blob(['a']); Object.defineProperty(large, 'size', {value: 0xffffffff});
+  expect(() => archiveSize([{name: 'a', blob: large}])).toThrow('budget');
+  expect(() => archiveSize([{name: 'A', blob: large.slice(0,1)}, {name: 'a', blob: large.slice(0,1)}])).toThrow('failed');
+  await expect(zipBlob(entries, {signal: new AbortController().signal, maxBytes: 10})).rejects.toThrow('budget');
+});
+it('aborts on cancellation, timeout and write failure without closing a partial file', async () => {
+  for (const reason of ['cancel','timeout','disk']) {
+    const controller = new AbortController(); let release!: () => void;
+    const close = vi.fn(), abort = vi.fn(async () => {release?.();});
+    const sink: ArchiveSink = {async write() {
+      if (reason === 'disk') throw new Error('disk');
+      if (reason === 'cancel') controller.abort();
+      else await new Promise<void>(r => {release = r;});
+    }, close, abort};
+    await expect(writeZip(entries, sink, {signal: controller.signal, maxBytes: 4 * 1024 ** 2, idleMs: 10})).rejects.toThrow(reason === 'cancel' ? 'changed' : reason);
+    expect(abort).toHaveBeenCalledOnce(); expect(close).not.toHaveBeenCalled();
+  }
+});
+it('checks cancellation after validation and before writing any page bytes', async () => {
+  const controller = new AbortController(), write = vi.fn(), close = vi.fn(), abort = vi.fn();
+  await expect(writeZip(entries, {write, close, abort}, {signal: controller.signal, maxBytes: 4 * 1024 ** 2, prepare: async () => {controller.abort();}})).rejects.toThrow('changed');
+  expect(write).not.toHaveBeenCalled(); expect(close).not.toHaveBeenCalled();
+});

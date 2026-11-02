@@ -31,14 +31,14 @@ export const imageCompressorContent: Content = {
 export const comicPageOrganizerContent: Content = {
   zh: {
     title: '漫画页整理 - 排序与 CBZ 打包 | Tool4Furry', description: '本地整理漫画和连续插画，导入图片或文件夹，在画廊中拖动页面、重置排序和多选删除，生成有序 ZIP 或 CBZ 归档。', h1: '漫画页整理', intro: '把连续画面排好顺序，打包带走。',
-    steps: ['添加多张图片或选择文件夹，按文件名自然排序。', '在画廊中拖动图片调整顺序，可多选删除；重置排序会按文件名与相对路径重新整理全部图片。', '逐页预览后下载 ZIP 或 CBZ，当前第一张就是归档首页，文件名自动零填充。'],
-    limitations: ['接收经过验证的静态图片，文件数量、大小和分辨率受当前设备限制。', '归档保留原始图片字节，不重新编码，也不清理来源元数据；请先确认作品中没有不希望分享的隐私信息。', 'CBZ 是标准 ZIP 容器。不同阅读器对图片格式的支持不同；不提供 PDF 或逐页图片加工。'],
+    steps: ['添加多张图片或选择文件夹，按文件名自然排序。', '在画廊中拖动图片调整顺序，可多选删除；重置排序会按文件名与相对路径重新整理全部图片。', '逐页预览后选择 ZIP、CBZ 或 PDF 并下载，当前第一张就是首页。ZIP/CBZ 文件名自动零填充。'],
+    limitations: ['接收经过验证的静态图片，文件数量、大小和分辨率受当前设备限制。', 'ZIP/CBZ 保留原始图片字节，不重新编码，也不清理来源元数据；请先确认作品中没有不希望分享的隐私信息。', 'CBZ 是标准 ZIP 容器，阅读器格式支持各异。大归档需要浏览器支持直接保存文件；PDF 有独立处理上限，部分格式需要转换。'],
     faq: [{question: '整理页面会降低图片质量吗？', answer: '不会。ZIP 和 CBZ 内保留来源文件的原始字节，只调整顺序和归档文件名。'}, {question: '归档首页如何决定？', answer: '归档使用当前画廊顺序，第一张有效图片就是首页。拖动图片即可调整。'}, {question: 'CBZ 可以在哪里打开？', answer: '可用支持 CBZ 和对应图片格式的漫画阅读器，也可以用 ZIP 解压工具打开。'}],
   },
   en: {
     title: 'Comic Page Organizer – ZIP & CBZ | Tool4Furry', description: 'Organize comic pages locally. Import images or folders, drag pages in a gallery, reset their order, remove selected pages, and export an ordered ZIP or CBZ archive.', h1: 'Comic Page Organizer', intro: 'Put your pages in order and take the archive with you.', headings: englishHeadings,
-    steps: ['Add multiple images or a folder and sort naturally by filename.', 'Drag images in the gallery to reorder them or select several to remove. Reset Order naturally sorts all current filenames and folder paths.', 'Read the pages in sequence, then export ZIP or CBZ in the same order, with the first image first and zero-padded filenames.'],
-    limitations: ['Accepts validated static images within device file-count, size and resolution limits.', 'Archives preserve original image bytes without re-encoding or removing source metadata. Check for private information before sharing.', 'CBZ uses a standard ZIP container. Reader support for image formats varies. PDF and per-page image editing are not included.'],
+    steps: ['Add multiple images or a folder and sort naturally by filename.', 'Drag images in the gallery to reorder them or select several to remove. Reset Order naturally sorts all current filenames and folder paths.', 'Read the pages, choose ZIP, CBZ or PDF, and download in the same order. ZIP/CBZ entries use zero-padded filenames.'],
+    limitations: ['Accepts validated static images within device file-count, size and resolution limits.', 'ZIP/CBZ preserve original image bytes without re-encoding or removing source metadata. Check for private information before sharing.', 'CBZ uses a standard ZIP container; reader format support varies. Large archives require direct file saving support. PDF has separate limits and may convert some image formats.'],
     faq: [{question: 'Does organizing reduce image quality?', answer: 'No. ZIP and CBZ entries preserve the original file bytes. Only ordering and archive filenames change.'}, {question: 'Which image comes first in the archive?', answer: 'The archive follows the gallery order. Its first valid image is the first page. Drag images to change that order.'}, {question: 'How do I open a CBZ?', answer: 'Use a comic reader that supports CBZ and the included image formats, or open it with a ZIP extraction tool.'}],
   },
 };

@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import ComicPageOrganizer from '../src/tools/comic-page-organizer/ComicPageOrganizer';
-import { acceptImage } from '../src/tools/image/browser-codec';
+import { inspectComic as acceptImage } from '../src/tools/comic-page-organizer/source';
 import { setViewport } from './setup';
 
-vi.mock('../src/tools/image/browser-codec', () => ({acceptImage: vi.fn()}));
+vi.mock('../src/tools/comic-page-organizer/source', () => ({inspectComic: vi.fn(), comicThumbnail: vi.fn(async source => source.blob), verifyComic: vi.fn(async () => {})}));
 vi.mock('../src/tools/image/ImagePreviewViewport', () => ({ImagePreviewViewport: ({src, alt}: {src: string; alt: string}) => <img src={src} alt={alt}/>}));
 const file = (name: string) => new File(['original'], name, {type: 'image/png'});
 let resize: () => void;
@@ -31,7 +31,7 @@ afterEach(() => {vi.useRealTimers(); vi.restoreAllMocks();});
 async function load(names = ['10.png', '2.png', '1.png']) {
   const rendered = render(<ComicPageOrganizer locale="en" region="global"/>);
   fireEvent.change(screen.getByLabelText('Choose images or drop them here', {selector: 'input'}), {target: {files: names.map(file)}});
-  await waitFor(() => expect(screen.getByRole('button', {name: 'Download CBZ'}).hasAttribute('disabled')).toBe(false));
+  await waitFor(() => expect(screen.getByRole('button', {name: 'Package & download'}).hasAttribute('disabled')).toBe(false));
   return rendered;
 }
 const pages = () => [...document.querySelectorAll<HTMLElement>('[data-page-id]')];
@@ -45,6 +45,11 @@ it('shows only image overlays, three actions and actual page numbers, with no co
   expect(screen.queryByRole('button', {name: /cover|Move earlier|Move later/i})).toBeNull();
   expect(pages().every(page => !page.draggable)).toBe(true);
   expect(screen.getAllByRole('checkbox')).toHaveLength(3);
+  expect([...pages()[0].querySelectorAll('button')].map(button => button.getAttribute('aria-label'))).toEqual(['Select page 1','Read page 1','Remove page 1']);
+  expect(screen.getByRole('radio', {name: 'ZIP'}).getAttribute('aria-checked')).toBe('true');
+  fireEvent.click(screen.getByRole('radio', {name: 'PDF'})); expect(screen.getByRole('button', {name: 'Export PDF'})).not.toBeNull();
+  fireEvent.keyDown(screen.getByRole('radio', {name: 'PDF'}), {key: 'ArrowLeft'}); expect(screen.getByRole('radio', {name: 'CBZ'}).getAttribute('aria-checked')).toBe('true');
+  expect(screen.getByRole('button', {name: 'Package & download'})).not.toBeNull();
 });
 
 it('reorders by image pointer gestures, preserves stable identity and resets order', async () => {
@@ -126,9 +131,34 @@ it('keeps folder import and privacy disclosure; errors have no invented image an
   expect(within(broken).getByRole('button', {name: 'Read page 1'}).hasAttribute('disabled')).toBe(true); expect(broken.querySelector('img')).toBeNull();
   const folder = screen.getByLabelText('Add folder'); expect(folder.getAttribute('webkitdirectory')).toBe('');
   fireEvent.change(folder, {target: {files: [file('page20.png'), file('page3.png')]}});
-  await waitFor(() => expect(screen.getByRole('button', {name: 'Download ZIP'}).hasAttribute('disabled')).toBe(false));
+  await waitFor(() => expect(screen.getByRole('button', {name: 'Package & download'}).hasAttribute('disabled')).toBe(false));
   expect(names()).toEqual(['broken.png', 'valid.png', 'page3.png', 'page20.png']);
-  expect(screen.getByText('Original image bytes are kept, including any source metadata. This tool does not clean private metadata.').closest('details')?.hasAttribute('open')).toBe(false);
+  expect(screen.getByText('ZIP/CBZ keep original image bytes and source metadata. PDF may convert images; this tool does not guarantee removal of private metadata.').closest('details')?.hasAttribute('open')).toBe(false);
   expect(document.querySelectorAll('select')).toHaveLength(0); const created = vi.mocked(URL.createObjectURL).mock.calls.length;
   unmount(); expect(URL.revokeObjectURL).toHaveBeenCalledTimes(created);
+});
+
+async function loadLarge() {
+  render(<ComicPageOrganizer locale="en" region="global"/>);
+  const files = Array.from({length:10},(_,i)=>{const f=file(`${i}.png`); Object.defineProperty(f,'size',{value:10*1024**2}); return f;});
+  fireEvent.change(screen.getByLabelText('Choose images or drop them here',{selector:'input'}),{target:{files}});
+  await waitFor(()=>expect(screen.getByRole('button',{name:'Read page 10'}).hasAttribute('disabled')).toBe(false));
+}
+it('clearly disables over-limit Blob exports when direct file saving is unavailable', async () => {
+  await loadLarge();
+  expect(screen.getByRole('button',{name:'Package & download'}).hasAttribute('disabled')).toBe(true);
+  expect(screen.getByRole('alert').textContent).toContain('exceeds this browser’s download limit');
+});
+it('opens a save picker only from the large export click and discards a cancelled late selection', async () => {
+  let choose!: (value: {createWritable: ReturnType<typeof vi.fn>}) => void;
+  const picker=vi.fn((_options: unknown)=>new Promise(resolve=>{choose=resolve;})), createWritable=vi.fn();
+  vi.stubGlobal('isSecureContext',true); vi.stubGlobal('showSaveFilePicker',picker);
+  await loadLarge(); expect(picker).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole('button',{name:'Package & download'}));
+  expect(picker).toHaveBeenCalledOnce(); expect(picker.mock.calls[0][0]).toMatchObject({suggestedName:expect.stringMatching(/\.zip$/)});
+  expect(screen.getByRole('button',{name:'Package & download'}).getAttribute('aria-busy')).toBe('true');
+  fireEvent.click(screen.getByRole('button',{name:'Cancel'}));
+  await act(async()=>{choose({createWritable});});
+  await waitFor(()=>expect(screen.getByText('Export cancelled.')).not.toBeNull());
+  expect(createWritable).not.toHaveBeenCalled();
 });

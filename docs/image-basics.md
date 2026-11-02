@@ -5,7 +5,7 @@ Image Compressor、Image Watermark 与 EXIF Metadata 为 CN/Global、zh/en **Pub
 | 工具与路径（Draft 仅 DEV） | 当前能力 |
 | --- | --- |
 | [Image Compressor](../src/tools/image-compressor/ImageCompressor.tsx) · `/tools/image-compressor/` | 单张/批量与文件夹，快速强度或高级质量/目标大小/最长边，PNG/JPEG/WebP 与受支持桌面设备上的 AVIF 输出，原图/结果比较、实际大小与节省比例、独立下载和 ZIP。JPEG/WebP 目标大小只进行有界尝试，未达到或变大均如实显示。 |
-| [Comic Page Organizer](../src/tools/comic-page-organizer/ComicPageOrganizer.tsx) · `/tools/comic-page-organizer/` | 多图/文件夹，行优先紧凑画廊、直接拖排与键盘排序、确定的自然顺序重置、多选删除、追加与逐页阅读，按当前顺序生成零填充页名的 ZIP/CBZ。第一页自然作为首页，无独立封面状态；原始图片字节保持不变，来源元数据也可能保留。 |
+| [Comic Page Organizer](../src/tools/comic-page-organizer/ComicPageOrganizer.tsx) · `/tools/comic-page-organizer/` | 多图/文件夹，行优先紧凑画廊、拖排/键盘排序、稳定自然顺序重置、多选删除与逐页阅读。漫画专用文件预算和可视范围有界缩略图；ZIP/CBZ 保留原始字节，受支持浏览器可流式保存大归档；PDF 按实际顺序和图片比例导出，有独立预算，部分格式转换。来源元数据可能保留。 |
 | [Image Watermark](../src/tools/image-watermark/ImageWatermark.tsx) · `/tools/image-watermark/` | 快速/高级共用参数草稿和重置，单张/批量文字或位图/安全静态 SVG Logo，单点旋转与三档密度平铺，实时有界预览及颜色弹层，PNG/JPEG/WebP/受限 AVIF 输出、单项下载和 ZIP。使用已有本地字体，不提供图层编辑器。 |
 | [EXIF Metadata](../src/tools/exif-metadata/ExifMetadata.tsx) · `/tools/exif-metadata/` | 单张/批量 JPEG/PNG/WebP 与文件夹导入，选中文件查看紧凑斑马纹元数据表及隐私标记，逐项或全部无损清理、前后字段对照、单项下载与成功结果 ZIP。未知结构明确失败并支持重试，无需清理的验证结果也可下载；列表提供缩略图与原图查看，不提供清理前后视觉对比。 |
 
@@ -34,6 +34,18 @@ L3 边界：真实 iOS/Android、Firefox/Safari、低端设备及压力测试未
 鼠标/笔直接拖动，触屏长按后拖动、未激活时保留滑动浏览；支持浮动反馈、插入位置、边缘自动滚动、Escape 取消及隐藏说明的键盘排序。最终顺序唯一来自 `ComicSession.move()`，DOM、页码、阅读器和归档一致。移除独立封面状态，第一页可以正常移动；重置按文件名/相对路径自然排序，同名使用初始导入顺序。排序、删除、追加与清空继续使旧归档快照失效，沿用原字节、串行验证和 URL 所有权。
 
 本轮 4 个定向测试文件共 40 项通过，覆盖行几何、鼠标/长按触控/多指取消/键盘排序、同名重置、错误隔离、移除与卸载释放及归档版本；`pnpm check`（336 文件）零诊断。真实 Chromium 已检查 CN 中文与 Global 英文、桌面和 390px 手机视口、亮暗主题、文件夹导入、鼠标拖排/自动滚动、阅读缩放/焦点返回及删除/清空。实际下载的 ZIP 和 CBZ 均解出 18 张，零填充文件名、当前顺序和每项原文件字节逐一核对一致，PNG 完整解码通过；本地证据在仓库外 `../.validation/comic-c1/`。手机视口中的鼠标拖动不代表真实触屏通过；真实 iOS/Android 长按与滑动冲突、Firefox/Safari 及压力范围仍未测。保持 Draft，不重复无关全量本地测试或双地区构建；完整 CI 沿用既有工作流。
+
+### B2-C1-R1 · 导出与大归档
+
+画廊和拖拽系统不变，浮层顺序为选择/阅读/删除；底部 ZIP（默认）/CBZ/PDF 共用单选和主操作。漫画专用预算见 [`limits.ts`](../src/tools/comic-page-organizer/limits.ts)，不改变已发布工具的 ImageLimits。导入只执行有界容器检查；IntersectionObserver 请求附近页面的 480px 缩略图，缓存按条数和字节淘汰，原图 URL 只在阅读弹窗期间持有。缩略图、逐页完整解码与导出仍共用唯一 SerialJobs，删除/清空/卸载释放所有权，不能把容器检查当作完整解码成功。
+
+新 [`archive/stream-zip.ts`](../src/tools/archive/stream-zip.ts) 仅提供安全的无压缩 ZIP 写入接口，保留扁平名称、同名冲突、32-bit ZIP 边界和逐块背压。已发布工具的 `packZip()` 未改动。普通 Blob 下载仍有独立上限；超过时仅在支持 File System Access 的安全上下文中，由用户点击触发保存选择器，逐块写入本地临时文件。取消、失败、超时或列表变更会 abort，不关闭提交半成品；串行通道等待实际 I/O/原生操作结束。最终原子 close 的短暂提交阶段锁定列表与取消入口，避免提交过程中改变快照；已提交的文件属于明确完成的旧导出，不可能在用户之后修改排序时追溯撤回。
+
+PDF 仅在导出时加载固定 `pdf-lib@1.17.1`，由独立页数、来源字节、累计像素和输出预算限制。JPEG/PNG 直接嵌入，显式应用全部 EXIF 方向矩阵；WebP/受支持 AVIF 逐页完整解码为 PNG 后嵌入，不持有多张临时 Bitmap/Canvas。PDF 页面保留图像比例并覆盖整个页面，生成后重新解析页数与尺寸。第三方及传递依赖完整声明随工具的 [NOTICE](../src/tools/comic-page-organizer/pdf-lib.NOTICE.txt) 按需交付；仍为 Draft。ZIP/CBZ 不重新编码、不清理元数据，PDF 不承诺所有格式零重编码或彻底清理隐私。
+
+最终 7 个定向测试文件共 81 项通过，`pnpm check`（343 文件）零诊断，`pnpm install --frozen-lockfile` 通过。未重复本地全量测试、双地区构建或无关专项夹具；完整 CI 沿用既有 GitHub Actions。
+
+本轮实际 Chromium 已导入 320 页约 267MiB JPEG，普通画廊只挂载附近的 28 个缩略图。系统保存选择器写出的 279,568,554 B ZIP 可解压，320 页名称、页序、CRC 与原文件字节逐项一致。普通 Blob ZIP/CBZ 均包含五张有效原图，按调整后顺序逐项保持原字节。真实五页 PDF 覆盖 JPEG 旋转/镜像、透明 PNG、WebP 和受支持 AVIF；Poppler 完整渲染，顺序、尺寸和方向经像素对比验证。原始编码器色彩声明不符合输入子集的 AVIF 明确拒绝，不伪造预览或加入输出。390px 手机视口下格式选择和主按钮无横向溢出。最后的 160 页大 CBZ 保存流程被维护者按 Escape 停止，未继续操作浏览器；大 CBZ 实际落盘、真实系统写入失败/取消后的磁盘状态尚未实测，受控取消、写入失败、快照失效和同一 ZIP 写入路径由定向测试覆盖。证据保存在仓库外 `../.validation/comic-r1/`。真实移动设备、其他浏览器、接近最大预算和长时间压力范围未测；手机视口不代表真机触控或 File System Access 支持。
 
 ## Image Compressor · B1-C1（2026-11-01）
 

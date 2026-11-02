@@ -23,6 +23,8 @@
 
 ### Changed
 
+- V0.7-B2-C1-R1 为 Comic Page Organizer 增加独立文件/缩略图预算、受控流式 ZIP/CBZ 与按需 PDF 导出，保留画廊、原字节归档和结果版本隔离。格式单选与主导出统一，操作图标改为选择/预览/删除；不支持直接保存时继续有界普通下载，PDF 使用独立规模限制。继续 Draft。
+
 - V0.7-B2-C1 将 Comic Page Organizer 改为行优先紧凑画廊，图片浮层、直接拖排、触屏长按与键盘排序共用实际页面顺序；重置自然排序稳定处理同名文件，移除独立封面设置。逐页阅读和原字节 ZIP/CBZ 保持现有验证、取消与快照隔离，继续 Draft。
 
 - V0.7-B3-D1 完成 Image Watermark 冻结双语 SEO 与 L2 Beta 资格收尾，提升 CN/Global 源码 Published。正式产物包含文字/Logo 批量水印、旋转平铺、安全静态 SVG、按需 AVIF 与完整 react-colorful MIT 通知，沿用既有首页身份与发现投影；Comic Page Organizer 继续 Draft，未部署。

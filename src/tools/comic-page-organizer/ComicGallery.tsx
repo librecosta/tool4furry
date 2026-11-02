@@ -17,22 +17,36 @@ function GalleryImage({page, labels}: {page: ComicPage; labels: Labels}) {
   return <>
     {(!available || loaded !== page.url) && <div {...stylex.props(s.placeholder)}>
       <FileImageIcon size={24} aria-hidden/>
-      <span>{!available ? labels[page.status === 'ready' ? 'imageError' : page.status] : labels.loading}</span>
+      <span>{page.status !== 'ready' ? labels[page.status] : page.thumbnailError || failed === page.url && !!page.url ? labels.imageError : labels.loading}</span>
     </div>}
     {available && <img src={page.url} alt={page.file.name} loading="lazy" decoding="async" draggable={false}
       onLoad={() => setLoaded(page.url)} onError={() => setFailed(page.url)} {...stylex.props(s.image, loaded !== page.url && s.imageLoading)}/>}
   </>;
 }
 
-export function ComicGallery({pages, selected, labels: t, onMove, onSelect, onRemove, onRead}: {
+export function ComicGallery({pages, selected, labels: t, onMove, onSelect, onRemove, onRead, onVisible}: {
   pages: readonly ComicPage[]; selected: readonly string[]; labels: Labels;
   onMove: (id: string, target: number) => void; onSelect: (id: string, selected: boolean) => void;
   onRemove: (id: string) => void; onRead: (id: string, trigger: HTMLElement) => void;
+  onVisible: (ids: readonly string[]) => void;
 }) {
   const host = useRef<HTMLDivElement>(null), list = useRef<HTMLUListElement>(null);
   const scrollAfterMove = useRef<HTMLElement | null>(null);
   const [width, setWidth] = useState(640), [lifted, setLifted] = useState<string>(), [announcement, setAnnouncement] = useState('');
   const keyboardStart = useRef(0), helpId = useId();
+  const visibility = useRef(onVisible); visibility.current = onVisible;
+  const orderKey = pages.map(page => page.id).join('|');
+  useEffect(() => {
+    if (!list.current) return;
+    const nodes = [...list.current.querySelectorAll<HTMLElement>('[data-page-id]')], visible = new Set<string>();
+    if (typeof IntersectionObserver === 'undefined') {visibility.current(nodes.slice(0, 12).map(node => node.dataset.pageId!)); return;}
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) {const id = (entry.target as HTMLElement).dataset.pageId!; if (entry.isIntersecting) visible.add(id); else visible.delete(id);}
+      visibility.current([...visible]);
+    }, {root: host.current, rootMargin: '80px 0px'});
+    nodes.forEach(node => observer.observe(node));
+    return () => observer.disconnect();
+  }, [orderKey]);
   useLayoutEffect(() => {
     const node = list.current;
     if (!node) return;
@@ -87,8 +101,8 @@ export function ComicGallery({pages, selected, labels: t, onMove, onSelect, onRe
             <GalleryImage page={page} labels={t}/>
             <span data-page-number aria-hidden {...stylex.props(s.number)}>{String(index + 1).padStart(2, '0')}</span>
             <div {...stylex.props(s.overlayActions, box.width < 180 && s.narrowActions)}>
-              <Tooltip content={t.preview}><IconButton label={`${t.preview} ${index + 1}`} variant="ghost" xstyle={s.overlayButton} disabled={page.status !== 'ready'} onClick={event => onRead(page.id, event.currentTarget)}><EyeIcon size={18}/></IconButton></Tooltip>
               <Tooltip content={checked ? t.deselect : t.select}><IconButton role="checkbox" aria-checked={checked} label={`${checked ? t.deselect : t.select} ${index + 1}`} variant="ghost" xstyle={[s.overlayButton, checked && s.checked]} onClick={() => onSelect(page.id, !checked)}>{checked ? <CheckSquareIcon size={19} weight="fill"/> : <SquareIcon size={19}/>}</IconButton></Tooltip>
+              <Tooltip content={t.preview}><IconButton label={`${t.preview} ${index + 1}`} variant="ghost" xstyle={s.overlayButton} disabled={page.status !== 'ready'} onClick={event => onRead(page.id, event.currentTarget)}><EyeIcon size={18}/></IconButton></Tooltip>
               <Tooltip content={t.remove}><IconButton label={`${t.remove} ${index + 1}`} variant="ghost" xstyle={s.overlayButton} onClick={() => onRemove(page.id)}><TrashIcon size={18}/></IconButton></Tooltip>
             </div>
             <div {...stylex.props(s.info)}><span title={page.file.webkitRelativePath || page.file.name} {...stylex.props(s.name)}>{page.file.name}</span>

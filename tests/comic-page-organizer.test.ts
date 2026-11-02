@@ -2,15 +2,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { unzipSync } from 'fflate';
 import { ComicSession, archiveEntries, naturalPages } from '../src/tools/comic-page-organizer/session';
-import { acceptImage } from '../src/tools/image/browser-codec';
+import { inspectComic as acceptImage, comicThumbnail, verifyComic } from '../src/tools/comic-page-organizer/source';
+import { desktopComicBudget } from '../src/tools/comic-page-organizer/limits';
 import { desktopImageLimits as limits, zipOutputBytes } from '../src/tools/image/limits';
 import type { ImageSource } from '../src/tools/image/types';
 
-vi.mock('../src/tools/image/browser-codec', () => ({acceptImage: vi.fn()}));
+vi.mock('../src/tools/comic-page-organizer/source', () => ({inspectComic: vi.fn(), comicThumbnail: vi.fn(async source => source.blob), verifyComic: vi.fn(async () => {})}));
 const file = (name: string, bytes = 'original EXIF bytes') => new File([bytes], name, {type: 'image/png'});
 const source = (f: File): ImageSource => ({file: f, blob: f, width: 50, height: 80, info: {format: 'png', width: 50, height: 80, orientation: 1}});
 const sessions: ComicSession[] = [];
-const create = (budget = limits) => { const session = new ComicSession(budget); sessions.push(session); return session; };
+const create = (budget = limits) => { const session = new ComicSession({...desktopComicBudget, input: budget}); sessions.push(session); return session; };
 const flush = async () => {for (let i = 0; i < 30; i++) await Promise.resolve();};
 const deferred = <T>() => { let resolve!: (value: T) => void; return {promise: new Promise<T>(done => {resolve = done;}), resolve: (value: T) => resolve(value)}; };
 beforeEach(() => {vi.mocked(acceptImage).mockImplementation(async f => {if (f.name === 'broken.png') throw new Error('decode'); return source(f);});});
@@ -48,7 +49,7 @@ describe('comic page ownership and ordering', () => {
   });
   it('multiselects, removes and clears pages with exact URL release', async () => {
     const session = create(); session.add([file('1.png'), file('2.png')]); await flush();
-    const ids = session.snapshot().pages.map(page => page.id); session.select(ids[0], true); session.select(ids[0], true);
+    const ids = session.snapshot().pages.map(page => page.id); session.showThumbnails(ids); await flush(); session.select(ids[0], true); session.select(ids[0], true);
     expect(session.snapshot().selected).toEqual([ids[0]]); session.selectAll(true); expect(session.snapshot().selected).toEqual(ids);
     session.remove([ids[1]]); expect(session.resources.urlsRevoked).toBe(1);
     session.clear(); expect(session.snapshot()).toMatchObject({pages: [], selected: [], intake: undefined});
@@ -70,20 +71,74 @@ describe('comic page ownership and ordering', () => {
     expect(session.snapshot().intake?.rejected.total).toBe(1);
     session.add([file('allowed.png', '1')]); await flush(); expect(acceptImage).toHaveBeenCalledTimes(1);
     gate.resolve(source(f)); await flush(); expect(acceptImage).toHaveBeenCalledTimes(2);
-    expect(session.snapshot().pages).toHaveLength(1); expect(session.resources.urlsCreated).toBe(1);
+    expect(session.snapshot().pages).toHaveLength(1); expect(session.resources.urlsCreated).toBe(0);
     expect(session.jobs.maxActive).toBe(1);
   });
   it('times out without overlapping the next native operation or accepting late results', async () => {
     vi.useFakeTimers(); const gate = deferred<ImageSource>(), f = file('1.png');
     vi.mocked(acceptImage).mockImplementationOnce(() => gate.promise);
-    const session = create(); session.add([f, file('2.png')]); await vi.advanceTimersByTimeAsync(45001);
+    const session = create(); session.add([f, file('2.png')]); await vi.advanceTimersByTimeAsync(300001);
     expect(session.snapshot().pages.map(page => page.status)).toEqual(['error', 'queued']); expect(acceptImage).toHaveBeenCalledTimes(1);
     gate.resolve(source(f)); await flush(); expect(session.snapshot().pages.map(page => page.status)).toEqual(['error', 'ready']);
-    expect(session.resources.urlsCreated).toBe(1);
+    expect(session.resources.urlsCreated).toBe(0);
   });
 });
 
 describe('original-byte comic archives', () => {
+  it('accepts 320 pages without eager decoding or thumbnail allocation', async () => {
+    const session = new ComicSession(desktopComicBudget); sessions.push(session);
+    const calls = vi.mocked(comicThumbnail).mock.calls.length;
+    session.add(Array.from({length: 320}, (_, i) => file(`page${i+1}.png`)));
+    await vi.waitFor(() => expect(session.snapshot().pages.every(p => p.status === 'ready')).toBe(true));
+    expect(session.snapshot().pages).toHaveLength(320); expect(session.snapshot().intake?.rejected.count).toBe(0);
+    expect(comicThumbnail).toHaveBeenCalledTimes(calls); expect(session.resources.urlsCreated).toBe(0);
+  });
+  it('evicts thumbnails with exact URL ownership, and never stores all originals as thumbnails', async () => {
+    const session = new ComicSession({...desktopComicBudget, thumbnails: 2}); sessions.push(session);
+    session.add([file('1.png'),file('2.png'),file('3.png')]); await flush();
+    const ids = session.snapshot().pages.map(p=>p.id);
+    session.showThumbnails(ids.slice(0,2)); await flush(); expect(session.resources.urlsCreated).toBe(2);
+    session.showThumbnails([ids[2]]); await flush(); expect(session.resources.urlsRevoked).toBe(1);
+    expect(session.snapshot().pages.filter(p=>p.url)).toHaveLength(2);
+    session.clear(); expect(session.resources.urlsCreated).toBe(session.resources.urlsRevoked);
+  });
+  it('verifies full decoding only at export and stops on an invalid page', async () => {
+    const session = create(); session.add([file('1.png'),file('2.png')]); await flush();
+    vi.mocked(verifyComic).mockRejectedValueOnce(new Error('invalid pixels'));
+    expect(await session.pack('zip')).toBeUndefined(); expect(session.snapshot().archiveError).toBe('pageFailed');
+    expect(session.snapshot().pages[0].status).toBe('error');
+    const result = await session.pack('zip'); expect(result).toBeDefined();
+    expect(Object.keys(unzipSync(new Uint8Array(await result!.blob.arrayBuffer())))).toHaveLength(1);
+  });
+  it('streams past the Blob cap and aborts a stale writable before it can close', async () => {
+    const session = new ComicSession({...desktopComicBudget, blobBytes: 10}); sessions.push(session);
+    session.add([file('1.png'), file('2.png')]); await flush();
+    expect(await session.pack('zip')).toBeUndefined(); expect(session.snapshot().archiveError).toBe('budget');
+    let release!: () => void; const gate = new Promise<void>(resolve => {release=resolve;});
+    const close=vi.fn(), abort=vi.fn(async()=>{release();});
+    const packing = session.pack('cbz', Promise.resolve({async createWritable(){return {async write(){await gate;},close,abort};}}));
+    await vi.waitFor(()=>expect(session.snapshot().packing).toBe(true)); await flush();
+    session.move(session.snapshot().pages[0].id,1); await packing;
+    expect(abort).toHaveBeenCalledOnce(); expect(close).not.toHaveBeenCalled(); expect(session.snapshot().exported).toBeUndefined();
+  });
+  it('handles picker cancellation and write errors without silently downloading a Blob', async () => {
+    const session=create(); session.add([file('1.png')]); await flush();
+    expect(await session.pack('zip',Promise.reject(new DOMException('cancel','AbortError')))).toBeUndefined();
+    expect(session.snapshot()).toMatchObject({packing:false,archiveError:undefined});
+    const close=vi.fn(),abort=vi.fn(async()=>{});
+    expect(await session.pack('zip',Promise.resolve({async createWritable(){return {async write(){throw Error('disk');},close,abort};}}))).toBeUndefined();
+    expect(session.snapshot().archiveError).toBe('failed'); expect(close).not.toHaveBeenCalled(); expect(abort).toHaveBeenCalledOnce();
+  });
+  it('holds a short commit boundary while the writable atomically closes', async () => {
+    const session=create(); session.add([file('1.png'),file('2.png')]); await flush();
+    let finish!: () => void; const gate = new Promise<void>(resolve=>{finish=resolve;});
+    const task=session.pack('zip',Promise.resolve({async createWritable(){return {async write(){},async close(){await gate;},async abort(){}};}}));
+    await vi.waitFor(()=>expect(session.snapshot().committing).toBe(true));
+    const order=session.snapshot().pages.map(p=>p.id);
+    session.move(order[0],1); session.remove([order[0]]); session.add([file('3.png')]); session.cancelExport();
+    expect(session.snapshot().pages.map(p=>p.id)).toEqual(order);
+    finish(); await task; expect(session.snapshot()).toMatchObject({committing:false,packing:false,exported:'zip'});
+  });
   it.each(['zip', 'cbz'] as const)('exports ordered %s entries with a first-page cover and unchanged source bytes', async format => {
     const session = create(), a = file('same.png', 'EXIF untouched A'), b = file('same.png', 'EXIF untouched B');
     session.add([a, b, file('10.png', 'PAGE10')]); await flush();
@@ -108,16 +163,16 @@ describe('original-byte comic archives', () => {
     const session = create(), f = file('1.png'); session.add([f]); await flush();
     const block = deferred<ArrayBuffer>(); vi.spyOn(f, 'slice').mockReturnValue({arrayBuffer: () => block.promise} as Blob);
     const packing = session.pack('cbz'); await flush(); expect(session.snapshot().packing).toBe(true);
-    session.add([file('2.png')]); expect(await packing).toBeUndefined(); await flush(); expect(acceptImage).toHaveBeenCalledTimes(1);
-    block.resolve(new Uint8Array([1, 2]).buffer); await flush();
+    session.add([file('2.png')]); await flush(); expect(acceptImage).toHaveBeenCalledTimes(1);
+    block.resolve(new Uint8Array([1, 2]).buffer); expect(await packing).toBeUndefined(); await flush();
     expect(acceptImage).toHaveBeenCalledTimes(2); expect(session.snapshot().packing).toBe(false);
   });
   it('cancels an archive snapshot when the first page moves, and regenerates in actual order', async () => {
     const session = create(), f = file('1.png'); session.add([f, file('2.png')]); await flush();
     const block = deferred<ArrayBuffer>(), slice = vi.spyOn(f, 'slice').mockReturnValue({arrayBuffer: () => block.promise} as Blob);
     const packing = session.pack('zip'); await flush();
-    session.move(session.snapshot().pages[0].id, 1); expect(await packing).toBeUndefined();
-    block.resolve(new Uint8Array([1, 2]).buffer); await flush(); slice.mockRestore();
+    session.move(session.snapshot().pages[0].id, 1);
+    block.resolve(new Uint8Array([1, 2]).buffer); expect(await packing).toBeUndefined(); await flush(); slice.mockRestore();
     const result = await session.pack('cbz');
     const entries = Object.values(unzipSync(new Uint8Array(await result!.blob.arrayBuffer())));
     expect(entries[0]).toEqual(new Uint8Array(await session.snapshot().pages[0].file.arrayBuffer()));
