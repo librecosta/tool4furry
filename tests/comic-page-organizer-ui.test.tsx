@@ -48,7 +48,16 @@ it('shows only image overlays, three actions and actual page numbers, with no co
   expect(screen.getAllByRole('checkbox')).toHaveLength(3);
   expect([...pages()[0].querySelectorAll('button')].map(button => button.getAttribute('aria-label'))).toEqual(['Select page 1','Read page 1','Remove page 1']);
   expect(screen.getByRole('radio', {name: 'ZIP'}).getAttribute('aria-checked')).toBe('true');
+  const exportPanel = screen.getByRole('region', {name: 'Export settings'});
+  expect(within(exportPanel).getByRole('heading', {name: 'Export settings'})).not.toBeNull();
+  expect(within(exportPanel).getByRole('group', {name: 'Parameter mode'})).not.toBeNull();
+  expect(within(exportPanel).getByLabelText('Page name prefix')).not.toBeNull();
+  expect(within(exportPanel).getByRole('button', {name: 'Package & download'})).not.toBeNull();
   fireEvent.click(screen.getByRole('radio', {name: 'PDF'})); expect(screen.getByRole('button', {name: 'Export PDF'})).not.toBeNull();
+  expect(within(exportPanel).queryByRole('group', {name: 'Parameter mode'})).toBeNull();
+  expect(within(exportPanel).queryByRole('textbox')).toBeNull();
+  expect(within(exportPanel).queryByRole('combobox')).toBeNull();
+  expect(within(exportPanel).getByRole('button', {name: 'Export PDF'})).not.toBeNull();
   fireEvent.keyDown(screen.getByRole('radio', {name: 'PDF'}), {key: 'ArrowLeft'}); expect(screen.getByRole('radio', {name: 'CBZ'}).getAttribute('aria-checked')).toBe('true');
   expect(screen.getByRole('button', {name: 'Package & download'})).not.toBeNull();
 });

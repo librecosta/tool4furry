@@ -79,19 +79,21 @@ export default function ComicPageOrganizer({locale}: ToolProps) {
           onSelect={(id, selected) => session?.select(id, selected)} onRemove={id => session?.remove([id])}
           onRead={(id, trigger) => {previewTrigger.current = trigger; setReading(id);}}/>
         {errors > 0 && <p role="status" {...stylex.props(s.note, s.error)}>{errors} · {t.failedExcluded}</p>}
-        <ComicExportSettings settings={settings} configure={patch => session?.configure(patch)} pdf={format === 'pdf'} cbz={format === 'cbz'} avifIssue={avifIssue} t={t}/>
-        <div {...stylex.props(s.row)}>
-          <div role="radiogroup" aria-label={t.exportFormat} {...stylex.props(c.modes)} onKeyDown={event => {
-            if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key) || view.packing) return;
-            event.preventDefault(); const values = ['zip','cbz','pdf'] as const, i = values.indexOf(format);
-            const next = event.key === 'Home' ? 0 : event.key === 'End' ? 2 : (i + (event.key === 'ArrowLeft' ? 2 : 1)) % 3;
-            setFormat(values[next]); (event.currentTarget.children[next] as HTMLElement).focus();
-          }}>{(['zip','cbz','pdf'] as const).map(value => <button key={value} type="button" role="radio" aria-checked={format === value} tabIndex={format === value ? 0 : -1} disabled={view.packing} {...stylex.props(c.mode, c.parameterControl, format === value && c.currentParameterMode)} onClick={() => setFormat(value)}>{value.toUpperCase()}</button>)}</div>
-          <Button xstyle={s.primary} loading={view.packing} disabled={!ready.length || pending || large && !streaming || format !== 'pdf' && (!validSettings || settings.format === 'avif' && !!avifIssue)} onClick={() => void archive()}>{format === 'pdf' ? t.pdf : t.download}</Button>
-          {view.packing && <><span role="status" {...stylex.props(s.note)}>{t.packing} {view.progress}/{ready.length}</span><Button xstyle={s.action} onClick={() => session?.cancelExport()}>{t.cancel}</Button></>}
-        </div>
-        {large && <p role={streaming ? 'status' : 'alert'} {...stylex.props(s.note, !streaming && s.error)}>{streaming ? t.stream : t.noStream}</p>}
-        {view.exported && <p role="status" {...stylex.props(s.note)}>{t.saved}</p>}
+        <section aria-label={t.exportSettings} data-comic-export-panel {...stylex.props(c.settings, s.exportPanel)}>
+          <ComicExportSettings settings={settings} configure={patch => session?.configure(patch)} pdf={format === 'pdf'} cbz={format === 'cbz'} avifIssue={avifIssue} t={t}/>
+          <div data-comic-export-actions {...stylex.props(s.row)}>
+            <div role="radiogroup" aria-label={t.exportFormat} {...stylex.props(c.modes)} onKeyDown={event => {
+              if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key) || view.packing) return;
+              event.preventDefault(); const values = ['zip','cbz','pdf'] as const, i = values.indexOf(format);
+              const next = event.key === 'Home' ? 0 : event.key === 'End' ? 2 : (i + (event.key === 'ArrowLeft' ? 2 : 1)) % 3;
+              setFormat(values[next]); (event.currentTarget.children[next] as HTMLElement).focus();
+            }}>{(['zip','cbz','pdf'] as const).map(value => <button key={value} type="button" role="radio" aria-checked={format === value} tabIndex={format === value ? 0 : -1} disabled={view.packing} {...stylex.props(c.mode, c.parameterControl, format === value && c.currentParameterMode)} onClick={() => setFormat(value)}>{value.toUpperCase()}</button>)}</div>
+            <Button xstyle={s.primary} loading={view.packing} disabled={!ready.length || pending || large && !streaming || format !== 'pdf' && (!validSettings || settings.format === 'avif' && !!avifIssue)} onClick={() => void archive()}>{format === 'pdf' ? t.pdf : t.download}</Button>
+            {view.packing && <><span role="status" {...stylex.props(s.note)}>{t.packing} {view.progress}/{ready.length}</span><Button xstyle={[s.action, s.exportSecondary]} onClick={() => session?.cancelExport()}>{t.cancel}</Button></>}
+          </div>
+          {large && <p role={streaming ? 'status' : 'alert'} {...stylex.props(s.note, !streaming && s.error)}>{streaming ? t.stream : t.noStream}</p>}
+          {view.exported && <p role="status" {...stylex.props(s.note)}>{t.saved}</p>}
+        </section>
       </>}
       {view.archiveError && <p role={view.archiveError === 'cancelled' ? 'status' : 'alert'} {...stylex.props(s.note, view.archiveError !== 'cancelled' && s.error)}>{t[view.archiveError]}</p>}
       <FilePreviewDialog open={!!current} onOpenChange={open => {if (!open) setReading(undefined);}} title={current ? `${view.pages.indexOf(current) + 1}/${view.pages.length} · ${current.file.name}` : t.preview} labels={t}
