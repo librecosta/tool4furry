@@ -8,25 +8,21 @@ import { packZip, ZipFailure } from '../image-converter/zip';
 import { batchTime } from '../file-naming';
 
 export type ComicPage = Readonly<{
-  id: string; file: File; status: 'queued' | 'checking' | 'ready' | 'error';
+  id: string; importIndex: number; file: File; status: 'queued' | 'checking' | 'ready' | 'error';
   source?: ImageSource; url?: string;
 }>;
 export type ComicView = Readonly<{
-  pages: readonly ComicPage[]; selected: readonly string[]; cover?: string;
+  pages: readonly ComicPage[]; selected: readonly string[];
   intake?: IntakeSummary; packing: boolean; archiveError?: 'budget' | 'changed' | 'failed';
 }>;
 export const emptyComicView: ComicView = { pages: [], selected: [], packing: false };
 const nameOrder = new Intl.Collator('en', {numeric: true, sensitivity: 'base'});
 const path = (file: File) => file.webkitRelativePath || file.name;
-/** Stable ties preserve duplicate names and user-selected order. */
-export function naturalPages<T extends {file: File}>(pages: readonly T[]): T[] {
+/** Reset ties use intake order, even after the user has moved duplicate names. */
+export function naturalPages<T extends {file: File; importIndex?: number}>(pages: readonly T[]): T[] {
   return pages.map((page, index) => ({page, index})).sort((a, b) =>
-    nameOrder.compare(path(a.page.file), path(b.page.file)) || a.index - b.index,
+    nameOrder.compare(path(a.page.file), path(b.page.file)) || (a.page.importIndex ?? a.index) - (b.page.importIndex ?? b.index),
   ).map(item => item.page);
-}
-export function coverFirst<T extends {id: string}>(pages: readonly T[], cover?: string): T[] {
-  const first = pages.find(page => page.id === cover);
-  return first ? [first, ...pages.filter(page => page.id !== cover)] : [...pages];
 }
 export function archiveEntries(pages: readonly ComicPage[]) {
   const width = Math.max(3, String(pages.length).length);
@@ -69,7 +65,10 @@ export class ComicSession {
     // A removed active file remains allocated until its native validation settles.
     const retained = this.activePage && !this.view.pages.some(page => page.id === this.activePage!.id) ? [this.activePage] : [];
     const intake = planIntake(files, [...this.view.pages, ...retained], this.limits);
-    const added = naturalPages(intake.accepted.map(file => ({id: `page-${++this.sequence}`, file, status: 'queued' as const})));
+    const added = naturalPages(intake.accepted.map(file => {
+      const importIndex = ++this.sequence;
+      return {id: `page-${importIndex}`, importIndex, file, status: 'queued' as const};
+    }));
     if (added.length) this.invalidate();
     this.publish({pages: [...this.view.pages, ...added], intake: intake.summary});
     for (const page of added) this.check(page);
@@ -106,7 +105,7 @@ export class ComicSession {
       this.jobs.cancel(page.id);
       if (page.url) this.resources.revoke(page.url);
     }
-    this.publish({pages: this.view.pages.filter(page => !ids.includes(page.id)), selected: this.view.selected.filter(id => !ids.includes(id)), cover: ids.includes(this.view.cover ?? '') ? undefined : this.view.cover});
+    this.publish({pages: this.view.pages.filter(page => !ids.includes(page.id)), selected: this.view.selected.filter(id => !ids.includes(id))});
   }
   clear() { this.remove(this.view.pages.map(page => page.id)); this.publish({intake: undefined}); }
   move(id: string, target: number) {
@@ -115,14 +114,12 @@ export class ComicSession {
     const to = Math.max(0, Math.min(pages.length - 1, Math.round(target)));
     if (from === to) return;
     const [page] = pages.splice(from, 1); pages.splice(to, 0, page);
-    const next = coverFirst(pages, this.view.cover);
-    if (next.every((page, i) => page === this.view.pages[i])) return;
-    this.invalidate(); this.publish({pages: next});
+    this.invalidate(); this.publish({pages});
   }
-  sort() { this.invalidate(); this.publish({pages: coverFirst(naturalPages(this.view.pages), this.view.cover)}); }
-  setCover(id?: string) {
-    if (id && !this.view.pages.some(page => page.id === id && page.status === 'ready')) return;
-    this.invalidate(); this.publish({cover: id, pages: coverFirst(this.view.pages, id)});
+  sort() {
+    const pages = naturalPages(this.view.pages);
+    if (pages.every((page, i) => page === this.view.pages[i])) return;
+    this.invalidate(); this.publish({pages});
   }
   pack(format: 'zip' | 'cbz'): Promise<Archive | undefined> {
     if (this.disposed || this.archive || !this.view.pages.some(page => page.status === 'ready') || this.view.pages.some(page => ['queued', 'checking'].includes(page.status))) return Promise.resolve(undefined);

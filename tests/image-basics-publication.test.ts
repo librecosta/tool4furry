@@ -46,6 +46,16 @@ describe.each(['cn', 'global'] as const)('%s Compressor/Watermark/EXIF publicati
       expect(content.faq?.at(-1)?.question).toBe(locale === 'zh' ? '图片会上传到服务器吗？' : 'Are my images uploaded to a server?');
     }
   });
+  it('describes the Comic gallery order without obsolete cover controls', () => {
+    const tool = tools.find(tool => tool.id === 'comic-page-organizer')!;
+    for (const locale of ['zh', 'en'] as const) {
+      const content = getToolPageContent(tool, region, undefined, true, locale);
+      expect(content.steps?.join(' ')).toContain(locale === 'zh' ? '重置排序' : 'Reset Order');
+      expect(content.faq?.[1].answer).toContain(locale === 'zh' ? '第一张有效图片' : 'first valid image');
+      expect(content.limitations?.join(' ')).toContain(locale === 'zh' ? '不清理来源元数据' : 'without re-encoding or removing source metadata');
+      expect(JSON.stringify([content, tool.copy[locale]])).not.toMatch(/设置封面|选择封面|箭头按钮|choose a cover|set a cover|arrow buttons/i);
+    }
+  });
   it('publishes the frozen Watermark SEO without an extra feature overview', () => {
     const tool = tools.find(tool => tool.id === 'image-watermark')!;
     const expected = {

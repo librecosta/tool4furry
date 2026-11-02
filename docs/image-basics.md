@@ -5,7 +5,7 @@ Image Compressor、Image Watermark 与 EXIF Metadata 为 CN/Global、zh/en **Pub
 | 工具与路径（Draft 仅 DEV） | 当前能力 |
 | --- | --- |
 | [Image Compressor](../src/tools/image-compressor/ImageCompressor.tsx) · `/tools/image-compressor/` | 单张/批量与文件夹，快速强度或高级质量/目标大小/最长边，PNG/JPEG/WebP 与受支持桌面设备上的 AVIF 输出，原图/结果比较、实际大小与节省比例、独立下载和 ZIP。JPEG/WebP 目标大小只进行有界尝试，未达到或变大均如实显示。 |
-| [Comic Page Organizer](../src/tools/comic-page-organizer/ComicPageOrganizer.tsx) · `/tools/comic-page-organizer/` | 多图/文件夹，自然排序、缩略图网格、拖排/移动、多选删除、追加、封面、逐页阅读，稳定零填充页名的 ZIP/CBZ。原始图片字节保持不变，来源元数据也可能保留。 |
+| [Comic Page Organizer](../src/tools/comic-page-organizer/ComicPageOrganizer.tsx) · `/tools/comic-page-organizer/` | 多图/文件夹，行优先紧凑画廊、直接拖排与键盘排序、确定的自然顺序重置、多选删除、追加与逐页阅读，按当前顺序生成零填充页名的 ZIP/CBZ。第一页自然作为首页，无独立封面状态；原始图片字节保持不变，来源元数据也可能保留。 |
 | [Image Watermark](../src/tools/image-watermark/ImageWatermark.tsx) · `/tools/image-watermark/` | 快速/高级共用参数草稿和重置，单张/批量文字或位图/安全静态 SVG Logo，单点旋转与三档密度平铺，实时有界预览及颜色弹层，PNG/JPEG/WebP/受限 AVIF 输出、单项下载和 ZIP。使用已有本地字体，不提供图层编辑器。 |
 | [EXIF Metadata](../src/tools/exif-metadata/ExifMetadata.tsx) · `/tools/exif-metadata/` | 单张/批量 JPEG/PNG/WebP 与文件夹导入，选中文件查看紧凑斑马纹元数据表及隐私标记，逐项或全部无损清理、前后字段对照、单项下载与成功结果 ZIP。未知结构明确失败并支持重试，无需清理的验证结果也可下载；列表提供缩略图与原图查看，不提供清理前后视觉对比。 |
 
@@ -26,6 +26,14 @@ L3 边界：真实 iOS/Android、Firefox/Safari、低端设备及压力测试未
 真实 Chromium 核心 Smoke 覆盖 CN 中文 / Global 英文、桌面与 390px 手机视口、亮暗主题。压缩 JPEG → WebP 512×512，下载 173,386 B，节省 42.3% 与界面一致；1 KB 不可达目标明确提示，双文件 ZIP 可完整解码。漫画实际文件夹导入、自然排序、封面置顶、移动/阅读和 ZIP/CBZ 下载通过，归档为 `page-001.png` 起始的零填充页名，顺序与每项原始字节逐一相等。文字水印 PNG 的中心文字及 60% 不透明度、图片水印左上 80×40 和来源 alpha × 50% 不透明度均经像素验证，PNG/JPEG 输出完整解码。EXIF JPEG 从 5,102 B 清理至 4,499 B，设备、GPS、作者等字段移除，方向 6 保留，清理前后解码像素完全相同；PNG/WebP 读取与清理由定向真实容器测试补足。
 
 可复查的本地临时证据在仓库外 `../.validation/v07-b/`（下载路径清单、字节/像素复检 JSON、Chromium 截图），不进入源码或正式产物。此记录仅代表本轮核心 Smoke，不代表完整格式/设备矩阵或 Beta 资格通过。
+
+## Comic Page Organizer · B2-C1（2026-11-02）
+
+工作区改为连续行的轻量 Justified Gallery，10px 间距、约 220px 桌面目标行高和有界内部滚动。普通图片保持完整比例，仅极端长宽缩略图限幅裁切；原图阅读与归档不受影响。图片浮层只保留页码、原始信息和阅读/选择/删除三个操作。视口变化仅重算布局，不创建另一份页面顺序。
+
+鼠标/笔直接拖动，触屏长按后拖动、未激活时保留滑动浏览；支持浮动反馈、插入位置、边缘自动滚动、Escape 取消及隐藏说明的键盘排序。最终顺序唯一来自 `ComicSession.move()`，DOM、页码、阅读器和归档一致。移除独立封面状态，第一页可以正常移动；重置按文件名/相对路径自然排序，同名使用初始导入顺序。排序、删除、追加与清空继续使旧归档快照失效，沿用原字节、串行验证和 URL 所有权。
+
+本轮 4 个定向测试文件共 40 项通过，覆盖行几何、鼠标/长按触控/多指取消/键盘排序、同名重置、错误隔离、移除与卸载释放及归档版本；`pnpm check`（336 文件）零诊断。真实 Chromium 已检查 CN 中文与 Global 英文、桌面和 390px 手机视口、亮暗主题、文件夹导入、鼠标拖排/自动滚动、阅读缩放/焦点返回及删除/清空。实际下载的 ZIP 和 CBZ 均解出 18 张，零填充文件名、当前顺序和每项原文件字节逐一核对一致，PNG 完整解码通过；本地证据在仓库外 `../.validation/comic-c1/`。手机视口中的鼠标拖动不代表真实触屏通过；真实 iOS/Android 长按与滑动冲突、Firefox/Safari 及压力范围仍未测。保持 Draft，不重复无关全量本地测试或双地区构建；完整 CI 沿用既有工作流。
 
 ## Image Compressor · B1-C1（2026-11-01）
 

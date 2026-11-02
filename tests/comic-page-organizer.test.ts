@@ -31,17 +31,26 @@ describe('comic page ownership and ordering', () => {
     session.move(ids[2], 0); session.add([file('30.png'), file('20.png')]); await flush();
     expect(session.snapshot().pages.map(page => page.file.name)).toEqual(['10.png', '1.png', '2.png', '20.png', '30.png']);
     expect(session.snapshot().pages[0].id).toBe(ids[2]);
-    session.setCover(ids[1]); session.sort();
-    expect(session.snapshot().pages.map(page => page.file.name)).toEqual(['2.png', '1.png', '10.png', '20.png', '30.png']);
-    session.move(ids[1], 4); expect(session.snapshot().pages[0].id).toBe(ids[1]);
-    session.setCover(undefined); session.move(ids[1], 4); expect(session.snapshot().pages[4].id).toBe(ids[1]);
+    session.sort();
+    expect(session.snapshot().pages.map(page => page.file.name)).toEqual(['1.png', '2.png', '10.png', '20.png', '30.png']);
+    session.move(ids[0], 4); expect(session.snapshot().pages[4].id).toBe(ids[0]);
+    session.move(ids[0], 0); expect(session.snapshot().pages[0].id).toBe(ids[0]);
+  });
+  it('resets duplicate paths to initial intake order after manual moves and later additions', async () => {
+    const session = create(), a = file('2.png', 'first'), b = file('2.png', 'second'), c = file('2.png', 'third');
+    session.add([a, file('10.png'), b]); await flush();
+    const second = session.snapshot().pages.find(page => page.file === b)!;
+    session.move(second.id, 0); session.add([c, file('1.png')]); await flush();
+    session.sort();
+    expect(session.snapshot().pages.map(page => page.file)).toEqual([expect.objectContaining({name: '1.png'}), a, b, c, expect.objectContaining({name: '10.png'})]);
+    const order = session.snapshot().pages.map(page => page.id);
+    session.sort(); expect(session.snapshot().pages.map(page => page.id)).toEqual(order);
   });
   it('multiselects, removes and clears pages with exact URL release', async () => {
     const session = create(); session.add([file('1.png'), file('2.png')]); await flush();
     const ids = session.snapshot().pages.map(page => page.id); session.select(ids[0], true); session.select(ids[0], true);
     expect(session.snapshot().selected).toEqual([ids[0]]); session.selectAll(true); expect(session.snapshot().selected).toEqual(ids);
-    session.setCover(ids[1]); session.remove([ids[1]]);
-    expect(session.snapshot().cover).toBeUndefined(); expect(session.resources.urlsRevoked).toBe(1);
+    session.remove([ids[1]]); expect(session.resources.urlsRevoked).toBe(1);
     session.clear(); expect(session.snapshot()).toMatchObject({pages: [], selected: [], intake: undefined});
     expect(session.resources.urlsCreated).toBe(session.resources.urlsRevoked);
   });
@@ -78,7 +87,7 @@ describe('original-byte comic archives', () => {
   it.each(['zip', 'cbz'] as const)('exports ordered %s entries with a first-page cover and unchanged source bytes', async format => {
     const session = create(), a = file('same.png', 'EXIF untouched A'), b = file('same.png', 'EXIF untouched B');
     session.add([a, b, file('10.png', 'PAGE10')]); await flush();
-    const second = session.snapshot().pages.find(page => page.file === b)!; session.setCover(second.id);
+    const second = session.snapshot().pages.find(page => page.file === b)!; session.move(second.id, 0);
     const expected = session.snapshot().pages.map(page => page.file);
     const result = await session.pack(format); expect(result?.filename.endsWith(`.${format}`)).toBe(true);
     expect(result?.blob.type).toBe(format === 'cbz' ? 'application/vnd.comicbook+zip' : 'application/zip');
@@ -88,6 +97,7 @@ describe('original-byte comic archives', () => {
     expect(archiveEntries(session.snapshot().pages).every((entry, i) => entry.blob === expected[i])).toBe(true);
     session.select(second.id, true); expect(result?.current()).toBe(true);
     session.move(session.snapshot().pages[2].id, 1); expect(result?.current()).toBe(false);
+    expect(session.download(result!)).toBe(false);
   });
   it('uses inspected format rather than the extension and never creates name collisions', async () => {
     vi.mocked(acceptImage).mockImplementation(async f => ({...source(f), info: {...source(f).info, format: 'jpeg'}}));
@@ -101,6 +111,17 @@ describe('original-byte comic archives', () => {
     session.add([file('2.png')]); expect(await packing).toBeUndefined(); await flush(); expect(acceptImage).toHaveBeenCalledTimes(1);
     block.resolve(new Uint8Array([1, 2]).buffer); await flush();
     expect(acceptImage).toHaveBeenCalledTimes(2); expect(session.snapshot().packing).toBe(false);
+  });
+  it('cancels an archive snapshot when the first page moves, and regenerates in actual order', async () => {
+    const session = create(), f = file('1.png'); session.add([f, file('2.png')]); await flush();
+    const block = deferred<ArrayBuffer>(), slice = vi.spyOn(f, 'slice').mockReturnValue({arrayBuffer: () => block.promise} as Blob);
+    const packing = session.pack('zip'); await flush();
+    session.move(session.snapshot().pages[0].id, 1); expect(await packing).toBeUndefined();
+    block.resolve(new Uint8Array([1, 2]).buffer); await flush(); slice.mockRestore();
+    const result = await session.pack('cbz');
+    const entries = Object.values(unzipSync(new Uint8Array(await result!.blob.arrayBuffer())));
+    expect(entries[0]).toEqual(new Uint8Array(await session.snapshot().pages[0].file.arrayBuffer()));
+    session.sort(); expect(result?.current()).toBe(false);
   });
   it('checks the ZIP output budget before reading file bytes', async () => {
     const huge = file('huge.png'); Object.defineProperty(huge, 'size', {value: zipOutputBytes});
