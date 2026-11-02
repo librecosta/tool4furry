@@ -6,31 +6,42 @@ import { assertToolLoaderContract, toolBuildDefines, toolAvailabilityConstant } 
 import { publicPages, llmsText } from '../src/site/discovery';
 
 const ids = ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'];
-describe.each(['cn', 'global'] as const)('%s Compressor/Watermark/EXIF publication and the remaining Comic Draft module', region => {
+describe.each(['cn', 'global'] as const)('%s published basic image tools', region => {
   it('keeps implementations behind their literal Loader and Registry qualifications', () => {
     expect(() => assertToolLoaderContract(tools, readFileSync('src/tools/loaders.ts', 'utf8'))).not.toThrow();
     const available = getAvailableTools(region, true), production = getAvailableTools(region, false);
     for (const id of ids) {
       const tool = tools.find(tool => tool.id === id)!;
-      const published = id === 'image-compressor' || id === 'image-watermark' || id === 'exif-metadata';
-      expect(tool).toMatchObject({id, slug: id, status: published ? 'published' : 'draft', mode: 'form', regions: ['cn', 'global']});
-      expect(available).toContain(tool); expect(production.includes(tool)).toBe(published);
-      expect(toolBuildDefines(tools, region)[toolAvailabilityConstant(id)]).toBe(String(published));
-      expect(publicPages(region).filter(page => page.url.includes(`/tools/${id}/`))).toHaveLength(published ? 2 : 0);
-      expect(llmsText(region).includes(`/tools/${id}/`)).toBe(published);
+      expect(tool).toMatchObject({id, slug: id, status: 'published', mode: 'form', regions: ['cn', 'global']});
+      expect(available).toContain(tool); expect(production).toContain(tool);
+      expect(toolBuildDefines(tools, region)[toolAvailabilityConstant(id)]).toBe('true');
+      expect(publicPages(region).filter(page => page.url.includes(`/tools/${id}/`))).toHaveLength(2);
+      expect(llmsText(region)).toContain(`/tools/${id}/`);
       for (const locale of ['zh', 'en'] as const) {
         const content = getToolPageContent(tool, region, undefined, true, locale);
         expect(content.title.match(/Tool4Furry/g)).toHaveLength(1);
         expect(content.h1).toBe(tool.copy[locale].title);
         expect(content.steps).toHaveLength(3); expect(content.limitations).toHaveLength(3); expect(content.faq).toHaveLength(4);
         if (locale === 'en') expect(JSON.stringify(content)).not.toMatch(/\p{Script=Han}/u);
-        if (published) expect(getToolPageContent(tool, region, undefined, false, locale)).toEqual(content);
-        else expect(() => getToolPageContent(tool, region, undefined, false, locale)).toThrow('Unpublished');
+        expect(getToolPageContent(tool, region, undefined, false, locale)).toEqual(content);
       }
       expect(getRelatedTools(tool, region, undefined, true).length).toBeGreaterThan(0);
-      if (published) expect(getRelatedTools(tool, region).map(item => item.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor']);
+      expect(getRelatedTools(tool, region).map(item => item.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor']);
     }
-    expect(production.map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'image-watermark', 'exif-metadata']);
+    expect(production.map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata']);
+  });
+  it.each(ids)('excludes %s from production when its Registry qualification is Draft', id => {
+    const registry = tools.map(tool => tool.id === id ? {...tool, status: 'draft' as const} : tool);
+    const tool = registry.find(tool => tool.id === id)!;
+    expect(getAvailableTools(region, true, registry)).toContain(tool);
+    expect(getAvailableTools(region, false, registry)).not.toContain(tool);
+    expect(toolBuildDefines(registry, region)[toolAvailabilityConstant(id)]).toBe('false');
+    expect(publicPages(region, registry).some(page => page.url.includes(`/tools/${id}/`))).toBe(false);
+    expect(llmsText(region, registry)).not.toContain(`/tools/${id}/`);
+    for (const locale of ['zh', 'en'] as const) {
+      expect(() => getToolPageContent(tool, region, undefined, false, locale)).toThrow('Unpublished');
+      expect(getToolPageContent(tool, region, undefined, true, locale).h1).toBe(tool.copy[locale].title);
+    }
   });
   it('keeps the finalized Compressor metadata and guide bilingual and static', () => {
     const tool = tools.find(tool => tool.id === 'image-compressor')!;

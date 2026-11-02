@@ -247,6 +247,7 @@ it('registers the third bilingual Published tool in both regions', () => {
       'image-resize-crop',
       'palette-extractor',
       'image-compressor',
+      'comic-page-organizer',
       'image-watermark',
       'exif-metadata',
     ]);

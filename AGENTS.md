@@ -6,7 +6,7 @@
 
 ## Current State
 
-- Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark 与 EXIF Metadata 七款工具均为 Published；漫画整理本轮未重新运行正式构建，**两个地区均未部署**。源码 Published 不代表部署授权。
+- Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark 与 EXIF Metadata 七款工具均为 Published；CN/Global 双语正式构建与产物守卫通过，**两个地区均未部署**。源码 Published 不代表部署授权。
 - 当前没有后端、数据库、SSR 服务或用户系统。Lab 仅供 DEV，不能进入生产路由/资源图。
 - Image Compressor 已完成 B1-D1 SEO 与 Beta 资格收尾，保留 C1-R1 最长边步进器；EXIF Metadata 已完成 B4-D1 双语 SEO 与 Beta 收尾；Image Watermark 已完成 B3-D1 双语 SEO 与 Beta 收尾；Comic Page Organizer 已完成 B2-D1 双语 SEO，并按维护者明确要求提升为 CN/Global Published；转换归档真实落盘验收仍缺证据，不能声明 L2 已全部通过。当前能力、审计证据和 L3 边界见 [基础图片工具说明](docs/image-basics.md)。
 - Image Resize & Crop 已完成 A1-D2 Beta 资格审计；单张裁剪、批量缩放、双语静态页面与所需资源进入两地区正式构建。实现、资格证据及 L3 未测范围见 [Resize/Crop 说明](docs/image-resize-crop-implementation.md)。A1 已收尾，不继续扩展裁剪工作区。

@@ -314,11 +314,15 @@ it('uses the shared selector and a keyboard-operable 3–10 target group without
   const mount = render(<PaletteParameters mode="balanced" count={6} disabled={false} extract={extract} t={messages.en}/>);
   expect(mount.container.querySelector('select')).toBeNull();
   expect(screen.getAllByRole('radio')).toHaveLength(8);
+  // Open by keyboard: jsdom cannot reproduce the select's pointer geometry and
+  // mouse-release timing. Await the portalled option before interacting with it.
+  await user.tab();
+  expect(document.activeElement).toBe(screen.getByRole('combobox', { name: 'Color direction' }));
+  await user.keyboard('{ArrowDown}');
+  await user.click(await screen.findByRole('option', { name: 'Bright' }));
+  expect(extract).toHaveBeenLastCalledWith('bright', 6);
   await user.click(screen.getByRole('radio', { name: '10' }));
   expect(extract).toHaveBeenLastCalledWith('balanced', 10);
-  await user.click(screen.getByRole('combobox', { name: 'Color direction' }));
-  await user.click(screen.getByRole('option', { name: 'Bright' }));
-  expect(extract).toHaveBeenLastCalledWith('bright', 6);
   await user.click(screen.getByRole('radio', { name: '6' }));
   await user.keyboard('{ArrowRight}');
   expect(extract).toHaveBeenLastCalledWith('balanced', 7);
@@ -504,7 +508,7 @@ it('invalidates exports while dragging and prepares only the settled fixed-ratio
   const download = screen.getByRole('button', {name: 'Download PNG'}) as HTMLButtonElement;
   await waitFor(() => expect(download.disabled).toBe(false));
   await user.click(screen.getByRole('combobox', {name: messages.en.outputRatio}));
-  await user.click(screen.getByRole('option', {name: '4:5 · 1080 × 1350'}));
+  await user.click(await screen.findByRole('option', {name: '4:5 · 1080 × 1350'}));
   await waitFor(() => expect(download.disabled).toBe(false));
   const canvas = document.querySelector<HTMLCanvasElement>('[data-share-canvas]')!;
   vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({left: 0, top: 0, width: 108, height: 135} as DOMRect);
@@ -581,7 +585,7 @@ it('rejects unreadable extreme original shapes without allocating/exporting and 
   expect(owner.export).not.toHaveBeenCalled();
   expect(document.querySelector('[data-share-canvas]')).toBeNull();
   await user.click(screen.getByRole('combobox', {name: messages.en.outputRatio}));
-  await user.click(screen.getByRole('option', {name: '1:1 · 1200 × 1200'}));
+  await user.click(await screen.findByRole('option', {name: '1:1 · 1200 × 1200'}));
   await waitFor(() => expect((screen.getByRole('button', {name: 'Download PNG'}) as HTMLButtonElement).disabled).toBe(false));
   expect(document.querySelector('[data-share-canvas]')).toBeTruthy();
 });

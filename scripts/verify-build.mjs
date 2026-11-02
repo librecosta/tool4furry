@@ -183,7 +183,7 @@ for (const prefix of ['', region === 'cn' ? 'en/' : 'zh/'])
     'Registry controls exactly the regional published routes in both languages',
   );
 const avifWasm = files.filter(file => /avif_(?:enc|dec).*\.wasm$/.test(file));
-if (['image-converter', 'image-compressor', 'image-watermark'].some(id => files.includes(`tools/${id}/index.html`))) {
+if (['image-converter', 'image-compressor', 'comic-page-organizer', 'image-watermark'].some(id => files.includes(`tools/${id}/index.html`))) {
   assert.equal(avifWasm.length, 1, 'Exactly one ST AVIF encoder, no decoder/threaded binary');
   assert(/avif_enc-[\w-]+\.wasm$/.test(avifWasm[0]), 'AVIF resource has a build content hash');
   const binary = await readFile(resolve(root, avifWasm[0]));
@@ -850,6 +850,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
     if (page === 'tools/image-compressor/index.html') assertToolContent(dom, locale, imageCompressorContent, 4, 3);
+    if (page === 'tools/comic-page-organizer/index.html') assertToolContent(dom, locale, comicPageOrganizerContent, 4, 3);
     if (page === 'tools/image-watermark/index.html') assertToolContent(dom, locale, imageWatermarkContent, 4, 3);
     if (page === 'tools/exif-metadata/index.html') assertToolContent(dom, locale, exifMetadataContent, 4, 3);
     if (page === 'tools/image-converter/index.html')
@@ -1209,6 +1210,16 @@ if (files.includes('tools/image-compressor/index.html')) {
   const scripts = await Promise.all(files.filter(file => file.endsWith('.js')).map(file => readFile(resolve(root, file), 'utf8')));
   assert(scripts.some(js => js.includes('data-image-compressor') && js.includes('data-compressor-parameters') && js.includes('spinbutton')),
     'Published Compressor includes its real implementation, parameter modes and longest-side stepper');
+}
+if (files.includes('tools/comic-page-organizer/index.html')) {
+  const scripts = await Promise.all(files.filter(file => file.endsWith('.js')).map(file => readFile(resolve(root, file), 'utf8')));
+  assert(scripts.some(js => js.includes('data-comic-page-organizer') && js.includes('data-comic-export-panel')),
+    'Published Comic includes its real gallery and export settings');
+  const notice = await readFile('src/tools/comic-page-organizer/pdf-lib.NOTICE.txt');
+  const emitted = files.filter(file => file.includes('pdf-lib.NOTICE'));
+  const hasNotice = scripts.some(js => js.includes(notice.toString('base64'))) ||
+    (await Promise.all(emitted.map(file => readFile(resolve(root, file))))).some(bytes => bytes.equals(notice));
+  assert(hasNotice, 'Published Comic distributes the complete PDF exporter licenses');
 }
 if (files.includes('tools/image-watermark/index.html')) {
   const scripts = await Promise.all(files.filter(file => file.endsWith('.js')).map(file => readFile(resolve(root, file), 'utf8')));

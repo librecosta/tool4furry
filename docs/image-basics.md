@@ -1,8 +1,8 @@
 # 基础图片工具 · V0.7-B
 
-Image Compressor、Image Watermark 与 EXIF Metadata 为 CN/Global、zh/en **Published**；Comic Page Organizer 仍为 **Draft**，只在 DEV 出现。沿用 Registry、显式字面量 Loader、Astro 静态正文与 Form Wide；没有新发布门、应用根或全局 Store。首页与创作身份使用既有人工精选和 Registry 过滤，正式站点当前为六款 Published 工具。
+Image Compressor、Comic Page Organizer、Image Watermark 与 EXIF Metadata 均为 CN/Global、zh/en **Published**。漫画整理依据维护者决定提升源码资格，手动验收缺口仍保留在 B2-D1/R1 记录中。沿用 Registry、显式字面量 Loader、Astro 静态正文与 Form Wide；没有新发布门、应用根或全局 Store。首页与创作身份使用既有人工精选和 Registry 过滤，当前共七款 Published 工具。
 
-| 工具与路径（Draft 仅 DEV） | 当前能力 |
+| 工具与路径 | 当前能力 |
 | --- | --- |
 | [Image Compressor](../src/tools/image-compressor/ImageCompressor.tsx) · `/tools/image-compressor/` | 单张/批量与文件夹，快速强度或高级质量/目标大小/最长边，PNG/JPEG/WebP 与受支持桌面设备上的 AVIF 输出，原图/结果比较、实际大小与节省比例、独立下载和 ZIP。JPEG/WebP 目标大小只进行有界尝试，未达到或变大均如实显示。 |
 | [Comic Page Organizer](../src/tools/comic-page-organizer/ComicPageOrganizer.tsx) · `/tools/comic-page-organizer/` | 多图/文件夹，行优先紧凑画廊、拖排/键盘排序、稳定自然顺序重置、多选删除与逐页阅读。漫画专用预算和有界缩略图；ZIP/CBZ 默认保留原字节，支持自定义页名前缀及可选 JPEG/PNG/WebP/受限 AVIF 逐页转换、快速/高级质量设置及流式写入；PDF 独立按原图比例导出。默认来源元数据可能保留。 |
@@ -70,6 +70,8 @@ ZIP/CBZ 默认仍为 `page-001.ext` 和原始字节，Unicode 前缀经长度、
 ### B2-D1-R1 · 维护者源码 Published 决定（2026-11-02）
 
 根据维护者明确指令，将 Comic Page Organizer 的 CN/Global Registry 状态设为 Published，复用既有双语 SEO、按需 Loader 与发现机制，不新增开关。本次不执行重复的大规模测试或双地区构建，也未实际部署。此前 B2-D1 的转换归档真实落盘、格式/方向/透明度、AVIF 与独立 PDF 参数验收缺口仍如实保留；**Published 变更不等于 L2 已完整通过**。
+
+后续 CI 修复（2026-11-02）：补齐七款 Published 的目录、导航、首页与发布预期，使用独立 Draft 变体继续验证隔离；修正 Palette 测试的 Portal 等待与键盘打开路径。`pnpm check` 零诊断，全量 86 文件 / 1053 项测试通过，CN/Global 正式构建及守卫通过；每区七款工具的 14 个语言页面、24 个公开 HTML URL，包含漫画正文、真实工作区、按需 AVIF 与完整 PDF 依赖许可。没有改变工具业务、发布状态或 CI 工作流，也不将这些构建结果补写为缺失的真实转换下载证据。
 
 ## Image Compressor · B1-C1（2026-11-01）
 
