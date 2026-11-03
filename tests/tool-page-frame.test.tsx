@@ -18,8 +18,9 @@ import type { ToolDefinition } from '../src/tools/types';
 import { renderToString } from 'react-dom/server';
 import { hydrateRoot, type Root } from 'react-dom/client';
 import { ToolboxDisclosure } from '../src/components/site/ToolboxDisclosure';
-import { fixtureTools } from './fixtures/tools';
 import { messages } from '../src/i18n/messages';
+import { navigationToolIds } from '../src/site/catalog';
+import { toolboxCopy } from '../src/site/toolbox-navigation';
 import { setViewport } from './setup';
 
 afterEach(() => {
@@ -43,15 +44,15 @@ describe('product navigation', () => {
     expect(screen.getByRole('link', { name: `Tool4Furry · ${messages[locale].home}` }).getAttribute('href')).toBe(localizedPath('/', region, locale));
     expect(container.querySelector('[data-language-link]')?.getAttribute('href')).toBe('/tools/');
   });
-  it('uses the shared featured order and homepage cap, without moving the current tool first', async () => {
+  it('uses independent navigation picks without moving the current tool first or changing homepage slots', async () => {
     vi.stubEnv('DEV', true);
-    const entries = fixtureTools(12);
+    const entries = [...registry.tools].reverse();
     vi.spyOn(registry, 'getAvailableTools').mockReturnValue(entries);
     const user = userEvent.setup();
     const { container } = render(<ToolPageFrame region="cn" locale="zh" mode="form" title="Current" currentToolId="fixture-12">Workspace</ToolPageFrame>);
     await user.click(screen.getByLabelText(messages.zh.featuredTools, { selector: 'summary' }));
-    expect([...container.querySelectorAll('[data-tool-panel] a:not([href="/tools/"])')].map(link => link.getAttribute('href')))
-      .toEqual(entries.slice(0, 9).map(tool => `/tools/${tool.slug}/`));
+    expect([...container.querySelectorAll('[data-tool-group="featured"] a')].map(link => link.getAttribute('href')))
+      .toEqual(navigationToolIds.map(id => `/tools/${id}/`));
     expect(container.querySelector('[data-tool-panel] [aria-current]')).toBeNull();
     expect(screen.getByRole('link', { name: messages.zh.browseAll }).getAttribute('href')).toBe('/tools/');
   });
@@ -66,6 +67,9 @@ describe('product navigation', () => {
     const positioner = details.querySelector('[data-tool-positioner]')!;
     positioner.setAttribute('aria-hidden', String(closing));
     positioner.toggleAttribute('inert', closing);
+    // Selection may also change through the native enhancer before hydration.
+    details.querySelectorAll('[data-tool-filter]').forEach(button => button.setAttribute('aria-pressed', String(button.getAttribute('data-tool-filter') === 'composer')));
+    details.querySelectorAll<HTMLElement>('[data-tool-group]').forEach(panel => { panel.hidden = panel.dataset.toolGroup !== 'composer'; });
     const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
     let root: Root | undefined;
     try {
@@ -73,6 +77,11 @@ describe('product navigation', () => {
       expect(host.querySelector('details')!.open).toBe(true);
       expect(positioner.hasAttribute('inert')).toBe(closing);
       expect(details.querySelector('summary')!.getAttribute('aria-expanded')).toBe(String(!closing));
+      expect(details.querySelector('[data-tool-filter="composer"]')!.getAttribute('aria-pressed')).toBe('true');
+      expect(details.querySelector<HTMLElement>('[data-tool-group="composer"]')!.hidden).toBe(false);
+      expect(details.querySelector<HTMLElement>('[data-tool-group="featured"]')!.hidden).toBe(true);
+      await act(async () => root!.render(<ToolboxDisclosure region="cn" locale="zh" currentToolId="image-converter" />));
+      expect(details.querySelector<HTMLElement>('[data-tool-group="composer"]')!.hidden).toBe(false);
       expect(errors).not.toHaveBeenCalled();
     } finally {
       await act(async () => root?.unmount());
@@ -181,10 +190,11 @@ describe('product navigation', () => {
       await user.tab();
       expect(document.activeElement).toBe(trigger);
       await user.click(trigger); // jsdom does not implement native summary Enter activation.
-      expect(await screen.findByText(t.empty)).toBeTruthy();
+      const empty = container.querySelector('[data-tool-group="featured"]')!;
+      expect(empty.textContent).toBe(toolboxCopy[defaultLocale(region)].empty);
       expect(
         screen
-          .getByText(t.empty).closest('[data-tool-panel]')!
+          .getByText(toolboxCopy[defaultLocale(region)].empty, { selector: '[data-tool-group="featured"] p' }).closest('[data-tool-panel]')!
           .querySelectorAll(
             'a[href^="/tools/"]:not([href="/tools/"]), a[href^="/lab/"]',
           ),
@@ -196,6 +206,10 @@ describe('product navigation', () => {
       ).toBe('/tools/');
       expect(screen.queryByRole('menu')).toBeNull();
       expect(container.querySelector('details')?.open).toBe(true);
+      for (const button of container.querySelectorAll('[data-tool-filter]')) {
+        await user.tab();
+        expect(document.activeElement).toBe(button);
+      }
       await user.tab();
       expect(document.activeElement).toBe(screen.getByRole('link', { name: t.browseAll }));
       await user.click(trigger);
@@ -226,9 +240,9 @@ describe('product navigation', () => {
       },
     });
     const fixtures = [
-      entry('draft', 'draft', ['cn']),
-      entry('overseas', 'published', ['global']),
-      entry('current', 'published', ['cn']),
+      entry('pdf-merge', 'draft', ['cn']),
+      entry('zip-manager', 'published', ['global']),
+      entry('image-converter', 'published', ['cn']),
     ];
     const original = registry.getAvailableTools;
     const available = vi
@@ -239,21 +253,22 @@ describe('product navigation', () => {
       <ToolPageFrame
         region="cn" locale="zh"
         mode="form"
-        currentToolId="current"
+        currentToolId="image-converter"
         title="current"
       >
         Workspace
       </ToolPageFrame>,
     );
     await user.click(screen.getByLabelText(messages.zh.featuredTools, { selector: 'summary' }));
-    const item = await screen.findByRole('link', { name: 'current' });
-    expect(item.getAttribute('href')).toBe('/tools/current-slug/');
+    const item = await screen.findByRole('link', { name: 'image-converter' });
+    expect(item.getAttribute('href')).toBe('/tools/image-converter-slug/');
     expect(item.getAttribute('aria-current')).toBe('page');
-    expect(screen.queryByRole('link', { name: 'draft' })?.getAttribute('href') ?? null)
-      .toBe(dev ? '/tools/draft-slug/' : null);
-    expect(screen.queryByText('overseas')).toBeNull();
+    expect(screen.queryByRole('link', { name: 'pdf-merge' })?.getAttribute('href') ?? null)
+      .toBe(dev ? '/tools/pdf-merge-slug/' : null);
+    expect(screen.queryByText('zip-manager')).toBeNull();
     expect(available).toHaveBeenCalledWith('cn', dev, registry.tools);
-    expect([...document.querySelectorAll('[data-tool-panel] a[aria-current], [data-tool-panel] a[href$="draft-slug/"]')].map(link => link.getAttribute('href'))).toEqual(dev ? ['/tools/draft-slug/', '/tools/current-slug/'] : ['/tools/current-slug/']);
+    expect([...document.querySelectorAll('[data-tool-group="featured"] a')].map(link => link.getAttribute('href')))
+      .toEqual(dev ? ['/tools/image-converter-slug/', '/tools/pdf-merge-slug/'] : ['/tools/image-converter-slug/']);
     expect(registry.tools.map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', ...draftIds]); // Fixtures never populate the real registry.
     expect(imageConverterDefinition.status).toBe('published');
     expect(original('cn', false)).toEqual([imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, comicPageOrganizerDefinition, imageWatermarkDefinition, exifMetadataDefinition]);

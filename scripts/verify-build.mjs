@@ -43,6 +43,7 @@ const { imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent
 const { tools } = await staticData('src/tools/registry.ts');
 const { getToolIcon } = await staticData('src/site/tool-icons.ts');
 const { roleShowcases } = await staticData('src/site/homepage-showcase.ts');
+const { getToolboxGroups } = await staticData('src/site/toolbox-navigation.ts');
 const verifiedAssets = new Map();
 async function assertImportedAsset(url, source) {
   assert(source.startsWith('src/assets/'), 'Only component-owned sources are audited as imported assets');
@@ -1076,6 +1077,20 @@ for (const page of htmlFiles) {
   const featuredTrigger = dom.querySelector('[data-tool-disclosure] > summary');
   assert.equal(featuredTrigger?.getAttribute('aria-label'), locale === 'zh' ? '精选工具' : 'Featured Tools', `Featured navigation label in ${page}`);
   assert(dom.querySelector(`[data-tool-panel] a[href="${localPath('/tools/')}"]`), 'Featured navigation retains the real full catalog');
+  const toolbox = dom.querySelector('[data-tool-panel]');
+  const expectedGroups = getToolboxGroups(region, locale);
+  const filters = [...toolbox.querySelectorAll('[data-tool-filter]')];
+  const panels = [...toolbox.querySelectorAll('[data-tool-group]')];
+  assert.deepEqual(filters.map(button => button.dataset.toolFilter), expectedGroups.map(group => group.id));
+  assert.deepEqual(panels.map(panel => panel.dataset.toolGroup), expectedGroups.map(group => group.id));
+  for (const [index, group] of expectedGroups.entries()) {
+    assert.equal(filters[index].textContent.trim(), group.label, 'Navigation identity uses shared localized labels');
+    assert.equal(filters[index].getAttribute('aria-pressed'), String(index === 0));
+    assert.equal(panels[index].hidden, index !== 0, 'Only independent general picks are initially visible');
+    assert.deepEqual([...panels[index].querySelectorAll('a')].map(link => link.getAttribute('href')), group.entries.map(entry => entry.href), 'Every navigation group respects regional publication eligibility');
+    for (const [item, entry] of [...panels[index].querySelectorAll('a')].entries())
+      await assertToolIcon(entry, group.entries[item].id, 32);
+  }
   for (const link of dom.querySelectorAll('[data-tool-panel] a')) {
     const href = link.getAttribute('href');
     assert(href?.startsWith(localPath('/tools/')), `Unexpected toolbox navigation in ${page}`);

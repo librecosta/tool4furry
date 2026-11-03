@@ -74,7 +74,7 @@ export function getRoleShowcases(region: Region, locale: Locale, dev = false, re
   }));
 }
 
-// A presentation cap only: navigation retains getHomepageEntries' nine-item limit.
+// Homepage presentation cap only; navigation maintains independent picks.
 export function getFeaturedShowcase(entries: readonly CatalogEntry[]) {
   return entries.slice(0, 4).map(entry => ({
     ...entry, description: entry.summary ?? entry.description,

@@ -79,6 +79,20 @@
   });
   document.addEventListener('click', event => {
     const el = disclosure(event.target);
+    const filter = event.target instanceof Element ? event.target.closest('[data-tool-filter]') : null;
+    if (el && filter && el.contains(filter)) {
+      const group = filter.dataset.toolFilter;
+      if (!Array.from(el.querySelectorAll('[data-tool-group]')).some(panel => panel.dataset.toolGroup === group)) return;
+      cancel(el);
+      el.querySelectorAll('[data-tool-filter]').forEach(button => {
+        button.setAttribute('aria-pressed', String(button === filter));
+      });
+      el.querySelectorAll('[data-tool-group]').forEach(panel => {
+        panel.hidden = panel.dataset.toolGroup !== group;
+        if (!panel.hidden) panel.scrollTop = 0;
+      });
+      return;
+    }
     const summary = event.target instanceof Element ? event.target.closest('summary') : null;
     if (!el || summary?.parentElement !== el) return;
     event.preventDefault();

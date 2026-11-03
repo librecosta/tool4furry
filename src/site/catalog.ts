@@ -7,6 +7,20 @@ import { domains, groups } from './taxonomy';
 export const featuredToolIds: readonly string[] = [];
 export const HOME_TOOL_LIMIT = 9;
 
+// Navigation picks are independent of the homepage's four presentation slots.
+export const navigationToolIds: readonly string[] = [
+  'image-converter', 'image-resize-crop', 'image-compressor', 'comic-page-organizer',
+  'pdf-merge', 'zip-manager', 'json-formatter', 'qr-code-generator', 'audio-trimmer',
+];
+
+export function getNavigationEntries(
+  region: Region, registry = tools, dev = false, locale: Locale = defaultLocale(region),
+  selected = navigationToolIds,
+) {
+  const entries = new Map(getCatalogEntries(region, registry, dev, locale).map(entry => [entry.id, entry]));
+  return [...new Set(selected)].flatMap(id => entries.has(id) ? [entries.get(id)!] : []).slice(0, 9);
+}
+
 // Presentation metadata only. The existing registry remains the publication gate.
 export function getCatalogEntries(region: Region, registry = tools, dev = false, locale: Locale = defaultLocale(region)) {
   return getAvailableTools(region, dev, registry).map((tool) => ({

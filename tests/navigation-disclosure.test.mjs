@@ -27,6 +27,29 @@ function page(fine = true, scripted = true, reduced = false) {
 afterEach(() => { dom?.window.close(); vi.useRealTimers(); });
 
 describe('shared native toolbox enhancement', () => {
+  it('switches identity panels without navigation or closing, including nested icon clicks and keyboard activation', () => {
+    const { window, details, summary, panel } = page();
+    panel.insertAdjacentHTML('afterbegin', `<div role="group"><button type="button" data-tool-filter="featured" aria-pressed="true">All picks</button><button type="button" data-tool-filter="composer" aria-pressed="false"><svg><path /></svg>Audio Engineers</button><button type="button" data-tool-filter="missing">Unknown</button></div>
+      <section data-tool-group="featured"><a href="/tools/example/">Example</a></section><section data-tool-group="composer" hidden><p>No tools available yet.</p></section>`);
+    summary.click();
+    const select = panel.querySelector('[data-tool-filter="composer"]');
+    select.querySelector('path').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+    expect(details.open).toBe(true);
+    expect(select.getAttribute('aria-pressed')).toBe('true');
+    expect(panel.querySelector('[data-tool-filter="featured"]').getAttribute('aria-pressed')).toBe('false');
+    expect(panel.querySelector('[data-tool-group="featured"]').hidden).toBe(true);
+    expect(panel.querySelector('[data-tool-group="composer"]').hidden).toBe(false);
+    expect(window.location.href).toBe('about:blank');
+    panel.querySelector('[data-tool-filter="missing"]').click();
+    expect(select.getAttribute('aria-pressed')).toBe('true');
+    const featured = panel.querySelector('[data-tool-filter="featured"]');
+    featured.focus(); featured.click(); // Native button click is also Enter/Space activation.
+    expect(window.document.activeElement).toBe(featured);
+    expect(panel.querySelector('[data-tool-group="featured"]').hidden).toBe(false);
+    expect(panel.querySelector('[data-tool-group="composer"]').hidden).toBe(true);
+    expect(details.open).toBe(true);
+  });
+
   it('delays fine-pointer hover, bridges the panel, and delays leaving', () => {
     vi.useFakeTimers();
     const { details, summary, link, panel, pointer, endExit } = page();
