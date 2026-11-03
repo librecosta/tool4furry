@@ -81,24 +81,21 @@ export const navigationStyles = stylex.create({
     width: '100%', maxWidth: 1280, marginInline: 'auto', paddingBlock: t.space16,
     paddingInline: 'clamp(16px, 2vw, 36px)',
     display: 'grid', gap: { default: t.space24, '@media (max-width: 600px)': t.space12 }, alignItems: 'stretch',
-    gridTemplateColumns: { default: '180px minmax(0, 1fr)', '@media (max-width: 600px)': 'minmax(0, 1fr)' },
+    gridTemplateColumns: { default: '160px minmax(0, 1fr)', '@media (max-width: 600px)': 'minmax(0, 1fr)' },
     maxHeight: 'min(520px, calc(100dvh - 112px))',
     overflowY: 'auto', overscrollBehavior: 'contain',
   },
   compactPanel: { paddingInline: t.space16 },
-  sidebar: {
-    display: 'flex', flexDirection: 'column', gap: t.space12, minWidth: 0,
-  },
   filters: {
-    display: 'flex', gap: t.space4,
+    display: 'flex', gap: 2, minWidth: 0, justifyContent: 'flex-start',
     flexDirection: { default: 'column', '@media (max-width: 600px)': 'row' },
     overflowX: { default: 'visible', '@media (max-width: 600px)': 'auto' },
   },
   filter: {
-    display: 'flex', alignItems: 'center', gap: t.space8,
-    minHeight: 40, paddingInline: t.space12, paddingBlock: t.space8,
+    display: 'flex', alignItems: 'center',
+    minHeight: 36, paddingInline: t.space12, paddingBlock: 6,
     borderWidth: 0, borderRadius: t.radiusSm, flexShrink: 0,
-    fontSize: 14, textAlign: 'start', whiteSpace: 'nowrap',
+    fontSize: 13, textAlign: 'start', whiteSpace: 'nowrap', textDecoration: 'none',
     color: { default: t.textSecondary, ':hover': t.textPrimary, ':is([aria-pressed="true"])': t.textPrimary },
     backgroundColor: { default: 'transparent', ':hover': t.featuredHover, ':is([aria-pressed="true"])': t.featuredSelected },
     outlineColor: t.focus,
@@ -111,12 +108,6 @@ export const navigationStyles = stylex.create({
   tools: {
     display: 'grid', gap: t.space8, minWidth: 0, alignContent: 'start',
     gridTemplateColumns: { default: 'repeat(3, minmax(0, 1fr))', '@media (max-width: 1000px)': 'repeat(2, minmax(0, 1fr))', '@media (max-width: 600px)': 'minmax(0, 1fr)' },
-  },
-  browse: {
-    display: 'inline-flex', alignItems: 'center', minHeight: 44,
-    color: { default: t.textSecondary, ':hover': t.featuredAccent },
-    textDecoration: 'none', fontSize: 13, marginTop: { default: 'auto', '@media (max-width: 600px)': 0 },
-    paddingInline: t.space12,
   },
   tool: {
     display: 'grid', gridTemplateColumns: '32px minmax(0, 1fr)', gap: t.space8,

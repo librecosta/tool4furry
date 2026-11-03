@@ -55,6 +55,12 @@ describe('product navigation', () => {
       .toEqual(navigationToolIds.map(id => `/tools/${id}/`));
     expect(container.querySelector('[data-tool-panel] [aria-current]')).toBeNull();
     expect(screen.getByRole('link', { name: messages.zh.browseAll }).getAttribute('href')).toBe('/tools/');
+    const choices = screen.getByRole('group', { name: toolboxCopy.zh.filters });
+    expect(choices.firstElementChild).toBe(screen.getByRole('link', { name: messages.zh.browseAll }));
+    expect(choices.children[1].getAttribute('aria-pressed')).toBe('true');
+    expect(choices.children[1].textContent).toBe(toolboxCopy.zh.featured);
+    expect(choices.querySelector('svg, img')).toBeNull();
+    expect(choices.children[1].className).toBe(choices.children[0].className);
   });
   it.each([false, true])('preserves disclosure enhancement before hydration (closing=%s)', async closing => {
     const host = document.createElement('div');
@@ -206,12 +212,12 @@ describe('product navigation', () => {
       ).toBe('/tools/');
       expect(screen.queryByRole('menu')).toBeNull();
       expect(container.querySelector('details')?.open).toBe(true);
+      await user.tab();
+      expect(document.activeElement).toBe(screen.getByRole('link', { name: t.browseAll }));
       for (const button of container.querySelectorAll('[data-tool-filter]')) {
         await user.tab();
         expect(document.activeElement).toBe(button);
       }
-      await user.tab();
-      expect(document.activeElement).toBe(screen.getByRole('link', { name: t.browseAll }));
       await user.click(trigger);
       expect(container.querySelector('details')?.open).toBe(false);
       expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(

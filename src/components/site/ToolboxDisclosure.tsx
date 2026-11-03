@@ -5,7 +5,6 @@ import type { Region } from '../../config/region';
 import { messages } from '../../i18n/messages';
 import { getToolboxGroups, toolboxCopy } from '../../site/toolbox-navigation';
 import { getToolIcon } from '../../site/tool-icons';
-import { roleIcon } from './role-icons';
 import { navigationStyles as n } from '../../styles/navigation';
 
 export function ToolboxDisclosure({ region, locale, currentToolId, compact = false }: {
@@ -27,17 +26,12 @@ export function ToolboxDisclosure({ region, locale, currentToolId, compact = fal
       {/* The disclosure script may update aria/inert before hydration, too. */}
       <div data-tool-positioner suppressHydrationWarning {...stylex.props(n.positioner, compact && n.compactPositioner)}>
         <div data-tool-panel {...stylex.props(n.panel, compact && n.compactPanel)}>
-          <div {...stylex.props(n.sidebar)}>
-            <div role="group" aria-label={toolboxCopy[locale].filters} {...stylex.props(n.filters)}>
-              {groups.map(group => {
-                const Icon = group.id === 'featured' ? SquaresFourIcon : roleIcon(group.id);
-                return <button key={group.id} type="button" data-tool-filter={group.id}
-                  suppressHydrationWarning aria-pressed={group.id === 'featured'} {...stylex.props(n.filter)}>
-                  <Icon size={20} aria-hidden="true" focusable="false" />{group.label}
-                </button>;
-              })}
-            </div>
-            <a href={localizedPath('/tools/', region, locale)} {...stylex.props(n.browse)}>{t.browseAll}</a>
+          <div role="group" aria-label={toolboxCopy[locale].filters} {...stylex.props(n.filters)}>
+            <a href={localizedPath('/tools/', region, locale)} {...stylex.props(n.filter)}>{t.browseAll}</a>
+            {groups.map(group => <button key={group.id} type="button" data-tool-filter={group.id}
+              suppressHydrationWarning aria-pressed={group.id === 'featured'} {...stylex.props(n.filter)}>
+              {group.label}
+            </button>)}
           </div>
           <div {...stylex.props(n.groups)}>
             {/* The shared native enhancer owns only these selection attributes.
