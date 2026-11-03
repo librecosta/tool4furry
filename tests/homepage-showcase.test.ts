@@ -1,3 +1,4 @@
+import { tools } from '../src/tools/registry';
 import { describe, expect, it } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -104,7 +105,7 @@ describe('homepage editorial role projection', () => {
       for (const role of dev) {
         const productionRole = production.find(item => item.id === role.id)!;
         expect(role.entries.filter(entry => entry.status === 'published')).toEqual(productionRole.entries);
-        expect(role.entries.filter(entry => entry.status === 'draft')).toEqual([]);
+        expect(role.entries.filter(entry => entry.status === 'draft').map(entry=>entry.id)).toEqual(role.toolIds.filter(id=>tools.some(tool=>tool.id===id&&tool.status==='draft')).slice(0,12-productionRole.entries.length));
       }
     }
     expect(publishedTools.map(tool => tool.status)).toEqual(['published', 'published', 'published', 'published', 'published', 'published', 'published']);

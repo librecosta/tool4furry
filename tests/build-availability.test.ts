@@ -1,3 +1,4 @@
+import { draftIds } from './fixtures/general-toolbox';
 import { describe, expect, it } from 'vitest';
 import { assertToolLoaderContract, toolAvailabilityConstant, toolBuildDefines } from '../src/tools/build-availability';
 import { readFileSync } from 'node:fs';
@@ -21,6 +22,7 @@ describe('Registry compile-time availability projection', () => {
       'import.meta.env.T4F_TOOL_COMIC_PAGE_ORGANIZER_AVAILABLE': 'true',
       'import.meta.env.T4F_TOOL_IMAGE_WATERMARK_AVAILABLE': 'true',
       'import.meta.env.T4F_TOOL_EXIF_METADATA_AVAILABLE': 'true',
+      ...Object.fromEntries(draftIds.map(id => [toolAvailabilityConstant(id), 'false'])),
     });
   });
   it.each(['cn', 'global'] as const)('projects every registered id in %s without runtime flags', region => {

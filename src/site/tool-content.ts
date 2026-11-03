@@ -1,3 +1,4 @@
+import { generalToolboxContent } from './general-toolbox-content';
 import { defaultLocale, locales, type Locale } from '../i18n/locale';
 import type { Region } from '../config/region';
 import type { ToolDefinition } from '../tools/types';
@@ -23,6 +24,7 @@ export type ToolContentMap = Readonly<
   Record<string, Partial<Record<Locale, ToolPageContent>>>
 >;
 export const toolPageContents: ToolContentMap = {
+  ...generalToolboxContent,
   'image-compressor': imageCompressorContent,
   'comic-page-organizer': comicPageOrganizerContent,
   'image-watermark': imageWatermarkContent,

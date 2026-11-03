@@ -41,7 +41,7 @@ describe('static tool discovery', () => {
   });
 
   it.each(['cn', 'global'] as const)(
-    'discovers seven Published tools in both DEV and production %s',
+    'discovers seven Published and fifteen Draft tools in DEV %s',
     (region) => {
       const entries = getCatalogEntries(region, undefined, true);
       expect(entries.map((entry) => [entry.id, entry.href, entry.title])).toEqual([
@@ -50,10 +50,17 @@ describe('static tool discovery', () => {
         ['palette-extractor', '/tools/palette-extractor/', paletteExtractorDefinition.copy[defaultLocale(region)].title],
         ...tools.slice(3).map(tool => [tool.id, `/tools/${tool.slug}/`, tool.copy[defaultLocale(region)].title]),
       ]);
-      expect(getHomepageEntries(region, undefined, [], true)).toEqual(entries);
+      expect(getHomepageEntries(region, undefined, [], true)).toEqual(entries.slice(0,9));
       expect(getCatalogSections(region, undefined, true).flatMap((section) =>
         section.groups.flatMap((group) => group.entries),
-      )).toEqual(entries);
+      ).map(entry => entry.id)).toEqual([
+        'image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata',
+        'qr-code-generator', 'color-contrast', 'audio-trimmer',
+        'text-cleaner', 'text-diff', 'subtitle-tools',
+        'pdf-merge', 'pdf-split', 'images-to-pdf',
+        'json-formatter', 'url-base64', 'timestamp-converter',
+        'zip-manager', 'batch-file-renamer', 'file-hash',
+      ]);
       const published = entries.filter(entry => entry.status === 'published');
       expect(getCatalogEntries(region)).toEqual(published);
       expect(getHomepageEntries(region)).toEqual(published);

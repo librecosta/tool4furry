@@ -6,6 +6,8 @@
 
 ## Current · 当前说明
 
+- [V0.8 通用工具](general-toolbox-v0.8.md)：15 款 Draft 的功能、边界及定向验证。
+
 - [架构](../.agents/architecture.md)：系统分层、依赖方向与非目标。
 - [工作流](../.agents/playbook.md)：实际 pnpm 命令、风险分级验证、提交边界。
 - [工程基础](foundation.md)：StyleX 集成、静态页面与构建审计入口。

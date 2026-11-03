@@ -9,6 +9,14 @@ export const domains = {
 } as const;
 export type DomainId = keyof typeof domains;
 export const groups = {
+  'pdf-tools': {category:'documents',zh:'PDF 工具',en:'PDF Tools'},
+  'file-operations': {category:'files',zh:'文件操作',en:'File Operations'},
+  'text-processing': {category:'text',zh:'文本处理',en:'Text Processing'},
+  'subtitles': {category:'text',zh:'字幕',en:'Subtitles'},
+  'developer-utilities': {category:'development',zh:'开发实用工具',en:'Developer Utilities'},
+  'design-utilities': {category:'creative',zh:'设计实用工具',en:'Design Utilities'},
+  'audio-processing': {category:'creative',zh:'音频处理',en:'Audio Processing'},
+
   'image-processing': {
     category: 'images',
     zh: '图片处理',

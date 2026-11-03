@@ -1,0 +1,17 @@
+export const draftIds = [
+  'pdf-merge',
+  'pdf-split',
+  'images-to-pdf',
+  'zip-manager',
+  'batch-file-renamer',
+  'file-hash',
+  'text-cleaner',
+  'text-diff',
+  'subtitle-tools',
+  'json-formatter',
+  'url-base64',
+  'timestamp-converter',
+  'qr-code-generator',
+  'color-contrast',
+  'audio-trimmer',
+];

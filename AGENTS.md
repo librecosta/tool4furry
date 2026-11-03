@@ -13,6 +13,8 @@
 - Palette Extractor 已完成 A2-D2 Beta 资格审计；有界提色、色卡编辑/图片取色和 PNG 分享卡进入两地区正式构建，首页复用既有画家/动画师精选。证据与 L3 边界见 [Palette 说明](docs/palette-extractor.md#a2-d2-beta-资格审计2026-11-01)。A2 已收尾，不继续新增功能阶段。
 - 当前能力与 D2 证据见 [Converter 说明](docs/image-converter-implementation.md)；旧阶段的 Draft、零工具、三格式和 CN-only 结论属于历史。
 
+- V0.8 已增加 15 款通用工具初版，全部为 CN/Global Draft；实际能力、限制和验证见 [通用工具说明](docs/general-toolbox-v0.8.md)。七款既有 Published 资格不变。
+
 ## Start Here
 
 1. 核对当前分支、工作区、任务范围和禁止事项。

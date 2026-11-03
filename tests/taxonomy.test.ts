@@ -1,3 +1,4 @@
+import { draftIds } from './fixtures/general-toolbox';
 import { describe, expect, it } from 'vitest';
 import { domains, groups } from '../src/site/taxonomy';
 import { tools, getPublishedTools } from '../src/tools/registry';
@@ -21,6 +22,13 @@ describe('publication metadata gate', () => {
       'files',
     ]);
     expect(groups).toEqual({
+      'pdf-tools': {category:'documents',zh:'PDF 工具',en:'PDF Tools'},
+      'file-operations': {category:'files',zh:'文件操作',en:'File Operations'},
+      'text-processing': {category:'text',zh:'文本处理',en:'Text Processing'},
+      'subtitles': {category:'text',zh:'字幕',en:'Subtitles'},
+      'developer-utilities': {category:'development',zh:'开发实用工具',en:'Developer Utilities'},
+      'design-utilities': {category:'creative',zh:'设计实用工具',en:'Design Utilities'},
+      'audio-processing': {category:'creative',zh:'音频处理',en:'Audio Processing'},
       'image-processing': {
         category: 'images',
         zh: '图片处理',
@@ -34,6 +42,7 @@ describe('publication metadata gate', () => {
       ['palette-extractor', 'published'],
       ['image-compressor', 'published'], ['comic-page-organizer', 'published'],
       ['image-watermark', 'published'], ['exif-metadata', 'published'],
+      ...draftIds.map(id => [id, 'draft']),
     ]);
     expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata']);
     expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata']);
@@ -54,6 +63,7 @@ describe('publication metadata gate', () => {
         ['palette-extractor', 'published'],
         ['image-compressor', 'published'], ['comic-page-organizer', 'published'],
         ['image-watermark', 'published'], ['exif-metadata', 'published'],
+      ...draftIds.map(id => [id, 'draft']),
       ]);
       expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata']);
       expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata']);
