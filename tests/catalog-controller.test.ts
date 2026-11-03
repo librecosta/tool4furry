@@ -11,7 +11,7 @@ function fixture(n = 121, query = '', desktop = true) {
     <div data-catalog-sidebar><dialog open data-catalog-filters><button data-close-filters>Close filters</button>
     <button data-catalog-control disabled data-filter="all">All</button>
     <button data-catalog-control disabled data-filter="role" data-value="painter" data-label="Artists">Artists</button>
-    <button data-catalog-control disabled data-filter="role" data-value="composer" data-label="Composers">Composers</button>
+    <button data-catalog-control disabled data-filter="role" data-value="composer" data-label="Audio Engineers">Audio Engineers</button>
     <button data-catalog-control disabled data-filter="category" data-value="images" data-label="Images" aria-controls="groups-images" aria-expanded="false">Images</button>
     <div id="groups-images" hidden><button data-catalog-control disabled data-filter="group" data-value="image-processing" data-parent="images" data-label="Processing">Processing</button></div>
     <button data-catalog-control disabled data-filter="category" data-value="development" data-label="Code" aria-controls="groups-code" aria-expanded="false">Code</button><div id="groups-code" hidden></div></dialog></div>

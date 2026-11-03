@@ -59,6 +59,16 @@ describe('four-slot featured presentation', () => {
 });
 
 describe('homepage editorial role projection', () => {
+  it('uses the revised bilingual identity labels with stable role IDs', () => {
+    for (const region of ['cn', 'global'] as const) {
+      for (const locale of ['zh', 'en'] as const) {
+        const entries = getRoleShowcases(region, locale);
+        expect(entries.find(role => role.id === 'painter')?.label).toEqual({ zh: '画师', en: 'Artists' });
+        expect(entries.find(role => role.id === 'composer')?.label).toEqual({ zh: '调音师', en: 'Audio Engineers' });
+      }
+    }
+  });
+
   const portraits = [
     ['painter', 'lynx-artist', '5fc730a97ddcec6e56cd965dbbb5e4f697e53bb00d72858224f1b25b5e6f7d4d'],
     ['composer', 'songbird-music-producer', '7f9dd7fc051a88e1ccbdf9deac599dad7d94b9f034ad7036b18f51de37e5535b'],
