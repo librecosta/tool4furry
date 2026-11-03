@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { getRoleShowcases, getFeaturedShowcase, roleShowcases, homepageCopy, homepageStories, homepageMedia, hasHomeMedia } from '../src/site/homepage-showcase';
 import { getHomepageEntries } from '../src/site/catalog';
 import { imageConverterDefinition } from '../src/tools/image-converter/definition';
@@ -56,6 +58,27 @@ describe('four-slot featured presentation', () => {
 });
 
 describe('homepage editorial role projection', () => {
+  const portraits = [
+    ['painter', 'lynx-artist', '5fc730a97ddcec6e56cd965dbbb5e4f697e53bb00d72858224f1b25b5e6f7d4d'],
+    ['composer', 'songbird-music-producer', '7f9dd7fc051a88e1ccbdf9deac599dad7d94b9f034ad7036b18f51de37e5535b'],
+    ['developer', 'wolf-developer', 'e82d170cb65708f9ee1fac6887aea0ed8a26f0bcb59bb3213f7ab2b604466efb'],
+    ['animator', 'fox-animator', 'd903b1c4a9850048fa44cac1d5d20ce259f756c3694c377ead78df9eea76cce0'],
+    ['operations', 'tabby-cat-community-curator', '95bd476b06525cdd1d264185fe678581c27500e06356f27199b7c27241847220'],
+    ['studio', 'lion-studio', '380c61f03f8ff9be45f5e96b1eed6ddd64f3ab57cce2762be62bfa360c7a1120'],
+  ] as const;
+
+  it.each(portraits)('assigns the approved original portrait to %s in every region and locale', async (id, filename, sha256) => {
+    const media = roleShowcases.find(role => role.id === id)?.media;
+    expect(hasHomeMedia(media)).toBe(true);
+    expect(media).toMatchObject({ width: 1086, height: 1448, alt: { zh: '', en: '' } });
+    expect(media?.src).toContain(`/illustrations/roles/${filename}.avif`);
+    const bytes = await readFile(`src/assets/illustrations/roles/${filename}.avif`);
+    expect(createHash('sha256').update(bytes).digest('hex')).toBe(sha256);
+    for (const region of ['cn', 'global'] as const) for (const locale of ['zh', 'en'] as const) {
+      expect(getRoleShowcases(region, locale).find(role => role.id === id)?.media).toEqual(media);
+    }
+  });
+
   const associatedRoles = ['painter', 'developer', 'animator', 'operations'];
   const publishedTools = [imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, comicPageOrganizerDefinition, imageWatermarkDefinition, exifMetadataDefinition];
   const roleTools = (id: string, list = publishedTools) => associatedRoles.includes(id)

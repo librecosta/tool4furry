@@ -21,6 +21,8 @@
 
 公开例外为品牌图形/横向字标和母版、OG、Favicon、字体/参考许可及 `/visuals/wavefield/NOTICE.txt`；自托管字体继续由现有 Fontsource CSS 导入。无引用的旧 Hero 装饰和与 PNG 字节相同的 Ko-fi `.ico` 副本已删除，测试夹具、历史证据与工具 Worker/WASM/局部 CSS/按需许可保持原位置。
 
+六种创作身份现已接入批准的透明角色立绘：画家 / 山猫、作曲家 / 鸣禽、开发者 / 狼、动画师 / 狐狸、运营 / 虎斑猫、工作室 / 狮子。原始 1086×1448 AVIF 位于 `src/assets/illustrations/roles/`，由 `roleShowcases.media` 静态导入，不重新编码；复用 portrait 入口完整显示、底对齐、空 alt、懒加载，取消该模式的底色和裁切，沿用手机隐藏策略。身份与工具关联、作曲家/工作室空状态保持不变。
+
 本次迁移验证（2026-11-03）：`pnpm check` 零诊断，7 文件 / 82 项定向测试及 CN/Global 各一次正式构建与产物守卫通过。真实 Chromium 检查 CN 中文亮色、Global 英文暗色的静态首页/工具箱，海报、全部工具图标、社群图片及插画正常；每地区 22 个迁移素材各仅一份且与原件 SHA-256 一致，10 个固定公开资源保持原字节，旧路径返回 404。没有运行全量测试矩阵或部署。
 
 - 已审核 [双兽首 Master](../public/brand/tool4furry-symbol.svg) 保留路径、两眼与负空间；Header/Footer/React 导航使用一个图形和一份字标，不重绘、不重复名称。正式横向字标为路径，Favicon 使用 ICO/PNG。源稿、正式 OG、字体和授权见 [视觉说明](visual-foundation.md)。

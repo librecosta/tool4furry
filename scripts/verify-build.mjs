@@ -42,6 +42,7 @@ const { paletteExtractorContent } = await staticData('src/site/palette-extractor
 const { imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent } = await staticData('src/site/image-basics-content.ts');
 const { tools } = await staticData('src/tools/registry.ts');
 const { getToolIcon } = await staticData('src/site/tool-icons.ts');
+const { roleShowcases } = await staticData('src/site/homepage-showcase.ts');
 const verifiedAssets = new Map();
 async function assertImportedAsset(url, source) {
   assert(source.startsWith('src/assets/'), 'Only component-owned sources are audited as imported assets');
@@ -561,6 +562,23 @@ for (const path of [symbol, horizontal, '/brand/tool4furry-og-master.svg']) {
   assert.equal(asset.querySelectorAll('text, filter, use, style').length, 0, 'Brand vectors use actual paths, without fonts or effects');
   assert.equal(svg.replace(/\r\n?/g, '\n'), (await readFile(resolve('public', path.slice(1)), 'utf8')).replace(/\r\n?/g, '\n'), 'Approved brand assets copied without transformation');
 }
+const rolePortraits = new Set();
+const roleArticles = [...document.querySelectorAll('[data-home-role]')];
+assert.deepEqual(roleArticles.map(role => role.dataset.homeRole), roleShowcases.map(role => role.id));
+for (const [index, role] of roleArticles.entries()) {
+  const media = roleShowcases[index].media;
+  assert(media, 'Each creator role has its delivered portrait');
+  assert.equal(media.width, 1086); assert.equal(media.height, 1448);
+  assert.deepEqual(media.alt, { zh: '', en: '' });
+  const portraits = role.querySelectorAll('[data-role-artwork] [data-home-media="portrait"] img');
+  assert.equal(portraits.length, 1, 'Exactly one portrait per role, including roles without tools');
+  const image = portraits[0];
+  await assertImportedAsset(image.getAttribute('src'), media.src);
+  assert.equal(image.getAttribute('width'), '1086'); assert.equal(image.getAttribute('height'), '1448');
+  assert.equal(image.getAttribute('alt'), '');
+  assert.equal(image.getAttribute('loading'), 'lazy'); assert.equal(image.getAttribute('decoding'), 'async');
+  rolePortraits.add(image);
+}
 for (const image of document.querySelectorAll('img')) {
   const src = image.getAttribute('src');
   const communityQR = region === 'cn' && src === communityCards[0].querySelector('img')?.getAttribute('src')
@@ -574,8 +592,8 @@ for (const image of document.querySelectorAll('img')) {
   assert(
     image.closest('[data-site-compliance]')
       ? src?.startsWith('/') && !src.startsWith('//')
-      : communityQR || communityLogo || editorialArtwork || toolIcon || src?.startsWith('/brand/') || (src === wavePosterURL && image.closest('[data-wavefield]')),
-    'Homepage images are approved brand/compliance, Wavefield, regional community, exact editorial assets or mapped pixel tool icons',
+      : communityQR || communityLogo || editorialArtwork || rolePortraits.has(image) || toolIcon || src?.startsWith('/brand/') || (src === wavePosterURL && image.closest('[data-wavefield]')),
+    'Homepage images are approved brand/compliance, Wavefield, regional community, exact editorial/role assets or mapped pixel tool icons',
   );
   assert.equal(
     image.getAttribute('alt'),

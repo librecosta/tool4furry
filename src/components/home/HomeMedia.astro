@@ -19,6 +19,6 @@ const sources = (['avif', 'webp'] as const).map(format => ({
 {hasHomeMedia(media) && <div data-home-media={kind} {...stylex.attrs(h.media, h[kind])}>
   <picture {...stylex.attrs(h.picture)}>
     {sources.map(source => <source type={source.type} srcset={source.srcset} sizes={media.sizes ?? '100vw'} />)}
-    <img src={media.src} alt={decorative ? '' : media.alt[locale]} width={media.width} height={media.height} loading="lazy" decoding="async" style={{objectPosition: media.focus ?? 'center'}} {...stylex.attrs(h.image)} />
+    <img src={media.src} alt={decorative ? '' : media.alt[locale]} width={media.width} height={media.height} loading="lazy" decoding="async" style={{objectPosition: media.focus ?? 'center'}} {...stylex.attrs(h.image, kind === 'portrait' && h.portraitImage)} />
   </picture>
 </div>}
