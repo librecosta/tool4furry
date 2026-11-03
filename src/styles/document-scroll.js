@@ -29,7 +29,6 @@ function mountDocumentDock() {
       });
       const label = `${button.dataset.label} ${percent}%`;
       button.setAttribute('aria-label', label);
-      button.title = label;
     }
     // Yield to footer links and modal surfaces; no collisions or private scroll.
     const visible = metrics.canShow && !(footer && footer.getBoundingClientRect().top < innerHeight) &&

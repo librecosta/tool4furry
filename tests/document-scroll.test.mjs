@@ -58,7 +58,8 @@ describe('static document dock', () => {
       expect(visible.map(digit => digit.getAttribute('href').split('-').at(-1)).join('')).toBe(value);
       expect(p.button.querySelector('[data-scroll-number]').getAttribute('transform')).toBe(`translate(${value.length === 3 ? 11.5 : 17.5} 20.5)`);
       expect(p.button.querySelectorAll('[data-scroll-segment][data-active]')).toHaveLength(active);
-      expect(p.button.title).toBe(`Back to top, current scroll progress ${percent}%`);
+      expect(p.button.getAttribute('aria-label')).toBe(`Back to top, current scroll progress ${percent}%`);
+      expect(p.button.hasAttribute('title')).toBe(false);
     }
     expect(p.button.hidden).toBe(true);
     p.dom.window.close();
