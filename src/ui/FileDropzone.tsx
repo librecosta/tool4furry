@@ -19,7 +19,7 @@ export interface FileDropzoneProps extends FileConstraints {
   disabled?: boolean;
   appearance?: 'expanded' | 'compact';
   /** Opt-in visual accent; file handling and default styling stay unchanged. */
-  accent?: 'slate';
+  accent?: 'lavender';
   issueMessages: Record<FileIssueReason, string>;
   onFilesSelected?: (files: File[]) => void;
   /** Delegate validation and aggregated feedback to a bounded workspace intake. */
@@ -115,9 +115,9 @@ export function FileDropzone({
           controls.button,
           styles.zone,
           appearance === 'compact' && styles.compact,
-          accent === 'slate' && styles.accentTransition,
+          accent === 'lavender' && styles.accentTransition,
           dragging && !disabled && styles.dragging,
-          dragging && !disabled && accent === 'slate' && styles.slateDragging,
+          dragging && !disabled && accent === 'lavender' && styles.lavenderDragging,
           issues.length > 0 && controls.invalid,
         )}
         onClick={() => input.current?.click()}
@@ -151,7 +151,7 @@ export function FileDropzone({
         <FolderOpenIcon
           size={28}
           aria-hidden="true"
-          {...stylex.props(accent === 'slate' && !disabled && styles.slateIcon)}
+          {...stylex.props(accent === 'lavender' && !disabled && styles.lavenderIcon)}
         />
         <span {...stylex.props(styles.label)}>{label}</span>
         {hint && (
@@ -210,14 +210,14 @@ const styles = stylex.create({
     transitionTimingFunction: 'ease-out',
     transitionDuration: { default: '200ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
   },
-  slateIcon: { color: tokens.supportSlate },
-  slateDragging: {
+  lavenderIcon: { color: tokens.supportLavender },
+  lavenderDragging: {
     backgroundColor: {
-      default: `color-mix(in srgb, ${tokens.supportSlate} 7%, ${tokens.surface})`,
-      ':hover': `color-mix(in srgb, ${tokens.supportSlate} 7%, ${tokens.surface})`,
+      default: `color-mix(in srgb, ${tokens.supportLavender} 7%, ${tokens.surface})`,
+      ':hover': `color-mix(in srgb, ${tokens.supportLavender} 7%, ${tokens.surface})`,
     },
-    borderColor: tokens.supportSlate,
-    outlineColor: tokens.supportSlate,
+    borderColor: tokens.supportLavender,
+    outlineColor: tokens.supportLavender,
   },
   compact: {
     minHeight: 44,

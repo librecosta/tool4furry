@@ -145,10 +145,13 @@ describe.each([
     for (const background of [hosts.settings, hosts.floating])
       expect(contrast(color('accent'), over(color('actionTint'), background))).toBeGreaterThanOrEqual(3);
   });
-  it('keeps supporting labels readable independently of feedback roles', () => {
-    for (const [name, background] of Object.entries(hosts))
-      for (const foreground of ['supportClay', 'supportAmber', 'supportLavender', 'supportSlate'] as const)
-        expect(contrast(color(foreground), background), `${foreground} on ${name}`).toBeGreaterThanOrEqual(4.5);
+  it('keeps Lavender labels and drop feedback readable independently of status colors', () => {
+    for (const [name, background] of Object.entries(hosts)) {
+      expect(contrast(color('supportLavender'), background), `Lavender on ${name}`).toBeGreaterThanOrEqual(4.5);
+      const dropFill = over(mix(color('supportLavender'), 0.07, color('surface')), background);
+      expect(contrast(color('textPrimary'), dropFill), `drop label on ${name}`).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(color('supportLavender'), dropFill), `drop boundary on ${name}`).toBeGreaterThanOrEqual(3);
+    }
   });
   it('keeps Converter accents readable on selected formats and quality controls', () => {
     for (const background of [

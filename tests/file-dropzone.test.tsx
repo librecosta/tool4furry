@@ -15,7 +15,7 @@ const issueMessages = {
 };
 const imageFile = (name = 'a.png') =>
   new File(['test'], name, { type: 'image/png' });
-function setup(disabled = false, accent?: 'slate') {
+function setup(disabled = false, accent?: 'lavender') {
   const onFilesSelected = vi.fn();
   const onRejected = vi.fn();
   const props = {
@@ -122,7 +122,7 @@ describe('FileDropzone', () => {
     expect(screen.getByRole('alert').textContent).toContain('Too large');
     expect(onFilesSelected).toHaveBeenCalledTimes(2);
   });
-  it.each([undefined, 'slate'] as const)('tracks nested drag boundaries, partially accepts drop and leaves unrelated drops alone (%s accent)', (accent) => {
+  it.each([undefined, 'lavender'] as const)('tracks nested drag boundaries, partially accepts drop and leaves unrelated drops alone (%s accent)', (accent) => {
     const { button, onFilesSelected, onRejected } = setup(false, accent);
     const file = imageFile();
     const bad = new File(['x'], 'bad.txt');
