@@ -71,7 +71,7 @@ export default function ImageWatermark({locale}: ToolProps) {
           <div {...stylex.props(s.actions)}>
             <Button variant="ghost" xstyle={s.accent} disabled={!session || hasDraftError || !view.tasks.some(task => task.source) || view.assetBusy || settings.kind === 'image' && !view.watermark || working} onClick={() => session?.start()}>{t.process}</Button>
             {working && <Button variant="ghost" onClick={() => session?.cancel()}>{t.cancel}</Button>}
-            {ready > 0 && !working && !hasDraftError && <Button variant="ghost" xstyle={s.accent} loading={packing} onClick={async () => { setPacking(true); setDeliveryError(false); try { await session?.zip(); } catch { setDeliveryError(true); } finally { setPacking(false); } }}>{packing ? t.packing : t.zip}</Button>}
+            {ready > 0 && !working && !hasDraftError && <Button variant="ghost" xstyle={s.secondary} loading={packing} onClick={async () => { setPacking(true); setDeliveryError(false); try { await session?.zip(); } catch { setDeliveryError(true); } finally { setPacking(false); } }}>{packing ? t.packing : t.zip}</Button>}
             {view.tasks.length > 0 && <Button variant="ghost" onClick={() => session?.clear()}>{t.clear}</Button>}
           </div>
           {view.tasks.length > 0 && <p role="status" {...stylex.props(s.note)}>{t.result}: {ready} · {t.failed}: {failed}</p>}

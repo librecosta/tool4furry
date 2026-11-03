@@ -37,11 +37,12 @@ export const styles = stylex.create({
   field: { display: 'grid', gap: 8, fontSize: 14, minWidth: 0 },
   accent: {
     backgroundColor: {
-      default: tokens.communityAction,
-      ':hover': tokens.communityActionHover,
-      ':active': tokens.communityActionHover,
+      default: tokens.action,
+      ':hover': tokens.actionHover,
+      ':active': tokens.actionPressed,
+      ':disabled': tokens.action,
     },
-    color: tokens.onCommunityAction,
+    color: tokens.onAction,
     borderColor: 'transparent',
   },
   secondary: {

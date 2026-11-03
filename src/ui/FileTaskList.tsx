@@ -251,7 +251,7 @@ export const fileTaskStyles = stylex.create({
     fontSize: 12,
     color: t.textSecondary,
   },
-  ready: { color: t.accent },
+  ready: { color: t.positive },
   metadataRow: {
     gridColumn: 2,
     gridRow: 2,

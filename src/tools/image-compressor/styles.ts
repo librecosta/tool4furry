@@ -12,7 +12,7 @@ export const s = stylex.create({
   note: {fontSize: 13, lineHeight: 1.6, color: t.textSecondary, margin: 0, overflowWrap: 'anywhere'},
   error: {fontSize: 13, lineHeight: 1.6, color: t.danger, margin: 0, overflowWrap: 'anywhere'},
   action: {borderWidth: 0, backgroundColor: {default: t.surfacePanel, ':hover': t.surfaceHover, ':active': t.surfaceMuted}, textDecoration: 'none'},
-  main: {borderWidth: 0, backgroundColor: {default: t.communityAction, ':hover': t.communityActionHover}, color: t.onCommunityAction, textDecoration: 'none'},
+  main: {borderWidth: 0, backgroundColor: {default: t.action, ':hover': t.actionHover, ':active': t.actionPressed, ':disabled': t.action}, color: t.onAction, textDecoration: 'none'},
   help: {fontSize: 13, lineHeight: 1.6, color: t.textSecondary},
   unit: {display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 92px', alignItems: 'start', gap: t.space8},
   stepper: {display: 'grid', gridTemplateColumns: '44px minmax(0, 1fr) 44px', alignItems: 'center', minHeight: 44, borderRadius: t.radiusMd, backgroundColor: t.surfacePanel},

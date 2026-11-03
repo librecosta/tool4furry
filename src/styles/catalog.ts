@@ -73,7 +73,7 @@ export const catalogStyles = stylex.create({
   jumpDialog: { width: 'min(360px, calc(100% - 32px))', maxHeight: 'calc(100dvh - 24px)', margin: 'auto', padding: 20, borderWidth: 0, borderRadius: tokens.radiusLg, color: tokens.textPrimary, backgroundColor: tokens.surfaceFloating, boxShadow: tokens.shadowFloating, overflowY: 'auto', scrollbarGutter: 'stable', ':is([open])': { display: 'grid', gap: 12 }, '::backdrop': { backgroundColor: tokens.overlay } },
   jump: { display: 'grid', gap: 12, fontSize: 13 },
   jumpActions: { display: 'flex', gap: 8, justifyContent: 'flex-end' },
-  confirmJump: { backgroundColor: tokens.action, color: tokens.onAction, ':hover': { backgroundColor: tokens.actionHover } },
+  confirmJump: { backgroundColor: tokens.action, color: tokens.onAction, ':hover': { backgroundColor: tokens.actionHover }, ':active': { backgroundColor: tokens.actionPressed } },
   jumpInput: { width: '100%', minHeight: 44, padding: 8, borderWidth: 2, borderStyle: 'solid', borderColor: tokens.controlBorder, borderRadius: 8, color: tokens.textPrimary, backgroundColor: tokens.inputSurface, ':focus': { outline: 'none', borderColor: tokens.focus }, ':is([aria-invalid="true"])': { borderColor: tokens.danger } },
   error: { color: tokens.danger, fontSize: 13, margin: 0, width: '100%' },
 });

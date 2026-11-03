@@ -20,8 +20,8 @@ export const comicStyles = stylex.create({
     backgroundColor: {default: t.surfacePanel, ':hover': t.surfaceHover, ':active': t.surfaceMuted},
   },
   primary: {
-    borderWidth: 0, backgroundColor: {default: t.communityAction, ':hover': t.communityActionHover, ':active': t.communityActionHover},
-    color: t.onCommunityAction, textDecoration: 'none', boxShadow: 'none',
+    borderWidth: 0, backgroundColor: {default: t.action, ':hover': t.actionHover, ':active': t.actionPressed, ':disabled': t.action},
+    color: t.onAction, textDecoration: 'none', boxShadow: 'none',
   },
   gallery: {minWidth: 0, maxHeight: 'min(72dvh, 760px)', overflow: 'auto', overscrollBehavior: 'contain', padding: 3, borderRadius: t.radiusMd, scrollbarGutter: 'stable'},
   grid: {position: 'relative', padding: 0, margin: 0, listStyle: 'none', minHeight: 160},

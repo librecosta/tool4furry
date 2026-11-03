@@ -1,12 +1,21 @@
 import * as stylex from '@stylexjs/stylex';
 import { describe, expect, it } from 'vitest';
 import { tokens, neutralDarkTheme, neutralLightTheme, neutralDarkValues, neutralLightValues } from '../src/styles/tokens.stylex';
+import { controls } from '../src/styles/controls';
 import {
   defaultTheme,
   resolveTheme,
   resolvePageTheme,
   type ThemeSelection,
 } from '../src/styles/theme';
+
+const semantic = stylex.create({
+  primary: {
+    backgroundColor: { default: tokens.action, ':hover': tokens.actionHover, ':active': tokens.actionPressed, ':disabled': tokens.action },
+    borderColor: 'transparent',
+    color: tokens.onAction,
+  },
+});
 
 describe('static theme selection contract', () => {
   it('defaults to dark and resolves either appearance to one compiled native theme', () => {
@@ -37,6 +46,19 @@ describe('static theme selection contract', () => {
     expect(neutralDarkValues.colorScheme).toBe('dark');
     for (const key of ['overlay', 'shadowSoft', 'shadowFloating', 'danger', 'positive', 'warning', 'info'] as const)
       expect(neutralLightValues[key]).not.toBe(neutralDarkValues[key]);
+  });
+  it('uses one Clay action family, Lavender secondary emphasis and no legacy CTA aliases', () => {
+    expect(neutralLightValues).toMatchObject({ action: '#9D533D', actionHover: '#884632', actionPressed: '#753A29', onAction: '#FFFFFF', accent: '#6D5883', supportLavender: '#6D5883' });
+    expect(neutralDarkValues).toMatchObject({ action: '#D49C7D', actionHover: '#E2AC8C', actionPressed: '#C58869', onAction: '#1D1F22', accent: '#C0B0D6', supportLavender: '#C0B0D6' });
+    for (const values of [neutralLightValues, neutralDarkValues]) {
+      for (const key of ['communityAction', 'communityActionHover', 'onCommunityAction'])
+        expect(values).not.toHaveProperty(key);
+    }
+    expect(stylex.props(controls.primary)).toEqual(stylex.props(semantic.primary));
+  });
+  it('preserves independent brand, focus, neutral selections and feedback roles', () => {
+    expect(neutralLightValues).toMatchObject({ brand: '#C97849', focus: '#53616E', navFocus: '#CBD5E1', actionTint: '#DDE2E7', supportClay: '#9D533D', supportAmber: '#8B5F23', supportSlate: '#456B86', danger: '#A63243', dangerHover: '#8B2738', onDanger: '#FFFFFF', positive: '#28634C', warning: '#785313', info: '#365F7A' });
+    expect(neutralDarkValues).toMatchObject({ brand: '#C97849', focus: '#CBD5E1', navFocus: '#CBD5E1', actionTint: 'rgba(203,213,225,0.08)', supportClay: '#D49C7D', supportAmber: '#D6B27A', supportSlate: '#ACC7D1', danger: '#FF9BA4', dangerHover: '#FFB2B9', onDanger: '#1D1F22', positive: '#83D6AE', warning: '#E7C47C', info: '#ACC7D1' });
   });
   it('limits environment preview to DEV and rejects invalid DEV appearances', () => {
     expect(resolvePageTheme(true, 'light').style).toBe(neutralLightTheme);

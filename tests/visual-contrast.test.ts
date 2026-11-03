@@ -21,6 +21,14 @@ function over(foreground: Color, background: Color): Color {
     foreground[index] * foreground[3] + background[index] * background[3] * (1 - foreground[3])
   ) / alpha).concat(alpha) as unknown as Color;
 }
+// CSS color-mix(in srgb) interpolates premultiplied alpha, then the result is
+// painted on its host. Mixing already-composited bytes hides nested-layer bugs.
+function mix(a: Color, weight: number, b: Color): Color {
+  const alpha = a[3] * weight + b[3] * (1 - weight);
+  return [0, 1, 2].map((i) => (
+    a[i] * a[3] * weight + b[i] * b[3] * (1 - weight)
+  ) / alpha).concat(alpha) as unknown as Color;
+}
 function luminance(color: Color) {
   const channels = color.slice(0, 3).map((channel) => {
     const value = channel / 255;
@@ -94,10 +102,31 @@ describe.each([
         expect(contrast(color('onDanger'), over(color(fill), background)), `onDanger on ${name}/${fill}`).toBeGreaterThanOrEqual(4.5);
     }
   });
-  it('keeps the community-only lavender CTA readable on default and hover fills', () => {
-    for (const fill of ['communityAction', 'communityActionHover'] as const)
-      expect(contrast(color('onCommunityAction'), color(fill)), fill).toBeGreaterThanOrEqual(4.5);
-    expect(contrast(color('focus'), hosts.panel)).toBeGreaterThanOrEqual(3);
+  it('keeps unified Hero/community CTAs readable in every state with independent focus', () => {
+    const hero = parse('#080C09');
+    for (const background of [hero, ...Object.values(hosts)]) {
+      for (const fill of ['action', 'actionHover', 'actionPressed'] as const)
+        expect(contrast(color('onAction'), over(color(fill), background)), fill).toBeGreaterThanOrEqual(4.5);
+      // Disabled controls are exempt from text AA, but retain a visible fill
+      // at the shared Button's 0.55 opacity rather than becoming transparent.
+      const disabled = over([...color('action').slice(0, 3), 0.55] as unknown as Color, background);
+      expect(contrast(disabled, background), 'disabled fill').toBeGreaterThanOrEqual(1.3);
+    }
+    for (const background of Object.values(hosts))
+      expect(contrast(color('focus'), background), 'offset keyboard ring').toBeGreaterThanOrEqual(3);
+    expect(contrast(parse('#CBD5E1'), hero), 'fixed Hero focus').toBeGreaterThanOrEqual(3);
+  });
+  it('keeps Lavender labels above AA on actual mixed selection surfaces, including portals', () => {
+    const lavender = color('supportLavender');
+    for (const host of Object.values(hosts)) {
+      for (const weight of [0.12, 0.14, 0.15, 0.16, 0.18, 0.20])
+        expect(contrast(lavender, over(mix(lavender, weight, color('inputSurface')), host)), `input mix ${weight}`).toBeGreaterThanOrEqual(4.5);
+    }
+    for (const weight of [0.08, 0.10])
+      expect(contrast(lavender, mix(lavender, weight, hosts.floating)), `selected popup ${weight}`).toBeGreaterThanOrEqual(4.5);
+    // Comic's checked overlay contains an icon, not small text.
+    for (const weight of [0.20, 0.30])
+      expect(contrast(lavender, mix(lavender, weight, hosts.floating)), 'checked gallery icon').toBeGreaterThanOrEqual(3);
   });
   it('keeps input/select boundaries, focus, selected outlines and progress identifiable', () => {
     for (const [name, background] of backgrounds)
@@ -110,7 +139,9 @@ describe.each([
       expect(contrast(color('focus'), hover)).toBeGreaterThanOrEqual(3);
     }
     expect(contrast(color('controlBorder'), over(color('surfaceHover'), hosts.settings))).toBeGreaterThanOrEqual(3);
-    expect(contrast(color('accent'), over(color('borderStrong'), hosts.settings))).toBeGreaterThanOrEqual(3);
+    const sliderTrack = mix(color('borderStrong'), 0.80, [0, 0, 0, 0]);
+    for (const host of [hosts.page, hosts.workspace, hosts.settings, hosts.floating])
+      expect(contrast(color('accent'), over(sliderTrack, host)), 'Slider indicator on neutral track').toBeGreaterThanOrEqual(3);
     for (const background of [hosts.settings, hosts.floating])
       expect(contrast(color('accent'), over(color('actionTint'), background))).toBeGreaterThanOrEqual(3);
   });

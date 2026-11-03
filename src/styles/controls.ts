@@ -58,7 +58,7 @@ export const controls = stylex.create({
       ':active': tokens.actionPressed,
       ':disabled': tokens.action,
     },
-    borderColor: tokens.controlBorder,
+    borderColor: 'transparent',
     color: tokens.onAction,
   },
   ghost: {

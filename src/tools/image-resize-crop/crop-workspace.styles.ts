@@ -18,8 +18,8 @@ export const cropWorkspaceStyles = stylex.create({
     color: { default: t.supportLavender, ':hover': t.supportLavender, ':active': t.supportLavender },
     backgroundColor: {
       default: `color-mix(in srgb, ${t.supportLavender} 16%, ${t.inputSurface})`,
-      ':hover': `color-mix(in srgb, ${t.supportLavender} 24%, ${t.inputSurface})`,
-      ':active': `color-mix(in srgb, ${t.supportLavender} 24%, ${t.inputSurface})`,
+      ':hover': `color-mix(in srgb, ${t.supportLavender} 20%, ${t.inputSurface})`,
+      ':active': `color-mix(in srgb, ${t.supportLavender} 20%, ${t.inputSurface})`,
     },
     borderWidth: 0,
     borderStyle: 'none',

@@ -88,7 +88,7 @@ const styles = stylex.create({
       ':active': tokens.actionPressed,
       ':disabled': tokens.action,
     },
-    borderColor: tokens.accent,
+    borderColor: 'transparent',
     color: tokens.onAction,
   },
   indicator: { display: 'flex' },

@@ -15,14 +15,14 @@ export const converterStyles = stylex.create({
   compactIntake: { gridTemplateColumns: 'minmax(0, 1fr) auto' },
   supportAction: {
     backgroundColor: {
-      default: t.communityAction,
-      ':hover': t.communityActionHover,
-      ':focus-visible': t.communityActionHover,
-      ':active': t.communityActionHover,
+      default: t.action,
+      ':hover': t.actionHover,
+      ':focus-visible': t.actionHover,
+      ':active': t.actionPressed,
       ':disabled': t.surface,
     },
     borderColor: { default: 'transparent', ':disabled': t.controlBorder },
-    color: { default: t.onCommunityAction, ':disabled': t.textSecondary },
+    color: { default: t.onAction, ':disabled': t.textSecondary },
     transitionProperty: 'background-color, border-color, color',
     transitionDuration: { default: '200ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
   },
@@ -73,8 +73,8 @@ export const converterStyles = stylex.create({
   currentParameterMode: {
     backgroundColor: {
       default: `color-mix(in srgb, ${t.supportLavender} 16%, ${t.inputSurface})`,
-      ':hover': `color-mix(in srgb, ${t.supportLavender} 24%, ${t.inputSurface})`,
-      ':active': `color-mix(in srgb, ${t.supportLavender} 24%, ${t.inputSurface})`,
+      ':hover': `color-mix(in srgb, ${t.supportLavender} 20%, ${t.inputSurface})`,
+      ':active': `color-mix(in srgb, ${t.supportLavender} 20%, ${t.inputSurface})`,
     },
     color: { default: t.supportLavender, ':hover': t.supportLavender, ':active': t.supportLavender },
     borderWidth: 0,

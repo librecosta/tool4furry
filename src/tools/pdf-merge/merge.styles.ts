@@ -15,11 +15,6 @@ export const mergeStyles = stylex.create({
     '@media (max-width: 360px)': { paddingInline: t.space4, fontSize: 13 },
   },
   primary: {
-    backgroundColor: { default: t.supportClay,
-      ':hover': `color-mix(in srgb, ${t.supportClay} 88%, ${t.textPrimary})`,
-      ':active': `color-mix(in srgb, ${t.supportClay} 78%, ${t.textPrimary})`,
-      ':disabled': t.supportClay },
-    color: t.page,
     transform: { default: 'none', ':active': 'translateY(1px)', ':disabled': 'none' },
   },
   secondary: {

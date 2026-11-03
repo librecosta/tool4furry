@@ -116,9 +116,9 @@ const styles = stylex.create({
     outlineOffset: -2,
   },
   quietSelected: {
-    backgroundColor: `color-mix(in srgb, ${tokens.supportLavender} 14%, ${tokens.surfaceFloating})`,
+    backgroundColor: `color-mix(in srgb, ${tokens.supportLavender} 8%, ${tokens.surfaceFloating})`,
     color: tokens.supportLavender,
-    ':is([data-highlighted])': { backgroundColor: `color-mix(in srgb, ${tokens.supportLavender} 22%, ${tokens.surfaceFloating})`, color: tokens.supportLavender },
+    ':is([data-highlighted])': { backgroundColor: `color-mix(in srgb, ${tokens.supportLavender} 10%, ${tokens.surfaceFloating})`, color: tokens.supportLavender },
   },
   trigger: {
     display: 'flex',

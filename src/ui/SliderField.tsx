@@ -103,7 +103,7 @@ const styles = stylex.create({
     width: '100%',
     height: 6,
     borderRadius: 3,
-    backgroundColor: tokens.borderStrong,
+    backgroundColor: `color-mix(in srgb, ${tokens.borderStrong} 80%, transparent)`,
   },
   indicator: { backgroundColor: tokens.accent, borderRadius: 3 },
   // A neutral rail with enough contrast against the supporting progress color.

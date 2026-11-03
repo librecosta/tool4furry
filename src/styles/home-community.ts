@@ -18,5 +18,5 @@ export const communityStyles = stylex.create({
   footer: { marginTop: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 },
   note: { margin: 0, fontSize: 12, lineHeight: 1.6, color: tokens.textSecondary },
   logo: { display: 'block', flexShrink: 0, width: 20, height: 20, objectFit: 'contain' },
-  action: { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 44, paddingInline: 14, borderRadius: 8, backgroundColor: { default: tokens.communityAction, ':hover': tokens.communityActionHover, ':focus-visible': tokens.communityActionHover, ':active': tokens.communityActionHover }, color: tokens.onCommunityAction, textDecoration: 'none', fontSize: 14, fontWeight: 500, transitionProperty: 'background-color', transitionDuration: { default: '220ms', '@media (prefers-reduced-motion: reduce)': '0ms' } },
+  action: { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 44, paddingInline: 14, borderRadius: 8, backgroundColor: { default: tokens.action, ':hover': tokens.actionHover, ':focus-visible': tokens.actionHover, ':active': tokens.actionPressed }, color: tokens.onAction, textDecoration: 'none', fontSize: 14, fontWeight: 500, transitionProperty: 'background-color', transitionDuration: { default: '220ms', '@media (prefers-reduced-motion: reduce)': '0ms' } },
 });

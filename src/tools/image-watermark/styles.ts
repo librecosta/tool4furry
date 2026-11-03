@@ -15,7 +15,7 @@ export const s = stylex.create({
   selected: {backgroundColor: `color-mix(in srgb, ${t.supportLavender} 12%, ${t.surface})`},
   selectFile: {display: 'flex', alignItems: 'center', gap: t.space12, flex: '1 1 180px', minWidth: 0, textAlign: 'start', borderWidth: 0, borderRadius: t.radiusSm, padding: t.space4, backgroundColor: {default: 'transparent', ':hover': t.surfaceHover}, cursor: {default: 'pointer', ':disabled': 'default'}, color: 'inherit', outlineStyle: {default: 'none', ':focus-visible': 'solid'}, outlineWidth: 2, outlineColor: t.focus, outlineOffset: 2},
   heading: {display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: t.space8, flexWrap: 'wrap'},
-  secondary: {backgroundColor: {default: t.surfacePanel, ':hover': t.surfaceHover}, borderColor: 'transparent'},
+  secondary: {backgroundColor: {default: t.surfacePanel, ':hover': t.surfaceHover, ':active': t.surfaceMuted, ':disabled': t.surfacePanel}, borderColor: 'transparent'},
   colorField: {display: 'grid', gridTemplateColumns: '44px minmax(0, 1fr)', alignItems: 'end', gap: t.space8},
   swatch: {width: 44, height: 44, minWidth: 44, borderRadius: t.radiusMd, borderWidth: 0, boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${t.textPrimary} 20%, transparent)`},
   popoverPositioner: {zIndex: t.layerFloating, maxWidth: 'calc(100vw - 24px)'},
@@ -27,7 +27,7 @@ export const s = stylex.create({
   group: {borderWidth: 0, padding: 0, margin: 0, minWidth: 0},
   legend: {fontWeight: 500, marginBottom: t.space8},
   choice: {display: 'flex', justifyContent: 'center', alignItems: 'center', gap: t.space4, minHeight: 44, cursor: 'pointer', padding: t.space4, borderRadius: t.radiusSm, backgroundColor: {default: t.surface, ':hover': t.surfaceHover}, color: t.textSecondary, fontSize: 12, ':has(input:focus-visible)': {outlineWidth: 2, outlineStyle: 'solid', outlineColor: t.focus, outlineOffset: 2}},
-  chosen: {color: t.supportLavender, backgroundColor: `color-mix(in srgb, ${t.supportLavender} 15%, ${t.surface})`},
+  chosen: {color: t.supportLavender, backgroundColor: {default: `color-mix(in srgb, ${t.supportLavender} 15%, ${t.inputSurface})`, ':hover': `color-mix(in srgb, ${t.supportLavender} 20%, ${t.inputSurface})`, ':active': `color-mix(in srgb, ${t.supportLavender} 20%, ${t.inputSurface})`}},
   radio: {accentColor: t.supportLavender, width: 14, height: 14, margin: 0},
-  accent: {backgroundColor: {default: t.communityAction, ':hover': t.communityActionHover}, color: t.onCommunityAction, borderColor: 'transparent'},
+  accent: {backgroundColor: {default: t.action, ':hover': t.actionHover, ':active': t.actionPressed, ':disabled': t.action}, color: t.onAction, borderColor: 'transparent'},
 });

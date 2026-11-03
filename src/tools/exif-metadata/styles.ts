@@ -11,7 +11,7 @@ export const s = stylex.create({
   error: {fontSize: 13, lineHeight: 1.6, color: t.danger, margin: 0, overflowWrap: 'anywhere'},
   help: {fontSize: 13, lineHeight: 1.6, color: t.textSecondary},
   action: {borderWidth: 0, backgroundColor: {default: t.surfacePanel, ':hover': t.surfaceHover}, textDecoration: 'none'},
-  main: {borderWidth: 0, backgroundColor: {default: t.communityAction, ':hover': t.communityActionHover}, color: t.onCommunityAction, textDecoration: 'none'},
+  main: {borderWidth: 0, backgroundColor: {default: t.action, ':hover': t.actionHover, ':active': t.actionPressed, ':disabled': t.action}, color: t.onAction, textDecoration: 'none'},
   task: {display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', alignItems: 'center', gap: t.space8, minWidth: 0, padding: t.space8, marginBlockEnd: {default: t.space8, ':last-child': 0}, borderRadius: t.radiusMd, backgroundColor: {default: 'transparent', ':hover': t.surfacePanel}},
   select: {display: 'grid', gridTemplateColumns: '48px minmax(0, 1fr)', justifyContent: 'stretch', justifyItems: 'start', alignItems: 'center', textAlign: 'start', gap: t.space8, height: 'auto', width: '100%', minWidth: 0, paddingBlock: 0, paddingInline: 0, borderWidth: 0, borderRadius: t.radiusSm, backgroundColor: {default: 'transparent', ':hover': 'transparent', ':active': 'transparent'}},
   current: {backgroundColor: {default: `color-mix(in srgb, ${t.supportLavender} 12%, ${t.inputSurface})`, ':hover': `color-mix(in srgb, ${t.supportLavender} 18%, ${t.inputSurface})`}, color: t.supportLavender, boxShadow: 'none', textDecoration: 'none', borderWidth: 0},

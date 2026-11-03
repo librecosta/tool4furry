@@ -150,6 +150,7 @@ export default function ZipManager({ locale }: ToolProps) {
             ))}
           </div>
           <Button
+            variant="primary"
             disabled={job.busy || !selected.length}
             onClick={() =>
               void job.run(async (signal) =>
