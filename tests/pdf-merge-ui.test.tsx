@@ -11,10 +11,15 @@ vi.mock('../src/tools/general/ui', async original => ({ ...await original<typeof
 const file = (name: string) => new File([`original ${name}`], name, { type: 'application/pdf' });
 const names = () => [...document.querySelectorAll('[data-pdf-file-name]')].map(node => node.textContent);
 const rows = () => [...document.querySelectorAll<HTMLElement>('[data-pdf-file-id]')];
-const download = () => screen.getByRole('button', { name: 'Download PDF' }) as HTMLButtonElement;
+const download = () => screen.getByRole('button', { name: 'Download' }) as HTMLButtonElement;
 const output = () => new Blob(['%PDF-validated'], { type: 'application/pdf' });
 beforeEach(() => {
   setViewport();
+  // jsdom has no Web Animations timeline. Movement itself is verified in Chromium.
+  Object.defineProperty(document, 'getAnimations', { configurable: true, value: () => [] });
+  Object.defineProperty(Element.prototype, 'getAnimations', { configurable: true, value: () => [] });
+  Object.defineProperty(Element.prototype, 'animate', { configurable: true,
+    value: () => ({ finished: Promise.resolve(), cancel() {}, finish() {} }) });
   vi.mocked(readPdf).mockImplementation(async f => ({ getPageCount: () => f.name.charCodeAt(0) - 64 }) as Awaited<ReturnType<typeof readPdf>>);
   vi.mocked(mergePdfs).mockImplementation(async () => output());
   vi.stubGlobal('PointerEvent', class extends MouseEvent {
@@ -28,16 +33,21 @@ beforeEach(() => {
     return index < 0 ? new DOMRect(0, 0, 600, 400) : new DOMRect(0, 100 + index * 70, 600, 60);
   });
 });
-afterEach(() => { vi.useRealTimers(); vi.clearAllMocks(); });
+afterEach(() => {
+  vi.useRealTimers(); vi.clearAllMocks();
+  Reflect.deleteProperty(document, 'getAnimations');
+  Reflect.deleteProperty(Element.prototype, 'getAnimations');
+  Reflect.deleteProperty(Element.prototype, 'animate');
+});
 function setup(locale: 'zh' | 'en' = 'en') {
   return render(<Tooltip.Provider><PdfMerge locale={locale} region="global" /></Tooltip.Provider>);
 }
 async function add(list = ['A.pdf', 'B.pdf', 'C.pdf']) {
   fireEvent.change(screen.getByLabelText('Choose files or drop them here', { selector: 'input' }), { target: { files: list.map(file) } });
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Merge PDFs' }).getAttribute('aria-busy')).toBeNull());
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Merge' }).getAttribute('aria-busy')).toBeNull());
 }
 async function merge() {
-  fireEvent.click(screen.getByRole('button', { name: 'Merge PDFs' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Merge' }));
   await waitFor(() => expect(download().disabled).toBe(false));
 }
 
@@ -45,7 +55,7 @@ it.each(['en', 'zh'] as const)('keeps all three actions present in %s, with no d
   const { container } = setup(locale);
   const actions = container.querySelector('[data-pdf-actions]')!;
   expect([...actions.querySelectorAll('button')].map(button => button.textContent)).toEqual(locale === 'en'
-    ? ['Merge PDFs', 'Download PDF', 'Clear / cancel'] : ['合并 PDF', '下载 PDF', '清空 / 取消']);
+    ? ['Merge', 'Download', 'Clear'] : ['合并 PDF', '下载 PDF', '清空']);
   expect(actions.querySelectorAll('button')[0].disabled).toBe(true);
   expect(actions.querySelectorAll('button')[1].disabled).toBe(true);
 });
@@ -60,7 +70,7 @@ it('merges the latest keyboard order, preserves metadata and invalidates downloa
   fireEvent.keyDown(handle, { key: 'ArrowDown' });
   expect(names()).toEqual(['B.pdf', 'A.pdf', 'C.pdf']);
   expect(document.activeElement).toBe(handle);
-  expect(screen.getByRole('status').textContent).toContain('position 2 of 3');
+  expect(screen.getAllByRole('status').some(el => el.textContent?.includes('position 2 of 3'))).toBe(true);
   expect(rows()[0].textContent).toContain('2 pages');
   expect(download().disabled).toBe(true);
   await merge();
@@ -71,53 +81,22 @@ it('merges the latest keyboard order, preserves metadata and invalidates downloa
   expect(names()).toEqual(['B.pdf', 'C.pdf', 'D.pdf']);
 });
 
-it('drags whole rows or handles to both ends and cancels with Escape without committing an order', async () => {
-  setup(); await add();
-  fireEvent.pointerDown(rows()[2], { clientX: 80, clientY: 270, button: 0 });
-  fireEvent.pointerMove(document, { clientX: 80, clientY: 101 });
-  expect(document.querySelector('[data-insert="before"]')).toBe(rows()[0]);
+it('supports first/last keyboard moves and leaves a valid result intact for a no-op move', async () => {
+  setup(); await add(); await merge();
+  fireEvent.keyDown(screen.getByRole('button', { name: 'Reorder A.pdf' }), { key: 'ArrowUp' });
+  expect(download().disabled).toBe(false);
+  fireEvent.keyDown(screen.getByRole('button', { name: 'Reorder A.pdf' }), { key: 'End' });
+  expect(names()).toEqual(['B.pdf', 'C.pdf', 'A.pdf']); expect(download().disabled).toBe(true);
+  fireEvent.keyDown(screen.getByRole('button', { name: 'Reorder A.pdf' }), { key: 'Home' });
   expect(names()).toEqual(['A.pdf', 'B.pdf', 'C.pdf']);
-  fireEvent.pointerUp(document, { clientX: 80, clientY: 101 });
-  expect(names()).toEqual(['C.pdf', 'A.pdf', 'B.pdf']);
-  const handle = screen.getByRole('button', { name: 'Reorder C.pdf' });
-  fireEvent.pointerDown(handle, { clientX: 20, clientY: 120, button: 0 });
-  fireEvent.pointerMove(document, { clientX: 20, clientY: 310 });
-  expect(document.querySelector('[data-insert="after"]')).toBe(rows()[2]);
-  fireEvent.keyDown(document, { key: 'Escape' });
-  fireEvent.pointerUp(document, { clientX: 20, clientY: 310 });
-  expect(names()).toEqual(['C.pdf', 'A.pdf', 'B.pdf']);
-  expect(document.querySelector('[data-dragging], [data-insert]')).toBeNull();
-  fireEvent.pointerDown(handle, { clientX: 20, clientY: 120, button: 0 });
-  fireEvent.pointerMove(document, { clientX: 20, clientY: 310 });
-  fireEvent.pointerUp(document, { clientX: 20, clientY: 310 });
-  expect(names()).toEqual(['A.pdf', 'B.pdf', 'C.pdf']);
-});
-
-it('keeps touch scrolling before long press, sorts after activation and cancels multiple touches', async () => {
-  setup(); await add(); vi.useFakeTimers();
-  const point = (y: number, identifier = 1) => ({ clientX: 20, clientY: y, identifier });
-  fireEvent.touchStart(rows()[2], { touches: [point(270)] });
-  const scrolling = new TouchEvent('touchmove', { bubbles: true, cancelable: true, touches: [point(290) as Touch] });
-  fireEvent(document, scrolling); expect(scrolling.defaultPrevented).toBe(false);
-  await act(() => vi.advanceTimersByTimeAsync(250)); expect(document.querySelector('[data-dragging]')).toBeNull();
-  fireEvent.touchStart(rows()[2], { touches: [point(270)] });
-  await act(() => vi.advanceTimersByTimeAsync(250));
-  const moving = new TouchEvent('touchmove', { bubbles: true, cancelable: true, touches: [point(101) as Touch] });
-  fireEvent(document, moving); expect(moving.defaultPrevented).toBe(true);
-  fireEvent.touchEnd(document, { touches: [], changedTouches: [point(101)] });
-  expect(names()).toEqual(['C.pdf', 'A.pdf', 'B.pdf']);
-  fireEvent.touchStart(rows()[0], { touches: [point(120)] });
-  await act(() => vi.advanceTimersByTimeAsync(250));
-  fireEvent.touchMove(document, { touches: [point(150), point(160, 2)] });
-  expect(document.querySelector('[data-dragging], [data-insert]')).toBeNull();
-  expect(names()).toEqual(['C.pdf', 'A.pdf', 'B.pdf']);
+  expect(document.querySelector('[data-insert]')).toBeNull();
 });
 
 it('locks sorting/removal and duplicate submits while busy; clear cancels and rejects the late result', async () => {
   setup(); await add();
   let finish!: (blob: Blob) => void;
   vi.mocked(mergePdfs).mockImplementation(() => new Promise(resolve => { finish = resolve; }));
-  const start = screen.getByRole('button', { name: 'Merge PDFs' });
+  const start = screen.getByRole('button', { name: 'Merge' });
   fireEvent.click(start); fireEvent.click(start);
   expect(mergePdfs).toHaveBeenCalledTimes(1);
   expect(download().disabled).toBe(true);
@@ -128,20 +107,21 @@ it('locks sorting/removal and duplicate submits while busy; clear cancels and re
   fireEvent.pointerMove(document, { clientX: 20, clientY: 310 });
   expect(names()).toEqual(['A.pdf', 'B.pdf', 'C.pdf']); expect(document.querySelector('[data-dragging]')).toBeNull();
   const signal = vi.mocked(mergePdfs).mock.calls[0][1]!;
-  fireEvent.click(screen.getByRole('button', { name: 'Clear / cancel' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
   expect(signal.aborted).toBe(true); expect(names()).toEqual([]);
   await act(async () => { finish(output()); });
   expect(download().disabled).toBe(true); expect((start as HTMLButtonElement).disabled).toBe(true);
 });
 
-it('does not drag from trash controls and removes listeners/indicators on unmount', async () => {
-  const { unmount } = setup(); await add();
-  fireEvent.pointerDown(screen.getByRole('button', { name: 'Remove A.pdf' }), { clientX: 20, clientY: 120, button: 0 });
-  fireEvent.pointerMove(document, { clientX: 20, clientY: 310 });
-  expect(document.querySelector('[data-dragging]')).toBeNull();
-  fireEvent.pointerDown(rows()[0], { clientX: 80, clientY: 120, button: 0 });
-  fireEvent.pointerMove(document, { clientX: 80, clientY: 310 });
-  expect(document.querySelector('[data-dragging]')).not.toBeNull();
-  unmount(); fireEvent.pointerMove(document, { clientX: 80, clientY: 101 }); fireEvent.pointerUp(document);
-  expect(document.querySelector('[data-dragging], [data-insert]')).toBeNull();
+it('clears files/results and ignores an unfinished intake after unmount', async () => {
+  const { unmount } = setup(); await add(); await merge();
+  fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
+  expect(names()).toEqual([]); expect(download().disabled).toBe(true);
+  let finish!: (doc: Awaited<ReturnType<typeof readPdf>>) => void;
+  vi.mocked(readPdf).mockImplementation(() => new Promise(resolve => { finish = resolve; }));
+  fireEvent.change(screen.getByLabelText('Choose files or drop them here', { selector: 'input' }),
+    { target: { files: [file('D.pdf')] } });
+  unmount();
+  await act(async () => { finish({ getPageCount: () => 4 } as Awaited<ReturnType<typeof readPdf>>); });
+  expect(document.querySelector('[data-pdf-file-list]')).toBeNull();
 });

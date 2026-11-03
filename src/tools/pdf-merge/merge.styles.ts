@@ -4,18 +4,23 @@ import { tokens as t } from '../../styles/tokens.stylex';
 export const mergeStyles = stylex.create({
   actions: {
     display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-    gap: t.space8, width: '100%', maxWidth: 640, alignItems: 'stretch',
-    '@media (max-width: 340px)': { gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' },
+    gap: t.space8, width: '100%', alignItems: 'stretch',
+    '@media (max-width: 360px)': { gap: 6 },
   },
   button: {
     borderWidth: 0, borderStyle: 'none', boxShadow: 'none', textDecoration: 'none',
-    minWidth: 0, paddingInline: t.space12,
+    minWidth: 0, width: '100%', height: 44, paddingInline: t.space12, paddingBlock: 0,
     transform: { default: 'none', ':active': 'none', ':disabled': 'none' },
     transitionProperty: 'background-color, color, opacity',
+    '@media (max-width: 360px)': { paddingInline: t.space4, fontSize: 13 },
   },
   primary: {
-    backgroundColor: { default: t.action, ':hover': t.actionHover, ':active': t.actionPressed, ':disabled': t.action },
-    color: t.onAction,
+    backgroundColor: { default: t.supportClay,
+      ':hover': `color-mix(in srgb, ${t.supportClay} 88%, ${t.textPrimary})`,
+      ':active': `color-mix(in srgb, ${t.supportClay} 78%, ${t.textPrimary})`,
+      ':disabled': t.supportClay },
+    color: t.page,
+    transform: { default: 'none', ':active': 'translateY(1px)', ':disabled': 'none' },
   },
   secondary: {
     backgroundColor: { default: t.surfaceMuted, ':hover': t.surfaceHover, ':active': t.actionTint, ':disabled': t.surfaceMuted },
@@ -24,21 +29,14 @@ export const mergeStyles = stylex.create({
   clear: {
     backgroundColor: { default: t.surfacePanel, ':hover': t.surfaceHover, ':active': t.surfaceMuted, ':disabled': t.surfacePanel },
     color: t.textSecondary,
-    '@media (max-width: 340px)': { gridColumn: '1 / -1' },
   },
   list: { listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: t.space8, minWidth: 0 },
   row: {
-    position: 'relative', display: 'grid', gridTemplateColumns: '44px minmax(0, 1fr) 44px',
+    position: 'relative', display: 'grid', gridTemplateColumns: '28px minmax(0, 1fr) 44px',
     gap: t.space8, alignItems: 'center', padding: t.space8, minWidth: 0,
-    backgroundColor: { default: t.surfacePanel, ':is([data-dragging="true"])': t.actionTint },
+    backgroundColor: { default: t.surfacePanel, ':is([data-dragging="true"])': t.surfaceFloating },
     borderRadius: t.radiusSm, userSelect: 'none', touchAction: 'pan-y',
     cursor: { default: 'grab', ':is([aria-disabled="true"])': 'default', ':is([data-dragging="true"])': 'grabbing' },
-  },
-  before: {
-    '::before': { content: '""', position: 'absolute', top: -5, insetInline: 0, height: 3, backgroundColor: t.supportLavender, pointerEvents: 'none' },
-  },
-  after: {
-    '::after': { content: '""', position: 'absolute', bottom: -5, insetInline: 0, height: 3, backgroundColor: t.supportLavender, pointerEvents: 'none' },
   },
   info: { minWidth: 0 },
   name: { display: 'block', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' },
@@ -50,6 +48,12 @@ export const mergeStyles = stylex.create({
     backgroundColor: { default: t.surfaceMuted, ':hover': t.surfaceHover, ':active': t.actionTint, ':disabled': t.surfaceMuted },
     transform: { default: 'none', ':active': 'none', ':disabled': 'none' },
   },
-  handle: { cursor: { default: 'grab', ':active': 'grabbing', ':disabled': 'not-allowed' }, touchAction: 'pan-y' },
+  handle: {
+    width: 28, minWidth: 28,
+    backgroundColor: { default: 'transparent', ':hover': 'transparent', ':active': 'transparent', ':disabled': 'transparent' },
+    color: { default: t.textSecondary, ':hover': t.textPrimary },
+    opacity: { default: 0.65, ':hover': 1, ':disabled': 0.4 },
+    cursor: { default: 'grab', ':active': 'grabbing', ':disabled': 'not-allowed' }, touchAction: 'pan-y',
+  },
   hidden: { position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clipPath: 'inset(50%)', whiteSpace: 'nowrap' },
 });

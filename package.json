@@ -21,6 +21,8 @@
   "dependencies": {
     "@astrojs/react": "7.0.1",
     "@base-ui/react": "1.8.0",
+    "@dnd-kit/dom": "0.5.3",
+    "@dnd-kit/react": "0.5.3",
     "@fontsource-variable/dm-sans": "5.3.0",
     "@fontsource-variable/noto-sans-sc": "5.3.0",
     "@jsquash/avif": "2.1.1",
