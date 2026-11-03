@@ -25,6 +25,15 @@ const digits = [
   ['111', '101', '111', '101', '111'],
   ['111', '101', '111', '001', '111'],
 ];
+const particles = [
+  { x: -6, y: 47, size: 2, duration: 1800, delay: -250, rise: 14, opacity: 0.25 },
+  { x: 60, y: 43, size: 3, duration: 2400, delay: -1300, rise: 22, opacity: 0.5 },
+  { x: -7, y: 23, size: 4, duration: 2800, delay: -1700, rise: 18, opacity: 0.42 },
+  { x: 61, y: 18, size: 2, duration: 1900, delay: -650, rise: 16, opacity: 0.26 },
+  { x: 10, y: -4, size: 2, duration: 2200, delay: -1100, rise: 14, opacity: 0.35 },
+  { x: 43, y: -5, size: 3, duration: 2600, delay: -2100, rise: 20, opacity: 0.55 },
+  { x: -1, y: 61, size: 2, duration: 2100, delay: -400, rise: 16, opacity: 0.3 },
+];
 ---
 <button type="button" data-document-dock data-label={label} hidden inert aria-hidden="true" aria-label={label} {...stylex.attrs(s.root)}>
   <svg viewBox="0 0 56 56" width="56" height="56" aria-hidden="true" focusable="false" shape-rendering="crispEdges" {...stylex.attrs(s.orb)}>
@@ -36,5 +45,6 @@ const digits = [
     <g data-scroll-number transform="translate(17.5 20.5)" {...stylex.attrs(s.number)}>
       {[0, 1, 2].map(index => <use data-scroll-digit href="#t4f-scroll-digit-0" x={index * 12} display={index === 2 ? 'none' : undefined} />)}
     </g>
+    <g>{particles.map(({x, y, size, duration, delay, rise, opacity}) => <rect data-scroll-particle x={x} y={y} width={size} height={size} style={{animationDuration: `${duration}ms`, animationDelay: `${delay}ms`, '--bubble-rise': `${rise}px`, '--bubble-opacity': String(opacity)}} {...stylex.attrs(s.particle)} />)}</g>
   </svg>
 </button>
