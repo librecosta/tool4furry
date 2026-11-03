@@ -107,7 +107,7 @@ export const navigationStyles = stylex.create({
   },
   tool: {
     display: 'grid', gridTemplateColumns: '32px minmax(0, 1fr)', gap: t.space8,
-    alignContent: 'start', minHeight: 92, padding: t.space12, borderRadius: t.radiusSm,
+    alignContent: 'start', minHeight: 44, padding: t.space8, borderRadius: t.radiusSm,
     color: { default: t.textPrimary, ':hover': t.featuredAccent, ':is([aria-current="page"])': t.featuredAccent }, textDecoration: 'none',
     backgroundColor: { default: 'transparent', ':hover': t.featuredHover, ':is([aria-current="page"])': t.featuredSelected },
   },
