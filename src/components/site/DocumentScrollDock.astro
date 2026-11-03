@@ -40,7 +40,6 @@ const particles = [
     <defs>{digits.map((rows, digit) => <g id={`t4f-scroll-digit-${digit}`}>
       {rows.flatMap((row, y) => [...row].map((pixel, x) => pixel === '1' && <rect x={x * 3} y={y * 3} width="3" height="3" />))}
     </g>)}</defs>
-    <path d="M20 6H36V8H42V12H46V18H48V38H46V44H42V48H36V50H20V48H14V44H10V38H8V18H10V12H14V8H20Z" {...stylex.attrs(s.plate)} />
     <g>{segments.map(([x, y]) => <rect data-scroll-segment x={x * 2} y={y * 2} width="4" height="4" {...stylex.attrs(s.segment)} />)}</g>
     <g data-scroll-number transform="translate(17.5 20.5)" {...stylex.attrs(s.number)}>
       {[0, 1, 2].map(index => <use data-scroll-digit href="#t4f-scroll-digit-0" x={index * 12} display={index === 2 ? 'none' : undefined} />)}

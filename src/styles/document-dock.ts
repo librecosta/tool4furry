@@ -15,12 +15,10 @@ export const documentDockStyles = stylex.create({
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
     width: 56, height: 56, padding: 0, borderWidth: 0, borderRadius: 0,
     backgroundColor: 'transparent', boxShadow: 'none', cursor: 'pointer',
-    color: t.surfaceFloating,
     outlineStyle: { default: 'none', ':focus-visible': 'solid' },
     outlineWidth: 2, outlineColor: t.focus, outlineOffset: 4,
   },
   orb: { display: 'block', width: '100%', height: '100%', overflow: 'visible', pointerEvents: 'none' },
-  plate: { fill: 'currentColor' },
   segment: { fill: { default: t.borderStrong, ':is([data-active])': t.textPrimary } },
   number: { fill: t.textPrimary },
   particle: {
