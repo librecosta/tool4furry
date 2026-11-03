@@ -80,7 +80,7 @@ export const navigationStyles = stylex.create({
   panel: {
     width: '100%', maxWidth: 1280, marginInline: 'auto', paddingBlock: t.space16,
     paddingInline: 'clamp(16px, 2vw, 36px)',
-    display: 'grid', gap: { default: t.space24, '@media (max-width: 600px)': t.space12 }, alignItems: 'stretch',
+    display: 'grid', gap: { default: t.space24, '@media (max-width: 600px)': t.space12 }, alignItems: 'start',
     gridTemplateColumns: { default: '160px minmax(0, 1fr)', '@media (max-width: 600px)': 'minmax(0, 1fr)' },
     maxHeight: 'min(520px, calc(100dvh - 112px))',
     overflowY: 'auto', overscrollBehavior: 'contain',
@@ -100,11 +100,7 @@ export const navigationStyles = stylex.create({
     backgroundColor: { default: 'transparent', ':hover': t.featuredHover, ':is([aria-pressed="true"])': t.featuredSelected },
     outlineColor: t.focus,
   },
-  groups: {
-    minWidth: 0, minHeight: 120,
-    height: { default: 360, '@media (max-width: 600px)': 'min(320px, calc(100dvh - 260px))' },
-    overflowY: 'auto', overscrollBehavior: 'contain',
-  },
+  groups: { minWidth: 0 },
   tools: {
     display: 'grid', gap: t.space8, minWidth: 0, alignContent: 'start',
     gridTemplateColumns: { default: 'repeat(3, minmax(0, 1fr))', '@media (max-width: 1000px)': 'repeat(2, minmax(0, 1fr))', '@media (max-width: 600px)': 'minmax(0, 1fr)' },
