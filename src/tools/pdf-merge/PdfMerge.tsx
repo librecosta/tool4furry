@@ -1,10 +1,10 @@
 import { useState } from 'react';
+import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import { Button } from '../../ui/Button';
 import {
   Frame,
   Picker,
-  FileRows,
   ErrorText,
   tr,
   saveBlob,
@@ -14,6 +14,8 @@ import { useJob } from '../general/use-job';
 import { boundedFiles } from '../general/bounds';
 import { readPdf, mergePdfs } from '../general/pdf';
 import notice from '../comic-page-organizer/pdf-lib.NOTICE.txt?url';
+import { PdfFileList } from './PdfFileList';
+import { mergeStyles as s } from './merge.styles';
 export default function PdfMerge({ locale }: ToolProps) {
   const [rows, setRows] = useState<FileRow[]>([]);
   const job = useJob<Blob>(locale);
@@ -50,31 +52,33 @@ export default function PdfMerge({ locale }: ToolProps) {
           });
         }}
       />
-      <FileRows rows={rows} locale={locale} onChange={change} />
+      <PdfFileList rows={rows} locale={locale} disabled={job.busy} onChange={change} />
       <ErrorText error={job.error} />
-      <Button
-        variant="primary"
-        loading={job.busy}
-        disabled={!rows.length}
-        onClick={() =>
-          void job.run((signal) =>
-            mergePdfs(
-              rows.map((r) => r.file),
-              signal,
-            ),
-          )
-        }
-      >
-        {tr(locale, '合并 PDF', 'Merge PDFs')}
-      </Button>
-      {job.result?.size ? (
-        <Button onClick={() => saveBlob(job.result!, 'merged.pdf')}>
+      <div data-pdf-actions {...stylex.props(s.actions)}>
+        <Button
+          variant="primary"
+          xstyle={[s.button, s.primary]}
+          loading={job.busy}
+          disabled={!rows.length}
+          onClick={() =>
+            void job.run((signal) =>
+              mergePdfs(
+                rows.map((r) => r.file),
+                signal,
+              ),
+            )
+          }
+        >
+          {tr(locale, '合并 PDF', 'Merge PDFs')}
+        </Button>
+        <Button xstyle={[s.button, s.secondary]} disabled={job.busy || !job.result?.size}
+          onClick={() => { if (!job.busy && job.result?.size) saveBlob(job.result, 'merged.pdf'); }}>
           {tr(locale, '下载 PDF', 'Download PDF')}
         </Button>
-      ) : null}
-      <Button onClick={() => change([])}>
-        {tr(locale, '清空 / 取消', 'Clear / cancel')}
-      </Button>
+        <Button xstyle={[s.button, s.clear]} onClick={() => change([])}>
+          {tr(locale, '清空 / 取消', 'Clear / cancel')}
+        </Button>
+      </div>
     </Frame>
   );
 }
