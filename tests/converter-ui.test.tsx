@@ -1,4 +1,4 @@
-import { draftIds } from './fixtures/general-toolbox';
+import { generalToolboxIds } from './fixtures/general-toolbox';
 import { defaultLocale } from '../src/i18n/locale';
 import type { ReactElement } from 'react';
 import { UiProvider } from '../src/ui/UiProvider';
@@ -999,9 +999,9 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
       expect(getAvailableTools(region, false)).toEqual(getAvailableTools(region, true).filter(tool => tool.status === 'published'));
       expect(getAvailableTools(region, true).map((tool) => tool.slug)).toEqual([
         'image-converter', 'image-resize-crop', 'palette-extractor',
-        'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', ...draftIds,
+        'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', ...generalToolboxIds,
       ]);
-      expect(getPublishedTools(region).map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata']);
+      expect(getPublishedTools(region).map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge']);
       const content = toolPageContents['image-converter'][defaultLocale(region)]!;
       expect(content.h1).toBeTruthy();
       expect(content.steps?.length).toBe(4);

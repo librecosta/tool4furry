@@ -40,6 +40,7 @@ const { imageConverterContent } = await staticData('src/site/image-converter-con
 const { imageResizeCropContent } = await staticData('src/site/image-resize-crop-content.ts');
 const { paletteExtractorContent } = await staticData('src/site/palette-extractor-content.ts');
 const { imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent } = await staticData('src/site/image-basics-content.ts');
+const { generalToolboxContent } = await staticData('src/site/general-toolbox-content.ts');
 const { tools } = await staticData('src/tools/registry.ts');
 const { getToolIcon } = await staticData('src/site/tool-icons.ts');
 const { roleShowcases } = await staticData('src/site/homepage-showcase.ts');
@@ -77,10 +78,10 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
-function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4) {
+function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
   const expected = contents[locale];
   assert.equal(dom.title, expected.title);
   assert.equal(dom.querySelector('meta[name="description"]')?.content, expected.description);
@@ -93,7 +94,7 @@ function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount
   assert.equal(guide.querySelectorAll(':scope > details').length, expected.features?.length ? 1 : 0,
     'Only tools with optional feature content receive a feature overview');
   for (const [key, selector] of [['steps', '#tool-steps + ol > li'], ['limitations', '#tool-limitations + ul > li']]) {
-    assert.equal(expected[key].length, instructionCount);
+    assert.equal(expected[key].length, key === 'steps' ? instructionCount : limitationCount);
     assert.deepEqual([...guide.querySelectorAll(selector)].map(node => plain(node.textContent)), expected[key].map(plain));
     assert.deepEqual([...guide.querySelectorAll(`${selector} strong`)].map(node => node.textContent),
       expected[key].flatMap(text => [...text.matchAll(/\*\*([^*]+)\*\*/g)].map(match => match[1])), 'Limited Markdown emphasis stays semantic HTML');
@@ -234,6 +235,20 @@ for (const prefix of ['', region === 'cn' ? 'en/' : 'zh/'])
     published.map(tool => `${prefix}tools/${tool.slug}/index.html`).sort(),
     'Registry controls exactly the regional published routes in both languages',
   );
+// No unavailable tool entry, local worker or private notice may be emitted.
+// Shared dependencies (pdf-lib, fflate, react-colorful) remain owned by their actual consumers.
+for (const tool of tools.filter(tool => !published.includes(tool))) {
+  const owned = await readdir(resolve('src/tools', tool.id)).catch(error => {
+    // Platform fixtures may intentionally share an implementation outside a tool directory.
+    if (error.code === 'ENOENT') return [];
+    throw error;
+  });
+  for (const source of owned.filter(name => /^[A-Z].*\.tsx$|\.worker\.ts$|NOTICE\.txt$/.test(name))) {
+    const stem = source.replace(/\.(?:tsx?|txt)$/, '');
+    assert(!files.some(file => file.split('/').at(-1).startsWith(stem + '.') || file.split('/').at(-1).startsWith(stem + '-')),
+      `Unavailable tool private resource leaked: ${tool.id}/${source}`);
+  }
+}
 const avifWasm = files.filter(file => /avif_(?:enc|dec).*\.wasm$/.test(file));
 if (['image-converter', 'image-compressor', 'comic-page-organizer', 'image-watermark'].some(id => files.includes(`tools/${id}/index.html`))) {
   assert.equal(avifWasm.length, 1, 'Exactly one ST AVIF encoder, no decoder/threaded binary');
@@ -594,7 +609,10 @@ for (const image of document.querySelectorAll('img')) {
   const communityLogo = communityLogos.includes(src) && image.closest('[data-home-community] a');
   const editorialArtwork = stories.some(story => story.querySelector('img')?.getAttribute('src') === src) && image.closest('[data-home-story]');
   const owner = image.closest('[data-home-tool], [data-home-role-tool]');
-  const id = owner?.dataset.homeTool ?? owner?.dataset.homeRoleTool;
+  const navigationTool = image.closest('[data-tool-group] a');
+  const navigationId = tools.find(tool => tool.status === 'published' && tool.regions.includes(region)
+    && navigationTool?.getAttribute('href') === localPath(`/tools/${tool.slug}/`))?.id;
+  const id = owner?.dataset.homeTool ?? owner?.dataset.homeRoleTool ?? navigationId;
   const toolIcon = id && image.dataset.toolIcon === id && getToolIcon(id);
   if (toolIcon) await assertImportedAsset(src, toolIcon[Number(image.getAttribute('width')) <= 32 ? 32 : 128]);
   assert(
@@ -913,6 +931,7 @@ for (const page of htmlFiles) {
   }
   }
   if (toolPages.includes(page)) {
+    if (page === 'tools/pdf-merge/index.html') assertToolContent(dom, locale, generalToolboxContent['pdf-merge'], 3, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1286,6 +1305,18 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
     toolPages.length > 0 || !js.includes('data-workbench'),
     `Unused workbench leaked without published tools: ${file}`,
   );
+}
+if (files.includes('tools/pdf-merge/index.html')) {
+  const scripts = await Promise.all(files.filter(file => file.endsWith('.js')).map(file => readFile(resolve(root, file), 'utf8')));
+  assert(scripts.some(js => js.includes('data-pdf-file-list') && js.includes('data-pdf-actions')),
+    'Published PDF Merge contains its real sortable file list and actions');
+  for (const source of ['src/tools/comic-page-organizer/pdf-lib.NOTICE.txt', 'src/tools/pdf-merge/dnd-kit.NOTICE.txt']) {
+    const notice = await readFile(source);
+    const emitted = files.filter(file => file.includes(source.split('/').at(-1).replace('.txt', '')));
+    const delivered = scripts.some(js => js.includes(notice.toString('base64'))) ||
+      (await Promise.all(emitted.map(file => readFile(resolve(root, file))))).some(bytes => bytes.equals(notice));
+    assert(delivered, `Published PDF Merge distributes the complete license: ${source}`);
+  }
 }
 if (files.includes('tools/image-compressor/index.html')) {
   const scripts = await Promise.all(files.filter(file => file.endsWith('.js')).map(file => readFile(resolve(root, file), 'utf8')));

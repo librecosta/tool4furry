@@ -1,6 +1,6 @@
 # 当前架构
 
-Tool4Furry 是单项目的浏览器工具站：Astro SSG + 必要的 React Islands + TypeScript + StyleX。Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark 与 EXIF Metadata 是当前七款 Published 工具，均登记 CN/Global，两个地区均未部署。漫画整理的实际验收缺口见 [当前模块说明](../docs/image-basics.md#b2-d1--seo-与-beta-审计进展)。来源优先级见 [AGENTS](../AGENTS.md#sources-of-truth)。
+Tool4Furry 是单项目的浏览器工具站：Astro SSG + 必要的 React Islands + TypeScript + StyleX。Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata 与 PDF Merge 是当前八款 Published 工具，均登记 CN/Global，两个地区均未部署。漫画整理的实际验收缺口见 [当前模块说明](../docs/image-basics.md#b2-d1--seo-与-beta-审计进展)。来源优先级见 [AGENTS](../AGENTS.md#sources-of-truth)。
 
 ## 静态站点层
 

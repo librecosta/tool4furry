@@ -24,4 +24,5 @@ export const secondBatchIds = [
   'regex-tester',
   'uuid-generator',
 ];
-export const draftIds = [...firstBatchIds, ...secondBatchIds];
+export const generalToolboxIds = [...firstBatchIds, ...secondBatchIds];
+export const draftIds = generalToolboxIds.filter(id => id !== 'pdf-merge');

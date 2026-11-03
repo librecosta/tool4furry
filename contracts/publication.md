@@ -9,7 +9,7 @@
 | 正式构建 | 生成可独立托管的静态页面与所需资源，不执行上传或上线 |
 | 实际部署 | 将产物发布到托管环境的独立操作，需要明确授权 |
 
-当前 Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark 与 EXIF Metadata 七款工具均为 Published，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
+当前 Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata 与 PDF Merge 八款工具均为 Published，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
 
 Image Resize & Crop (`image-resize-crop`) 已通过 A1-D2 L2 审计，并依据维护者本任务授权提升源码资格。两地区正式构建包含其双语页面、按需实现、局部裁剪 CSS 和完整 ISC 许可声明；其他 Draft、Lab 和 Fixture 继续隔离。审计证据与 L3 边界见 [模块说明](../docs/image-resize-crop-implementation.md#a1-d2-beta-资格审计2026-10-31)。
 
@@ -22,6 +22,8 @@ EXIF Metadata (`exif-metadata`) 依据 B4-D1 授权通过 L2 审计后提升源�
 Image Watermark (`image-watermark`) 依据 B3-D1 授权通过 L2 审计并提升源码资格；双语静态 SEO、批量文字/Logo、旋转平铺、严格安全 SVG、按需 AVIF 与完整 react-colorful MIT 通知进入两地区正式构建。复用既有首页身份配置，不新增精选或发布名单。实际证据与 L3 边界见 [基础图片工具说明](../docs/image-basics.md#image-watermark--b3-d1-beta-资格2026-11-02)。
 
 Comic Page Organizer (`comic-page-organizer`) 的 B2-D1 双语 SEO 已更新。2026-11-02 维护者明确要求提升其 CN/Global 源码 Published 资格，本次按要求修改 Registry，不代表 L2 证据补齐。原格式 ZIP/CBZ 已实际下载复检；转换归档真实落盘仍受浏览器安全检查阻断，相关输出验证未覆盖，不可宣称 L2 全部通过。记录见 [基础图片工具说明](../docs/image-basics.md#b2-d1--seo-与-beta-审计进展)。
+
+PDF Merge (`pdf-merge`) 依据 V0.8-B1-D1 授权进入 CN/Global Published；双语静态 SEO、现有 dnd-kit 排序、顺序合并与下载进入正式构建，分发 pdf-lib / dnd-kit 完整 MIT 通知。29 款工具中其余 21 款通用工具仍为 Draft，不改变首批 15 款/次批 7 款的历史集合。真实下载内容复检、构建、CI 与 L3 范围见 [通用工具说明](../docs/general-toolbox-v0.8.md#pdf-merge--v08-b1-d1-beta资格2026-11-04)。
 
 ## 唯一可用性来源
 
