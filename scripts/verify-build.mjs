@@ -130,6 +130,13 @@ function assertDocumentScroll(dom, enabled = !dom.querySelector('[data-workbench
   assert.equal(scripts[0].textContent.trim(), documentScrollSource.trim());
   assert.equal(docks.length, 1);
   assert(docks[0].hidden && docks[0].hasAttribute('inert') && docks[0].getAttribute('aria-hidden') === 'true');
+  const orb = docks[0].querySelector('svg');
+  assert.equal(orb?.getAttribute('viewBox'), '0 0 56 56');
+  assert.equal(orb.getAttribute('shape-rendering'), 'crispEdges');
+  assert.equal(orb.querySelectorAll('[data-scroll-segment]').length, 24, 'Discrete pixel progress segments');
+  assert.equal(orb.querySelectorAll('defs > g').length, 10, 'Ten locally drawn pixel numeral glyphs');
+  assert.equal(orb.querySelectorAll('[data-scroll-digit]').length, 3, 'Pixel slots accommodate 00–100');
+  assert(!orb.querySelector('text, image, circle, [rx], [stroke-dasharray]'), 'No font, image, smooth ring or rounded-card fallback');
 }
 function assertNavigationScript(dom) {
   const scripts = dom.querySelectorAll('script#t4f-navigation');

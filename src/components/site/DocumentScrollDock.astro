@@ -1,17 +1,40 @@
 ---
 import { type Locale } from '../../i18n/locale';
 import * as stylex from '@stylexjs/stylex';
-import { ArrowUpIcon } from '@phosphor-icons/react/ssr';
 import { documentDockStyles as s } from '../../styles/document-dock';
 import type { Region } from '../../config/region';
 interface Props { region: Region; locale: Locale }
 const { locale } = Astro.props;
-const label = locale === 'zh' ? '向上滚动，当前进度' : 'Scroll up, current progress';
+const label = locale === 'zh' ? '返回顶部，当前滚动进度' : 'Back to top, current scroll progress';
+// Clockwise from twelve o'clock, on a 28 × 28 grid (2 physical px per unit).
+const segments = [
+  [13, 0], [16, 1], [19, 2], [22, 4], [24, 7], [25, 10],
+  [26, 13], [25, 16], [24, 19], [22, 22], [19, 24], [16, 25],
+  [13, 26], [10, 25], [7, 24], [4, 22], [2, 19], [1, 16],
+  [0, 13], [1, 10], [2, 7], [4, 4], [7, 2], [10, 1],
+];
+const digits = [
+  ['111', '101', '101', '101', '111'],
+  ['010', '110', '010', '010', '111'],
+  ['111', '001', '111', '100', '111'],
+  ['111', '001', '111', '001', '111'],
+  ['101', '101', '111', '001', '001'],
+  ['111', '100', '111', '001', '111'],
+  ['111', '100', '111', '101', '111'],
+  ['111', '001', '010', '010', '010'],
+  ['111', '101', '111', '101', '111'],
+  ['111', '101', '111', '001', '111'],
+];
 ---
 <button type="button" data-document-dock data-label={label} hidden inert aria-hidden="true" aria-label={label} {...stylex.attrs(s.root)}>
-  <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" {...stylex.attrs(s.ring)}>
-    <rect x="1.75" y="1.75" width="44.5" height="44.5" rx="8.25" {...stylex.attrs(s.track)} />
-    <rect data-scroll-progress x="1.75" y="1.75" width="44.5" height="44.5" rx="8.25" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" {...stylex.attrs(s.progress)} />
+  <svg viewBox="0 0 56 56" width="56" height="56" aria-hidden="true" focusable="false" shape-rendering="crispEdges" {...stylex.attrs(s.orb)}>
+    <defs>{digits.map((rows, digit) => <g id={`t4f-scroll-digit-${digit}`}>
+      {rows.flatMap((row, y) => [...row].map((pixel, x) => pixel === '1' && <rect x={x * 3} y={y * 3} width="3" height="3" />))}
+    </g>)}</defs>
+    <path d="M20 6H36V8H42V12H46V18H48V38H46V44H42V48H36V50H20V48H14V44H10V38H8V18H10V12H14V8H20Z" {...stylex.attrs(s.plate)} />
+    <g>{segments.map(([x, y]) => <rect data-scroll-segment x={x * 2} y={y * 2} width="4" height="4" {...stylex.attrs(s.segment)} />)}</g>
+    <g data-scroll-number transform="translate(17.5 20.5)" {...stylex.attrs(s.number)}>
+      {[0, 1, 2].map(index => <use data-scroll-digit href="#t4f-scroll-digit-0" x={index * 12} display={index === 2 ? 'none' : undefined} />)}
+    </g>
   </svg>
-  <ArrowUpIcon size={20} aria-hidden className={stylex.attrs(s.icon).class} />
 </button>

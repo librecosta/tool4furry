@@ -4,7 +4,9 @@
 function mountDocumentDock() {
   const button = document.querySelector('[data-document-dock]');
   if (!button) return;
-  const ring = button.querySelector('[data-scroll-progress]');
+  const segments = [...button.querySelectorAll('[data-scroll-segment]')];
+  const number = button.querySelector('[data-scroll-number]');
+  const digits = [...button.querySelectorAll('[data-scroll-digit]')];
   const footer = document.querySelector('[data-site-footer]');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   let frame = 0, percent = -1;
@@ -17,7 +19,14 @@ function mountDocumentDock() {
     const metrics = measure();
     if (percent !== metrics.percent) {
       percent = metrics.percent;
-      ring.style.strokeDashoffset = String(100 - percent);
+      const active = Math.round(percent * segments.length / 100);
+      segments.forEach((segment, index) => segment.toggleAttribute('data-active', index < active));
+      const value = String(percent).padStart(2, '0');
+      number.setAttribute('transform', `translate(${(56 - (value.length * 12 - 3)) / 2} 20.5)`);
+      digits.forEach((digit, index) => {
+        digit.setAttribute('display', index < value.length ? 'inline' : 'none');
+        if (index < value.length) digit.setAttribute('href', `#t4f-scroll-digit-${value[index]}`);
+      });
       const label = `${button.dataset.label} ${percent}%`;
       button.setAttribute('aria-label', label);
       button.title = label;
@@ -40,7 +49,7 @@ function mountDocumentDock() {
     button.setAttribute('aria-hidden', String(!visible));
   };
   const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
-  const up = () => window.scrollTo({ top: measure().stepTarget, behavior: reduced.matches ? 'instant' : 'smooth' });
+  const up = () => window.scrollTo({ top: 0, behavior: reduced.matches ? 'instant' : 'smooth' });
   const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(schedule) : undefined;
   observer?.observe(document.documentElement);
   observer?.observe(document.body);
