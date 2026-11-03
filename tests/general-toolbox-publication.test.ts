@@ -4,14 +4,14 @@ import { toolPageContents, getToolPageContent } from '../src/site/tool-content';
 import { toolLoaders } from '../src/tools/loaders';
 import { groups } from '../src/site/taxonomy';
 import { draftIds } from './fixtures/general-toolbox';
-it('registers 15 real bilingual regional Drafts while preserving seven Published tools', () => {
-  expect(tools).toHaveLength(22);
+it('registers 22 real bilingual regional Drafts while preserving seven Published tools', () => {
+  expect(tools).toHaveLength(29);
   expect(tools.filter((t) => t.status === 'draft').map((t) => t.id)).toEqual(
     draftIds,
   );
   for (const region of ['cn', 'global'] as const) {
     expect(getAvailableTools(region, false)).toHaveLength(7);
-    expect(getAvailableTools(region, true)).toHaveLength(22);
+    expect(getAvailableTools(region, true)).toHaveLength(29);
     for (const id of draftIds) {
       const tool = tools.find((t) => t.id === id)!;
       expect(tool.regions).toEqual(['cn', 'global']);

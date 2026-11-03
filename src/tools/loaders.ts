@@ -48,6 +48,20 @@ export const toolLoaders: Readonly<Partial<Record<string, ToolLoader>>> = {
   'audio-trimmer': import.meta.env.DEV || import.meta.env.T4F_TOOL_AUDIO_TRIMMER_AVAILABLE
     ? () => import('./audio-trimmer/AudioTrimmer') : undefined,
   // Publication follows metadata; no additional release switch to remove.
+  'markdown-editor': import.meta.env.DEV || import.meta.env.T4F_TOOL_MARKDOWN_EDITOR_AVAILABLE
+    ? () => import('./markdown-editor/MarkdownEditor') : undefined,
+  'video-frame-extractor': import.meta.env.DEV || import.meta.env.T4F_TOOL_VIDEO_FRAME_EXTRACTOR_AVAILABLE
+    ? () => import('./video-frame-extractor/VideoFrameExtractor') : undefined,
+  'csv-json-converter': import.meta.env.DEV || import.meta.env.T4F_TOOL_CSV_JSON_CONVERTER_AVAILABLE
+    ? () => import('./csv-json-converter/CsvJsonConverter') : undefined,
+  'code-image-generator': import.meta.env.DEV || import.meta.env.T4F_TOOL_CODE_IMAGE_GENERATOR_AVAILABLE
+    ? () => import('./code-image-generator/CodeImageGenerator') : undefined,
+  'svg-to-png': import.meta.env.DEV || import.meta.env.T4F_TOOL_SVG_TO_PNG_AVAILABLE
+    ? () => import('./svg-to-png/SvgToPng') : undefined,
+  'regex-tester': import.meta.env.DEV || import.meta.env.T4F_TOOL_REGEX_TESTER_AVAILABLE
+    ? () => import('./regex-tester/RegexTester') : undefined,
+  'uuid-generator': import.meta.env.DEV || import.meta.env.T4F_TOOL_UUID_GENERATOR_AVAILABLE
+    ? () => import('./uuid-generator/UuidGenerator') : undefined,
   'image-converter': import.meta.env.DEV || import.meta.env.T4F_TOOL_IMAGE_CONVERTER_AVAILABLE
     ? () => import('./image-converter/ImageConverter')
     : undefined,

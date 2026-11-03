@@ -1,4 +1,4 @@
-export const draftIds = [
+export const firstBatchIds = [
   'pdf-merge',
   'pdf-split',
   'images-to-pdf',
@@ -15,3 +15,13 @@ export const draftIds = [
   'color-contrast',
   'audio-trimmer',
 ];
+export const secondBatchIds = [
+  'markdown-editor',
+  'video-frame-extractor',
+  'csv-json-converter',
+  'code-image-generator',
+  'svg-to-png',
+  'regex-tester',
+  'uuid-generator',
+];
+export const draftIds = [...firstBatchIds, ...secondBatchIds];

@@ -1,4 +1,11 @@
 import { definition as pdfMergeDefinition } from './pdf-merge/definition';
+import { definition as markdownEditorDefinition } from './markdown-editor/definition';
+import { definition as videoFrameExtractorDefinition } from './video-frame-extractor/definition';
+import { definition as csvJsonConverterDefinition } from './csv-json-converter/definition';
+import { definition as codeImageGeneratorDefinition } from './code-image-generator/definition';
+import { definition as svgToPngDefinition } from './svg-to-png/definition';
+import { definition as regexTesterDefinition } from './regex-tester/definition';
+import { definition as uuidGeneratorDefinition } from './uuid-generator/definition';
 import { definition as pdfSplitDefinition } from './pdf-split/definition';
 import { definition as imagesToPdfDefinition } from './images-to-pdf/definition';
 import { definition as zipManagerDefinition } from './zip-manager/definition';
@@ -25,7 +32,8 @@ import { exifMetadataDefinition } from './exif-metadata/definition';
 // Metadata only. Lab demos are intentionally not registered as tools.
 export const tools: readonly ToolDefinition[] = [imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition,
   imageCompressorDefinition, comicPageOrganizerDefinition, imageWatermarkDefinition, exifMetadataDefinition,
-  pdfMergeDefinition, pdfSplitDefinition, imagesToPdfDefinition, zipManagerDefinition, batchFileRenamerDefinition, fileHashDefinition, textCleanerDefinition, textDiffDefinition, subtitleToolsDefinition, jsonFormatterDefinition, urlBase64Definition, timestampConverterDefinition, qrCodeGeneratorDefinition, colorContrastDefinition, audioTrimmerDefinition];
+  pdfMergeDefinition, pdfSplitDefinition, imagesToPdfDefinition, zipManagerDefinition, batchFileRenamerDefinition, fileHashDefinition, textCleanerDefinition, textDiffDefinition, subtitleToolsDefinition, jsonFormatterDefinition, urlBase64Definition, timestampConverterDefinition, qrCodeGeneratorDefinition, colorContrastDefinition, audioTrimmerDefinition,
+  markdownEditorDefinition, videoFrameExtractorDefinition, csvJsonConverterDefinition, codeImageGeneratorDefinition, svgToPngDefinition, regexTesterDefinition, uuidGeneratorDefinition];
 export function getPublishedTools(region: Region, registry = tools) {
   return getAvailableTools(region, false, registry);
 }

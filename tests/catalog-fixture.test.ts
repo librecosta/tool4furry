@@ -20,7 +20,7 @@ describe('catalog-only DEV samples', () => {
     const snapshot = structuredClone({ real, sections, tools });
     const result = addCatalogFixture(real, sections, locale, 'compact');
     expect(result.fixtureCount).toBe(48); expect(result.entries).toHaveLength(real.length + 48);
-    expect(catalogPage(result.entries.map(entry => ({ ...entry, search: entry.title })), emptyCatalogState()).totalPages).toBe(6);
+    expect(catalogPage(result.entries.map(entry => ({ ...entry, search: entry.title })), emptyCatalogState()).totalPages).toBe(7);
     const samples = result.entries.filter(entry => entry.fixture);
     expect(new Set(samples.map(entry => entry.id)).size).toBe(48);
     expect(samples.every(entry => !entry.href && entry.title.includes(locale === 'zh' ? '目录样本' : 'Catalog sample'))).toBe(true);
@@ -39,7 +39,7 @@ describe('catalog-only DEV samples', () => {
     expect(extended.fixtureCount).toBe(180);
     const entries = extended.entries.map(entry => ({ ...entry, search: entry.title }));
     for (const [scope, total, totalPages] of [
-      [{}, real.length + 180, 17], [{ category: 'images' }, 7 + 132, 12], [{ group: 'image-processing' }, 7 + 108, 10],
+      [{}, real.length + 180, 18], [{ category: 'images' }, 7 + 132, 12], [{ group: 'image-processing' }, 7 + 108, 10],
     ] as const) {
       const page = catalogPage(entries, { ...emptyCatalogState(), ...scope });
       expect(page.total).toBe(total); expect(page.totalPages).toBe(totalPages);

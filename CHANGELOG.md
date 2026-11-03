@@ -8,6 +8,8 @@
 
 ### Added
 
+- V0.8-A / A2 共新增 22 款双语通用 Draft：首批 PDF、文件、文本、编码、颜色、二维码和音频工具，以及第二批 Markdown、视频取帧、CSV/JSON、代码分享图、SVG 转 PNG、Regex 和 UUIDv4。复用既有工作区与发布门，安全预览、任务失效和输出预算由工具局部管理；原有七款 Published 不变，无专属图标或部署。能力和验收见 [通用工具说明](docs/general-toolbox-v0.8.md)。
+
 - V0.7-B 新增四款双语 Draft：Image Compressor 的有界目标大小压缩/比较/ZIP；Comic Page Organizer 的排序、封面、逐页预览与原字节 ZIP/CBZ；Image Watermark 的文字/图片批量水印与 PNG/JPEG/WebP；EXIF Metadata 的可靠字段读取、隐私标记和无损清理。复用现有资源/串行/输出验证与发布门，集中集成，不提升 Published 或部署。
 
 - V0.7-A2-B 新增 Palette Extractor 完整双语 Draft：有界 OKLCH 候选提色与六种倾向、手动色卡编辑/图片取色、复制及基础 PNG、三套固定分享模板与可用设备的系统文件分享；图片仅在浏览器本地处理，专属依赖、样式和 MIT 通知隔离于生产产物。未提升 Published 或部署。

@@ -1,0 +1,50 @@
+.t4f-markdown-preview {
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.t4f-markdown-preview > :first-child {
+  margin-top: 0;
+}
+.t4f-markdown-preview :is(h1, h2, h3, h4, h5, h6) {
+  margin-block: 1em 0.5em;
+  line-height: 1.3;
+}
+.t4f-markdown-preview h1 {
+  font-size: 1.8em;
+}
+.t4f-markdown-preview h2 {
+  font-size: 1.5em;
+}
+.t4f-markdown-preview h3 {
+  font-size: 1.2em;
+}
+.t4f-markdown-preview :is(p, ul, ol, pre, blockquote, table) {
+  margin-block: 0.75em;
+}
+.t4f-markdown-preview :is(ul, ol) {
+  padding-inline-start: 1.5em;
+}
+.t4f-markdown-preview pre {
+  overflow: auto;
+  padding: 0.75em;
+  background: #80808015;
+  border-radius: 8px;
+}
+.t4f-markdown-preview code {
+  font-family: ui-monospace, monospace;
+}
+.t4f-markdown-preview table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.t4f-markdown-preview :is(th, td) {
+  text-align: start;
+  padding: 0.4em 0.6em;
+  border-bottom: 1px solid #80808040;
+}
+.t4f-markdown-preview a {
+  text-decoration: underline;
+}
+.t4f-markdown-preview input {
+  pointer-events: none;
+}
