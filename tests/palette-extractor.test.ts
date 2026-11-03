@@ -250,6 +250,7 @@ it('registers the third bilingual Published tool in both regions', () => {
       'comic-page-organizer',
       'image-watermark',
       'exif-metadata',
+      'pdf-merge',
     ]);
     expect(getAvailableTools(region, true)).toContain(tool);
     for (const locale of ['zh', 'en'] as const) {

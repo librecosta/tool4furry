@@ -237,6 +237,10 @@ for (const prefix of ['', region === 'cn' ? 'en/' : 'zh/'])
   );
 // No unavailable tool entry, local worker or private notice may be emitted.
 // Shared dependencies (pdf-lib, fflate, react-colorful) remain owned by their actual consumers.
+const sharedNoticeConsumers = {
+  'pdf-lib.NOTICE.txt': ['comic-page-organizer', 'pdf-merge', 'pdf-split', 'images-to-pdf'],
+  'react-colorful.NOTICE.txt': ['palette-extractor', 'image-watermark', 'color-contrast'],
+};
 for (const tool of tools.filter(tool => !published.includes(tool))) {
   const owned = await readdir(resolve('src/tools', tool.id)).catch(error => {
     // Platform fixtures may intentionally share an implementation outside a tool directory.
@@ -244,6 +248,7 @@ for (const tool of tools.filter(tool => !published.includes(tool))) {
     throw error;
   });
   for (const source of owned.filter(name => /^[A-Z].*\.tsx$|\.worker\.ts$|NOTICE\.txt$/.test(name))) {
+    if (sharedNoticeConsumers[source]?.some(id => published.some(tool => tool.id === id))) continue;
     const stem = source.replace(/\.(?:tsx?|txt)$/, '');
     assert(!files.some(file => file.split('/').at(-1).startsWith(stem + '.') || file.split('/').at(-1).startsWith(stem + '-')),
       `Unavailable tool private resource leaked: ${tool.id}/${source}`);
