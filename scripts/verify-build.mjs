@@ -1265,7 +1265,7 @@ for (const page of htmlFiles) {
   assert(faces.length > 0, 'Missing bundled font faces');
   for (const face of faces) {
     if (/src:\s*local\(/.test(face)) {
-      assert(/font-family:\s*["']?T4F (?:DM Sans|Noto SC) Fallback/.test(face) &&
+      assert(/font-family:\s*["']?T4F (?:DM Sans|DM Mixed|Noto SC) Fallback/.test(face) &&
         /size-adjust:/.test(face) && /ascent-override:/.test(face) && /descent-override:/.test(face) &&
         /line-gap-override:\s*0%/.test(face) && /unicode-range:/i.test(face) && !/url\(/.test(face),
         'Metric fallbacks must stay local, bounded to their scripts and download-free');

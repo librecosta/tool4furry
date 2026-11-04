@@ -1,26 +1,41 @@
 // Local-only fallbacks: no new download and no change to the final web fonts.
 // DM Sans metrics (1000px): ascent 992, descent 310, line gap 0.
-// Size adjustments use measured Latin UI text widths against installed Segoe UI.
+// Real bilingual DOM samples supplement the original Latin measurements.
+// Chinese mixed text needs a different 400 face; applying that fit to English
+// causes a new wrap. Both aliases retain the verified brand match at 700.
 // Each override divides the target metric by size-adjust. See the font audit in
 // docs/styling-foundation-v0.9.md for the corpus, platform and remaining limits.
 @layer base {
-  @each $weight, $face, $size, $ascent, $descent in (
-    (400, 'Segoe UI', 104.49%, 94.94%, 29.67%),
-    (500, 'Segoe UI Semibold', 103.21%, 96.11%, 30.04%),
-    (600, 'Segoe UI Semibold', 105.40%, 94.12%, 29.41%),
-    (700, 'Segoe UI Bold', 103.34%, 95.99%, 30.00%)
-  ) {
-    @font-face {
-      font-family: 'T4F DM Sans Fallback';
-      src: local($face);
-      font-style: normal;
-      font-weight: $weight;
-      size-adjust: $size;
-      ascent-override: $ascent;
-      descent-override: $descent;
-      line-gap-override: 0%;
-      unicode-range: U+0000-024F, U+02B0-02FF, U+1E00-1EFF, U+2000-206F,
-        U+20A0-20CF, U+2113, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  @each $family in ('T4F DM Sans Fallback', 'T4F DM Mixed Fallback') {
+    @each $weight, $face, $size, $ascent, $descent in (
+      (400, 'Segoe UI', 104.49%, 94.94%, 29.67%),
+      (500, 'Segoe UI Semibold', 103.21%, 96.11%, 30.04%),
+      (600, 'Segoe UI Semibold', 105.40%, 94.12%, 29.41%),
+      (650, 'Segoe UI Semibold', 106.41%, 93.22%, 29.13%),
+      (700, 'Segoe UI Bold', 103.34%, 95.99%, 30.00%)
+    ) {
+      $mixed-body: $family == 'T4F DM Mixed Fallback' and $weight == 400;
+      @if $mixed-body {
+        $face: 'Calibri';
+        $size: 115%;
+        $ascent: 86.26%;
+        $descent: 26.96%;
+      }
+      @font-face {
+        font-family: $family;
+        src: local($face);
+        font-style: normal;
+        font-weight: $weight;
+        size-adjust: $size;
+        ascent-override: $ascent;
+        descent-override: $descent;
+        line-gap-override: 0%;
+        @if $mixed-body {
+          font-feature-settings: 'pnum';
+        }
+        unicode-range: U+0000-024F, U+02B0-02FF, U+1E00-1EFF, U+2000-206F,
+          U+20A0-20CF, U+2113, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
     }
   }
 

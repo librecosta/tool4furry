@@ -23,12 +23,16 @@
 }
 @layer base {
   :root {
+    --t4f-font-latin-fallback: 'T4F DM Sans Fallback';
     --t4f-font-sans:
-      'DM Sans Variable', 'T4F DM Sans Fallback', 'Noto Sans SC Variable',
+      'DM Sans Variable', var(--t4f-font-latin-fallback), 'Noto Sans SC Variable',
       'T4F Noto SC Fallback', system-ui, -apple-system,
       BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --t4f-font-mono:
       'Cascadia Mono', 'SFMono-Regular', Consolas, ui-monospace, monospace;
+  }
+  html:lang(zh) {
+    --t4f-font-latin-fallback: 'T4F DM Mixed Fallback', 'T4F DM Sans Fallback';
   }
   body {
     font-family: var(--t4f-font-sans);

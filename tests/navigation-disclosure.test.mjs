@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
+import { compile } from 'sass-embedded';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const source = readFileSync('src/styles/navigation-disclosure.js', 'utf8');
@@ -21,12 +22,48 @@ function page(fine = true, scripted = true, reduced = false) {
   const positioner = details.querySelector('[data-tool-positioner]');
   const outside = window.document.querySelector('button');
   const pointer = (target, type, relatedTarget = null, pointerType = 'mouse') => target.dispatchEvent(Object.assign(new window.Event(type, { bubbles: true }), { relatedTarget, pointerType }));
-  const endExit = () => positioner.dispatchEvent(Object.assign(new window.Event('transitionend', { bubbles: true }), { propertyName: 'clip-path' }));
+  const endExit = () => panel.dispatchEvent(Object.assign(new window.Event('transitionend', { bubbles: true }), { propertyName: 'mask-size' }));
   return { window, details, summary, link, panel, positioner, outside, pointer, motion, endExit };
 }
 afterEach(() => { dom?.window.close(); vi.useRealTimers(); });
 
 describe('shared native toolbox enhancement', () => {
+  it('keeps the full positioner hit box independent of the 420ms visual clip', () => {
+    const css = compile('src/components/site/ToolboxDisclosure.module.scss').css;
+    const positioner = css.match(/\.positioner\s*\{([^}]+)\}/)[1];
+    const panel = css.match(/\.panel\s*\{([^}]+)\}/)[1];
+    expect(positioner).toContain('pointer-events: auto');
+    expect(positioner).not.toMatch(/clip-path:|opacity:|transition/);
+    expect(css).toMatch(/\.positioner:where\([^}]+pointer-events: none/s);
+    expect(panel).not.toContain('clip-path:');
+    expect(panel).toContain('mask-size: 100% calc(100% - var(--toolbox-hidden))');
+    expect(panel).toContain('mask-size 420ms');
+    expect(css).toContain('transition-duration: 0ms');
+  });
+
+  it('cancels a pending leave when the pointer returns to the stable outer area', () => {
+    vi.useFakeTimers();
+    const { details, summary, positioner, outside, pointer } = page();
+    pointer(summary, 'pointerover'); vi.advanceTimersByTime(120);
+    pointer(summary, 'pointerout', outside); vi.advanceTimersByTime(150);
+    pointer(positioner, 'pointerover', outside); vi.advanceTimersByTime(200);
+    expect(details.open).toBe(true);
+    expect(details.dataset.toolMotion).not.toBe('closing');
+  });
+
+  it('finishes the exit from the visual panel event, not the outer box or its children', () => {
+    vi.useFakeTimers();
+    const { window, details, summary, positioner, panel, endExit } = page();
+    summary.click(); summary.click();
+    positioner.dispatchEvent(Object.assign(new window.Event('transitionend', { bubbles: true }), { propertyName: 'mask-size' }));
+    panel.dispatchEvent(Object.assign(new window.Event('transitionend', { bubbles: true }), { propertyName: 'opacity' }));
+    expect(details.open).toBe(true);
+    vi.advanceTimersByTime(420); endExit();
+    expect(details.open).toBe(false);
+    vi.advanceTimersByTime(0); // Native details queues its own toggle event.
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
   it('switches identity panels without navigation or closing, including nested icon clicks and keyboard activation', () => {
     const { window, details, summary, panel } = page();
     panel.insertAdjacentHTML('afterbegin', `<div role="group"><button type="button" data-tool-filter="featured" aria-pressed="true">All picks</button><button type="button" data-tool-filter="composer" aria-pressed="false"><svg><path /></svg>Audio Engineers</button><button type="button" data-tool-filter="missing">Unknown</button></div>
@@ -130,11 +167,24 @@ describe('shared native toolbox enhancement', () => {
     expect(outside.ownerDocument.activeElement).toBe(outside);
   });
 
+  it('allows leaving a pointer-focused item while retaining keyboard focus semantics', () => {
+    vi.useFakeTimers();
+    const { window, details, summary, link, pointer, endExit } = page();
+    summary.click(); pointer(link, 'pointerdown'); link.focus();
+    pointer(link, 'pointerout'); vi.advanceTimersByTime(180);
+    expect(details.dataset.toolMotion).toBe('closing'); endExit();
+    summary.click(); pointer(link, 'pointerdown'); link.focus();
+    link.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
+    pointer(link, 'pointerout'); vi.advanceTimersByTime(180);
+    expect(details.open).toBe(true);
+    expect(details.dataset.toolMotion).not.toBe('closing');
+  });
+
   it('enhances React disclosures mounted after the initial document script', () => {
     const { window } = page();
     const added = window.document.createElement('details');
     added.dataset.toolDisclosure = '';
-    added.innerHTML = '<summary>New toolbox</summary><div data-tool-positioner><a href="/tools/">All</a></div>';
+    added.innerHTML = '<summary>New toolbox</summary><div data-tool-positioner><div data-tool-panel><a href="/tools/">All</a></div></div>';
     window.document.body.append(added);
     added.querySelector('summary').click();
     expect(added.open).toBe(true);
@@ -146,7 +196,7 @@ describe('shared native toolbox enhancement', () => {
     summary.click(); summary.click();
     expect(positioner.hasAttribute('inert')).toBe(true);
     expect(positioner.getAttribute('aria-hidden')).toBe('true');
-    link.dispatchEvent(Object.assign(new window.Event('transitionend', { bubbles: true }), { propertyName: 'clip-path' }));
+    link.dispatchEvent(Object.assign(new window.Event('transitionend', { bubbles: true }), { propertyName: 'mask-size' }));
     vi.advanceTimersByTime(420);
     expect(details.open).toBe(true);
     vi.advanceTimersByTime(60);

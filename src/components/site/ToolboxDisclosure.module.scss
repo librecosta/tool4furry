@@ -120,29 +120,28 @@
   left: 0;
   right: 0;
   z-index: var(--t4f-layer-floating);
-  background-color: var(--t4f-featured-background);
-  clip-path: inset(0 0 var(--toolbox-hidden) 0);
-  opacity: var(--toolbox-opacity);
   pointer-events: auto;
-  transition-property: clip-path, opacity;
-  transition-duration: 420ms;
-  transition-timing-function: cubic-bezier(0.2, 0, 0.2, 1);
 
   &:where(:is([inert])) {
     pointer-events: none;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition-duration: 0ms;
   }
 }
 
 .panel {
   width: 100%;
-  max-width: 1280px;
   margin-inline: auto;
   padding-block: var(--t4f-space-16);
-  padding-inline: clamp(16px, 2vw, 36px);
+  // Keep the previous centered 1280px content while the visual surface spans
+  // the full hit box. The unclipped positioner catches early pointer entry.
+  padding-inline: max(clamp(16px, 2vw, 36px), calc((100% - 1280px) / 2 + clamp(16px, 2vw, 36px)));
+  background-color: var(--t4f-featured-background);
+  // A mask changes painting only. Chromium can keep animated clip-path child
+  // hit regions clipped until the transition ends, even in the revealed area.
+  mask-image: linear-gradient(#000 0 0);
+  mask-repeat: no-repeat;
+  mask-size: 100% calc(100% - var(--toolbox-hidden));
+  opacity: var(--toolbox-opacity);
+  transition: mask-size 420ms cubic-bezier(0.2, 0, 0.2, 1), opacity 420ms cubic-bezier(0.2, 0, 0.2, 1);
   display: grid;
   gap: var(--t4f-space-24);
   align-items: start;
@@ -154,6 +153,10 @@
   @media (max-width: 600px) {
     gap: var(--t4f-space-12);
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition-duration: 0ms;
   }
 }
 

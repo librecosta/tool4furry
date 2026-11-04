@@ -5,7 +5,7 @@
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const states = new WeakMap();
   const state = (el) => {
-    if (!states.has(el)) states.set(el, { timer: 0, exit: 0, cleanup: null, suppressed: false });
+    if (!states.has(el)) states.set(el, { timer: 0, exit: 0, cleanup: null, suppressed: false, inside: false, pointerFocus: false });
     return states.get(el);
   };
   const cancel = (el) => clearTimeout(state(el).timer);
@@ -34,9 +34,9 @@
     interactive(el, false);
     el.dataset.toolMotion = 'closing';
     if (reducedMotion.matches) { finish(el); return; }
-    const panel = el.querySelector('[data-tool-positioner]');
+    const panel = el.querySelector('[data-tool-panel]');
     const ended = event => {
-      if (event.target === panel && event.propertyName === 'clip-path') finish(el);
+      if (event.target === panel && event.propertyName === 'mask-size') finish(el);
     };
     panel.addEventListener('transitionend', ended);
     state(el).cleanup = () => panel.removeEventListener('transitionend', ended);
@@ -53,8 +53,8 @@
     if (!el.open) {
       el.dataset.toolMotion = 'opening';
       el.open = true;
-      // Establish the clipped first frame after native details becomes visible.
-      el.querySelector('[data-tool-positioner]').getBoundingClientRect();
+      // Establish the masked first frame after native details becomes visible.
+      el.querySelector('[data-tool-panel]').getBoundingClientRect();
     }
     delete el.dataset.toolMotion;
     interactive(el, true);
@@ -64,17 +64,23 @@
   const finePointer = (event) => event.pointerType !== 'touch' && matchMedia('(hover: hover) and (pointer: fine)').matches;
   document.addEventListener('pointerover', event => {
     const el = disclosure(event.target);
-    if (!el || !finePointer(event) || el.contains(event.relatedTarget)) return;
+    if (!el || !finePointer(event)) return;
+    state(el).inside = true;
+    if (el.contains(event.relatedTarget)) return;
     cancel(el);
     if (!state(el).suppressed) state(el).timer = setTimeout(() => open(el), 120);
   });
   document.addEventListener('pointerout', event => {
     const el = disclosure(event.target);
     if (!el || !finePointer(event) || el.contains(event.relatedTarget)) return;
+    state(el).inside = false;
     cancel(el);
     state(el).suppressed = false;
     state(el).timer = setTimeout(() => {
-      if (!el.contains(document.activeElement) || document.activeElement === el.querySelector('summary')) close(el);
+      if (state(el).inside) return;
+      // Keyboard focus keeps the links usable. A pointer-selected filter should
+      // not pin the drawer open after the pointer has genuinely left its box.
+      if (state(el).pointerFocus || !el.contains(document.activeElement) || document.activeElement === el.querySelector('summary')) close(el);
     }, 180);
   });
   document.addEventListener('click', event => {
@@ -101,11 +107,15 @@
     else open(el);
   });
   document.addEventListener('pointerdown', event => {
+    const target = disclosure(event.target);
+    if (target) state(target).pointerFocus = true;
     document.querySelectorAll(`${selector}[open]`).forEach(el => {
       if (!el.contains(event.target)) close(el);
     });
   });
   document.addEventListener('keydown', event => {
+    const target = disclosure(event.target);
+    if (target) state(target).pointerFocus = false;
     if (event.key !== 'Escape') return;
     const opened = document.querySelector(`${selector}[open]`);
     if (opened) { event.preventDefault(); state(opened).suppressed = true; close(opened, true); }
