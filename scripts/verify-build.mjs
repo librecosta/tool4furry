@@ -1352,6 +1352,14 @@ const outputCSS = await Promise.all(files.filter(file => file.endsWith('.css')).
 for (const css of outputCSS)
   assert(!/@layer priority|virtual:stylex|stylex-dev-css|@stylexjs/.test(css), 'All CSS uses the native styling pipeline');
 const combinedCSS = outputCSS.join('\n');
+{
+  const available = published.some(tool => tool.id === 'images-to-pdf');
+  assert.equal(/\._?imagesPdfGallery[_-]/.test(combinedCSS), available,
+    'Images to PDF gallery CSS follows its own publication status');
+  const scripts = await Promise.all(files.filter(file => /\.(?:m?js)$/.test(file)).map(file => readFile(resolve(root, file), 'utf8')));
+  assert.equal(scripts.some(js => js.includes('data-images-pdf-actions')), available,
+    'Images to PDF implementation stays in its own lazy publication graph');
+}
 if (!published.some(tool => tool.id === 'pdf-split')) {
   assert(!files.some(file => /pdf\.worker|pdfjs\.NOTICE|\.bcmap$|(?:jbig2|openjpeg|qcms_bg|quickjs-eval).*\.wasm$|(?:Foxit\w*|LiberationSans-[\w]+)[.-]/.test(file)),
     'Draft PDF Split must not emit PDF.js worker, CMaps, fonts, codecs or notices');

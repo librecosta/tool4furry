@@ -115,7 +115,7 @@ export const generalToolboxContent = {
       intro: '按原图比例生成多页 PDF。',
       steps: ['添加 PNG 或 JPEG', '调整图片顺序', '生成并下载 PDF。'],
       limitations: [
-        '最多 40 张、累计 32 MiB、2400 万总像素。PNG/JPEG 直接嵌入，支持已验证方向与透明度，来源元数据可能保留。',
+        'PNG/JPEG 直接嵌入，支持已验证方向与透明度，来源元数据可能保留。大批量或高分辨率图片会提示资源需求；实际可处理规模取决于浏览器、设备及 PDF 库能力。',
         '所有文件与文本均在当前浏览器本地处理，不上传、不持久保存。',
       ],
     },
@@ -130,7 +130,7 @@ export const generalToolboxContent = {
         'create and download the PDF.',
       ],
       limitations: [
-        'Up to 40 images, 32 MiB total and 24 million combined pixels. PNG/JPEG are embedded directly with supported orientation and transparency; source metadata may remain.',
+        'PNG/JPEG are embedded directly with supported orientation and transparency; source metadata may remain. Large batches or images trigger a resource reminder. Actual capacity depends on the browser, device and PDF library.',
         'Files and text stay in your browser, without uploads or persistent storage.',
       ],
     },

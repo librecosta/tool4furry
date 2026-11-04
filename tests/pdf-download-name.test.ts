@@ -9,6 +9,11 @@ it('uses local date/time with milliseconds and handles repeated downloads in the
   expect(name('merged', '', local)).toBe('merged-20261104-204712-123-3.pdf');
   expect(name('merged', '', new Date(2026, 10, 4, 20, 47, 12, 124))).toBe('merged-20261104-204712-124.pdf');
 });
+it('names each Images to PDF download independently without a source prefix or new output generation', () => {
+  const name = createPdfDownloadNamer();
+  expect(name('images', '', local)).toBe('images-20261104-204712-123.pdf');
+  expect(name('images', '', local)).toBe('images-20261104-204712-123-2.pdf');
+});
 it.each([
   ['document.pdf', 'document'], ['我的文档.PDF', '我的文档'], ['report.final.v2.pdf', 'report.final.v2'],
   ['插画🐾.pdf', '插画🐾'], ['../a\\b:<c>|?*\u0000\u0085.Pdf', 'abc'], [' .pdf', 'document'], ['...pdf', 'document'],

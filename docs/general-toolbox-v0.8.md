@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | `pdf-merge` | 文件排序、页数检查、顺序合并与 PDF 下载 | 100 文件、累计 96 MiB、1000 页；拒绝损坏/加密文件 |
 | `pdf-split` | 真实页面缩略图、可缩放/拖拽的放大预览、点击或有序范围选页、单个 PDF / 所选逐页 ZIP | 单文件 32 MiB / 1000 页；PDF 输出 128 MiB；ZIP 所选最多 200 页 / 96 MiB；预览每批 24 页，放大栅格最多 200 万像素 |
-| `images-to-pdf` | PNG/JPEG 排序、原比例多页 PDF、方向与透明度 | 复用 Comic PDF；40 页、32 MiB、2400 万总像素及既有图片预算 |
+| `images-to-pdf` | PNG/JPEG 画廊、拖拽/键盘排序、缩放平移预览、原比例 PDF、方向与透明度 | 独立宽松策略，原 40 页 / 32 MiB / 2400 万总像素仅用于提醒；实际解码、分配及 PDF 生成/验证失败时安全停止，不缩小原图 |
 | `zip-manager` | 文件/文件夹 ZIP、目录浏览、选择提取、选中项 ZIP | 创建 500 项/96 MiB；读取 64 MiB；展开单项 32 MiB、累计 128 MiB；拒绝 ZIP64/加密/不安全路径/异常压缩率，验证 CRC |
 | `batch-file-renamer` | 前后缀、查找替换、序号、保留扩展名、名称预览及 ZIP | 100 文件、单个 32 MiB、累计 96 MiB；非法/重复名称拒绝，原字节不变 |
 | `file-hash` | SHA-256、复制、预期哈希比较 | 单文件 32 MiB；需安全上下文 Web Crypto；不是加密 |
@@ -50,6 +50,16 @@
 - 七款工具逐一检查 390px 视口，无横向溢出；覆盖 CN 中文与 Global 英文主要路径。手机视口不是触控真机证据。Firefox/Safari、真实移动设备、其他视频编解码及大型媒体压力仍未测，不宣称 Beta 或 Published。
 
 定向入口：`tests/general-toolbox-a2.test.ts`、`tests/regex-worker.test.ts`，继续使用第一批发布与目录契约测试。后续仅按反馈集中打磨操作密度、正式 SEO、专属图标和兼容性。
+
+## Images to PDF — 画廊与资源策略（2026-11-04）
+
+- 直接复用 Comic 的 `galleryLayout` / `useGalleryDrag`，保留行优先页序、鼠标拖动、触控长按、自动滚动、Escape 与键盘排序；不实例化 ComicSession，不改变漫画的 UI/预算。放大查看复用 FilePreviewDialog / ImagePreviewViewport，关闭恢复焦点并撤销原图 URL。
+- 本工具独立策略不再调用 `boundedFiles(40, 32 MiB, 20 MiB)` 或移动设备图片/PDF预算。旧数量、累计字节与总像素阈值只提醒，不阻断生成；保留真实格式/结构/方向检查、安全整数算术、浏览器解码/分配及 PDF 完整性边界。纯本地工具优先采用用户可控的宽松策略，但不批量改动其他工具。
+- 仅做容器检查的导入不会解码全部原图。可见图片才请求最长边 480px 的缩略 Bitmap，缓存最多 48 张 / 8 MiB；与原图预览、逐页 PDF 导出共用 SerialJobs 单通道，输入变化/关闭/清空/卸载使旧任务不能交付。用户可取消长任务，原生操作真正结束后才释放执行槽；失败保留文件与顺序。
+- PNG/JPEG 直接嵌入，保留方向与适用透明度，不改变原始像素；大图仅按比例调整 PDF 页面坐标以遵守 [PDF 默认用户空间尺寸](https://developer.adobe.com/acrobat-pdfl-sdk/guides/jsapiref/doc)。保存后核对页数、尺寸及每页的嵌入图像引用顺序。PDF 仍在内存中组装、保存与复检，并非流式 PDF，不能保证任意设备或规模成功。
+- 三个 44px 等宽操作始终显示：生成 / 下载 / 清空；生成中另有取消入口。下载点击时使用 `images-YYYYMMDD-HHmmss-SSS.pdf`，同毫秒追加短序号，重复下载复用同一 Blob。
+- 70 项相关定向测试和 `pnpm check`（435 文件，0 错误/警告）通过；真实 Chromium 156 在 CN 中文 Dark / 1280px 与 Global 英文 Light / 390px 完成鼠标、触控长按和键盘排序、预览缩放/平移、增删、取消、清空及真实下载。逐页核对 JPEG 嵌入字节、PNG RGB/Alpha 哈希、EXIF 方向和当前顺序；超宽 20000px 图片的原始嵌入宽度保留。
+- 实际 45 张输入共 75,758,780 字节、29,603,200 像素（其中两张各约 36.1 MiB），生成并重读 45 页 / 75,746,503 字节有效 PDF；单通道最大并发 1，清理后活动 Bitmap / URL 为零。CN/Global 正式构建及画廊私有 JS/CSS 隔离守卫通过，仍为 Draft，资格维持 9 Published / 20 Draft。Firefox/Safari、真实 iOS/Android、浏览器进程级内存耗尽及极端规模未测；390px 是桌面 Chromium 触控模拟。
 
 ## PDF Split — D1 可视选页（2026-11-04）
 

@@ -10,7 +10,8 @@ export class SerialJobs {
   timedOut = false;
   disposed = false;
   maxActive = 0;
-  constructor(private deadline = 45000) {}
+  // null is an explicit opt-in for user-cancelled long jobs; existing callers keep their watchdog.
+  constructor(private deadline: number | null = 45000) {}
   schedule(key: string, run: () => Promise<void>, timeout: () => void) {
     if (this.disposed) return;
     this.pending.set(key, { run, timeout });
@@ -31,7 +32,7 @@ export class SerialJobs {
     this.pending.delete(key);
     this.active = true;
     this.maxActive = 1;
-    const timer = setTimeout(() => {
+    const timer = this.deadline === null ? undefined : setTimeout(() => {
       if (this.disposed) return;
       this.timedOut = true;
       // Only this job failed. Waiting files keep their FIFO position and cannot

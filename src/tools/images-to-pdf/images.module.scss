@@ -1,0 +1,31 @@
+@layer t4f-tools {
+  .toolbar, .progress { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; min-width: 0; }
+  .note { margin: 0; color: var(--t4f-text-secondary); font-size: 13px; overflow-wrap: anywhere; }
+  .imagesPdfGallery { max-height: min(72dvh, 760px); min-width: 0; overflow: auto; overscroll-behavior: contain; padding: 3px; border-radius: var(--t4f-radius-md); scrollbar-gutter: stable; }
+  .grid { position: relative; margin: 0; padding: 0; list-style: none; min-width: 0; }
+  .page { position: absolute; overflow: hidden; border-radius: var(--t4f-radius-sm); background: var(--t4f-surface-muted); touch-action: pan-y; cursor: grab; user-select: none; }
+  .page:focus-visible, .lifted { outline: 2px solid var(--t4f-action); outline-offset: 1px; }
+  .image { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; user-select: none; }
+  .image[data-loading] { visibility: hidden; }
+  .placeholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; padding: 32px 8px; text-align: center; color: var(--t4f-text-secondary); font-size: 12px; }
+  .number, .overlays, .info { position: absolute; z-index: 1; }
+  .number { top: 8px; left: 8px; padding: 2px 6px; border-radius: 4px; background: rgb(25 27 30 / 68%); color: #fff; font-size: 12px; font-variant-numeric: tabular-nums; pointer-events: none; }
+  .overlays { right: 6px; top: 6px; display: flex; gap: 6px; }
+  .icon { width: 32px; height: 32px; min-width: 32px; min-height: 32px; padding: 0; border: 0; background: rgb(25 27 30 / 65%); color: #fff; text-decoration: none; }
+  .icon:where(:hover) { background: rgb(25 27 30 / 85%); }
+  .info { bottom: 0; left: 0; right: 0; display: grid; gap: 2px; padding: 20px 8px 7px; color: #fff; background: linear-gradient(transparent, rgb(25 27 30 / 80%)); font-size: 11px; pointer-events: none; }
+  .name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; }
+  .dragging { opacity: .35; }
+  .before::after, .after::after { content: ''; position: absolute; top: 2px; bottom: 2px; width: 3px; border-radius: 2px; background: var(--t4f-action); pointer-events: none; }
+  .before::after { left: 0; } .after::after { right: 0; }
+  .ghost { position: fixed; z-index: var(--t4f-layer-floating); pointer-events: none; overflow: hidden; background: var(--t4f-surface-muted); border-radius: var(--t4f-radius-sm); }
+  .srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .preview { position: relative; height: 100%; min-width: 0; min-height: 0; }
+  .feedback { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: var(--t4f-text-secondary); text-align: center; }
+  .actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; gap: 8px; }
+  .action { height: 44px; width: 100%; min-width: 0; padding-inline: 8px; border: 0; box-shadow: none; }
+  .secondary { background: var(--t4f-surface-muted); color: var(--t4f-text-primary); }
+  .secondary:where(:hover) { background: var(--t4f-surface-hover); }
+  .secondary:where(:disabled) { background: var(--t4f-surface-muted); }
+  @media (max-width: 390px) { .actions { gap: 6px; } .action { padding-inline: 4px; font-size: 13px; } }
+}

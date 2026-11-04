@@ -1,4 +1,4 @@
-type PdfDownloadKind = 'merged' | 'extracted' | 'pages';
+type PdfDownloadKind = 'merged' | 'extracted' | 'pages' | 'images';
 
 function sourceStem(source: string) {
   const cleaned = source.trim().replace(/\.pdf$/i, '')
@@ -23,7 +23,7 @@ export function createPdfDownloadNamer() {
     const stamp = `${pad(now.getFullYear(), 4)}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}-${pad(now.getMilliseconds(), 3)}`;
     collision = stamp === previous ? collision + 1 : 0;
     previous = stamp;
-    const prefix = kind === 'merged' ? 'merged' : `${sourceStem(source)}-${kind}`;
+    const prefix = kind === 'merged' || kind === 'images' ? kind : `${sourceStem(source)}-${kind}`;
     return `${prefix}-${stamp}${collision ? `-${collision + 1}` : ''}.${kind === 'pages' ? 'zip' : 'pdf'}`;
   };
 }
