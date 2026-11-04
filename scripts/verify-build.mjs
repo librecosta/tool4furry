@@ -1360,6 +1360,11 @@ const combinedCSS = outputCSS.join('\n');
   const scripts = await Promise.all(files.filter(file => /\.(?:m?js)$/.test(file)).map(file => readFile(resolve(root, file), 'utf8')));
   assert.equal(scripts.some(js => js.includes('data-images-pdf-actions')), available,
     'Images to PDF implementation stays in its own lazy publication graph');
+  const zipAvailable = published.some(tool => tool.id === 'zip-manager');
+  assert.equal(/\._?zipWorkspace[_-]/.test(combinedCSS), zipAvailable,
+    'ZIP Manager local CSS follows its Draft/Published qualification');
+  assert.equal(scripts.some(js => js.includes('data-zip-manager')), zipAvailable,
+    'ZIP Manager mode/tree implementation stays in its own lazy publication graph');
   if (available) {
     const notice = await readFile('src/tools/comic-page-organizer/pdf-lib.NOTICE.txt');
     const emitted = files.filter(file => file.includes('pdf-lib.NOTICE'));

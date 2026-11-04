@@ -92,10 +92,12 @@ function bad(): never {
     'ZIP is damaged, encrypted, unsafe or exceeds extraction limits.',
   );
 }
-export async function inspectZip(blob: Blob): Promise<ZipItem[]> {
+export async function inspectZip(blob: Blob, signal?: AbortSignal): Promise<ZipItem[]> {
+  check(signal);
   if (blob.size < 22 || blob.size > 64 * MiB) bad();
   const bytes = new Uint8Array(await blob.arrayBuffer()),
     d = new DataView(bytes.buffer);
+  check(signal);
   let end = -1;
   for (let i = bytes.length - 22; i >= Math.max(0, bytes.length - 65557); i--)
     if (
