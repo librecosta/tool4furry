@@ -15,6 +15,7 @@ import NavigationControls from '../components/site/NavigationControls.astro';
 import ToolboxDisclosure from '../components/site/ToolboxDisclosure.astro';
 import '@fontsource-variable/dm-sans/wght.css';
 import '@fontsource-variable/noto-sans-sc/wght.css';
+import dmSansLatin from '@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2?url';
 import '../styles/global.scss';
 import Brand from '../components/site/Brand.astro';
 import SiteFooter from '../components/site/SiteFooter.astro';
@@ -43,6 +44,7 @@ const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preload" as="font" type="font/woff2" href={dmSansLatin} crossorigin="anonymous" />
     <script is:inline id="t4f-appearance" data-default={theme.appearance} data-region-origins={regionOrigins} set:html={appearanceSource} />
     <meta name="description" content={resolvedDescription} />
     <title>{resolvedTitle}</title>

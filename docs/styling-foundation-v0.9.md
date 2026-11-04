@@ -66,3 +66,26 @@ CN/Global 正式构建均生成 27 页，原生 CSS、字体、许可、Worker/W
 正式 Chromium 预览完成 CN Dark 的真实 PDF 合并/下载，3 页尺寸、方向与解码内容流严格等于 A1/A2/B1。两地区首页身份筛选与目录均正常，目录各 8 款；Global Light 刷新恢复主题、Converter 原图/结果 Dialog 与 Palette 首次 Select 弹层正常。桌面导航 64px、手机 56px，PDF 操作按钮 44px 高且等宽，390px 无横向溢出，与 DEV 一致；没有观测到 Hydration 警告。验收后恢复原固定双地区 DEV 服务。
 
 DEV 修改工具 CSS Module 后，Vite 热更新能应用新规则，无手工注入链路；Canvas 普通草稿保留，但 Converter 的资源 Effect 在 React Fast Refresh 时重新执行，会清空导入队列。普通断点切换不丢状态。这是开发态限制，未通过改写工具业务或隐藏页面掩盖。工具正常懒加载占位仍存在；未观察到 Hydration mismatch 或可复现的阻断性样式闪现。未做逐帧慢网/慢 CPU、Firefox/Safari、真实 iOS/Android 与触屏设备验证，390px 仅为桌面 Chromium 视口模拟。
+
+## 字体刷新专项复检（2026-11-04）
+
+此前样式验收没有覆盖逐帧字体替换，不能据此推断刷新时没有 FOUT。本次使用 Windows / Chrome 156.0.8078.76、1280×900，对 DEV 中文及 CN 生产预览中英文的首页、目录、PDF Merge 记录 rAF 文字/导航边界、LayoutShift、字体事件、资源时序和 CDP Rendered Fonts。条件包括禁用缓存的冷加载、正常缓存后的浏览器 reload（F5 等价）、阻止全部 WOFF2，以及仅将 WOFF2 延迟 800ms；修复前后使用相同条件，没有 CPU/全网限速。
+
+- Fontsource 5.3.0 的两个变量字体均为 normal / swap，并使用 unicode-range 按需选择分片；Noto Sans SC 有约百个 WOFF2 分片，另有少量内联子集。实际拉丁文字使用 DM Sans，中文使用 Noto Sans SC；阻止字体时原来的 system-ui 在该 Windows 环境实际选中 Microsoft YaHei UI（包括拉丁文字），宽度与目标字体不同。
+- 修复前生产中文首页的 CSS 在 29.7/40.5ms 交付、FCP 284ms，首轮字体 loadingdone 为 314.7ms；目录为 CSS 18.1–27.9ms、FCP 148ms、字体 217.2ms。PDF Merge 的外壳 CSS 在 26.7–54ms，字体替换发生在 FCP 后；之后的工具懒加载 CSS 属于正常模块交付。屏蔽 WOFF2 后对应布局变化消失，证据支持字体替换是本次文字跳动主因，未复现静态外壳先无样式后补 CSS。
+- 修复仅增加 DM Sans Latin variable 的单份 36,932 字节预加载，复用 Fontsource CSS 的同一 URL / CORS 模式。DEV 使用 `?url`，避免 `?no-inline` 与 Fontsource 原 URL 不同而重复请求；中文分片仍按需加载，原 font-display 和最终字体不变。
+- `font-fallbacks.scss` 使用 local-only、限定脚本范围的 Segoe UI / Microsoft YaHei UI 别名，匹配 size-adjust 与垂直度量。1000px Canvas 实测 DM Sans ascent/descent 为 992/310，Noto 为 1160/288；中文全宽字 advance 同为 1em。拉丁宽度样本为 `Tool4Furry PDF Merge Download Clear Featured Tools Images Files Search All tools Local browser processing`，分别测量 400/500/600/700 后配置系数。没有这些本地字体的平台继续使用原系统回退，不宣称系数跨平台通用。
+
+| 相同条件下的观察 | 修复前 | 修复后 |
+| --- | --- | --- |
+| DEV 中文三页，冷加载/缓存刷新，品牌文字最大宽度变化 | 最高 4.11px | 0px |
+| 生产预览中英文三页，正常冷加载/缓存刷新 CLS | 最高 0.005686 | 均为 0 |
+| 生产英文 PDF Merge，限制文本换行带动后续 FAQ | 27px 位移 | 未再出现 |
+| 字体延迟 800ms，品牌文字最大宽度变化 | 4.11px | 0.17px |
+| 字体延迟 800ms，生产英文 PDF Merge CLS | 0.005686 | 0.0000805 |
+
+生产中文三页的 Latin 请求起点分别由 48.7/40.8/67.0ms 提前至 17.7/10.0/10.2ms；中文首页首轮 loadingdone 由 314.7ms 变为 294.8ms。缓存刷新实测字体 HTTP 304、约 300B 响应头，而非再次传输完整字体；即使命中缓存，旧实现仍可能在字体激活前显示回退字形。单次 FCP 有波动（中文首页 284→360ms），本次结论是布局稳定性改善，不是首屏速度基准提升。
+
+首页 Hero 原有 opacity/translateY 入场在阻止字体后仍执行（介绍文字 12px 位移），属于既有 Reveal，不是字体/CSS 布局重排；未修改。Logo SVG Mask 在采样中先于文字首次绘制完成，且预留 32×32，未复现独立问题，未修改 Logo。
+
+`pnpm check`：414 文件零诊断；字体交付、主题、SCSS/React 样式和对比度共 5 文件 / 37 项定向测试通过；CN/Global 构建及产物守卫通过。守卫保留真实字体、子集与许可检查，新增单份 Latin 预加载 URL 复用及本地回退约束。8 Published / 21 Draft 不变。延迟字体时仍有少量字宽差异，没有隐藏页面或等待 fonts.ready；其他操作系统、本次未覆盖的视口、慢 CPU、Firefox/Safari 与真实移动设备未验证，不承诺所有环境零位移。

@@ -1264,6 +1264,13 @@ for (const page of htmlFiles) {
   );
   assert(faces.length > 0, 'Missing bundled font faces');
   for (const face of faces) {
+    if (/src:\s*local\(/.test(face)) {
+      assert(/font-family:\s*["']?T4F (?:DM Sans|Noto SC) Fallback/.test(face) &&
+        /size-adjust:/.test(face) && /ascent-override:/.test(face) && /descent-override:/.test(face) &&
+        /line-gap-override:\s*0%/.test(face) && /unicode-range:/i.test(face) && !/url\(/.test(face),
+        'Metric fallbacks must stay local, bounded to their scripts and download-free');
+      continue;
+    }
     assert(
       /font-style:\s*normal/.test(face) && /font-display:\s*swap/.test(face),
       'Only normal swap fonts are expected',
@@ -1274,11 +1281,13 @@ for (const page of htmlFiles) {
       'Variable weight and Unicode subsets must be preserved',
     );
   }
-  assert.equal(
-    dom.querySelectorAll('link[rel="preload"][as="font"]').length,
-    0,
-    'Do not preload all font subsets',
-  );
+  const fontPreloads = [...dom.querySelectorAll('link[rel="preload"][as="font"]')];
+  assert.equal(fontPreloads.length, 1, 'Only the shared Latin variable face is critical; never preload all Chinese subsets');
+  const fontPreload = fontPreloads[0], fontURL = fontPreload.getAttribute('href');
+  assert.equal(fontPreload.getAttribute('crossorigin'), 'anonymous');
+  assert.equal(fontPreload.getAttribute('type'), 'font/woff2');
+  assert(fontURL?.startsWith('/_astro/dm-sans-latin-wght-normal.') && fontAssets.has(fontURL),
+    'Font preload must reuse the real CSS face URL without a second font copy');
 }
 assert(fontAssets.size > 0, 'Missing self-hosted WOFF2 assets');
 for (const font of ['dm-sans', 'noto-sans-sc']) {

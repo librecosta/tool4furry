@@ -1,0 +1,44 @@
+// Local-only fallbacks: no new download and no change to the final web fonts.
+// DM Sans metrics (1000px): ascent 992, descent 310, line gap 0.
+// Size adjustments use measured Latin UI text widths against installed Segoe UI.
+// Each override divides the target metric by size-adjust. See the font audit in
+// docs/styling-foundation-v0.9.md for the corpus, platform and remaining limits.
+@layer base {
+  @each $weight, $face, $size, $ascent, $descent in (
+    (400, 'Segoe UI', 104.49%, 94.94%, 29.67%),
+    (500, 'Segoe UI Semibold', 103.21%, 96.11%, 30.04%),
+    (600, 'Segoe UI Semibold', 105.40%, 94.12%, 29.41%),
+    (700, 'Segoe UI Bold', 103.34%, 95.99%, 30.00%)
+  ) {
+    @font-face {
+      font-family: 'T4F DM Sans Fallback';
+      src: local($face);
+      font-style: normal;
+      font-weight: $weight;
+      size-adjust: $size;
+      ascent-override: $ascent;
+      descent-override: $descent;
+      line-gap-override: 0%;
+      unicode-range: U+0000-024F, U+02B0-02FF, U+1E00-1EFF, U+2000-206F,
+        U+20A0-20CF, U+2113, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+  }
+
+  // Full-width Han glyph advances already match (1em). Match Noto's vertical
+  // metrics instead of enlarging Chinese text. Only use installed local faces;
+  // other platforms retain the existing system fallback if these are absent.
+  @each $weight, $face in ((400, 'Microsoft YaHei UI'), (700, 'Microsoft YaHei UI Bold')) {
+    @font-face {
+      font-family: 'T4F Noto SC Fallback';
+      src: local($face);
+      font-style: normal;
+      font-weight: $weight;
+      size-adjust: 100%;
+      ascent-override: 116%;
+      descent-override: 28.8%;
+      line-gap-override: 0%;
+      unicode-range: U+2E80-9FFF, U+F900-FAFF, U+FE10-FE1F, U+FE30-FE4F,
+        U+FF00-FFEF, U+20000-3FFFF;
+    }
+  }
+}
