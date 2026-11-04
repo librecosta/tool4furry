@@ -5,10 +5,11 @@ import { Button, IconButton } from '../../ui/Button';
 import { Tooltip } from '../../ui/Tooltip';
 import { FilePreviewDialog } from '../../ui/FilePreviewDialog';
 import { ErrorText, tr } from '../general/ui';
-import { enlargedSize, previewBatchSize, thumbnailSize, type PreviewSession } from './preview-session';
+import { previewBatchSize, thumbnailSize, type PreviewSession } from './preview-session';
+import { PdfPagePreview } from './PdfPagePreview';
 import s from './split.module.scss';
 
-function PageCanvas({ session, page, large = false, locale }: { session: PreviewSession; page: number; large?: boolean; locale: Locale }) {
+function PageCanvas({ session, page, locale }: { session: PreviewSession; page: number; locale: Locale }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const [status, setStatus] = useState<'waiting' | 'ready' | 'error'>('waiting');
   useEffect(() => {
@@ -18,18 +19,18 @@ function PageCanvas({ session, page, large = false, locale }: { session: Preview
     const draw = () => {
       if (started || controller.signal.aborted) return;
       started = true;
-      void session.render(page, element, large ? enlargedSize : thumbnailSize, controller.signal).then(() => {
+      void session.render(page, element, thumbnailSize, controller.signal).then(() => {
         if (!controller.signal.aborted) setStatus('ready');
       }, () => {
         if (!controller.signal.aborted) setStatus('error');
       });
     };
-    const observer = !large && typeof IntersectionObserver !== 'undefined'
+    const observer = typeof IntersectionObserver !== 'undefined'
       ? new IntersectionObserver(entries => { if (entries.some(e => e.isIntersecting)) { observer?.disconnect(); draw(); } }, { rootMargin: '100px' }) : undefined;
     if (observer) observer.observe(element); else draw();
     return () => { observer?.disconnect(); controller.abort(); element.width = element.height = 0; };
-  }, [session, page, large]);
-  return <div className={large ? s.enlarged : s.paper} data-pdf-preview-state={status}>
+  }, [session, page]);
+  return <div className={s.paper} data-pdf-preview-state={status}>
     <canvas ref={canvas} aria-label={tr(locale, `第 ${page} 页预览`, `Preview of page ${page}`)} className={s.canvas} data-ready={status === 'ready' || undefined} />
     {status !== 'ready' && <span className={s.previewStatus} role={status === 'error' ? 'status' : undefined}>{status === 'error' ? tr(locale, '此页无法预览', 'Page preview unavailable') : tr(locale, '正在加载页面…', 'Loading page…')}</span>}
   </div>;
@@ -83,7 +84,7 @@ export function PdfPages({ file, count, pages, valid, onToggle, locale }: { file
       <Button size="sm" disabled={current === 0} onClick={() => setBatch(current - 1)}>{tr(locale, '上一批', 'Previous')}</Button><span className={s.note}>{current + 1} / {lastBatch + 1}</span><Button size="sm" disabled={current === lastBatch} onClick={() => setBatch(current + 1)}>{tr(locale, '下一批', 'Next')}</Button>
     </div>}
     <FilePreviewDialog open={!!enlarged && !!session} onOpenChange={open => { if (!open) setEnlarged(undefined); }} title={tr(locale, `第 ${enlarged ?? 1} 页`, `Page ${enlarged ?? 1}`)} description={file.name} finalFocus={() => focus.current} labels={{ close: tr(locale, '关闭', 'Close'), maximize: tr(locale, '全屏', 'Fullscreen'), restore: tr(locale, '还原', 'Restore') }}>
-      {enlarged && session && <PageCanvas key={`${enlarged}-large`} session={session} page={enlarged} large locale={locale} />}
+      {enlarged && session && <PdfPagePreview key={enlarged} session={session} page={enlarged} locale={locale} />}
     </FilePreviewDialog>
   </section>;
 }
