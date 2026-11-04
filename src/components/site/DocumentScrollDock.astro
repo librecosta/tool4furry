@@ -1,7 +1,6 @@
 ---
+import styles from './DocumentScrollDock.module.scss';
 import { type Locale } from '../../i18n/locale';
-import * as stylex from '@stylexjs/stylex';
-import { documentDockStyles as s } from '../../styles/document-dock';
 import type { Region } from '../../config/region';
 interface Props { region: Region; locale: Locale }
 const { locale } = Astro.props;
@@ -35,15 +34,15 @@ const particles = [
   { x: -1, y: 61, size: 2, duration: 2100, delay: -400, rise: 16, opacity: 0.3 },
 ];
 ---
-<button type="button" data-document-dock data-label={label} hidden inert aria-hidden="true" aria-label={label} {...stylex.attrs(s.root)}>
-  <svg viewBox="0 0 56 56" width="56" height="56" aria-hidden="true" focusable="false" shape-rendering="crispEdges" {...stylex.attrs(s.orb)}>
+<button type="button" data-document-dock data-label={label} hidden inert aria-hidden="true" aria-label={label} class={styles.root}>
+  <svg viewBox="0 0 56 56" width="56" height="56" aria-hidden="true" focusable="false" shape-rendering="crispEdges" class={styles.orb}>
     <defs>{digits.map((rows, digit) => <g id={`t4f-scroll-digit-${digit}`}>
       {rows.flatMap((row, y) => [...row].map((pixel, x) => pixel === '1' && <rect x={x * 3} y={y * 3} width="3" height="3" />))}
     </g>)}</defs>
-    <g>{segments.map(([x, y]) => <rect data-scroll-segment x={x * 2} y={y * 2} width="4" height="4" {...stylex.attrs(s.segment)} />)}</g>
-    <g data-scroll-number transform="translate(17.5 20.5)" {...stylex.attrs(s.number)}>
+    <g>{segments.map(([x, y]) => <rect data-scroll-segment x={x * 2} y={y * 2} width="4" height="4" class={styles.segment} />)}</g>
+    <g data-scroll-number transform="translate(17.5 20.5)" class={styles.number}>
       {[0, 1, 2].map(index => <use data-scroll-digit href="#t4f-scroll-digit-0" x={index * 12} display={index === 2 ? 'none' : undefined} />)}
     </g>
-    <g>{particles.map(({x, y, size, duration, delay, rise, opacity}) => <rect data-scroll-particle x={x} y={y} width={size} height={size} style={{animationDuration: `${duration}ms`, animationDelay: `${delay}ms`, '--bubble-rise': `${rise}px`, '--bubble-opacity': String(opacity)}} {...stylex.attrs(s.particle)} />)}</g>
+    <g>{particles.map(({x, y, size, duration, delay, rise, opacity}) => <rect data-scroll-particle x={x} y={y} width={size} height={size} style={{animationDuration: `${duration}ms`, animationDelay: `${delay}ms`, '--bubble-rise': `${rise}px`, '--bubble-opacity': String(opacity)}} class={styles.particle} />)}</g>
   </svg>
 </button>

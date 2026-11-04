@@ -1,0 +1,15 @@
+.roleIcon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  color: var(--t4f-text-secondary);
+}
+
+.roleIconImage {
+  display: block;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}

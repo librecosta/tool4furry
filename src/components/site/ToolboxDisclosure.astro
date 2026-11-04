@@ -1,37 +1,36 @@
 ---
+import styles from './ToolboxDisclosure.module.scss';
 import { localizedPath, type Locale } from '../../i18n/locale';
-import * as stylex from '@stylexjs/stylex';
 import { ToolboxIcon, CaretDownIcon } from '@phosphor-icons/react/ssr';
 import { region } from '../../config/site';
 import { messages } from '../../i18n/messages';
 import { getToolboxGroups, toolboxCopy } from '../../site/toolbox-navigation';
 import FeaturedToolIcon from '../home/FeaturedToolIcon.astro';
-import { navigationStyles as n } from '../../styles/navigation';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const t = messages[locale];
 const groups = getToolboxGroups(region, locale, import.meta.env.DEV);
 ---
-<details data-tool-disclosure {...stylex.attrs(n.disclosure)}>
-  <summary aria-label={t.featuredTools} {...stylex.attrs(n.control, n.trigger)}>
-    <span {...stylex.attrs(n.mobileToolbox)}><ToolboxIcon size={20} aria-hidden /></span>
-    <span {...stylex.attrs(n.toolboxLabel)}><span {...stylex.attrs(n.labelFull)}>{t.featuredTools}</span><span {...stylex.attrs(n.labelShort)}>{t.featuredToolsShort}</span></span>
-    <span {...stylex.attrs(n.chevron)}><CaretDownIcon size={16} aria-hidden className={stylex.attrs(n.svg).class} /></span>
+<details data-tool-disclosure class={styles.disclosure}>
+  <summary aria-label={t.featuredTools} class:list={[styles.control, styles.trigger]}>
+    <span class={styles.mobileToolbox}><ToolboxIcon size={20} aria-hidden /></span>
+    <span class={styles.toolboxLabel}><span class={styles.labelFull}>{t.featuredTools}</span><span class={styles.labelShort}>{t.featuredToolsShort}</span></span>
+    <span class={styles.chevron}><CaretDownIcon size={16} aria-hidden className={styles.svg} /></span>
   </summary>
-  <div data-tool-positioner {...stylex.attrs(n.positioner)}>
-    <div data-tool-panel {...stylex.attrs(n.panel)}>
-      <div role="group" aria-label={toolboxCopy[locale].filters} {...stylex.attrs(n.filters)}>
-        <a href={localizedPath('/tools/', region, locale)} {...stylex.attrs(n.filter)}>{t.browseAll}</a>
+  <div data-tool-positioner class={styles.positioner}>
+    <div data-tool-panel class={styles.panel}>
+      <div role="group" aria-label={toolboxCopy[locale].filters} class={styles.filters}>
+        <a href={localizedPath('/tools/', region, locale)} class={styles.filter}>{t.browseAll}</a>
         {groups.map(group => <button type="button" data-tool-filter={group.id}
-          aria-pressed={group.id === 'featured'} {...stylex.attrs(n.filter)}>{group.label}</button>)}
+          aria-pressed={group.id === 'featured'} class={styles.filter}>{group.label}</button>)}
       </div>
-      <div {...stylex.attrs(n.groups)}>
-        {groups.map(group => <section data-tool-group={group.id} hidden={group.id !== 'featured'} aria-label={group.label} {...stylex.attrs(n.tools)}>
-          {group.entries.length === 0 && <p {...stylex.attrs(n.empty)}>{toolboxCopy[locale].empty}</p>}
-          {group.entries.map(tool => <a href={tool.href} {...stylex.attrs(n.tool)}>
+      <div class={styles.groups}>
+        {groups.map(group => <section data-tool-group={group.id} hidden={group.id !== 'featured'} aria-label={group.label} class={styles.tools}>
+          {group.entries.length === 0 && <p class={styles.empty}>{toolboxCopy[locale].empty}</p>}
+          {group.entries.map(tool => <a href={tool.href} class={styles.tool}>
             <FeaturedToolIcon id={tool.id} size={32} />
-            <span {...stylex.attrs(n.toolCopy)}><span {...stylex.attrs(n.toolTitle)}>{tool.title}</span>
-            <span {...stylex.attrs(n.description)}>{tool.summary ?? tool.description}</span></span>
+            <span class={styles.toolCopy}><span class={styles.toolTitle}>{tool.title}</span>
+            <span class={styles.description}>{tool.summary ?? tool.description}</span></span>
           </a>)}
         </section>)}
       </div>

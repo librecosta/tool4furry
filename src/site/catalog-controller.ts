@@ -1,5 +1,4 @@
-import * as stylex from '@stylexjs/stylex';
-import { catalogStyles as c } from '../styles/catalog';
+import styles from '../components/site/ToolsCatalog.module.scss';
 import { catalogCopy } from './catalog-copy';
 import { catalogLanguageHref, catalogPage, catalogQuery, emptyCatalogState, pageNumbers, parseCatalogState, validJump, type CatalogState, type SearchEntry } from './catalog-state';
 
@@ -34,7 +33,7 @@ export function initCatalog(root: HTMLElement, win: Window = window) {
   function elementButton(text: string, attrs: Record<string, string> = {}) {
     const button = root.ownerDocument.createElement('button');
     button.type = 'button'; button.textContent = text;
-    button.className = stylex.props(c.button, c.page).className ?? '';
+    button.className = `${styles.button} ${styles.page}`;
     for (const [name, value] of Object.entries(attrs)) button.setAttribute(name, value);
     return button;
   }
@@ -68,7 +67,7 @@ export function initCatalog(root: HTMLElement, win: Window = window) {
       const name = key === 'q' ? t.keyword.replace('{name}', state.q)
         : filters.find(button => button.dataset.filter === key && button.dataset.value === state[key])!.dataset.label!;
       const chip = elementButton(`${name} ×`, { 'data-remove': key, 'aria-label': t.remove.replace('{name}', name) });
-      chip.className = stylex.props(c.button, c.chip).className ?? ''; chips.append(chip);
+      chip.className = `${styles.button} ${styles.chip}`; chips.append(chip);
     }
     if (chips.childElementCount) chips.append(elementButton(t.clear, { 'data-clear-all': '' }));
     chips.hidden = !chips.childElementCount;

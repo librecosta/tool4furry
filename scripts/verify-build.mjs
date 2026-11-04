@@ -1233,6 +1233,12 @@ for (const page of htmlFiles) {
     css.includes('@layer priority') && css.includes('--'),
     'Linked CSS must include extracted StyleX styles and tokens',
   );
+  assert(
+    /--t4f-page\s*:/.test(css) && /--t4f-action\s*:/.test(css) &&
+      /--t4f-radius-sm\s*:/.test(css) && /var\(--t4f-text-primary\)/.test(css) &&
+      /html\[data-appearance\s*=\s*["']?light["']?\]/.test(css),
+    `Missing native SCSS shell tokens or runtime Light theme in ${page}`,
+  );
   for (const family of ['DM Sans Variable', 'Noto Sans SC Variable'])
     assert(css.includes(family), `Missing self-hosted font: ${family}`);
   const faces = [...css.matchAll(/@font-face\s*\{([^}]+)\}/g)].map(

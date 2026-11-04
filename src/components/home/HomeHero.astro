@@ -1,27 +1,26 @@
 ---
-import * as stylex from '@stylexjs/stylex';
+import styles from './HomeHero.module.scss';
 import type { Locale } from '../../i18n/locale';
 import { localizedPath } from '../../i18n/locale';
 import type { Region } from '../../config/region';
 import { messages } from '../../i18n/messages';
-import { homeStyles as h } from '../../styles/homepage';
 import wavefieldPoster from '../../assets/visuals/wavefield.avif?url&no-inline';
 interface Props { region: Region; locale: Locale }
 const { region, locale } = Astro.props;
 const t = messages[locale];
 ---
-<section data-home-section="hero" aria-labelledby="hero-heading" {...stylex.attrs(h.hero)}>
-  <div data-hero-media data-wavefield="static" {...stylex.attrs(h.heroScene)}>
-    <img src={wavefieldPoster} width="1440" height="576" alt="" aria-hidden="true" fetchpriority="high" decoding="async" {...stylex.attrs(h.wavePoster)} />
-    <canvas data-wavefield-canvas aria-hidden="true" {...stylex.attrs(h.waveCanvas)}></canvas>
-    <div aria-hidden="true" {...stylex.attrs(h.waveVeil)}></div>
+<section data-home-section="hero" aria-labelledby="hero-heading" class={styles.hero}>
+  <div data-hero-media data-wavefield="static" class={styles.heroScene}>
+    <img src={wavefieldPoster} width="1440" height="576" alt="" aria-hidden="true" fetchpriority="high" decoding="async" class={styles.wavePoster} />
+    <canvas data-wavefield-canvas aria-hidden="true" class={styles.waveCanvas}></canvas>
+    <div aria-hidden="true" class={styles.waveVeil}></div>
   </div>
-  <div {...stylex.attrs(h.inner)}>
-    <div {...stylex.attrs(h.heroContent)}>
-      <h1 id="hero-heading" {...stylex.attrs(h.heroTitle)}><span {...stylex.attrs(h.heroLine, h.heroReveal, h.revealTitleLead)}>{t.homeHeroLead}</span>{locale === 'en' ? ' ' : ''}<span {...stylex.attrs(h.heroLine, h.heroReveal, h.revealTitleClose)}>{t.homeHeroClose}</span></h1>
-      <p {...stylex.attrs(h.heroIntro, h.heroReveal, h.revealIntroLead)}>{t.homeHeroIntroLead}</p>
-      <p {...stylex.attrs(h.heroIntro, h.heroIntroLast, h.heroReveal, h.revealIntroDetail)}>{t.homeHeroIntroDetail}</p>
-      <a href={localizedPath('/tools/', region, locale)} data-home-cta {...stylex.attrs(h.heroCta, h.heroReveal, h.revealCta)}>{t.explore}</a>
+  <div class={styles.inner}>
+    <div class={styles.heroContent}>
+      <h1 id="hero-heading" class={styles.heroTitle}><span class:list={[styles.heroLine, styles.heroReveal, styles.revealTitleLead]}>{t.homeHeroLead}</span>{locale === 'en' ? ' ' : ''}<span class:list={[styles.heroLine, styles.heroReveal, styles.revealTitleClose]}>{t.homeHeroClose}</span></h1>
+      <p class:list={[styles.heroIntro, styles.heroReveal, styles.revealIntroLead]}>{t.homeHeroIntroLead}</p>
+      <p class:list={[styles.heroIntro, styles.heroIntroLast, styles.heroReveal, styles.revealIntroDetail]}>{t.homeHeroIntroDetail}</p>
+      <a href={localizedPath('/tools/', region, locale)} data-home-cta class:list={[styles.heroCta, styles.heroReveal, styles.revealCta]}>{t.explore}</a>
     </div>
   </div>
 </section>

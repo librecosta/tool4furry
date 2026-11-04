@@ -1,11 +1,10 @@
 ---
+import styles from './SiteLayout.module.scss';
 import * as stylex from '@stylexjs/stylex';
 import { locales, type Locale } from '../i18n/locale';
 import { languageLink } from '../site/language';
 import { region, regionConfig } from '../config/site';
 import { messages } from '../i18n/messages';
-import { siteStyles as s } from '../styles/site';
-import { tokens } from '../styles/tokens.stylex';
 import { resolvePageTheme, resolveTheme } from '../styles/theme';
 import appearanceSource from '../styles/appearance-controller.js?raw';
 import navigationSource from '../styles/navigation-disclosure.js?raw';
@@ -17,10 +16,9 @@ import NavigationControls from '../components/site/NavigationControls.astro';
 import ToolboxDisclosure from '../components/site/ToolboxDisclosure.astro';
 import '@fontsource-variable/dm-sans/wght.css';
 import '@fontsource-variable/noto-sans-sc/wght.css';
-import '../styles/global.css';
+import '../styles/global.scss';
 import Brand from '../components/site/Brand.astro';
 import SiteFooter from '../components/site/SiteFooter.astro';
-import { catalogStyles as c } from '../styles/catalog';
 interface Props { locale: Locale; title: string; fullTitle?: string; description?: string; workspace?: boolean; noindex?: boolean; documentScroll?: boolean; catalogWorkbench?: boolean }
 const { locale, title, fullTitle, description, workspace = false, noindex = false, documentScroll = true, catalogWorkbench = false } = Astro.props;
 const scrollEnabled = documentScroll && !catalogWorkbench;
@@ -44,7 +42,7 @@ const regionOrigins = JSON.stringify(import.meta.env.DEV ? Object.values(devOrig
 const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function ', 'function ')}\n${scrollSource}\n})();`;
 ---
 <!doctype html>
-<html lang={locales[locale].lang} data-color-theme={theme.colorTheme} data-appearance={theme.appearance} data-catalog-workbench={catalogWorkbench || undefined} {...stylex.attrs(theme.style, s.themeRoot, catalogWorkbench && c.viewport)} style={`--t4f-focus: ${tokens.focus};`}>
+<html lang={locales[locale].lang} data-color-theme={theme.colorTheme} data-appearance={theme.appearance} data-catalog-workbench={catalogWorkbench || undefined} class:list={[stylex.attrs(theme.style).class, styles.themeRoot, catalogWorkbench && styles.viewport]}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -80,17 +78,17 @@ const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function
       <script is:inline type="module" src="/src/styles/stylex-dev-css.ts"></script>
     </>}
   </head>
-  <body {...stylex.attrs(s.body, catalogWorkbench && c.viewport)}>
-    <div {...stylex.attrs(s.frame, catalogWorkbench && c.frame)}>
-      <div data-site-background aria-hidden="true" {...stylex.attrs(s.pageBackground)}></div>
-      <div data-page-dots aria-hidden="true" {...stylex.attrs(s.pageDots, workspace && !documentScroll && s.workspaceDotsHidden)}>
-        <span data-page-dot-side="left" {...stylex.attrs(s.pageDotSide, s.pageDotsLeft)}></span>
-        <span data-page-dot-side="right" {...stylex.attrs(s.pageDotSide, s.pageDotsRight)}></span>
+  <body class:list={[styles.body, catalogWorkbench && styles.viewport]}>
+    <div class:list={[styles.frame, catalogWorkbench && styles.catalogFrame]}>
+      <div data-site-background aria-hidden="true" class={styles.pageBackground}></div>
+      <div data-page-dots aria-hidden="true" class:list={[styles.pageDots, workspace && !documentScroll && styles.workspaceDotsHidden]}>
+        <span data-page-dot-side="left" class:list={[styles.pageDotSide, styles.pageDotsLeft]}></span>
+        <span data-page-dot-side="right" class:list={[styles.pageDotSide, styles.pageDotsRight]}></span>
       </div>
-      <a {...stylex.attrs(s.skip)} href="#main-content">{t.skip}</a>
-      {!workspace && <header data-site-header {...stylex.attrs(s.fullBleed, s.productHeader, catalogWorkbench && c.header)}>
-        <nav {...stylex.attrs(s.fluid, s.nav)} aria-label={t.headerNav}>
-          <div {...stylex.attrs(s.navLinks)}>
+      <a class={styles.skip} href="#main-content">{t.skip}</a>
+      {!workspace && <header data-site-header class:list={[styles.fullBleed, styles.productHeader, catalogWorkbench && styles.header]}>
+        <nav class:list={[styles.fluid, styles.nav]} aria-label={t.headerNav}>
+          <div class={styles.navLinks}>
             <Brand navigation locale={locale} />
             <ToolboxDisclosure locale={locale} />
           </div>

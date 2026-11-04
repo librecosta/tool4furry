@@ -1,26 +1,25 @@
 ---
+import styles from './InformationPage.module.scss';
 import { localizedPath, type Locale } from '../../i18n/locale';
-import * as stylex from '@stylexjs/stylex';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { region } from '../../config/site';
 import { informationContent, type InformationKind } from '../../site/information-content';
-import { siteStyles as s } from '../../styles/site';
 
 interface Props { kind: InformationKind; locale: Locale }
 const { kind, locale } = Astro.props;
 const content = informationContent[region][locale][kind];
 ---
 <SiteLayout locale={locale} title={content.h1} fullTitle={content.title} description={content.description}>
-  <main id="main-content" {...stylex.attrs(s.fluid, s.main)}>
-    <article data-information-page={kind} aria-labelledby="information-title" {...stylex.attrs(s.readable, s.information)}>
-      <header {...stylex.attrs(s.informationHeader)}>
-        <h1 id="information-title" {...stylex.attrs(s.informationTitle)}>{content.h1}</h1>
+  <main id="main-content" class:list={[styles.fluid, styles.main]}>
+    <article data-information-page={kind} aria-labelledby="information-title" class:list={[styles.readable, styles.information]}>
+      <header class={styles.informationHeader}>
+        <h1 id="information-title" class={styles.informationTitle}>{content.h1}</h1>
       </header>
-      {content.sections.map((section, index) => <section aria-labelledby={`information-section-${index}`} {...stylex.attrs(s.informationSection)}>
-        <h2 id={`information-section-${index}`} {...stylex.attrs(s.informationHeading)}>{section.heading}</h2>
-        {section.paragraphs.map(paragraph => <p {...stylex.attrs(s.informationText)}>{paragraph}</p>)}
-        {section.links && <div {...stylex.attrs(s.informationLinks)}>
-          {section.links.map(link => <a href={localizedPath(link.href, region, locale)} {...stylex.attrs(s.link)}>{link.label}</a>)}
+      {content.sections.map((section, index) => <section aria-labelledby={`information-section-${index}`} class={styles.informationSection}>
+        <h2 id={`information-section-${index}`} class={styles.informationHeading}>{section.heading}</h2>
+        {section.paragraphs.map(paragraph => <p class={styles.informationText}>{paragraph}</p>)}
+        {section.links && <div class={styles.informationLinks}>
+          {section.links.map(link => <a href={localizedPath(link.href, region, locale)} class={styles.link}>{link.label}</a>)}
         </div>}
       </section>)}
     </article>

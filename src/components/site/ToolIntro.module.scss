@@ -1,0 +1,43 @@
+.fluid {
+  width: 100%;
+  padding-left: max(clamp(16px, 2vw, 36px), env(safe-area-inset-left));
+  padding-right: max(clamp(16px, 2vw, 36px), env(safe-area-inset-right));
+}
+
+.toolIntro {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--t4f-space-12);
+  padding-block: 32px 24px;
+
+  @media (max-width: 600px) {
+    padding-block: 24px 16px;
+  }
+}
+
+.toolTitle {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.3;
+  text-wrap: balance;
+
+  @media (max-width: 600px) {
+    font-size: 24px;
+  }
+}
+
+.toolDescription {
+  font-size: 16px;
+  color: var(--t4f-text-secondary);
+  line-height: 1.7;
+  margin: 0;
+  width: 100%;
+  max-width: 880px;
+  text-wrap: pretty;
+
+  @media (max-width: 600px) {
+    font-size: 14px;
+  }
+}

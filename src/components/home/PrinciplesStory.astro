@@ -1,26 +1,25 @@
 ---
-import * as stylex from '@stylexjs/stylex';
+import styles from './PrinciplesStory.module.scss';
 import type { Region } from '../../config/region';
 import type { Locale } from '../../i18n/locale';
 import { homepageCopy } from '../../site/homepage-showcase';
-import { homeStyles as h } from '../../styles/homepage';
 import revealSource from '../../styles/principles-reveal.js?raw';
 interface Props { region: Region; locale: Locale }
 const { locale } = Astro.props;
 const c = homepageCopy[locale];
 ---
-<section data-home-section="principles" aria-labelledby="principles-heading" {...stylex.attrs(h.inner, h.principles)}>
-  <div {...stylex.attrs(h.editorial)}>
-    <div data-principles-part="title" {...stylex.attrs(h.principlesTitle, h.principlesMotion, h.principlesTitleReveal)}>
-      <h2 id="principles-heading" {...stylex.attrs(h.principlesHeading, locale === 'en' && h.principlesHeadingEnglish)}>{c.principlesTitle}</h2>
-      {c.principlesSubtitle && <span lang="en" {...stylex.attrs(h.principlesSubtitle)}>{c.principlesSubtitle}</span>}
+<section data-home-section="principles" aria-labelledby="principles-heading" class:list={[styles.inner, styles.principles]}>
+  <div class={styles.editorial}>
+    <div data-principles-part="title" class:list={[styles.principlesTitle, styles.principlesMotion, styles.principlesTitleReveal]}>
+      <h2 id="principles-heading" class:list={[styles.principlesHeading, locale === 'en' && styles.principlesHeadingEnglish]}>{c.principlesTitle}</h2>
+      {c.principlesSubtitle && <span lang="en" class={styles.principlesSubtitle}>{c.principlesSubtitle}</span>}
     </div>
-    <div {...stylex.attrs(h.principlesText)}>
-      <p data-principles-part="intro" {...stylex.attrs(h.principlesBody, h.principlesMotion, h.principlesIntroReveal)}>{c.principlesIntro}</p>
-      <p data-principles-part="detail" {...stylex.attrs(h.principlesBody, h.principlesDetail, h.principlesMotion, h.principlesDetailReveal)}>{c.principlesDetail}</p>
+    <div class={styles.principlesText}>
+      <p data-principles-part="intro" class:list={[styles.principlesBody, styles.principlesMotion, styles.principlesIntroReveal]}>{c.principlesIntro}</p>
+      <p data-principles-part="detail" class:list={[styles.principlesBody, styles.principlesDetail, styles.principlesMotion, styles.principlesDetailReveal]}>{c.principlesDetail}</p>
     </div>
-    <div data-principles-part="link" {...stylex.attrs(h.principlesLink, h.principlesMotion, h.principlesLinkReveal)}>
-      <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" {...stylex.attrs(h.link)}><span {...stylex.attrs(h.linkText)}>{c.principlesSource}</span></a>
+    <div data-principles-part="link" class:list={[styles.principlesLink, styles.principlesMotion, styles.principlesLinkReveal]}>
+      <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" class={styles.link}><span class={styles.linkText}>{c.principlesSource}</span></a>
     </div>
   </div>
 </section>

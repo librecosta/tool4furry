@@ -1,0 +1,71 @@
+.fluid {
+  width: 100%;
+  padding-left: max(clamp(16px, 2vw, 36px), env(safe-area-inset-left));
+  padding-right: max(clamp(16px, 2vw, 36px), env(safe-area-inset-right));
+}
+
+.readable {
+  width: 100%;
+  max-width: 820px;
+  margin-inline: auto;
+}
+
+.main {
+  flex: 1;
+  padding-block: 72px;
+
+  @media (max-width: 600px) {
+    padding-block: 40px;
+  }
+}
+
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--t4f-accent);
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--t4f-border);
+  border-radius: var(--t4f-radius-sm);
+  padding-block: 6px;
+  padding-inline: 10px;
+}
+
+.title {
+  max-width: 750px;
+  text-wrap: balance;
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.045em;
+  margin-block: 24px;
+
+  @media (max-width: 600px) {
+    font-size: 36px;
+  }
+}
+
+.intro {
+  font-size: 18px;
+  color: var(--t4f-text-secondary);
+  max-width: 680px;
+  line-height: 1.8;
+}
+
+.link {
+  color: var(--t4f-accent);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--t4f-space-8);
+  text-underline-offset: 5px;
+
+  &:where(:hover) {
+    color: var(--t4f-text-primary);
+  }
+
+  &:where(:active) {
+    color: var(--t4f-accent);
+  }
+}

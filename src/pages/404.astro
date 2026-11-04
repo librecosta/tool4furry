@@ -1,18 +1,17 @@
 ---
+import styles from './404.module.scss';
 import { defaultLocale, localizedPath } from '../i18n/locale';
-import * as stylex from '@stylexjs/stylex';
 import SiteLayout from '../layouts/SiteLayout.astro';
-import { siteStyles as s } from '../styles/site';
 import { region } from '../config/site';
 import { messages } from '../i18n/messages';
 const locale = defaultLocale(region);
 const t = messages[locale];
 ---
 <SiteLayout locale={locale} title="404" noindex>
-  <main id="main-content" {...stylex.attrs(s.fluid, s.readable, s.main)}>
-    <span {...stylex.attrs(s.badge)}>404</span>
-    <h1 {...stylex.attrs(s.title)}>{t.notFound}</h1>
-    <p {...stylex.attrs(s.intro)}>{t.notFoundDetail}</p>
-    <a href={localizedPath('/', region, locale)} {...stylex.attrs(s.link)}>{t.back}</a>
+  <main id="main-content" class:list={[styles.fluid, styles.readable, styles.main]}>
+    <span class={styles.badge}>404</span>
+    <h1 class={styles.title}>{t.notFound}</h1>
+    <p class={styles.intro}>{t.notFoundDetail}</p>
+    <a href={localizedPath('/', region, locale)} class={styles.link}>{t.back}</a>
   </main>
 </SiteLayout>

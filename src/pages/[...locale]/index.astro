@@ -1,8 +1,7 @@
 ---
+import styles from './index.module.scss';
 import { localePaths } from '../../i18n/locale';
-import * as stylex from '@stylexjs/stylex';
 import SiteLayout from '../../layouts/SiteLayout.astro';
-import { homeStyles as h } from '../../styles/homepage';
 import { region } from '../../config/site';
 import { messages } from '../../i18n/messages';
 import { getHomepageEntries } from '../../site/catalog';
@@ -17,9 +16,9 @@ const t = messages[locale];
 const tools = getHomepageEntries(region, undefined, undefined, import.meta.env.DEV, locale);
 ---
 <SiteLayout locale={locale} title={t.home} fullTitle={t.homeTitle} description={t.homeDescription}>
-  <main id="main-content" {...stylex.attrs(h.main)}>
+  <main id="main-content" class={styles.main}>
     <HomeHero region={region} locale={locale} />
-    <section id="tools" aria-labelledby="tools-heading" {...stylex.attrs(h.discovery)}>
+    <section id="tools" aria-labelledby="tools-heading" class={styles.discovery}>
       <FeaturedTools region={region} locale={locale} entries={tools} />
       <RoleShowcases region={region} locale={locale} />
     </section>

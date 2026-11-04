@@ -1,6 +1,6 @@
 # 工程基础 · 当前说明
 
-当前为 V0.6-D2 源码基线：唯一正式工具 Image Converter，CN/Global 双语静态构建就绪，均未部署。系统分层见 [架构](../.agents/architecture.md)，执行流程见 [playbook](../.agents/playbook.md)；本页只解释工程集成与验证入口。
+当前工具与发布状态以 [AGENTS](../AGENTS.md) 为准；V0.9-A 已迁移 Astro 静态外壳，React 保留 StyleX，两个地区均未部署。系统分层见 [架构](../.agents/architecture.md)，执行流程见 [playbook](../.agents/playbook.md)；本页只解释工程集成与验证入口。
 
 ## SSG 与交互边界
 
@@ -13,7 +13,7 @@ DEV Lab 与正式工具分离：UI/文件/Canvas/Form/Batch 各自持有演示�
 
 ## StyleX 与字体
 
-[astro.config.mjs](../astro.config.mjs) 使用官方 unplugin 的 Vite pre-transform、`devMode: 'css-only'`、`runtimeInjection: false`、独立生产 CSS；React 使用现有集成路径，不恢复旧 Babel 配置。生产 `cssInjectionTarget` 固定选择所有静态页引用的 SiteLayout CSS，防止工具局部 CSS 成为上游默认的首资产注入目标；不改变工具 CSS 的按需归属。样式在 TS/TSX 中定义，Astro 用 `stylex.attrs`，React 用 `stylex.props`。`global.css` 仅承载 reset、字体/继承与必要基础桥接，不能变成第二套组件样式系统。
+[astro.config.mjs](../astro.config.mjs) 使用官方 unplugin 的 Vite pre-transform、`devMode: 'css-only'`、`runtimeInjection: false`、独立生产 CSS；React 使用现有集成路径，不恢复旧 Babel 配置。生产 `cssInjectionTarget` 固定选择所有静态页引用的 SiteLayout CSS，防止工具局部 CSS 成为上游默认的首资产注入目标；不改变工具 CSS 的按需归属。Astro 静态组件使用邻近 SCSS Modules，React 暂用 `stylex.props`；`global.scss` 承载 reset、字体与基础规则，`tokens.scss` 与旧 StyleX 值保持一致。具体所有权和后续范围见 [V0.9 样式基础](styling-foundation-v0.9.md)。
 
 原生 `defineVars/createTheme` 与 `resolveTheme` 选择一份完整主题；根 class/data/color-scheme 覆盖静态页面、Island 和 Portal。外观恢复与切换由既有受控脚本完成，不增加 React ThemeProvider。主题值、字体和品牌权威入口见 [视觉说明](visual-foundation.md)。
 

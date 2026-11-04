@@ -1,0 +1,62 @@
+.media {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--t4f-surface-panel);
+  border-radius: var(--t4f-radius-sm);
+}
+
+.picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.portraitImage {
+  object-fit: contain;
+}
+
+.cover {
+  aspect-ratio: 16 / 10;
+  height: auto;
+}
+
+.thumbnail {
+  aspect-ratio: 4 / 3;
+  height: auto;
+}
+
+.portrait {
+  aspect-ratio: 3 / 4;
+  height: auto;
+  background-color: transparent;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.story {
+  aspect-ratio: 4 / 3;
+  height: auto;
+
+  @media (max-width: 760px) {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+.wide {
+  aspect-ratio: 2.8 / 1;
+  height: auto;
+
+  @media (max-width: 760px) {
+    aspect-ratio: 1.8 / 1;
+  }
+}

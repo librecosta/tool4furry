@@ -1,26 +1,25 @@
 ---
-import * as stylex from '@stylexjs/stylex';
+import styles from './CommunitySupport.module.scss';
 import type { Region } from '../../config/region';
 import type { Locale } from '../../i18n/locale';
 import { getCommunityCards } from '../../site/home-community';
-import { communityStyles as s } from '../../styles/home-community';
 interface Props { region: Region; locale: Locale }
 const { region, locale } = Astro.props;
 ---
-<section data-home-community aria-labelledby="community-heading" {...stylex.attrs(s.section)}>
-  <h2 id="community-heading" {...stylex.attrs(s.accessibleHeading)}>{locale === 'zh' ? '社群与支持' : 'Community & Support'}</h2>
-  <div {...stylex.attrs(s.grid)}>
-    {getCommunityCards(region, locale).map(card => <article data-community-card={card.id} aria-labelledby={`community-${card.id}`} {...stylex.attrs(s.card)}>
-      <h3 id={`community-${card.id}`} {...stylex.attrs(s.title)}>{card.title}</h3>
-      {card.qr ? <div {...stylex.attrs(s.qqBody)}>
-        <div {...stylex.attrs(s.qqCopy)}><p {...stylex.attrs(s.description)}>{card.description}</p><p {...stylex.attrs(s.note, s.qqHint)}>{card.note}</p></div>
-        <img src={card.qr.src} width={card.qr.width} height={card.qr.height} alt={card.qr.alt} loading="lazy" {...stylex.attrs(s.qr)} />
+<section data-home-community aria-labelledby="community-heading" class={styles.section}>
+  <h2 id="community-heading" class={styles.accessibleHeading}>{locale === 'zh' ? '社群与支持' : 'Community & Support'}</h2>
+  <div class={styles.grid}>
+    {getCommunityCards(region, locale).map(card => <article data-community-card={card.id} aria-labelledby={`community-${card.id}`} class={styles.card}>
+      <h3 id={`community-${card.id}`} class={styles.title}>{card.title}</h3>
+      {card.qr ? <div class={styles.qqBody}>
+        <div class={styles.qqCopy}><p class={styles.description}>{card.description}</p><p class:list={[styles.note, styles.qqHint]}>{card.note}</p></div>
+        <img src={card.qr.src} width={card.qr.width} height={card.qr.height} alt={card.qr.alt} loading="lazy" class={styles.qr} />
       </div> : <>
-        <p {...stylex.attrs(s.description, s.centeredCopy)}>{card.description}</p>
-        <div {...stylex.attrs(s.footer)}>
-          {card.note && <p {...stylex.attrs(s.note)}>{card.note}</p>}
-          <a href={card.href} target="_blank" rel="noopener noreferrer" {...stylex.attrs(s.action)}>
-            <img src={card.logo} width="20" height="20" alt="" aria-hidden="true" loading="lazy" {...stylex.attrs(s.logo)} />{card.action}
+        <p class:list={[styles.description, styles.centeredCopy]}>{card.description}</p>
+        <div class={styles.footer}>
+          {card.note && <p class={styles.note}>{card.note}</p>}
+          <a href={card.href} target="_blank" rel="noopener noreferrer" class={styles.action}>
+            <img src={card.logo} width="20" height="20" alt="" aria-hidden="true" loading="lazy" class={styles.logo} />{card.action}
           </a>
         </div>
       </>}

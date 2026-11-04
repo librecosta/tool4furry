@@ -1,0 +1,83 @@
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--t4f-space-4);
+  flex-shrink: 0;
+}
+
+.control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px;
+  gap: var(--t4f-space-4);
+  color: var(--t4f-nav-text);
+  background-color: transparent;
+  outline-color: var(--t4f-nav-focus);
+  border-width: 0;
+  border-radius: var(--t4f-radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  flex-shrink: 0;
+
+  &:where(:hover) {
+    background-color: var(--t4f-nav-hover);
+  }
+
+  &:where(:focus-visible) {
+    outline-color: var(--t4f-nav-focus);
+  }
+}
+
+.controlMotion {
+  transition-property: color, background-color;
+  transition-duration: 300ms;
+  transition-timing-function: ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition-duration: 0ms;
+  }
+}
+
+.currentLanguage {
+  color: var(--t4f-nav-text);
+  font-weight: 700;
+}
+
+.targetLanguage {
+  color: var(--t4f-nav-secondary);
+  font-weight: 400;
+}
+
+.github {
+  display: inline-flex;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
+}
+
+.appearanceIcon {
+  width: 20px;
+  height: 20px;
+  line-height: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.svg {
+  display: block;
+}
+
+.account {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  color: var(--t4f-nav-secondary);
+}

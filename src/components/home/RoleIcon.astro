@@ -1,16 +1,15 @@
 ---
-import * as stylex from '@stylexjs/stylex';
+import styles from './RoleIcon.module.scss';
 import { SquaresFourIcon } from '@phosphor-icons/react/ssr';
 import { roleIcon } from '../site/role-icons';
 import { roles, type RoleId } from '../../site/roles';
 import { hasHomeMedia, type HomeMedia } from '../../site/homepage-showcase';
-import { homeStyles as h } from '../../styles/homepage';
 interface Props { id: string; media?: HomeMedia }
 const { id, media } = Astro.props;
 const present = hasHomeMedia(media);
 const Icon = Object.hasOwn(roles, id) ? roleIcon(id as RoleId) : SquaresFourIcon;
 ---
-<span data-role-icon aria-hidden="true" {...stylex.attrs(h.roleIcon)}>
-  {present && media ? <img src={media.src} width={media.width} height={media.height} alt="" loading="lazy" decoding="async" {...stylex.attrs(h.roleIconImage)} />
-    : <Icon size={24} weight="regular" color="currentColor" aria-hidden="true" focusable="false" className={stylex.attrs(h.roleIconImage).class} />}
+<span data-role-icon aria-hidden="true" class={styles.roleIcon}>
+  {present && media ? <img src={media.src} width={media.width} height={media.height} alt="" loading="lazy" decoding="async" class={styles.roleIconImage} />
+    : <Icon size={24} weight="regular" color="currentColor" aria-hidden="true" focusable="false" className={styles.roleIconImage} />}
 </span>

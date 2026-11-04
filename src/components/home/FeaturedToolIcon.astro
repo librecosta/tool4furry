@@ -1,7 +1,6 @@
 ---
-import * as stylex from '@stylexjs/stylex';
+import styles from './FeaturedToolIcon.module.scss';
 import { SquaresFourIcon } from '@phosphor-icons/react/ssr';
-import { homeStyles as h } from '../../styles/homepage';
 import { getToolIcon } from '../../site/tool-icons';
 interface Props { id: string; size?: number }
 const { id, size = 40 } = Astro.props;
@@ -16,5 +15,5 @@ const icon = getToolIcon(id);
   height={size}
   alt=""
   decoding="async"
-  {...stylex.attrs(h.pixelToolIcon)}
-/> : <SquaresFourIcon data-tool-icon-fallback size={size} weight="regular" color="currentColor" aria-hidden="true" focusable="false" className={stylex.attrs(h.featuredIcon).class} />}
+  class={styles.pixelToolIcon}
+/> : <SquaresFourIcon data-tool-icon-fallback size={size} weight="regular" color="currentColor" aria-hidden="true" focusable="false" className={styles.featuredIcon} />}

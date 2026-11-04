@@ -1,0 +1,12 @@
+.pixelToolIcon {
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.featuredIcon {
+  display: block;
+  flex-shrink: 0;
+  color: var(--t4f-text-primary);
+}

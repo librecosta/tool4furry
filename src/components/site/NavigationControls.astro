@@ -1,8 +1,7 @@
 ---
+import styles from './NavigationControls.module.scss';
 import { type Locale } from '../../i18n/locale';
-import * as stylex from '@stylexjs/stylex';
 import { SunIcon, MoonIcon, UserIcon, GithubLogoIcon } from '@phosphor-icons/react/ssr';
-import { navigationStyles as n } from '../../styles/navigation';
 import { pageLanguageLink } from '../../config/navigation';
 import { messages } from '../../i18n/messages';
 const link = pageLanguageLink(Astro.url.pathname);
@@ -10,14 +9,14 @@ interface Props { locale: Locale }
 const { locale } = Astro.props;
 const t = messages[locale];
 ---
-<div data-navigation-controls {...stylex.attrs(n.actions)}>
-  <a data-language-link href={link.href} hreflang={link.hreflang} aria-label={t.switchLanguage} {...stylex.attrs(n.control, n.controlMotion)}>
-    <span aria-hidden="true" {...stylex.attrs(n.currentLanguage)}>{link.current}</span><span aria-hidden="true" {...stylex.attrs(n.targetLanguage)}> / </span><span lang={link.hreflang} {...stylex.attrs(n.targetLanguage)}>{link.target}</span>
+<div data-navigation-controls class={styles.actions}>
+  <a data-language-link href={link.href} hreflang={link.hreflang} aria-label={t.switchLanguage} class:list={[styles.control, styles.controlMotion]}>
+    <span aria-hidden="true" class={styles.currentLanguage}>{link.current}</span><span aria-hidden="true" class={styles.targetLanguage}> / </span><span lang={link.hreflang} class={styles.targetLanguage}>{link.target}</span>
   </a>
-  <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" aria-label={t.github} {...stylex.attrs(n.control, n.controlMotion, n.github)}><GithubLogoIcon size={20} aria-hidden /></a>
-  <button type="button" data-appearance-toggle="static" data-light-label={t.switchLight} data-dark-label={t.switchDark} aria-label={t.appearanceControl} disabled {...stylex.attrs(n.control, n.controlMotion)}>
-    <span data-appearance-icon="light" {...stylex.attrs(n.appearanceIcon)}><SunIcon size={20} aria-hidden className={stylex.attrs(n.svg).class} /></span>
-    <span data-appearance-icon="dark" {...stylex.attrs(n.appearanceIcon)}><MoonIcon size={20} aria-hidden className={stylex.attrs(n.svg).class} /></span>
+  <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" aria-label={t.github} class:list={[styles.control, styles.controlMotion, styles.github]}><GithubLogoIcon size={20} aria-hidden /></a>
+  <button type="button" data-appearance-toggle="static" data-light-label={t.switchLight} data-dark-label={t.switchDark} aria-label={t.appearanceControl} disabled class:list={[styles.control, styles.controlMotion]}>
+    <span data-appearance-icon="light" class={styles.appearanceIcon}><SunIcon size={20} aria-hidden className={styles.svg} /></span>
+    <span data-appearance-icon="dark" class={styles.appearanceIcon}><MoonIcon size={20} aria-hidden className={styles.svg} /></span>
   </button>
-  <span data-account-slot role="img" aria-label={t.accountReserved} {...stylex.attrs(n.account)}><UserIcon size={20} aria-hidden /></span>
+  <span data-account-slot role="img" aria-label={t.accountReserved} class={styles.account}><UserIcon size={20} aria-hidden /></span>
 </div>

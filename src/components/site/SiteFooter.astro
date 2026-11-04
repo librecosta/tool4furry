@@ -1,12 +1,11 @@
 ---
+import styles from './SiteFooter.module.scss';
 import { localizedPath, type Locale } from '../../i18n/locale';
-import * as stylex from '@stylexjs/stylex';
 import { GithubLogoIcon } from '@phosphor-icons/react/ssr';
 import type { Region } from '../../config/region';
 import { getComplianceEntries, showCompliancePreview } from '../../config/compliance';
 import { regionLink } from '../../site/language';
 import { messages } from '../../i18n/messages';
-import { siteStyles as s } from '../../styles/site';
 import Brand from './Brand.astro';
 
 interface Props { region: Region; locale: Locale }
@@ -16,55 +15,55 @@ const github = 'https://github.com/librecosta/tool4furry';
 const compliance = getComplianceEntries(region);
 const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, compliance);
 ---
-<footer data-site-footer {...stylex.attrs(s.fullBleed, s.fluid, s.footerRoot)}>
-  <div {...stylex.attrs(s.homeWidth)}>
-    <div data-footer-brand {...stylex.attrs(s.footerTop)}>
+<footer data-site-footer class:list={[styles.fullBleed, styles.fluid, styles.footerRoot]}>
+  <div class={styles.homeWidth}>
+    <div data-footer-brand class={styles.footerTop}>
       <Brand locale={locale} />
-      <a data-footer-social href={github} target="_blank" rel="noopener noreferrer" aria-label={t.github} {...stylex.attrs(s.footerSocial)}>
-        <GithubLogoIcon size={24} aria-hidden className={stylex.attrs(s.footerSocialIcon).class} />
+      <a data-footer-social href={github} target="_blank" rel="noopener noreferrer" aria-label={t.github} class={styles.footerSocial}>
+        <GithubLogoIcon size={24} aria-hidden className={styles.footerSocialIcon} />
       </a>
     </div>
-    <nav aria-label={t.footerNav} {...stylex.attrs(s.footerLinks)}>
-      <div {...stylex.attrs(s.footerGroup)}>
-        <p {...stylex.attrs(s.footerGroupHeading)}>{t.footerTools}</p>
-        <a {...stylex.attrs(s.footerLink)} href={localizedPath('/#tools', region, locale)}><span {...stylex.attrs(s.footerLinkText)}>{t.featuredTools}</span></a>
-        <a {...stylex.attrs(s.footerLink)} href={localizedPath('/tools/', region, locale)}><span {...stylex.attrs(s.footerLinkText)}>{t.browseAll}</span></a>
+    <nav aria-label={t.footerNav} class={styles.footerLinks}>
+      <div class={styles.footerGroup}>
+        <p class={styles.footerGroupHeading}>{t.footerTools}</p>
+        <a class={styles.footerLink} href={localizedPath('/#tools', region, locale)}><span class={styles.footerLinkText}>{t.featuredTools}</span></a>
+        <a class={styles.footerLink} href={localizedPath('/tools/', region, locale)}><span class={styles.footerLinkText}>{t.browseAll}</span></a>
       </div>
-      <div {...stylex.attrs(s.footerGroup)}>
-        <p {...stylex.attrs(s.footerGroupHeading)}>{t.footerProject}</p>
-        <a {...stylex.attrs(s.footerLink)} href={localizedPath('/about/', region, locale)}><span {...stylex.attrs(s.footerLinkText)}>{t.about}</span></a>
-        <a {...stylex.attrs(s.footerLink)} href={github} target="_blank" rel="noopener noreferrer"><span {...stylex.attrs(s.footerLinkText)}>{t.source}</span></a>
-        <a data-region-link href={regionLink(Astro.url.pathname, region, undefined, import.meta.env.DEV)} {...stylex.attrs(s.footerLink)}><span {...stylex.attrs(s.footerLinkText)}>{region === 'cn' ? t.internationalSite : t.chinaSite}</span></a>
+      <div class={styles.footerGroup}>
+        <p class={styles.footerGroupHeading}>{t.footerProject}</p>
+        <a class={styles.footerLink} href={localizedPath('/about/', region, locale)}><span class={styles.footerLinkText}>{t.about}</span></a>
+        <a class={styles.footerLink} href={github} target="_blank" rel="noopener noreferrer"><span class={styles.footerLinkText}>{t.source}</span></a>
+        <a data-region-link href={regionLink(Astro.url.pathname, region, undefined, import.meta.env.DEV)} class={styles.footerLink}><span class={styles.footerLinkText}>{region === 'cn' ? t.internationalSite : t.chinaSite}</span></a>
       </div>
-      <div {...stylex.attrs(s.footerGroup)}>
-        <p {...stylex.attrs(s.footerGroupHeading)}>{t.footerSupport}</p>
-        <a {...stylex.attrs(s.footerLink)} href={`${github}/issues`} target="_blank" rel="noopener noreferrer"><span {...stylex.attrs(s.footerLinkText)}>{t.feedback}</span></a>
-        <a {...stylex.attrs(s.footerLink)} href="mailto:contact@librecosta.com"><span {...stylex.attrs(s.footerLinkText)}>{t.reportVulnerability}</span></a>
+      <div class={styles.footerGroup}>
+        <p class={styles.footerGroupHeading}>{t.footerSupport}</p>
+        <a class={styles.footerLink} href={`${github}/issues`} target="_blank" rel="noopener noreferrer"><span class={styles.footerLinkText}>{t.feedback}</span></a>
+        <a class={styles.footerLink} href="mailto:contact@librecosta.com"><span class={styles.footerLinkText}>{t.reportVulnerability}</span></a>
       </div>
     </nav>
-    <div data-footer-compliance-slot {...stylex.attrs(s.footerComplianceSlot)}>
-      {compliance.length > 0 && <div data-site-compliance aria-label={locale === 'zh' ? '备案与许可信息' : 'Registrations and licenses'} {...stylex.attrs(s.footerCompliance)}>
-        {compliance.map(entry => <div data-compliance-kind={entry.kind} {...stylex.attrs(s.complianceCell, entry.kind === 'public-security' && s.compliancePolice, entry.kind === 'additional' && s.complianceAdditional)}>
-          {entry.href ? <a href={entry.href} {...stylex.attrs(s.complianceLink)}>
-            {entry.iconSrc && <img src={entry.iconSrc} width="20" height="20" alt="" aria-hidden="true" {...stylex.attrs(s.complianceIcon)} />}
-            <span {...stylex.attrs(s.footerLinkText)}>{entry.label}</span>
-          </a> : <span {...stylex.attrs(s.complianceText)}>{entry.label}</span>}
+    <div data-footer-compliance-slot class={styles.footerComplianceSlot}>
+      {compliance.length > 0 && <div data-site-compliance aria-label={locale === 'zh' ? '备案与许可信息' : 'Registrations and licenses'} class={styles.footerCompliance}>
+        {compliance.map(entry => <div data-compliance-kind={entry.kind} class:list={[styles.complianceCell, entry.kind === 'public-security' && styles.compliancePolice, entry.kind === 'additional' && styles.complianceAdditional]}>
+          {entry.href ? <a href={entry.href} class={styles.complianceLink}>
+            {entry.iconSrc && <img src={entry.iconSrc} width="20" height="20" alt="" aria-hidden="true" class={styles.complianceIcon} />}
+            <span class={styles.footerLinkText}>{entry.label}</span>
+          </a> : <span class={styles.complianceText}>{entry.label}</span>}
         </div>)}
       </div>}
-      {compliancePreview && <div data-footer-compliance-preview {...stylex.attrs(s.footerCompliance)}>
-        <p {...stylex.attrs(s.complianceCell, s.compliancePreview)}>{locale === 'zh' ? 'ICP备案展示位置 · 开发预览' : 'ICP registration location · Development preview'}</p>
-        <p {...stylex.attrs(s.complianceCell, s.compliancePolice, s.compliancePreview)}>{locale === 'zh' ? '公安备案展示位置 · 开发预览' : 'Public security registration location · Development preview'}</p>
+      {compliancePreview && <div data-footer-compliance-preview class={styles.footerCompliance}>
+        <p class:list={[styles.complianceCell, styles.compliancePreview]}>{locale === 'zh' ? 'ICP备案展示位置 · 开发预览' : 'ICP registration location · Development preview'}</p>
+        <p class:list={[styles.complianceCell, styles.compliancePolice, styles.compliancePreview]}>{locale === 'zh' ? '公安备案展示位置 · 开发预览' : 'Public security registration location · Development preview'}</p>
       </div>}
     </div>
-    <div data-footer-legal {...stylex.attrs(s.footerBottom)}>
-      <div {...stylex.attrs(s.footerLegal)}>
-        <nav aria-label={t.footerLegal} {...stylex.attrs(s.footerLegalLinks)}>
-          <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href={localizedPath('/privacy/', region, locale)}><span {...stylex.attrs(s.footerLinkText)}>{t.privacy}</span></a>
-          <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href={localizedPath('/terms/', region, locale)}><span {...stylex.attrs(s.footerLinkText)}>{t.terms}</span></a>
-          <a {...stylex.attrs(s.footerLink, s.footerLegalLink)} href={`${github}/blob/master/LICENSE`}><span {...stylex.attrs(s.footerLinkText)}>BSD-3-Clause License</span></a>
+    <div data-footer-legal class={styles.footerBottom}>
+      <div class={styles.footerLegal}>
+        <nav aria-label={t.footerLegal} class={styles.footerLegalLinks}>
+          <a class:list={[styles.footerLink, styles.footerLegalLink]} href={localizedPath('/privacy/', region, locale)}><span class={styles.footerLinkText}>{t.privacy}</span></a>
+          <a class:list={[styles.footerLink, styles.footerLegalLink]} href={localizedPath('/terms/', region, locale)}><span class={styles.footerLinkText}>{t.terms}</span></a>
+          <a class:list={[styles.footerLink, styles.footerLegalLink]} href={`${github}/blob/master/LICENSE`}><span class={styles.footerLinkText}>BSD-3-Clause License</span></a>
         </nav>
       </div>
-      <span {...stylex.attrs(s.footerCopyright)}>© {new Date().getFullYear()} Tool4Furry ·&nbsp;<a data-footer-attribution href="https://librecosta.com" target="_blank" rel="noopener noreferrer" {...stylex.attrs(s.complianceLink)}><span {...stylex.attrs(s.footerLinkText)}>LibreCosta</span></a></span>
+      <span class={styles.footerCopyright}>© {new Date().getFullYear()} Tool4Furry ·&nbsp;<a data-footer-attribution href="https://librecosta.com" target="_blank" rel="noopener noreferrer" class={styles.complianceLink}><span class={styles.footerLinkText}>LibreCosta</span></a></span>
     </div>
 
   </div>

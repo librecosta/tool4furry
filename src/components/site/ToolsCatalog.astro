@@ -1,5 +1,5 @@
 ---
-import * as stylex from '@stylexjs/stylex';
+import styles from './ToolsCatalog.module.scss';
 import { MagnifyingGlassIcon, XIcon, SlidersHorizontalIcon, SquaresFourIcon, CaretLeftIcon } from '@phosphor-icons/react/ssr';
 import type { Region } from '../../config/region';
 import type { Locale } from '../../i18n/locale';
@@ -8,7 +8,6 @@ import { roles } from '../../site/roles';
 import { roleIcon } from './role-icons';
 import { catalogCopy } from '../../site/catalog-copy';
 import { messages } from '../../i18n/messages';
-import { catalogStyles as c } from '../../styles/catalog';
 import ToolCards from './ToolCards.astro';
 import CatalogEmpty from './CatalogEmpty.astro';
 import type { CatalogDisplayEntry, CatalogDisplaySection } from '../../site/catalog-fixture';
@@ -25,26 +24,26 @@ if (import.meta.env.DEV) {
 }
 const onlyDrafts = realEntries.length > 0 && realEntries.every(entry => entry.status === 'draft');
 ---
-<main id="main-content" data-tools-catalog data-locale={locale} {...stylex.attrs(c.root)}>
-  <div data-catalog-sidebar {...stylex.attrs(c.sidebarClip)}>
-  <dialog open id="catalog-filters" data-catalog-filters aria-label={t.filters} {...stylex.attrs(c.sidebar)}>
-    <div {...stylex.attrs(c.sidebarInner, c.scroll)}>
-      <div {...stylex.attrs(c.drawerTitle)}><strong>{t.filters}</strong><button type="button" data-close-filters aria-label={t.close} {...stylex.attrs(c.button, c.iconButton)}><XIcon size={20} aria-hidden /></button></div>
-      <nav aria-label={t.filters} {...stylex.attrs(c.nav)}>
-        <div {...stylex.attrs(c.fixed)}>
-          <button type="button" disabled data-catalog-control data-filter="all" aria-pressed="true" {...stylex.attrs(c.button, c.all)}><SquaresFourIcon size={20} aria-hidden />{t.all}<span>{entries.length}</span></button>
+<main id="main-content" data-tools-catalog data-locale={locale} class={styles.root}>
+  <div data-catalog-sidebar class={styles.sidebarClip}>
+  <dialog open id="catalog-filters" data-catalog-filters aria-label={t.filters} class={styles.sidebar}>
+    <div class:list={[styles.sidebarInner, styles.scroll]}>
+      <div class={styles.drawerTitle}><strong>{t.filters}</strong><button type="button" data-close-filters aria-label={t.close} class:list={[styles.button, styles.iconButton]}><XIcon size={20} aria-hidden /></button></div>
+      <nav aria-label={t.filters} class={styles.nav}>
+        <div class={styles.fixed}>
+          <button type="button" disabled data-catalog-control data-filter="all" aria-pressed="true" class:list={[styles.button, styles.all]}><SquaresFourIcon size={20} aria-hidden />{t.all}<span>{entries.length}</span></button>
         </div>
-        <section {...stylex.attrs(c.fixed, c.roleSection)} aria-labelledby="catalog-roles-heading">
-          <h2 id="catalog-roles-heading" {...stylex.attrs(c.heading)}>{t.roles}</h2>
-          <div {...stylex.attrs(c.roles)}>{Object.entries(roles).map(([id, role]) => { const Icon = roleIcon(id as keyof typeof roles); return <button type="button" disabled data-catalog-control data-filter="role" data-value={id} data-label={role[locale]} aria-pressed="false" lang={locale} {...stylex.attrs(c.button, c.role)}><span {...stylex.attrs(c.roleIcon, c[id as keyof typeof roles])}><Icon size={24} weight="regular" aria-hidden /></span><span>{role[locale]}</span></button>; })}</div>
+        <section class:list={[styles.fixed, styles.roleSection]} aria-labelledby="catalog-roles-heading">
+          <h2 id="catalog-roles-heading" class={styles.heading}>{t.roles}</h2>
+          <div class={styles.roles}>{Object.entries(roles).map(([id, role]) => { const Icon = roleIcon(id as keyof typeof roles); return <button type="button" disabled data-catalog-control data-filter="role" data-value={id} data-label={role[locale]} aria-pressed="false" lang={locale} class:list={[styles.button, styles.role]}><span class:list={[styles.roleIcon, styles[id as keyof typeof roles]]}><Icon size={24} weight="regular" aria-hidden /></span><span>{role[locale]}</span></button>; })}</div>
         </section>
-        <section {...stylex.attrs(c.treeArea)} aria-labelledby="catalog-categories-heading">
-          <h2 id="catalog-categories-heading" {...stylex.attrs(c.heading)}>{t.categories}</h2>
-          <div data-catalog-tree tabindex="0" role="group" aria-labelledby="catalog-categories-heading" {...stylex.attrs(c.tree, c.scroll)}>
-            {sections.length === 0 && <p {...stylex.attrs(c.muted)}>{t.noCategories}</p>}
+        <section class={styles.treeArea} aria-labelledby="catalog-categories-heading">
+          <h2 id="catalog-categories-heading" class={styles.heading}>{t.categories}</h2>
+          <div data-catalog-tree tabindex="0" role="group" aria-labelledby="catalog-categories-heading" class:list={[styles.tree, styles.scroll]}>
+            {sections.length === 0 && <p class={styles.muted}>{t.noCategories}</p>}
             {sections.map(section => <div>
-              <button type="button" disabled data-catalog-control data-filter="category" data-value={section.id} data-label={section.label} aria-pressed="false" aria-expanded={section.groups.length ? 'false' : undefined} aria-controls={section.groups.length ? `catalog-group-${section.id}` : undefined} {...stylex.attrs(c.button, c.treeButton)}><span aria-hidden="true" {...stylex.attrs(c.treeDot, c.parentDot)}></span><span {...stylex.attrs(c.treeLabel)}>{section.label}</span><span {...stylex.attrs(c.treeCount)}>{section.groups.reduce((n, group) => n + group.entries.length, 0)}</span></button>
-              {section.groups.length > 0 && <div id={`catalog-group-${section.id}`} data-group-list={section.id} hidden {...stylex.attrs(c.subgroup)}>{section.groups.map(group => <button type="button" disabled data-catalog-control data-filter="group" data-value={group.id} data-parent={section.id} data-label={group.label} aria-pressed="false" {...stylex.attrs(c.button, c.treeButton, c.groupButton)}><span aria-hidden="true" {...stylex.attrs(c.treeDot, c.childDot)}></span><span {...stylex.attrs(c.treeLabel)}>{group.label}</span><span {...stylex.attrs(c.treeCount)}>{group.entries.length}</span></button>)}</div>}
+              <button type="button" disabled data-catalog-control data-filter="category" data-value={section.id} data-label={section.label} aria-pressed="false" aria-expanded={section.groups.length ? 'false' : undefined} aria-controls={section.groups.length ? `catalog-group-${section.id}` : undefined} class:list={[styles.button, styles.treeButton]}><span aria-hidden="true" class:list={[styles.treeDot, styles.parentDot]}></span><span class={styles.treeLabel}>{section.label}</span><span class={styles.treeCount}>{section.groups.reduce((n, group) => n + group.entries.length, 0)}</span></button>
+              {section.groups.length > 0 && <div id={`catalog-group-${section.id}`} data-group-list={section.id} hidden class={styles.subgroup}>{section.groups.map(group => <button type="button" disabled data-catalog-control data-filter="group" data-value={group.id} data-parent={section.id} data-label={group.label} aria-pressed="false" class:list={[styles.button, styles.treeButton, styles.groupButton]}><span aria-hidden="true" class:list={[styles.treeDot, styles.childDot]}></span><span class={styles.treeLabel}>{group.label}</span><span class={styles.treeCount}>{group.entries.length}</span></button>)}</div>}
             </div>)}
           </div>
         </section>
@@ -52,35 +51,35 @@ const onlyDrafts = realEntries.length > 0 && realEntries.every(entry => entry.st
     </div>
   </dialog>
   </div>
-  <div {...stylex.attrs(c.main)}>
-    <button type="button" hidden data-toggle-sidebar aria-controls="catalog-filters" aria-expanded="true" aria-label={t.collapseSidebar} {...stylex.attrs(c.collapseControl)}><span {...stylex.attrs(c.collapseBall)}><CaretLeftIcon size={18} aria-hidden className={stylex.attrs(c.collapseArrow).class} /></span></button>
-    <div {...stylex.attrs(c.top, c.scroll)}>
-      <div {...stylex.attrs(c.titleRow)}>
-        <div><h1 {...stylex.attrs(c.title)}>{site.tools}</h1><p {...stylex.attrs(c.intro)}>{site.catalogIntro}</p></div>
-        <button type="button" disabled data-catalog-control data-open-filters aria-label={t.filters} aria-expanded="false" aria-controls="catalog-filters" {...stylex.attrs(c.button, c.mobile)}><SlidersHorizontalIcon size={20} aria-hidden /><span {...stylex.attrs(c.filterLabel)}>{t.filters}</span></button>
+  <div class={styles.main}>
+    <button type="button" hidden data-toggle-sidebar aria-controls="catalog-filters" aria-expanded="true" aria-label={t.collapseSidebar} class={styles.collapseControl}><span class={styles.collapseBall}><CaretLeftIcon size={18} aria-hidden className={styles.collapseArrow} /></span></button>
+    <div class:list={[styles.top, styles.scroll]}>
+      <div class={styles.titleRow}>
+        <div><h1 class={styles.title}>{site.tools}</h1><p class={styles.intro}>{site.catalogIntro}</p></div>
+        <button type="button" disabled data-catalog-control data-open-filters aria-label={t.filters} aria-expanded="false" aria-controls="catalog-filters" class:list={[styles.button, styles.mobile]}><SlidersHorizontalIcon size={20} aria-hidden /><span class={styles.filterLabel}>{t.filters}</span></button>
       </div>
-      <form data-catalog-search role="search" {...stylex.attrs(c.searchRow)}>
-        <label {...stylex.attrs(c.search)}><MagnifyingGlassIcon size={20} aria-hidden /><input data-catalog-control disabled type="search" name="q" maxlength="160" aria-label={t.search} placeholder={t.placeholder} autocomplete="off" {...stylex.attrs(c.input)} /><button type="button" disabled data-catalog-control data-clear-search aria-label={t.clearSearch} {...stylex.attrs(c.button, c.iconButton)}><XIcon size={18} aria-hidden /></button></label>
-        <button type="button" hidden data-search-all {...stylex.attrs(c.button)}>{t.searchAll}</button>
+      <form data-catalog-search role="search" class={styles.searchRow}>
+        <label class={styles.search}><MagnifyingGlassIcon size={20} aria-hidden /><input data-catalog-control disabled type="search" name="q" maxlength="160" aria-label={t.search} placeholder={t.placeholder} autocomplete="off" class={styles.input} /><button type="button" disabled data-catalog-control data-clear-search aria-label={t.clearSearch} class:list={[styles.button, styles.iconButton]}><XIcon size={18} aria-hidden /></button></label>
+        <button type="button" hidden data-search-all class={styles.button}>{t.searchAll}</button>
       </form>
-      <div data-catalog-chips aria-label={t.selected} hidden {...stylex.attrs(c.chips, c.scroll)}></div>
-      <div {...stylex.attrs(c.status)}><p data-result-count role="status" aria-live="polite" aria-atomic="true" {...stylex.attrs(c.muted)}>{entries.length === 1 ? t.countOne : t.count.replace('{count}', String(entries.length))}</p>{onlyDrafts && <p data-catalog-drafts {...stylex.attrs(c.muted)}>{t.drafts}</p>}</div>
-      {fixtureCount > 0 && <p data-catalog-fixture-note {...stylex.attrs(c.muted)}>{t.fixtureNote.replace('{count}', String(fixtureCount))}</p>}
-      <noscript><p {...stylex.attrs(c.muted)}>{t.noJS}</p></noscript>
+      <div data-catalog-chips aria-label={t.selected} hidden class:list={[styles.chips, styles.scroll]}></div>
+      <div class={styles.status}><p data-result-count role="status" aria-live="polite" aria-atomic="true" class={styles.muted}>{entries.length === 1 ? t.countOne : t.count.replace('{count}', String(entries.length))}</p>{onlyDrafts && <p data-catalog-drafts class={styles.muted}>{t.drafts}</p>}</div>
+      {fixtureCount > 0 && <p data-catalog-fixture-note class={styles.muted}>{t.fixtureNote.replace('{count}', String(fixtureCount))}</p>}
+      <noscript><p class={styles.muted}>{t.noJS}</p></noscript>
     </div>
-    <section data-catalog-results tabindex="0" aria-label={t.results} {...stylex.attrs(c.results, c.scroll)}>
+    <section data-catalog-results tabindex="0" aria-label={t.results} class:list={[styles.results, styles.scroll]}>
       <ToolCards entries={entries} locale={locale} />
-      {entries.length === 0 && <div {...stylex.attrs(c.empty)}><CatalogEmpty region={region} locale={locale} /></div>}
-      <div data-catalog-no-match hidden {...stylex.attrs(c.empty)}><h2 {...stylex.attrs(c.emptyTitle)}>{t.noMatch}</h2><p {...stylex.attrs(c.muted)}>{t.noMatchDetail}</p><button type="button" data-clear-all {...stylex.attrs(c.button)}>{t.clear}</button></div>
-      <nav data-catalog-pagination hidden aria-label={t.pagination} {...stylex.attrs(c.pagination)}>
-        <div data-catalog-pages {...stylex.attrs(c.pages)}></div>
-        <p data-page-range {...stylex.attrs(c.muted)}></p>
+      {entries.length === 0 && <div class={styles.empty}><CatalogEmpty region={region} locale={locale} /></div>}
+      <div data-catalog-no-match hidden class={styles.empty}><h2 class={styles.emptyTitle}>{t.noMatch}</h2><p class={styles.muted}>{t.noMatchDetail}</p><button type="button" data-clear-all class={styles.button}>{t.clear}</button></div>
+      <nav data-catalog-pagination hidden aria-label={t.pagination} class={styles.pagination}>
+        <div data-catalog-pages class={styles.pages}></div>
+        <p data-page-range class={styles.muted}></p>
       </nav>
     </section>
-    <dialog data-catalog-jump-dialog aria-labelledby="catalog-jump-title" aria-describedby="catalog-jump-context" {...stylex.attrs(c.jumpDialog, c.scroll)}>
-      <div {...stylex.attrs(c.titleRow)}><h2 id="catalog-jump-title" {...stylex.attrs(c.emptyTitle)}>{t.jump}</h2><button type="button" data-close-jump aria-label={t.closeJump} {...stylex.attrs(c.button, c.iconButton)}><XIcon size={20} aria-hidden /></button></div>
-      <p id="catalog-jump-context" data-jump-context {...stylex.attrs(c.muted)}></p>
-      <form data-catalog-jump {...stylex.attrs(c.jump)}><input id="catalog-page" type="text" inputmode="numeric" autocomplete="off" autofocus aria-label={t.jump} aria-describedby="catalog-page-error" {...stylex.attrs(c.jumpInput)} /><p id="catalog-page-error" role="alert" hidden {...stylex.attrs(c.error)}></p><div {...stylex.attrs(c.jumpActions)}><button type="button" data-close-jump {...stylex.attrs(c.button)}>{t.cancel}</button><button type="submit" {...stylex.attrs(c.button, c.confirmJump)}>{t.go}</button></div></form>
+    <dialog data-catalog-jump-dialog aria-labelledby="catalog-jump-title" aria-describedby="catalog-jump-context" class:list={[styles.jumpDialog, styles.scroll]}>
+      <div class={styles.titleRow}><h2 id="catalog-jump-title" class={styles.emptyTitle}>{t.jump}</h2><button type="button" data-close-jump aria-label={t.closeJump} class:list={[styles.button, styles.iconButton]}><XIcon size={20} aria-hidden /></button></div>
+      <p id="catalog-jump-context" data-jump-context class={styles.muted}></p>
+      <form data-catalog-jump class={styles.jump}><input id="catalog-page" type="text" inputmode="numeric" autocomplete="off" autofocus aria-label={t.jump} aria-describedby="catalog-page-error" class={styles.jumpInput} /><p id="catalog-page-error" role="alert" hidden class={styles.error}></p><div class={styles.jumpActions}><button type="button" data-close-jump class={styles.button}>{t.cancel}</button><button type="submit" class:list={[styles.button, styles.confirmJump]}>{t.go}</button></div></form>
     </dialog>
   </div>
 </main>

@@ -1,11 +1,10 @@
 ---
-import * as stylex from '@stylexjs/stylex';
-import { siteStyles as s } from '../../styles/site';
+import styles from './ToolIntro.module.scss';
 import type { ToolPageContent } from '../../site/tool-content';
 interface Props { content: ToolPageContent }
 const { content } = Astro.props;
 ---
-<section data-tool-intro aria-labelledby="tool-heading" {...stylex.attrs(s.fluid, s.toolIntro)}>
-  <h1 id="tool-heading" {...stylex.attrs(s.toolTitle)}>{content.h1}</h1>
-  <p {...stylex.attrs(s.toolDescription)}>{content.intro}</p>
+<section data-tool-intro aria-labelledby="tool-heading" class:list={[styles.fluid, styles.toolIntro]}>
+  <h1 id="tool-heading" class={styles.toolTitle}>{content.h1}</h1>
+  <p class={styles.toolDescription}>{content.intro}</p>
 </section>

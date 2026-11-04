@@ -1,7 +1,6 @@
 ---
+import styles from './ToolGuide.module.scss';
 import { localizedPath, type Locale } from '../../i18n/locale';
-import * as stylex from '@stylexjs/stylex';
-import { siteStyles as s } from '../../styles/site';
 import type { ToolPageContent } from '../../site/tool-content';
 import type { ToolDefinition } from '../../tools/types';
 import type { Region } from '../../config/region';
@@ -14,12 +13,12 @@ const hasLimitations = !!content.limitations?.length;
 // Only inline emphasis is supported; all text remains escaped Astro content.
 const emphasis = (text: string) => text.split(/(\*\*[^*]+\*\*)/g);
 ---
-<div data-tool-guide {...stylex.attrs(s.fluid, s.toolGuide)}>
-  {(hasSteps || hasLimitations) && <div data-tool-instructions {...stylex.attrs(s.toolInstructions, hasSteps && hasLimitations && s.toolInstructionColumns)}>
-    {hasSteps && <section aria-labelledby="tool-steps"><h2 id="tool-steps" {...stylex.attrs(s.sectionHeading)}>{content.headings?.steps ?? t.toolSteps}</h2><ol>{content.steps!.map(step => <li>{emphasis(step).map((part, index) => index % 2 ? <strong>{part.slice(2, -2)}</strong> : part)}</li>)}</ol></section>}
-    {hasLimitations && <section aria-labelledby="tool-limitations"><h2 id="tool-limitations" {...stylex.attrs(s.sectionHeading)}>{content.headings?.limitations ?? t.toolLimitations}</h2><ul>{content.limitations!.map(item => <li>{emphasis(item).map((part, index) => index % 2 ? <strong>{part.slice(2, -2)}</strong> : part)}</li>)}</ul></section>}
+<div data-tool-guide class:list={[styles.fluid, styles.toolGuide]}>
+  {(hasSteps || hasLimitations) && <div data-tool-instructions class:list={[styles.toolInstructions, hasSteps && hasLimitations && styles.toolInstructionColumns]}>
+    {hasSteps && <section aria-labelledby="tool-steps"><h2 id="tool-steps" class={styles.sectionHeading}>{content.headings?.steps ?? t.toolSteps}</h2><ol>{content.steps!.map(step => <li>{emphasis(step).map((part, index) => index % 2 ? <strong>{part.slice(2, -2)}</strong> : part)}</li>)}</ol></section>}
+    {hasLimitations && <section aria-labelledby="tool-limitations"><h2 id="tool-limitations" class={styles.sectionHeading}>{content.headings?.limitations ?? t.toolLimitations}</h2><ul>{content.limitations!.map(item => <li>{emphasis(item).map((part, index) => index % 2 ? <strong>{part.slice(2, -2)}</strong> : part)}</li>)}</ul></section>}
   </div>}
-  {!!content.features?.length && <details {...stylex.attrs(s.faqItem)}><summary {...stylex.attrs(s.faqQuestion)}>{locale === 'zh' ? '功能概览' : 'Features'}</summary><ul>{content.features.map(feature => <li>{emphasis(feature).map((part, index) => index % 2 ? <strong>{part.slice(2, -2)}</strong> : part)}</li>)}</ul></details>}
-  {content.faq && content.faq.length > 0 && <section aria-labelledby="tool-faq"><h2 id="tool-faq" {...stylex.attrs(s.sectionHeading)}>{content.headings?.faq ?? t.toolFaq}</h2>{content.faq.map(item => <details {...stylex.attrs(s.faqItem)}><summary {...stylex.attrs(s.faqQuestion)}><span>{item.question}</span><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" {...stylex.attrs(s.faqChevron)}><path d="m6 9 6 6 6-6" /></svg></summary><p {...stylex.attrs(s.faqAnswer)}>{item.answer}</p></details>)}</section>}
-  {related.length > 0 && <section data-related-tools aria-labelledby="related-tools"><h2 id="related-tools" {...stylex.attrs(s.sectionHeading)}>{t.relatedTools}</h2><ul>{related.map(tool => <li><a href={localizedPath(`/tools/${tool.slug}/`, region, locale)} {...stylex.attrs(s.link)}>{tool.copy[locale].title}</a></li>)}</ul></section>}
+  {!!content.features?.length && <details class={styles.faqItem}><summary class={styles.faqQuestion}>{locale === 'zh' ? '功能概览' : 'Features'}</summary><ul>{content.features.map(feature => <li>{emphasis(feature).map((part, index) => index % 2 ? <strong>{part.slice(2, -2)}</strong> : part)}</li>)}</ul></details>}
+  {content.faq && content.faq.length > 0 && <section aria-labelledby="tool-faq"><h2 id="tool-faq" class={styles.sectionHeading}>{content.headings?.faq ?? t.toolFaq}</h2>{content.faq.map(item => <details class={styles.faqItem}><summary class={styles.faqQuestion}><span>{item.question}</span><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class={styles.faqChevron}><path d="m6 9 6 6 6-6" /></svg></summary><p class={styles.faqAnswer}>{item.answer}</p></details>)}</section>}
+  {related.length > 0 && <section data-related-tools aria-labelledby="related-tools"><h2 id="related-tools" class={styles.sectionHeading}>{t.relatedTools}</h2><ul>{related.map(tool => <li><a href={localizedPath(`/tools/${tool.slug}/`, region, locale)} class={styles.link}>{tool.copy[locale].title}</a></li>)}</ul></section>}
 </div>
