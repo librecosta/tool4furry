@@ -1001,7 +1001,7 @@ describe('real workspace interaction contract (codec mocked; not browser evidenc
         'image-converter', 'image-resize-crop', 'palette-extractor',
         'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', ...generalToolboxIds,
       ]);
-      expect(getPublishedTools(region).map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge']);
+      expect(getPublishedTools(region).map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split']);
       const content = toolPageContents['image-converter'][defaultLocale(region)]!;
       expect(content.h1).toBeTruthy();
       expect(content.steps?.length).toBe(4);
