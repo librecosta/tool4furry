@@ -9,7 +9,7 @@
 | 正式构建 | 生成可独立托管的静态页面与所需资源，不执行上传或上线 |
 | 实际部署 | 将产物发布到托管环境的独立操作，需要明确授权 |
 
-当前 Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge 与 PDF Split 九款工具均为 Published，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
+当前 Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split 与 Images to PDF 十款工具均为 Published，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
 
 Image Resize & Crop (`image-resize-crop`) 已通过 A1-D2 L2 审计，并依据维护者本任务授权提升源码资格。两地区正式构建包含其双语页面、按需实现、局部裁剪 CSS 和完整 ISC 许可声明；其他 Draft、Lab 和 Fixture 继续隔离。审计证据与 L3 边界见 [模块说明](../docs/image-resize-crop-implementation.md#a1-d2-beta-资格审计2026-10-31)。
 
@@ -25,7 +25,9 @@ Comic Page Organizer (`comic-page-organizer`) 的 B2-D1 双语 SEO 已更新。2
 
 PDF Merge (`pdf-merge`) 依据 V0.8-B1-D1 授权进入 CN/Global Published；双语静态 SEO、现有 dnd-kit 排序、顺序合并与下载进入正式构建，分发 pdf-lib / dnd-kit 完整 MIT 通知。不改变首批 15 款/次批 7 款的历史集合。真实下载内容复检、构建、CI 与 L3 范围见 [通用工具说明](../docs/general-toolbox-v0.8.md#pdf-merge--v08-b1-d1-beta资格2026-11-04)。
 
-PDF Split (`pdf-split`) 依据 V0.8-B2-D1 授权完成双语静态 SEO、真实 PDF/ZIP 输出复检和必要 Beta 验收，具备 CN/Global Published 源码资格。页面预览按需加载本地 PDF.js / Worker / 二进制资源，完整 Apache-2.0 和附带许可随工具交付；pdf-lib 和 ZIP 仍负责独立验证的输出。当前共 29 款（9 Published / 20 Draft），不新增发布开关或改动其他工具资格。下载命名、实际证据和未测平台见 [通用工具说明](../docs/general-toolbox-v0.8.md#pdf-split--v08-b2-d1-beta-资格2026-11-04)。
+PDF Split (`pdf-split`) 依据 V0.8-B2-D1 授权完成双语静态 SEO、真实 PDF/ZIP 输出复检和必要 Beta 验收，具备 CN/Global Published 源码资格。页面预览按需加载本地 PDF.js / Worker / 二进制资源，完整 Apache-2.0 和附带许可随工具交付；pdf-lib 和 ZIP 仍负责独立验证的输出。该次发布后为 29 款（9 Published / 20 Draft），不新增发布开关或改动其他工具资格。下载命名、实际证据和未测平台见 [通用工具说明](../docs/general-toolbox-v0.8.md#pdf-split--v08-b2-d1-beta-资格2026-11-04)。
+
+Images to PDF (`images-to-pdf`) 依据 V0.8-B3-D2 授权完成双语静态 SEO 与 L2 输出复核，提升为 CN/Global Published。冻结 PNG/JPEG 画廊、排序与预览、直接嵌入和宽松非阻断资源策略；共享 Comic PDF 模块及完整 pdf-lib MIT 通知按实际依赖交付，不改变其他工具资格。当前共 29 款（10 Published / 19 Draft）；实际下载、既有大批量证据、构建与 L3 范围见 [通用工具说明](../docs/general-toolbox-v0.8.md#images-to-pdf--v08-b3-d2-beta-资格2026-11-04)。
 
 ## 唯一可用性来源
 

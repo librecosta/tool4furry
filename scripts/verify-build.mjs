@@ -78,7 +78,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -939,6 +939,7 @@ for (const page of htmlFiles) {
   if (toolPages.includes(page)) {
     if (page === 'tools/pdf-merge/index.html') assertToolContent(dom, locale, generalToolboxContent['pdf-merge'], 3, 4, 6);
     if (page === 'tools/pdf-split/index.html') assertToolContent(dom, locale, generalToolboxContent['pdf-split'], 4, 4, 6);
+    if (page === 'tools/images-to-pdf/index.html') assertToolContent(dom, locale, generalToolboxContent['images-to-pdf'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1359,6 +1360,13 @@ const combinedCSS = outputCSS.join('\n');
   const scripts = await Promise.all(files.filter(file => /\.(?:m?js)$/.test(file)).map(file => readFile(resolve(root, file), 'utf8')));
   assert.equal(scripts.some(js => js.includes('data-images-pdf-actions')), available,
     'Images to PDF implementation stays in its own lazy publication graph');
+  if (available) {
+    const notice = await readFile('src/tools/comic-page-organizer/pdf-lib.NOTICE.txt');
+    const emitted = files.filter(file => file.includes('pdf-lib.NOTICE'));
+    const delivered = scripts.some(js => js.includes(notice.toString('base64'))) ||
+      (await Promise.all(emitted.map(file => readFile(resolve(root, file))))).some(bytes => bytes.equals(notice));
+    assert(delivered, 'Published Images to PDF distributes the complete shared pdf-lib MIT license');
+  }
 }
 if (!published.some(tool => tool.id === 'pdf-split')) {
   assert(!files.some(file => /pdf\.worker|pdfjs\.NOTICE|\.bcmap$|(?:jbig2|openjpeg|qcms_bg|quickjs-eval).*\.wasm$|(?:Foxit\w*|LiberationSans-[\w]+)[.-]/.test(file)),

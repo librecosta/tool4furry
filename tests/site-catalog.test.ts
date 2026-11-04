@@ -41,7 +41,7 @@ describe('static tool discovery', () => {
   });
 
   it.each(['cn', 'global'] as const)(
-    'discovers nine Published and twenty Draft tools in DEV %s',
+    'discovers ten Published and nineteen Draft tools in DEV %s',
     (region) => {
       const entries = getCatalogEntries(region, undefined, true);
       expect(entries.map((entry) => [entry.id, entry.href, entry.title])).toEqual([
@@ -66,12 +66,12 @@ describe('static tool discovery', () => {
       ]);
       const published = entries.filter(entry => entry.status === 'published');
       expect(getCatalogEntries(region)).toEqual(published);
-      expect(getHomepageEntries(region)).toEqual(published);
+      expect(getHomepageEntries(region)).toEqual(published.slice(0, 9)); // Homepage projection keeps its existing nine-entry cap.
       expect(getCatalogSections(region).flatMap(section => section.groups.flatMap(group => group.entries))).toEqual(published);
       expect(imageConverterDefinition.status).toBe('published');
       expect(imageResizeCropDefinition.status).toBe('published');
       expect(paletteExtractorDefinition.status).toBe('published');
-      expect(published.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split']);
+      expect(published.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf']);
     },
   );
 

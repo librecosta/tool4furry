@@ -4,18 +4,19 @@ import { toolPageContents, getToolPageContent } from '../src/site/tool-content';
 import { toolLoaders } from '../src/tools/loaders';
 import { groups } from '../src/site/taxonomy';
 import { draftIds, generalToolboxIds, firstBatchIds, secondBatchIds } from './fixtures/general-toolbox';
-it('keeps both implementation batches intact with nine Published and twenty Draft tools', () => {
+it('keeps both implementation batches intact with ten Published and nineteen Draft tools', () => {
   expect(tools).toHaveLength(29);
   expect(firstBatchIds).toHaveLength(15);
   expect(firstBatchIds).toContain('pdf-merge');
   expect(firstBatchIds).toContain('pdf-split');
+  expect(firstBatchIds).toContain('images-to-pdf');
   expect(secondBatchIds).toHaveLength(7);
-  expect(draftIds).toHaveLength(20);
+  expect(draftIds).toHaveLength(19);
   expect(tools.filter((t) => t.status === 'draft').map((t) => t.id)).toEqual(
     draftIds,
   );
   for (const region of ['cn', 'global'] as const) {
-    expect(getAvailableTools(region, false)).toHaveLength(9);
+    expect(getAvailableTools(region, false)).toHaveLength(10);
     expect(getAvailableTools(region, true)).toHaveLength(29);
     for (const id of generalToolboxIds) {
       const tool = tools.find((t) => t.id === id)!;
@@ -34,12 +35,12 @@ it('keeps both implementation batches intact with nine Published and twenty Draf
         expect(c.limitations?.length).toBeGreaterThan(0);
         if (locale === 'en')
           expect(JSON.stringify(c)).not.toMatch(/[\u4e00-\u9fff]/);
-        if (id === 'pdf-merge' || id === 'pdf-split') {
+        if (id === 'pdf-merge' || id === 'pdf-split' || id === 'images-to-pdf') {
           expect(tool.status).toBe('published');
           expect(getToolPageContent(tool, region, toolPageContents, false, locale)).toBe(c);
           expect(c.steps).toHaveLength(4);
           expect(c.limitations).toHaveLength(6);
-          expect(c.faq).toHaveLength(id === 'pdf-split' ? 4 : 3);
+          expect(c.faq).toHaveLength(id === 'pdf-merge' ? 3 : 4);
           expect(c.features).toBeUndefined();
         } else {
           expect(tool.status).toBe('draft');
@@ -71,4 +72,37 @@ it('publishes the frozen PDF Merge metadata without changing the first-batch set
     expect(toolPageContents['pdf-merge'][locale]).toMatchObject(expected[locale]);
     expect(expected[locale].title.match(/Tool4Furry/g)).toHaveLength(1);
   }
+});
+
+it('delivers Images to PDF bilingual static SEO with its current resource and privacy policy', () => {
+  const expected = {
+    zh: {
+      title: '图片转 PDF 在线工具 - 拖拽排序与本地生成 | Tool4Furry',
+      description: '将多张 PNG、JPG 或 JPEG 图片合成为一份 PDF。支持图片预览、拖拽排序、放大查看和继续添加，保留图片原始比例，所有处理均在浏览器本地完成，无需上传文件。',
+      h1: '图片转 PDF',
+      intro: '把图片排成想要的顺序，再合成一份 PDF。预览、调整页序，然后生成下载。',
+    },
+    en: {
+      title: 'Convert Images to PDF - Preview & Reorder | Tool4Furry',
+      description: 'Combine PNG and JPEG images into one PDF. Preview images, drag to reorder pages, and download the result locally in your browser. No file uploads required.',
+      h1: 'Images to PDF',
+      intro: 'Arrange your images in the order you want, preview them, and turn them into a single PDF in your browser.',
+    },
+  };
+  for (const locale of ['zh', 'en'] as const) {
+    const tool = tools.find(tool => tool.id === 'images-to-pdf')!;
+    const content = getToolPageContent(tool, 'cn', toolPageContents, false, locale);
+    expect(content).toMatchObject(expected[locale]);
+    expect(content.title.match(/Tool4Furry/g)).toHaveLength(1);
+    expect(content.steps).toHaveLength(4);
+    expect(content.limitations).toHaveLength(6);
+    expect(content.faq).toHaveLength(4);
+  }
+  expect(toolPageContents['images-to-pdf'].zh!.limitations).toContain('不设置固定的图片张数或累计体积配额；实际可处理规模取决于浏览器解码能力、设备内存及 PDF 库能力。');
+  expect(toolPageContents['images-to-pdf'].en!.limitations).toContain('Files are processed locally in your browser without uploads or persistent storage. Some source image data or metadata may remain embedded in the PDF.');
+  expect(JSON.stringify(toolPageContents['images-to-pdf'].en)).not.toMatch(/[\u4e00-\u9fff]/);
+  expect(tools.find(tool => tool.id === 'images-to-pdf')).toMatchObject({
+    id: 'images-to-pdf', slug: 'images-to-pdf', category: 'documents', group: 'pdf-tools',
+    roles: ['studio', 'painter'], mode: 'form', status: 'published', regions: ['cn', 'global'],
+  });
 });

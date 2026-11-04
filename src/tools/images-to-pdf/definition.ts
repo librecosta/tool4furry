@@ -6,7 +6,7 @@ export const definition = {
   group: 'pdf-tools',
   roles: ['studio', 'painter'],
   mode: 'form',
-  status: 'draft',
+  status: 'published',
   regions: ['cn', 'global'],
   copy: {
     zh: {

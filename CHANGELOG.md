@@ -25,6 +25,8 @@
 
 ### Changed
 
+- Images to PDF 完成双语静态 SEO、真实图片 PDF 下载复核及 CN/Global 源码 Published 资格收尾；保留既有画廊与宽松资源策略，当前 29 款工具为 10 Published / 19 Draft，未部署。
+
 - Images to PDF（Draft）改为真实图片画廊，复用漫画拖拽/触控/键盘排序与现有缩放预览；缩略图按可见范围串行生成并有界缓存，PDF 按当前页序直接嵌入 PNG/JPEG。独立宽松资源策略以性能提醒替代旧数量/体积/总像素门槛，其他工具预算不变；取消与过期结果隔离、三等宽按钮和每次下载的毫秒文件名同步完善。
 
 - PDF Split 完成 V0.8-B2-D1 双语 SEO、真实选页 PDF/ZIP 复检与 CN/Global 源码 Published 资格收尾，按需交付 PDF.js 本地预览及完整许可；当前 29 款工具为 9 Published / 20 Draft。PDF Merge / Split 下载改为点击时生成安全源名与本地毫秒时间戳，重复下载不重建文件；未部署。

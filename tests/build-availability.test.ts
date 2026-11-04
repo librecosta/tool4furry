@@ -13,7 +13,7 @@ describe('Registry compile-time availability projection', () => {
     fixtureTool('character-editor', { regions: ['global'] }),
     fixtureTool('cn-only', { regions: ['cn'] }),
   ];
-  it.each(['cn', 'global'] as const)('enables all nine real Published tools in %s', region => {
+  it.each(['cn', 'global'] as const)('enables all ten real Published tools in %s', region => {
     expect(toolBuildDefines(tools, region)).toEqual({
       'import.meta.env.T4F_TOOL_IMAGE_CONVERTER_AVAILABLE': 'true',
       'import.meta.env.T4F_TOOL_IMAGE_RESIZE_CROP_AVAILABLE': 'true',
@@ -24,6 +24,7 @@ describe('Registry compile-time availability projection', () => {
       'import.meta.env.T4F_TOOL_EXIF_METADATA_AVAILABLE': 'true',
       'import.meta.env.T4F_TOOL_PDF_MERGE_AVAILABLE': 'true',
       'import.meta.env.T4F_TOOL_PDF_SPLIT_AVAILABLE': 'true',
+      'import.meta.env.T4F_TOOL_IMAGES_TO_PDF_AVAILABLE': 'true',
       ...Object.fromEntries(draftIds.map(id => [toolAvailabilityConstant(id), 'false'])),
     });
   });

@@ -1,6 +1,15 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split 已获得 CN/Global Published 源码资格，其余 20 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（9 Published / 20 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF 已获得 CN/Global Published 源码资格，其余 19 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（10 Published / 19 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+
+## Images to PDF — V0.8-B3-D2 Beta 资格（2026-11-04）
+
+- 依据维护者验收和本轮授权，仅将 Images to PDF 提升为 CN/Global Published；冻结 PNG/JPEG 画廊、鼠标/长按/键盘排序、缩放平移预览、追加/移除、逐页生成、取消和失效管理。资源策略仍为宽松非阻断提醒，未重新加入数量/累计体积配额；不承诺无限处理或清除源图片隐私信息。
+- 中英文静态 SEO 各含 4 项步骤、6 项限制、4 组 FAQ。四个正式页面均可索引，唯一 H1、Title/Description、Canonical/同地区 hreflang、目录、Sitemap 和 llms.txt 通过产物守卫。保留人工角色关联：工作室现显示三款 PDF 工具，画师不因 Definition 的 roles 自动新增首页精选；首页四槽不变。
+- Chrome 156 在 DEV 和正式静态预览中复核 CN 中文 Dark / 1280px 与 Global 英文 Light / 390px：真实上传、鼠标/触控长按及键盘排序、缩放/平移/关闭及焦点恢复、删除/追加、取消/清空和下载失效均通过。三按钮等宽、44px、无边框且紫色主操作，未见横向溢出、阻断交互或明显样式闪现。
+- 实际下载并以 pdf-lib 重读：输出顺序与当时画廊一致（含 `C → B → A`、`B → A → D`），逐页核对尺寸、JPEG 原始字节哈希、PNG 解码 RGB / alpha 哈希及 EXIF 6 方向矩阵。20,000×20 PNG 的 PDF 页面坐标按比例缩放为 14,400×14.4，嵌入像素仍为原始尺寸；重复下载名称不同、PDF 字节相同。清理后活动 Bitmap / URL 均为零，原生解码最大并发为 1。
+- 复用未变业务代码在 `a594e20` 的 45 图 / 75,758,780 字节 / 29,603,200 像素与 45 页有效 PDF、失败恢复证据，不机械重跑压力样本。`pnpm check`（435 文件）及 18 个相关文件共 218 项定向测试通过；CN/Global 各一次正式构建与守卫通过，每地区 20 个工具页面、30 条公开发现 URL。合法共享 Comic PDF 模块及完整 pdf-lib MIT 通知随按需图交付，其余 19 款 Draft / Lab 的私有实现和资源仍被排除。
+- [基线 `a594e20` 的既有 CI 已通过](https://github.com/librecosta/tool4furry/actions/runs/41843836846)；本轮提交继续由同一工作流复检，远程 CI 结论单独核对，不以本地成功代替。Firefox、Safari、真实 iOS/Android、浏览器进程级内存耗尽和极端规模仍属 L3 未测；390px 是桌面 Chromium 视口/触控模拟。源码 Published 不代表部署，未部署。
 
 | ID | 实际能力 | 主要边界 |
 | --- | --- | --- |
@@ -59,7 +68,7 @@
 - PNG/JPEG 直接嵌入，保留方向与适用透明度，不改变原始像素；大图仅按比例调整 PDF 页面坐标以遵守 [PDF 默认用户空间尺寸](https://developer.adobe.com/acrobat-pdfl-sdk/guides/jsapiref/doc)。保存后核对页数、尺寸及每页的嵌入图像引用顺序。PDF 仍在内存中组装、保存与复检，并非流式 PDF，不能保证任意设备或规模成功。
 - 三个 44px 等宽操作始终显示：生成 / 下载 / 清空；生成中另有取消入口。下载点击时使用 `images-YYYYMMDD-HHmmss-SSS.pdf`，同毫秒追加短序号，重复下载复用同一 Blob。
 - 70 项相关定向测试和 `pnpm check`（435 文件，0 错误/警告）通过；真实 Chromium 156 在 CN 中文 Dark / 1280px 与 Global 英文 Light / 390px 完成鼠标、触控长按和键盘排序、预览缩放/平移、增删、取消、清空及真实下载。逐页核对 JPEG 嵌入字节、PNG RGB/Alpha 哈希、EXIF 方向和当前顺序；超宽 20000px 图片的原始嵌入宽度保留。
-- 实际 45 张输入共 75,758,780 字节、29,603,200 像素（其中两张各约 36.1 MiB），生成并重读 45 页 / 75,746,503 字节有效 PDF；单通道最大并发 1，清理后活动 Bitmap / URL 为零。CN/Global 正式构建及画廊私有 JS/CSS 隔离守卫通过，仍为 Draft，资格维持 9 Published / 20 Draft。Firefox/Safari、真实 iOS/Android、浏览器进程级内存耗尽及极端规模未测；390px 是桌面 Chromium 触控模拟。
+- 实际 45 张输入共 75,758,780 字节、29,603,200 像素（其中两张各约 36.1 MiB），生成并重读 45 页 / 75,746,503 字节有效 PDF；单通道最大并发 1，清理后活动 Bitmap / URL 为零。CN/Global 正式构建及画廊私有 JS/CSS 隔离守卫通过，当时仍为 Draft，资格为 9 Published / 20 Draft（当前提升见 Beta 资格小节）。Firefox/Safari、真实 iOS/Android、浏览器进程级内存耗尽及极端规模未测；390px 是桌面 Chromium 触控模拟。
 
 ## PDF Split — D1 可视选页（2026-11-04）
 
@@ -75,7 +84,7 @@
 
 ## PDF Split — V0.8-B2-D1 Beta 资格（2026-11-04）
 
-- 按维护者授权完成双语静态 SEO：4 项步骤、6 项限制、4 组 FAQ；唯一 H1、Title/Description、Canonical/hreflang、OG、Sitemap 和 llms 沿用现有静态系统。只提升 PDF Split 为 CN/Global Published，当前 9 Published / 20 Draft，历史两批 ID 不变；工作室关联继续使用原人工配置。
+- 按维护者授权完成双语静态 SEO：4 项步骤、6 项限制、4 组 FAQ；唯一 H1、Title/Description、Canonical/hreflang、OG、Sitemap 和 llms 沿用现有静态系统。该次只提升 PDF Split 为 CN/Global Published，发布时为 9 Published / 20 Draft，历史两批 ID 不变；工作室关联继续使用原人工配置。
 - 两款 PDF 在每次 Download 点击时命名：`merged-YYYYMMDD-HHmmss-SSS.pdf`、`源文件名-extracted-YYYYMMDD-HHmmss-SSS.pdf`、`源文件名-pages-YYYYMMDD-HHmmss-SSS.zip`。使用本地时间，同毫秒碰撞追加 `-2`、`-3`；源名去掉末尾 PDF 扩展名、过滤路径/控制字符和 Windows 非法字符，按 UTF-8 字节有界截断，空名用 `document`。重复下载复用同一 Blob，不重新处理，也不改变 ZIP 内的页名。
 - 真实 Chromium 156 完成默认全选、点击/有序输入、已选视图、旋转页放大/Escape/焦点恢复、替换和错误范围拒绝。下载的选页为 8→1→2→3→5，重新解析确认 5 页内容流、尺寸和旋转与来源一致；ZIP 解压为 `page-008/001/002/003/005.pdf`，各自内容与来源对应。PDF/ZIP 连续下载名称不同且字节完全相同；另复检 PDF Merge 真实三页合并和重复下载。500 页中选择 10 页的证据复用上轮 D1，不重复压力验证。
 - CN 中文 Dark 桌面、Global 英文 Light 390px 的缩略图、Dialog、紫色主操作和禁用态可用，无横向溢出；卸载/更换/清空沿用取消与版本隔离，清空后无残留 Canvas/Worker。PDF.js 的惰性导入、独立读取字节、24 页批次、串行与像素/超时预算不变；未引入 Viewer UI 或远程 Worker。
