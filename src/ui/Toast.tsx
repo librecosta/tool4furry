@@ -1,3 +1,4 @@
+import styles from './Toast.module.scss';
 import { Toast as BaseToast } from '@base-ui/react/toast';
 import {
   CheckCircleIcon,
@@ -6,8 +7,6 @@ import {
   XCircleIcon,
   XIcon,
 } from '@phosphor-icons/react';
-import * as stylex from '@stylexjs/stylex';
-import { tokens } from '../styles/tokens.stylex';
 import { IconButton } from './Button';
 
 export type ToastType = 'success' | 'info' | 'warning' | 'error';
@@ -53,7 +52,7 @@ export function ToastViewport({ labels }: { labels: UiLabels }) {
     <BaseToast.Portal>
       <BaseToast.Viewport
         aria-label={labels.notifications}
-        {...stylex.props(styles.viewport)}
+        className={styles.viewport}
       >
         {toasts.map((toast) => {
           const type = (toast.type ?? 'info') as ToastType;
@@ -65,21 +64,15 @@ export function ToastViewport({ labels }: { labels: UiLabels }) {
               data-toast
               hidden={toast.limited}
               swipeDirection={[]}
-              className={(state) =>
-                stylex.props(
-                  styles.toast,
-                  styles[type],
-                  state.limited && styles.limited,
-                ).className
-              }
+              className={[styles.toast, styles[type]].join(' ')}
             >
-              <Icon size={20} aria-hidden="true" {...stylex.props(styles.icon)} />
-              <div {...stylex.props(styles.content)}>
-                <BaseToast.Title {...stylex.props(styles.title)}>
+              <Icon size={20} aria-hidden="true" className={styles.icon} />
+              <div className={styles.content}>
+                <BaseToast.Title className={styles.title}>
                   {toast.title}
                 </BaseToast.Title>
                 {toast.description && (
-                  <BaseToast.Description {...stylex.props(styles.description)}>
+                  <BaseToast.Description className={styles.description}>
                     {toast.description}
                   </BaseToast.Description>
                 )}
@@ -102,51 +95,3 @@ export function ToastViewport({ labels }: { labels: UiLabels }) {
     </BaseToast.Portal>
   );
 }
-const styles = stylex.create({
-  viewport: {
-    position: 'fixed',
-    zIndex: tokens.layerToast,
-    top: 'calc(16px + env(safe-area-inset-top, 0px))',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    width: 'min(440px, calc(100% - 32px))',
-    maxHeight: 'min(36dvh, 320px)',
-    overflowY: 'auto',
-    overscrollBehavior: 'contain',
-    display: 'grid',
-    justifyItems: 'center',
-    gap: tokens.space8,
-    pointerEvents: 'none',
-  },
-  toast: {
-    display: 'flex',
-    gap: tokens.space8,
-    alignItems: 'center',
-    width: 'fit-content',
-    maxWidth: '100%',
-    backgroundColor: `color-mix(in srgb, ${tokens.surfaceFloating} 88%, ${tokens.textSecondary})`,
-    borderRadius: tokens.radiusLg,
-    padding: '6px 8px 6px 12px',
-    boxShadow: tokens.shadowFloating,
-    pointerEvents: 'auto',
-    opacity: { default: 1, ':is([data-starting-style], [data-ending-style])': 0 },
-    transform: { default: 'translateY(0)', ':is([data-starting-style], [data-ending-style])': 'translateY(-6px)' },
-    transitionProperty: 'opacity, transform',
-    transitionDuration: { default: '200ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
-    transitionTimingFunction: 'ease-out',
-  },
-  limited: { display: 'none' },
-  content: { flex: 1, minWidth: 0, overflowWrap: 'anywhere' },
-  title: {
-    fontWeight: 600,
-    color: tokens.textPrimary,
-    fontSize: 14,
-    margin: 0,
-  },
-  description: { fontSize: 13, color: tokens.textSecondary, marginTop: 4 },
-  icon: { flexShrink: 0 },
-  success: { color: tokens.positive },
-  info: { color: tokens.info },
-  warning: { color: tokens.warning },
-  error: { color: tokens.danger },
-});

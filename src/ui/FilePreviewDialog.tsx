@@ -1,12 +1,11 @@
+import s from './FilePreviewDialog.module.scss';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import { CornersInIcon, CornersOutIcon, XIcon } from '@phosphor-icons/react';
-import * as stylex from '@stylexjs/stylex';
-import { motion } from '../styles/motion';
-import { controls } from '../styles/controls';
+import motion from '../styles/motion.module.scss';
+import controls from './controls.module.scss';
 import { IconButton } from './Button';
 import { Tooltip } from './Tooltip';
-import { tokens as t } from '../styles/tokens.stylex';
 
 export interface FilePreviewDialogProps {
   open: boolean;
@@ -109,7 +108,7 @@ export function FilePreviewDialog({
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Backdrop forceRender {...stylex.props(s.backdrop, motion.backdrop)} />
+        <Dialog.Backdrop forceRender className={[s.backdrop, motion.backdrop].filter(Boolean).join(' ')} />
         <Dialog.Popup
           ref={popup}
           initialFocus={close}
@@ -121,22 +120,22 @@ export function FilePreviewDialog({
               void exitFullscreen();
             }
           }}
-          {...stylex.props(s.popup, motion.dialog, maximized && s.maximized)}
+          className={[s.popup, motion.dialog, maximized && s.maximized].filter(Boolean).join(' ')}
         >
-          <header {...stylex.props(s.header)}>
-            <div {...stylex.props(s.identity)}>
-              <Dialog.Title {...stylex.props(s.title)}>{title}</Dialog.Title>
+          <header className={s.header}>
+            <div className={s.identity}>
+              <Dialog.Title className={s.title}>{title}</Dialog.Title>
               {description && (
                 <Dialog.Description
                   title={description}
-                  {...stylex.props(s.description)}
+                  className={s.description}
                 >
                   {description}
                 </Dialog.Description>
               )}
             </div>
-            {toolbar && <div {...stylex.props(s.toolbar)}>{toolbar}</div>}
-            <div {...stylex.props(s.actions)}>
+            {toolbar && <div className={s.toolbar}>{toolbar}</div>}
+            <div className={s.actions}>
               <Tooltip content={maximized ? labels.restore : labels.maximize}>
                 <IconButton
                   label={maximized ? labels.restore : labels.maximize}
@@ -158,7 +157,7 @@ export function FilePreviewDialog({
                     label={labels.close}
                     variant="ghost"
                     size="sm"
-                    xstyle={controls.dialogClose}
+                    className={controls.dialogClose}
                   >
                     <XIcon size={20} aria-hidden />
                   </IconButton>
@@ -166,83 +165,9 @@ export function FilePreviewDialog({
               />
             </div>
           </header>
-          <div {...stylex.props(s.content)}>{open ? children : null}</div>
+          <div className={s.content}>{open ? children : null}</div>
         </Dialog.Popup>
       </Dialog.Portal>
     </Dialog.Root>
   );
 }
-
-const s = stylex.create({
-  backdrop: {
-    position: 'fixed',
-    inset: 0,
-    zIndex: t.layerDialog,
-    backgroundColor: t.overlay,
-  },
-  popup: {
-    position: 'fixed',
-    zIndex: t.layerDialog,
-    top: { default: '50%', '@media (max-width: 600px)': 0 },
-    left: { default: '50%', '@media (max-width: 600px)': 0 },
-    transform: {
-      default: 'translate(-50%, -50%)',
-      '@media (max-width: 600px)': 'none',
-    },
-    width: { default: '92vw', '@media (max-width: 600px)': '100vw' },
-    height: { default: '90dvh', '@media (max-width: 600px)': '100dvh' },
-    display: 'grid',
-    gridTemplateRows: 'auto minmax(0, 1fr)',
-    gap: t.space12,
-    paddingTop: 'max(12px, env(safe-area-inset-top))',
-    paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
-    paddingLeft: 'max(12px, env(safe-area-inset-left))',
-    paddingRight: 'max(12px, env(safe-area-inset-right))',
-    backgroundColor: t.surfaceFloating,
-    color: t.textPrimary,
-    boxShadow: t.shadowFloating,
-    borderRadius: { default: t.radiusLg, '@media (max-width: 600px)': 0 },
-    overflow: 'hidden',
-  },
-  maximized: {
-    top: 0,
-    left: 0,
-    transform: 'none',
-    width: '100vw',
-    height: '100dvh',
-    borderRadius: 0,
-  },
-  header: {
-    display: 'grid',
-    gridTemplateColumns: {
-      default: 'minmax(0, 1fr) auto minmax(0, 1fr)',
-      '@media (max-width: 600px)': 'minmax(0, 1fr) auto',
-    },
-    alignItems: 'center',
-    gap: t.space8,
-  },
-  identity: { minWidth: 0, gridColumn: 1, gridRow: 1 },
-  title: { fontSize: 18, fontWeight: 600, margin: 0 },
-  description: {
-    fontSize: 13,
-    color: t.textSecondary,
-    margin: 0,
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-  },
-  actions: {
-    display: 'flex',
-    alignItems: 'center',
-    justifySelf: 'end',
-    gridRow: 1,
-    gridColumn: { default: 3, '@media (max-width: 600px)': 2 },
-  },
-  toolbar: {
-    minWidth: 0,
-    justifySelf: 'center',
-    gridColumn: { default: 2, '@media (max-width: 600px)': '1 / -1' },
-    gridRow: { default: 1, '@media (max-width: 600px)': 2 },
-  },
-  content: { minWidth: 0, minHeight: 0, height: '100%' },
-});

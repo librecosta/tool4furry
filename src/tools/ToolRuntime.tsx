@@ -1,3 +1,4 @@
+import s from './ToolRuntime.module.scss';
 import { type Locale } from '../i18n/locale';
 import { Component, lazy, Suspense, useMemo, type ReactNode } from 'react';
 import type { Region } from '../config/region';
@@ -6,8 +7,6 @@ import { toolLoaders } from './loaders';
 import { UiProvider } from '../ui/UiProvider';
 import { getAvailableTools } from './registry';
 import ToolPageFrame from './ToolPageFrame';
-import * as stylex from '@stylexjs/stylex';
-import { tokens } from '../styles/tokens.stylex';
 import type { LanguageLink } from '../site/language';
 class LoadBoundary extends Component<
   { children: ReactNode; fallback: ReactNode },
@@ -40,12 +39,12 @@ export default function ToolRuntime({
     const loader = toolLoaders[toolId];
     return loader ? lazy(loader) : null;
   }, [toolId]);
-  const statusStyle = stylex.props(
+  const statusStyle = [
     s.status,
     definition?.mode === 'canvas' && !intro && s.canvasStatus,
-  );
+  ].filter(Boolean).join(' ');
   const fallback = (
-    <p role="alert" {...statusStyle}>
+    <p role="alert" className={statusStyle}>
       {t.unavailable}
     </p>
   );
@@ -63,7 +62,7 @@ export default function ToolRuntime({
           <LoadBoundary key={toolId} fallback={fallback}>
             <Suspense
               fallback={
-                <p role="status" {...statusStyle}>
+                <p role="status" className={statusStyle}>
                   {t.loading}
                 </p>
               }
@@ -76,9 +75,3 @@ export default function ToolRuntime({
     </UiProvider>
   );
 }
-
-const s = stylex.create({
-  status: { padding: tokens.space24, margin: 0 },
-  // Loading/error copy stays below the product entry before a Canvas tool mounts.
-  canvasStatus: { paddingTop: 96 },
-});

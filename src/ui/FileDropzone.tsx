@@ -1,9 +1,8 @@
+import styles from './FileDropzone.module.scss';
+import fieldStyles from './Field.module.scss';
 import { useEffect, useId, useRef, useState, type DragEvent } from 'react';
 import { FolderOpenIcon } from '@phosphor-icons/react';
-import * as stylex from '@stylexjs/stylex';
-import { controls } from '../styles/controls';
-import { tokens } from '../styles/tokens.stylex';
-import { fieldStyles } from './Field';
+import controls from './controls.module.scss';
 import {
   validateFiles,
   type FileConstraints,
@@ -82,7 +81,7 @@ export function FileDropzone({
     if (result.rejected.length) onRejected?.(result.rejected);
   };
   return (
-    <div {...stylex.props(controls.field)}>
+    <div className={controls.field}>
       <input
         ref={input}
         id={inputId}
@@ -111,7 +110,7 @@ export function FileDropzone({
         aria-describedby={describedBy}
         aria-invalid={issues.length > 0 || undefined}
         data-dragging={dragging && !disabled ? '' : undefined}
-        {...stylex.props(
+        className={[
           controls.button,
           styles.zone,
           appearance === 'compact' && styles.compact,
@@ -119,7 +118,7 @@ export function FileDropzone({
           dragging && !disabled && styles.dragging,
           dragging && !disabled && accent === 'lavender' && styles.lavenderDragging,
           issues.length > 0 && controls.invalid,
-        )}
+        ].filter(Boolean).join(' ')}
         onClick={() => input.current?.click()}
         onDragEnter={(event) => {
           if (!hasFiles(event)) return;
@@ -151,11 +150,11 @@ export function FileDropzone({
         <FolderOpenIcon
           size={28}
           aria-hidden="true"
-          {...stylex.props(accent === 'lavender' && !disabled && styles.lavenderIcon)}
+          className={[accent === 'lavender' && !disabled && styles.lavenderIcon].filter(Boolean).join(' ')}
         />
-        <span {...stylex.props(styles.label)}>{label}</span>
+        <span className={styles.label}>{label}</span>
         {hint && (
-          <span id={`${inputId}-hint`} {...stylex.props(controls.muted)}>
+          <span id={`${inputId}-hint`} className={controls.muted}>
             {hint}
           </span>
         )}
@@ -164,7 +163,7 @@ export function FileDropzone({
         <ul
           id={`${inputId}-issues`}
           role="alert"
-          {...stylex.props(styles.issues, fieldStyles.error)}
+          className={[styles.issues, fieldStyles.error].filter(Boolean).join(' ')}
         >
           {issues.map((issue, index) => (
             <li key={index}>
@@ -176,56 +175,3 @@ export function FileDropzone({
     </div>
   );
 }
-const styles = stylex.create({
-  zone: {
-    backgroundColor: {
-      default: tokens.surface,
-      ':hover': tokens.surfaceHover,
-      ':disabled': tokens.surface,
-    },
-    flexDirection: 'column',
-    width: '100%',
-    minHeight: 156,
-    padding: tokens.space24,
-    borderRadius: tokens.radiusLg,
-    borderStyle: 'dashed',
-    borderWidth: 2,
-    textAlign: 'center',
-    overflowWrap: 'anywhere',
-    opacity: { default: 1, ':disabled': 0.55 },
-  },
-  dragging: {
-    backgroundColor: {
-      default: tokens.actionTint,
-      ':hover': tokens.actionTint,
-    },
-    borderColor: tokens.accent,
-    outlineStyle: 'solid',
-    outlineWidth: 2,
-    outlineColor: tokens.focus,
-    outlineOffset: 2,
-  },
-  accentTransition: {
-    transitionProperty: 'color, background-color, border-color, outline-color',
-    transitionTimingFunction: 'ease-out',
-    transitionDuration: { default: '200ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
-  },
-  lavenderIcon: { color: tokens.supportLavender },
-  lavenderDragging: {
-    backgroundColor: {
-      default: `color-mix(in srgb, ${tokens.supportLavender} 7%, ${tokens.surface})`,
-      ':hover': `color-mix(in srgb, ${tokens.supportLavender} 7%, ${tokens.surface})`,
-    },
-    borderColor: tokens.supportLavender,
-    outlineColor: tokens.supportLavender,
-  },
-  compact: {
-    minHeight: 44,
-    padding: tokens.space8,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    textAlign: 'start',
-  },
-  label: { fontWeight: 600, maxWidth: '100%' },
-  issues: { paddingInlineStart: 24 },
-});

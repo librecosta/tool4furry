@@ -1,14 +1,13 @@
 import { type Locale } from '../../i18n/locale';
 import { useSyncExternalStore } from 'react';
 import { SunIcon, MoonIcon, UserIcon, GithubLogoIcon } from '@phosphor-icons/react';
-import * as stylex from '@stylexjs/stylex';
 import type { Region } from '../../config/region';
 import type { LanguageLink } from '../../site/language';
 import { messages } from '../../i18n/messages';
 import {
   currentAppearance, subscribeAppearance, toggleAppearance,
 } from '../../styles/appearance';
-import { navigationStyles as n } from '../../styles/navigation';
+import n from './NavigationControls.module.scss';
 
 const serverAppearance = () => undefined;
 
@@ -24,30 +23,30 @@ export function NavigationControls({ locale, link }: {
     ? t.appearanceControl
     : appearance === 'light' ? t.switchDark : t.switchLight;
   return (
-    <div data-navigation-controls {...stylex.props(n.actions)}>
+    <div data-navigation-controls className={n.actions}>
       <a
         data-language-link href={link.href} hrefLang={link.hreflang}
-        aria-label={t.switchLanguage} {...stylex.props(n.control, n.controlMotion)}
+        aria-label={t.switchLanguage} className={[n.control, n.controlMotion].filter(Boolean).join(' ')}
       >
-        <span aria-hidden {...stylex.props(n.currentLanguage)}>{link.current}</span>
-        <span aria-hidden {...stylex.props(n.targetLanguage)}> / </span>
-        <span lang={link.hreflang} {...stylex.props(n.targetLanguage)}>{link.target}</span>
+        <span aria-hidden className={n.currentLanguage}>{link.current}</span>
+        <span aria-hidden className={n.targetLanguage}> / </span>
+        <span lang={link.hreflang} className={n.targetLanguage}>{link.target}</span>
       </a>
-      <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" aria-label={t.github} {...stylex.props(n.control, n.controlMotion, n.github)}>
+      <a href="https://github.com/librecosta/tool4furry" target="_blank" rel="noopener noreferrer" aria-label={t.github} className={[n.control, n.controlMotion, n.github].filter(Boolean).join(' ')}>
         <GithubLogoIcon size={20} aria-hidden />
       </a>
       <button
         type="button" data-appearance-toggle="react" aria-label={label} title={label}
         aria-pressed={appearance === undefined ? undefined : appearance === 'light'}
         disabled={appearance === undefined}
-        onClick={event => toggleAppearance(event.currentTarget)} {...stylex.props(n.control, n.controlMotion)}
+        onClick={event => toggleAppearance(event.currentTarget)} className={[n.control, n.controlMotion].filter(Boolean).join(' ')}
       >
-        <span data-appearance-icon="light" {...stylex.props(n.appearanceIcon)}><SunIcon size={20} aria-hidden {...stylex.props(n.svg)} /></span>
-        <span data-appearance-icon="dark" {...stylex.props(n.appearanceIcon)}><MoonIcon size={20} aria-hidden {...stylex.props(n.svg)} /></span>
+        <span data-appearance-icon="light" className={n.appearanceIcon}><SunIcon size={20} aria-hidden className={n.svg} /></span>
+        <span data-appearance-icon="dark" className={n.appearanceIcon}><MoonIcon size={20} aria-hidden className={n.svg} /></span>
       </button>
       <span
         data-account-slot role="img" aria-label={t.accountReserved}
-        {...stylex.props(n.account)}
+        className={n.account}
       >
         <UserIcon size={20} aria-hidden />
       </span>

@@ -1,0 +1,26 @@
+// Below legacy StyleX priority layers until tool migration in V0.9-C.
+@layer t4f-ui {
+  .description {
+    margin: 0;
+  }
+
+  .positioner {
+    z-index: var(--t4f-layer-tooltip);
+  }
+
+  .popup {
+    max-width: min(280px, calc(100vw - 24px));
+    background-color: var(--t4f-surface-floating);
+    color: var(--t4f-text-primary);
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--t4f-border);
+    border-radius: var(--t4f-radius-md);
+    padding-block: var(--t4f-space-8);
+    padding-inline: var(--t4f-space-12);
+    box-shadow: var(--t4f-shadow-floating);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+
+}

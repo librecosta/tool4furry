@@ -1,0 +1,80 @@
+// Below legacy StyleX priority layers until tool migration in V0.9-C.
+@layer t4f-ui {
+  .zone {
+    background-color: var(--t4f-surface);
+    flex-direction: column;
+    width: 100%;
+    min-height: 156px;
+    padding: var(--t4f-space-24);
+    border-radius: var(--t4f-radius-lg);
+    border-style: dashed;
+    border-width: 2px;
+    text-align: center;
+    overflow-wrap: anywhere;
+    opacity: 1;
+
+    &:where(:hover) {
+      background-color: var(--t4f-surface-hover);
+    }
+
+    &:where(:disabled) {
+      background-color: var(--t4f-surface);
+      opacity: 0.55;
+    }
+  }
+
+  .lavenderIcon {
+    color: var(--t4f-support-lavender);
+  }
+
+  .compact {
+    min-height: 44px;
+    padding: var(--t4f-space-8);
+    flex-direction: row;
+    flex-wrap: wrap;
+    text-align: start;
+  }
+
+  .accentTransition {
+    transition-property: color, background-color, border-color, outline-color;
+    transition-timing-function: ease-out;
+    transition-duration: 200ms;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: 0ms;
+    }
+  }
+
+  .dragging {
+    background-color: var(--t4f-action-tint);
+    border-color: var(--t4f-accent);
+    outline-style: solid;
+    outline-width: 2px;
+    outline-color: var(--t4f-focus);
+    outline-offset: 2px;
+
+    &:where(:hover) {
+      background-color: var(--t4f-action-tint);
+    }
+  }
+
+  .lavenderDragging {
+    background-color: color-mix(in srgb, var(--t4f-support-lavender) 7%, var(--t4f-surface));
+    border-color: var(--t4f-support-lavender);
+    outline-color: var(--t4f-support-lavender);
+
+    &:where(:hover) {
+      background-color: color-mix(in srgb, var(--t4f-support-lavender) 7%, var(--t4f-surface));
+    }
+  }
+
+  .label {
+    font-weight: 600;
+    max-width: 100%;
+  }
+
+  .issues {
+    padding-inline-start: 24px;
+  }
+
+}

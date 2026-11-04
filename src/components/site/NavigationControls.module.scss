@@ -81,3 +81,8 @@
   flex-shrink: 0;
   color: var(--t4f-nav-secondary);
 }
+.chrome {
+  background-color: var(--t4f-nav-floating-background);
+  color: var(--t4f-nav-text);
+  --t4f-focus: var(--t4f-nav-focus);
+}

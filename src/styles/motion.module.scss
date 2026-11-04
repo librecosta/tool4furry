@@ -1,0 +1,45 @@
+// Below legacy StyleX priority layers until tool migration in V0.9-C.
+@layer t4f-ui {
+  .selection {
+    transition-property: background-color, border-color, color, opacity;
+    transition-duration: 280ms;
+    transition-timing-function: ease-out;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: 0ms;
+    }
+  }
+
+  .backdrop {
+    opacity: 1;
+    transition-property: opacity;
+    transition-duration: 300ms;
+    transition-timing-function: ease-out;
+
+    &:where(:is([data-starting-style], [data-ending-style])) {
+      opacity: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: 0ms;
+    }
+  }
+
+  .dialog {
+    opacity: 1;
+    scale: 1;
+    transition-property: opacity, scale;
+    transition-duration: 300ms;
+    transition-timing-function: ease-out;
+
+    &:where(:is([data-starting-style], [data-ending-style])) {
+      opacity: 0;
+      scale: 0.98;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: 0ms;
+    }
+  }
+
+}

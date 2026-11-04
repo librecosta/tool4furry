@@ -1,5 +1,7 @@
 import { useSyncExternalStore } from 'react';
-// Keep this breakpoint aligned with the shell's StyleX media queries.
+// Interaction semantics only: SCSS media queries own all responsive geometry.
+// The SSR/hydration snapshot is closed and nonmodal; no parameter content is
+// moved or remounted when this store first updates or crosses the breakpoint.
 const query = '(max-width: 900px)';
 function subscribe(notify: () => void) {
   const media = window.matchMedia(query);

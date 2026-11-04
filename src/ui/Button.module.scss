@@ -1,0 +1,35 @@
+// Below legacy StyleX priority layers until tool migration in V0.9-C.
+@layer t4f-ui {
+  .content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--t4f-space-8);
+  }
+
+  .hidden {
+    opacity: 0;
+  }
+
+  .spinner {
+    position: absolute;
+    animation-name: animation0;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-play-state: running;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation-play-state: paused;
+    }
+  }
+
+  @keyframes animation0 {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

@@ -1239,6 +1239,14 @@ for (const page of htmlFiles) {
       /html\[data-appearance\s*=\s*["']?light["']?\]/.test(css),
     `Missing native SCSS shell tokens or runtime Light theme in ${page}`,
   );
+  if (dom.querySelector('[data-tool-runtime]')) {
+    assert(css.includes('@layer t4f-controls') && css.includes('@layer t4f-ui'),
+      `React shell and UI CSS must be linked before hydration in ${page}`);
+    // A native shell must not wait for a lazy tool to inject its base styles.
+    for (const element of dom.querySelectorAll('[data-tool-page-entry], [data-tool-page-entry] nav'))
+      for (const className of element.classList)
+        assert(css.includes(`.${className}`), `Missing SSR navigation class ${className} in ${page}`);
+  }
   for (const family of ['DM Sans Variable', 'Noto Sans SC Variable'])
     assert(css.includes(family), `Missing self-hosted font: ${family}`);
   const faces = [...css.matchAll(/@font-face\s*\{([^}]+)\}/g)].map(

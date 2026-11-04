@@ -1,7 +1,6 @@
+import fieldStyles from './Field.module.scss';
 import { useId, type ReactNode } from 'react';
-import * as stylex from '@stylexjs/stylex';
-import { controls } from '../styles/controls';
-import { tokens } from '../styles/tokens.stylex';
+import controls from './controls.module.scss';
 
 export interface FieldProps {
   id?: string;
@@ -25,17 +24,7 @@ export function useField({ id, hint, error }: FieldProps) {
         .join(' ') || undefined,
   };
 }
-export const fieldStyles = stylex.create({
-  error: {
-    margin: 0,
-    color: tokens.danger,
-    fontSize: 13,
-    overflowWrap: 'anywhere',
-  },
-  area: { resize: 'vertical', minHeight: 120 },
-  disabled: { opacity: 0.55, cursor: 'not-allowed' },
-  label: { fontWeight: 500 },
-});
+
 export function FieldFeedback({
   hint,
   error,
@@ -44,12 +33,12 @@ export function FieldFeedback({
   return (
     <>
       {hint && (
-        <p id={ids.hintId} {...stylex.props(controls.muted)}>
+        <p id={ids.hintId} className={controls.muted}>
           {hint}
         </p>
       )}
       {error && (
-        <p id={ids.errorId} role="alert" {...stylex.props(fieldStyles.error)}>
+        <p id={ids.errorId} role="alert" className={fieldStyles.error}>
           {error}
         </p>
       )}
@@ -65,11 +54,11 @@ export function FieldFrame({
   children,
 }: FieldProps & { ids: ReturnType<typeof useField>; children: ReactNode }) {
   return (
-    <div {...stylex.props(controls.field)}>
+    <div className={controls.field}>
       <label
         id={ids.labelId}
         htmlFor={ids.id}
-        {...stylex.props(fieldStyles.label)}
+        className={fieldStyles.label}
       >
         {label}
         {required && <span aria-hidden="true"> *</span>}
@@ -79,3 +68,6 @@ export function FieldFrame({
     </div>
   );
 }
+
+// Tool-facing compatibility only; this component renders native CSS Modules.
+export { fieldStyles } from './Field.legacy';

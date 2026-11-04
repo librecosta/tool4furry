@@ -1,0 +1,48 @@
+// Below legacy StyleX priority layers until tool migration in V0.9-C.
+@layer t4f-ui {
+  .dock {
+    position: fixed;
+    display: none;
+    right: max(20px, env(safe-area-inset-right));
+    bottom: max(20px, env(safe-area-inset-bottom));
+    z-index: var(--t4f-layer-dock);
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-width: 0;
+    border-radius: 50%;
+    background-color: var(--t4f-surface-floating);
+    color: var(--t4f-accent);
+    box-shadow: var(--t4f-shadow-soft);
+
+    &:where(:hover) {
+      background-color: var(--t4f-page);
+    }
+
+    @media (min-width: 900px) and (pointer: fine) {
+      display: inline-flex;
+    }
+  }
+
+  .ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .track {
+    fill: none;
+    stroke: var(--t4f-border);
+    stroke-width: 2;
+  }
+
+  .progress {
+    fill: none;
+    stroke: var(--t4f-accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+}

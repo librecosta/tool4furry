@@ -1,7 +1,7 @@
+import fieldStyles from './Field.module.scss';
 import type { ComponentProps } from 'react';
-import * as stylex from '@stylexjs/stylex';
-import { controls } from '../styles/controls';
-import { FieldFrame, useField, fieldStyles, type FieldProps } from './Field';
+import controls from './controls.module.scss';
+import { FieldFrame, useField, type FieldProps } from './Field';
 
 type Controlled = FieldProps & {
   value: string;
@@ -30,13 +30,12 @@ export function TextField({
 }: TextFieldProps) {
   const field = { label, hint, error, id, required };
   const ids = useField(field);
-  const sx = stylex.props(controls.input, !!error && controls.invalid);
+  const sx = [controls.input, !!error && controls.invalid].filter(Boolean).join(' ');
   return (
     <FieldFrame {...field} ids={ids}>
       <input
         {...props}
-        {...sx}
-        className={[sx.className, className].filter(Boolean).join(' ')}
+        className={[sx, className].filter(Boolean).join(' ')}
         id={ids.id}
         required={required}
         value={value}
@@ -64,17 +63,16 @@ export function TextAreaField({
 }: TextAreaFieldProps) {
   const field = { label, hint, error, id, required };
   const ids = useField(field);
-  const sx = stylex.props(
+  const sx = [
     controls.input,
     fieldStyles.area,
     !!error && controls.invalid,
-  );
+  ].filter(Boolean).join(' ');
   return (
     <FieldFrame {...field} ids={ids}>
       <textarea
         {...props}
-        {...sx}
-        className={[sx.className, className].filter(Boolean).join(' ')}
+        className={[sx, className].filter(Boolean).join(' ')}
         id={ids.id}
         required={required}
         value={value}

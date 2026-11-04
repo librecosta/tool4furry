@@ -1,0 +1,112 @@
+// Below legacy StyleX priority layers until tool migration in V0.9-C.
+@layer t4f-ui {
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: var(--t4f-layer-dialog);
+    background-color: var(--t4f-overlay);
+  }
+
+  .popup {
+    position: fixed;
+    z-index: var(--t4f-layer-dialog);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 92vw;
+    height: 90dvh;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: var(--t4f-space-12);
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+    background-color: var(--t4f-surface-floating);
+    color: var(--t4f-text-primary);
+    box-shadow: var(--t4f-shadow-floating);
+    border-radius: var(--t4f-radius-lg);
+    overflow: hidden;
+
+    @media (max-width: 600px) {
+      top: 0;
+      left: 0;
+      transform: none;
+      width: 100vw;
+      height: 100dvh;
+      border-radius: 0;
+    }
+  }
+
+  .maximized {
+    top: 0;
+    left: 0;
+    transform: none;
+    width: 100vw;
+    height: 100dvh;
+    border-radius: 0;
+  }
+
+  .header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--t4f-space-8);
+
+    @media (max-width: 600px) {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+  }
+
+  .identity {
+    min-width: 0;
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .description {
+    font-size: 13px;
+    color: var(--t4f-text-secondary);
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-self: end;
+    grid-row: 1;
+    grid-column: 3;
+
+    @media (max-width: 600px) {
+      grid-column: 2;
+    }
+  }
+
+  .toolbar {
+    min-width: 0;
+    justify-self: center;
+    grid-column: 2;
+    grid-row: 1;
+
+    @media (max-width: 600px) {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+
+  .content {
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+  }
+
+}

@@ -273,3 +273,28 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+// Shared by the compact React Canvas navigation.
+.compactTrigger {
+  min-height: 44px;
+}
+
+.compactPositioner {
+  left: 16px;
+  right: auto;
+  width: min(1000px, calc(100vw - 32px));
+  top: calc(100% - 16px);
+}
+
+.compactPanel {
+  padding-inline: var(--t4f-space-16);
+}
+
+.toolIcon {
+  display: block;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}

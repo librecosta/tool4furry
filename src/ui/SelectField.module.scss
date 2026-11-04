@@ -1,0 +1,131 @@
+// Below legacy StyleX priority layers until tool migration in V0.9-C.
+@layer t4f-ui {
+  .trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--t4f-space-12);
+    text-align: start;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+
+    &:where(:disabled) {
+      cursor: not-allowed;
+    }
+  }
+
+  .quiet {
+    border-width: 0;
+    background-color: var(--t4f-surface-panel);
+    box-shadow: none;
+    outline-style: none;
+    outline-width: 2px;
+    outline-color: var(--t4f-focus);
+    outline-offset: 2px;
+
+    &:where(:hover) {
+      background-color: var(--t4f-surface-hover);
+    }
+
+    &:where(:disabled) {
+      background-color: var(--t4f-surface-panel);
+    }
+
+    &:where(:focus-visible) {
+      outline-style: solid;
+      box-shadow: none;
+    }
+  }
+
+  .positioner {
+    z-index: var(--t4f-layer-floating);
+    max-width: calc(100vw - 24px);
+  }
+
+  .popup {
+    width: var(--anchor-width);
+    max-width: calc(100vw - 24px);
+    max-height: min(320px, var(--available-height));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background-color: var(--t4f-surface-floating);
+    color: var(--t4f-text-primary);
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--t4f-border);
+    border-radius: var(--t4f-radius-lg);
+    padding: var(--t4f-space-4);
+    box-shadow: var(--t4f-shadow-floating);
+  }
+
+  .quietPopup {
+    border-width: 0;
+    box-shadow: var(--t4f-shadow-floating);
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: var(--t4f-space-8);
+    min-height: 44px;
+    padding-block: var(--t4f-space-8);
+    padding-inline: var(--t4f-space-12);
+    margin-block: 2px;
+    border-radius: var(--t4f-radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    outline: none;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+  }
+
+  .item:where([data-highlighted]) {
+    background-color: var(--t4f-surface-hover);
+    color: var(--t4f-text-primary);
+    outline: 2px solid var(--t4f-focus);
+    outline-offset: -2px;
+  }
+
+  .item:where([data-selected]) {
+    background-color: var(--t4f-action-tint);
+    color: var(--t4f-accent);
+  }
+
+  .quietItem {
+    outline-style: none;
+    outline-width: 2px;
+    outline-color: var(--t4f-focus);
+    outline-offset: -2px;
+
+    &:where(:is([data-highlighted])) {
+      background-color: var(--t4f-surface-hover);
+      color: var(--t4f-text-primary);
+    }
+
+    &:where(:is([data-highlighted]):focus-visible) {
+      outline-style: solid;
+    }
+  }
+
+  .quietItem:where([data-selected]) {
+    background-color: color-mix(in srgb, var(--t4f-support-lavender) 8%, var(--t4f-surface-floating));
+    color: var(--t4f-support-lavender);
+
+    &:where(:is([data-highlighted])) {
+      background-color: color-mix(in srgb, var(--t4f-support-lavender) 10%, var(--t4f-surface-floating));
+      color: var(--t4f-support-lavender);
+    }
+  }
+
+  .item:where([data-disabled]) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .check {
+    display: flex;
+    width: 18px;
+    flex-shrink: 0;
+  }
+
+}

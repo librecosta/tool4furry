@@ -1,5 +1,5 @@
 // Native theme values. Keep in parity with tokens.stylex.ts until V0.9-C.
-@layer reset, base;
+@layer reset, base, t4f-controls, t4f-ui;
 @layer base {
   :root {
     --t4f-page: #1d1f22;

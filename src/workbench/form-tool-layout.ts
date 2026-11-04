@@ -4,6 +4,8 @@ import { tokens } from '../styles/tokens.stylex';
 // Opt-in layout recipe inside WorkbenchShell mode="form" formWidth="wide".
 // Apply container (+ columns + split), then leading/aside/main in the split variant.
 // Keep DOM reading order leading -> aside -> main; CSS never moves the nodes.
+// Legacy image-tool consumers only; WorkbenchShell uses the native SCSS module.
+// Remove this export after those consumers migrate in V0.9-C.
 export const formToolLayout = stylex.create({
   container: {
     display: 'grid',

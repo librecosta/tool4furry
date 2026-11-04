@@ -21,7 +21,7 @@ describe('V0.9-A native styling foundation', () => {
       expect(Object.keys(actual).sort()).toEqual(Object.keys(values).map(variable).sort());
       for (const [key, value] of Object.entries(values)) expect(actual[variable(key)], selector + ' ' + key).toBe(normalize(value));
     }
-    expect(css.indexOf('@layer reset, base;')).toBeLessThan(css.indexOf('@layer base {'));
+    expect(css.indexOf('@layer reset, base, t4f-controls, t4f-ui;')).toBeLessThan(css.indexOf('@layer base {'));
     expect(css).toContain('DM Sans Variable');
     expect(css).toContain('html[data-appearance=light] [data-appearance-icon=dark]');
   });

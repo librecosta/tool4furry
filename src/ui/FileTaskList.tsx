@@ -1,5 +1,5 @@
+import fileTaskStyles from './FileTaskList.module.scss';
 import { useId, type ReactNode } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import {
   ArrowClockwiseIcon,
   DownloadSimpleIcon,
@@ -9,8 +9,7 @@ import {
 } from '@phosphor-icons/react';
 import { IconButton } from './Button';
 import { Tooltip } from './Tooltip';
-import { controls } from '../styles/controls';
-import { tokens as t } from '../styles/tokens.stylex';
+import controls from './controls.module.scss';
 
 export type FileTaskStatus =
   'validating' | 'queued' | 'processing' | 'ready' | 'stale' | 'error';
@@ -57,7 +56,7 @@ export function FileTaskList({
   children?: ReactNode;
 }) {
   return (
-    <ul aria-label={label} {...stylex.props(fileTaskStyles.list)}>
+    <ul aria-label={label} className={fileTaskStyles.list}>
       {items
         ? items.map((item) => <FileTaskRow key={item.id} item={item} />)
         : children}
@@ -76,34 +75,34 @@ export function FileTaskRow({ item }: { item: FileTaskItem }) {
       aria-describedby={item.error ? errorId : undefined}
       data-task-id={item.id}
       data-task-status={item.status}
-      {...stylex.props(fileTaskStyles.item)}
+      className={fileTaskStyles.item}
     >
-      <div aria-hidden="true" {...stylex.props(fileTaskStyles.media)}>
+      <div aria-hidden="true" className={fileTaskStyles.media}>
         {item.media ?? item.icon ?? <FileIcon size={22} />}
       </div>
-      <div {...stylex.props(fileTaskStyles.heading)}>
-        <span id={nameId} title={item.name} {...stylex.props(fileTaskStyles.name)}>
+      <div className={fileTaskStyles.heading}>
+        <span id={nameId} title={item.name} className={fileTaskStyles.name}>
           {item.name}
         </span>
         <span
           role="status"
-          {...stylex.props(
+          className={[
             fileTaskStyles.status,
             item.status === 'ready' && fileTaskStyles.ready,
             item.status === 'error' && fileTaskStyles.error,
-          )}
+          ].filter(Boolean).join(' ')}
         >
           {item.statusLabel}
         </span>
       </div>
-      <div {...stylex.props(fileTaskStyles.metadataRow)}>
-        <div {...stylex.props(fileTaskStyles.metadata)}>
+      <div className={fileTaskStyles.metadataRow}>
+        <div className={fileTaskStyles.metadata}>
           {item.error ? (
             <span
               id={errorId}
               role="alert"
               title={item.error}
-              {...stylex.props(fileTaskStyles.error)}
+              className={fileTaskStyles.error}
             >
               {item.error}
             </span>
@@ -115,7 +114,7 @@ export function FileTaskRow({ item }: { item: FileTaskItem }) {
                   : item.metadata}
               </span>
               {item.status === 'ready' && item.output && (
-                <span {...stylex.props(fileTaskStyles.output)}> → {item.output}</span>
+                <span className={fileTaskStyles.output}> → {item.output}</span>
               )}
             </>
           )}
@@ -131,13 +130,13 @@ export function FileTaskRow({ item }: { item: FileTaskItem }) {
                 ? Math.round(Math.max(0, Math.min(1, item.progress!)) * 100)
                 : undefined
             }
-            {...stylex.props(fileTaskStyles.progress)}
+            className={fileTaskStyles.progress}
           >
             <span
-              {...stylex.props(
+              className={[
                 fileTaskStyles.bar,
                 !Number.isFinite(item.progress) && fileTaskStyles.indeterminate,
-              )}
+              ].filter(Boolean).join(' ')}
               style={
                 Number.isFinite(item.progress)
                   ? {
@@ -149,7 +148,7 @@ export function FileTaskRow({ item }: { item: FileTaskItem }) {
           </div>
         )}
       </div>
-      <div {...stylex.props(fileTaskStyles.actions)}>
+      <div className={fileTaskStyles.actions}>
         {item.actions.map((action) => {
           const Icon = icons[action.kind];
           const content = <Icon size={18} aria-hidden="true" />;
@@ -165,12 +164,12 @@ export function FileTaskRow({ item }: { item: FileTaskItem }) {
                   download={action.download}
                   aria-label={action.label}
                   onClick={action.onClick}
-                  {...stylex.props(
+                  className={[
                     controls.button,
                     controls.ghost,
                     fileTaskStyles.action,
                     action.kind === 'download' && fileTaskStyles.ready,
-                  )}
+                  ].filter(Boolean).join(' ')}
                 >
                   {content}
                 </a>
@@ -184,7 +183,7 @@ export function FileTaskRow({ item }: { item: FileTaskItem }) {
                   aria-description={action.disabledReason}
                   title={action.disabledReason}
                   onClick={action.onClick}
-                  {...stylex.props(fileTaskStyles.action)}
+                  className={fileTaskStyles.action}
                 >
                   {content}
                 </IconButton>
@@ -197,108 +196,5 @@ export function FileTaskRow({ item }: { item: FileTaskItem }) {
   );
 }
 
-const glide = stylex.keyframes({
-  from: { transform: 'translateX(-100%)' },
-  to: { transform: 'translateX(280%)' },
-});
-export const fileTaskStyles = stylex.create({
-  list: { listStyle: 'none', padding: 0, margin: 0, minWidth: 0 },
-  item: {
-    display: 'grid',
-    gridTemplateColumns: { default: 'auto minmax(0, 1fr) auto', '@media (max-width: 600px)': 'auto minmax(0, 1fr)' },
-    alignItems: 'center',
-    columnGap: t.space8,
-    rowGap: 2,
-    minHeight: 64,
-    paddingBlock: { default: t.space8, '@media (max-width: 600px)': t.space4 },
-    paddingInline: t.space8,
-    borderBottomWidth: 1,
-    borderBottomStyle: 'solid',
-    borderBottomColor: t.border,
-    backgroundColor: { default: 'transparent', ':hover': t.surfacePanel },
-  },
-  heading: {
-    gridColumn: 2,
-    gridRow: 1,
-    display: 'flex',
-    alignItems: 'center',
-    gap: t.space8,
-    minWidth: 0,
-  },
-  media: {
-    gridColumn: 1,
-    gridRow: '1 / 3',
-    minWidth: 44,
-    minHeight: 44,
-    display: 'grid',
-    placeItems: 'center',
-    overflow: 'hidden',
-    borderRadius: t.radiusSm,
-    backgroundColor: 'transparent',
-    color: t.textSecondary,
-  },
-  name: {
-    minWidth: 0,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-    fontSize: 14,
-    fontWeight: 500,
-  },
-  status: {
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    fontSize: 12,
-    color: t.textSecondary,
-  },
-  ready: { color: t.positive },
-  metadataRow: {
-    gridColumn: 2,
-    gridRow: 2,
-    display: 'flex',
-    alignItems: 'center',
-    gap: t.space8,
-    minWidth: 0,
-  },
-  metadata: {
-    minWidth: 0,
-    flexGrow: 1,
-    fontSize: 12,
-    lineHeight: 1.6,
-    color: t.textSecondary,
-    fontVariantNumeric: 'tabular-nums',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: { default: 'nowrap', '@media (max-width: 600px)': 'normal' },
-  },
-  progress: {
-    width: 80,
-    height: 3,
-    flexShrink: 0,
-    overflow: 'hidden',
-    backgroundColor: t.border,
-    borderRadius: 2,
-  },
-  bar: { display: 'block', height: '100%', backgroundColor: t.accent },
-  indeterminate: {
-    width: '35%',
-    animationName: {
-      default: glide,
-      '@media (prefers-reduced-motion: reduce)': 'none',
-    },
-    animationDuration: '1.5s',
-    animationTimingFunction: 'ease-in-out',
-    animationIterationCount: 'infinite',
-    transform: 'translateX(90%)',
-  },
-  output: { color: t.textPrimary },
-  actions: {
-    gridColumn: { default: '3', '@media (max-width: 600px)': '1 / -1' },
-    gridRow: { default: '1 / 3', '@media (max-width: 600px)': '3' },
-    display: 'flex',
-    alignItems: 'center',
-    justifySelf: 'end',
-  },
-  action: { width: 44, height: 44, paddingInline: 0, flexShrink: 0 },
-  error: { color: t.danger },
-});
+// Tool-facing compatibility only; this component renders native CSS Modules.
+export { fileTaskStyles } from './FileTaskList.legacy';

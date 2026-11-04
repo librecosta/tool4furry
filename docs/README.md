@@ -24,7 +24,7 @@
 - [视觉基础](visual-foundation.md)：当前主题/品牌入口与历代视觉变更；色值以源码为准。
 - [Pixel Icon V1](visual/tool-icon-prompts.md)：六条维护者确认的原始 Prompt、共同母本与透明 PNG 交付规则；素材是否已提供见文内检查记录。
 
-- [V0.9 样式基础](styling-foundation-v0.9.md)：SCSS / CSS Variables、Astro 迁移范围及 React StyleX 过渡边界。
+- [V0.9 样式基础](styling-foundation-v0.9.md)：Astro / React 公共组件的 SCSS、CSS Variables、Hydration 与工具 StyleX 过渡边界。
 
 ## Contracts · 稳定约束
 

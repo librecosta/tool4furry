@@ -1,6 +1,6 @@
 @use './tokens';
 
-@layer reset, base;
+@layer reset, base, t4f-controls, t4f-ui;
 @layer reset {
   *,
   *::before,

@@ -1,0 +1,61 @@
+// Below legacy StyleX priority layers until tool migration in V0.9-C.
+@layer t4f-ui {
+  .positioner {
+    z-index: var(--t4f-layer-floating);
+  }
+
+  .popup {
+    width: 280px;
+    max-width: calc(100vw - 32px);
+    max-height: var(--available-height);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--t4f-space-8);
+    background-color: var(--t4f-surface-floating);
+    color: var(--t4f-text-primary);
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--t4f-border-strong);
+    border-radius: var(--t4f-radius-lg);
+    box-shadow: var(--t4f-shadow-floating);
+  }
+
+  .label {
+    padding: var(--t4f-space-8);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .note {
+    margin: 0;
+    padding: var(--t4f-space-8);
+    font-size: 13px;
+    color: var(--t4f-text-secondary);
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: var(--t4f-space-8);
+    border-radius: var(--t4f-radius-sm);
+    color: var(--t4f-text-primary);
+    font-size: 14px;
+    text-decoration: none;
+    text-underline-offset: 4px;
+    background-color: transparent;
+    outline: none;
+    outline-offset: -2px;
+
+    &:where(:is([aria-current="page"])) {
+      text-decoration: underline;
+      background-color: var(--t4f-action-tint);
+    }
+
+    &:where(:is([data-highlighted])) {
+      background-color: var(--t4f-surface-hover);
+      outline: 2px solid var(--t4f-focus);
+    }
+  }
+
+}

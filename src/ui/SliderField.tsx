@@ -1,10 +1,10 @@
+import styles from './SliderField.module.scss';
+import fieldStyles from './Field.module.scss';
 import { Slider } from '@base-ui/react/slider';
 import { Field } from '@base-ui/react/field';
 import type { ReactNode } from 'react';
-import * as stylex from '@stylexjs/stylex';
-import { controls } from '../styles/controls';
-import { tokens } from '../styles/tokens.stylex';
-import { FieldFeedback, useField, fieldStyles, type FieldProps } from './Field';
+import controls from './controls.module.scss';
+import { FieldFeedback, useField, type FieldProps } from './Field';
 
 export interface SliderFieldProps extends Omit<FieldProps, 'required'> {
   value: number;
@@ -35,7 +35,7 @@ export function SliderField({
     <Field.Root
       invalid={!!field.error}
       disabled={field.disabled}
-      {...stylex.props(controls.field, field.disabled && fieldStyles.disabled)}
+      className={[controls.field, field.disabled && fieldStyles.disabled].filter(Boolean).join(' ')}
     >
       <Slider.Root
         id={ids.id}
@@ -47,7 +47,7 @@ export function SliderField({
         name={name}
         disabled={field.disabled}
       >
-        <div {...stylex.props(styles.label)}>
+        <div className={styles.label}>
           <Slider.Label>{field.label}</Slider.Label>
           {valueControl ?? (
             <span aria-hidden="true">
@@ -56,23 +56,23 @@ export function SliderField({
             </span>
           )}
         </div>
-        <Slider.Control {...stylex.props(styles.control)}>
-          <Slider.Track {...stylex.props(
+        <Slider.Control className={styles.control}>
+          <Slider.Track className={[
             styles.track,
             accent === 'lavender' && !field.disabled && styles.lavenderTrack,
-          )}>
-            <Slider.Indicator {...stylex.props(
+          ].filter(Boolean).join(' ')}>
+            <Slider.Indicator className={[
               styles.indicator,
               accent === 'lavender' && !field.disabled && styles.lavenderIndicator,
-            )} />
+            ].filter(Boolean).join(' ')} />
             <Slider.Thumb
               aria-describedby={ids.describedBy}
               getAriaValueText={(value) => `${value}${unit}`}
-              {...stylex.props(
+              className={[
                 styles.thumb,
                 accent === 'lavender' && !field.disabled && styles.lavenderThumb,
                 !!field.error && controls.invalid,
-              )}
+              ].filter(Boolean).join(' ')}
             />
           </Slider.Track>
         </Slider.Control>
@@ -81,58 +81,3 @@ export function SliderField({
     </Field.Root>
   );
 }
-const styles = stylex.create({
-  label: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: tokens.space12,
-    fontWeight: 500,
-    fontVariantNumeric: 'tabular-nums',
-  },
-  control: {
-    display: 'flex',
-    alignItems: 'center',
-    height: 44,
-    paddingInline: 13,
-    touchAction: 'none',
-    userSelect: 'none',
-  },
-  track: {
-    position: 'relative',
-    width: '100%',
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: `color-mix(in srgb, ${tokens.borderStrong} 80%, transparent)`,
-  },
-  indicator: { backgroundColor: tokens.accent, borderRadius: 3 },
-  // A neutral rail with enough contrast against the supporting progress color.
-  lavenderTrack: { backgroundColor: tokens.border },
-  lavenderIndicator: {
-    backgroundColor: tokens.supportLavender,
-    transitionProperty: 'background-color',
-    transitionTimingFunction: 'ease-out',
-    transitionDuration: { default: '200ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
-  },
-  lavenderThumb: {
-    borderColor: tokens.supportLavender,
-    transitionProperty: 'border-color, background-color',
-    transitionTimingFunction: 'ease-out',
-    transitionDuration: { default: '200ms', '@media (prefers-reduced-motion: reduce)': '0ms' },
-  },
-  thumb: {
-    width: 26,
-    height: 26,
-    borderRadius: '50%',
-    backgroundColor: {
-      default: tokens.surfaceFloating,
-      ':hover': tokens.surfaceFloating,
-      ':active': tokens.surfaceFloating,
-    },
-    borderWidth: { default: 2, ':has(:focus-visible)': 3 },
-    borderStyle: 'solid',
-    borderColor: tokens.accent,
-    // Base UI focuses its clipped range input. Emphasize this one ring for keys.
-    outlineStyle: 'none',
-  },
-});

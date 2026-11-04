@@ -1,0 +1,12 @@
+// Below legacy StyleX priority layers until tool migration in V0.9-C.
+@layer t4f-ui {
+  // Wide Form wins over the generic Form columns regardless of chunk order.
+  .columns.columns {
+    grid-template-columns: minmax(0, 1fr) 350px;
+
+    @media (max-width: 1050px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+}

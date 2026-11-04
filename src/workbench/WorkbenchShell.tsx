@@ -1,3 +1,4 @@
+import s from './WorkbenchShell.module.scss';
 import { useId, useRef, useState, type ReactNode } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import {
@@ -5,13 +6,10 @@ import {
   SidebarSimpleIcon,
   XIcon,
 } from '@phosphor-icons/react';
-import * as stylex from '@stylexjs/stylex';
 import type { WorkspaceMode } from '../tools/types';
-import { controls as c } from '../styles/controls';
-import { tokens } from '../styles/tokens.stylex';
-import { siteStyles as site } from '../styles/site';
+import c from '../ui/controls.module.scss';
 import { useCompact } from './useCompact';
-import { formToolLayout } from './form-tool-layout';
+import formToolLayout from './form-tool-layout.module.scss';
 import { IconButton } from '../ui/Button';
 
 export interface WorkbenchShellProps {
@@ -60,43 +58,43 @@ export default function WorkbenchShell({
 
   if (!canvas)
     return (
-      <section data-workbench={mode} {...stylex.props(s.shell)}>
+      <section data-workbench={mode} className={s.shell}>
         {header != null && (
-          <header {...stylex.props(s.flowHeader)}>{header}</header>
+          <header className={s.flowHeader}>{header}</header>
         )}
         <div
-          {...stylex.props(
+          className={[
             s.flow,
-            site.fluid,
+            s.fluid,
             mode === 'form' ? s.form : mode === 'batch' ? s.batch : s.custom,
             right != null && mode === 'form' && s.formColumns,
             mode === 'form' && formWidth === 'wide' && s.formWide,
             right != null && mode === 'form' && formWidth === 'wide' && formToolLayout.columns,
             right != null && mode === 'batch' && s.batchColumns,
-          )}
+          ].filter(Boolean).join(' ')}
         >
           {left != null && (
-            <div aria-label={labels.toolbar} {...stylex.props(s.flowLeft)}>
+            <div aria-label={labels.toolbar} className={s.flowLeft}>
               {left}
             </div>
           )}
-          <div aria-label={labels.main} {...stylex.props(s.main)}>
+          <div aria-label={labels.main} className={s.main}>
             {children}
           </div>
-          {right != null && <aside {...stylex.props(s.main)}>{right}</aside>}
+          {right != null && <aside className={s.main}>{right}</aside>}
         </div>
         {bottom != null && (
-          <footer {...stylex.props(s.flowBottom)}>{bottom}</footer>
+          <footer className={s.flowBottom}>{bottom}</footer>
         )}
       </section>
     );
 
   return (
-    <section data-workbench={mode} {...stylex.props(s.shell, s.canvas)}>
+    <section data-workbench={mode} className={[s.shell, s.canvas].filter(Boolean).join(' ')}>
       <div
         data-canvas-viewport
         aria-label={labels.main}
-        {...stylex.props(s.viewport)}
+        className={s.viewport}
       >
         {children}
       </div>
@@ -108,36 +106,36 @@ export default function WorkbenchShell({
           compact ? setSheetOpen(next) : setDesktopOpen(next)
         }
       >
-        <div data-canvas-overlay {...stylex.props(s.overlay)}>
+        <div data-canvas-overlay className={s.overlay}>
           {header != null && (
-            <header {...stylex.props(s.localHeader, s.surface)}>
+            <header className={[s.localHeader, s.surface].filter(Boolean).join(' ')}>
               {header}
             </header>
           )}
           {(left != null || right != null || bottom != null) && (
-            <div {...stylex.props(s.dock)}>
+            <div className={s.dock}>
               {left != null && (
                 <div
                   id={toolbarId}
                   aria-label={labels.toolbar}
-                  {...stylex.props(
+                  className={[
                     s.left,
                     s.surface,
                     !leftOpen && s.closedLeft,
-                  )}
+                  ].filter(Boolean).join(' ')}
                 >
                   {left}
                 </div>
               )}
               {bottom != null && (
-                <footer {...stylex.props(s.bottom, s.surface)}>{bottom}</footer>
+                <footer className={[s.bottom, s.surface].filter(Boolean).join(' ')}>{bottom}</footer>
               )}
               {(left != null || right != null) && (
-                <div {...stylex.props(s.switches)}>
+                <div className={s.switches}>
                   {left != null && (
                     <button
                       type="button"
-                      {...stylex.props(c.button, s.icon, s.desktopOnly)}
+                      className={[c.button, s.icon, s.desktopOnly].filter(Boolean).join(' ')}
                       aria-label={
                         leftOpen ? labels.hideTools : labels.showTools
                       }
@@ -152,7 +150,7 @@ export default function WorkbenchShell({
                   {right != null && (
                     <Dialog.Trigger
                       ref={trigger}
-                      {...stylex.props(c.button, s.icon, open && c.active)}
+                      className={[c.button, s.icon, open && c.active].filter(Boolean).join(' ')}
                       aria-label={
                         open ? labels.hideParameters : labels.showParameters
                       }
@@ -171,29 +169,29 @@ export default function WorkbenchShell({
           )}
           {right != null && (
             <>
-              <div ref={panelHost} {...stylex.props(s.panelHost)} />
+              <div ref={panelHost} className={s.panelHost} />
               <Dialog.Portal
                 container={panelHost}
                 keepMounted
-                {...stylex.props(s.portal)}
+                className={s.portal}
               >
-                {compact && <Dialog.Backdrop {...stylex.props(s.backdrop)} />}
+                <Dialog.Backdrop className={s.backdrop} />
                 <Dialog.Popup
                   id={panelId}
                   initialFocus={compact}
                   finalFocus={trigger}
                   role={compact ? 'dialog' : 'region'}
-                  {...stylex.props(s.surface, s.panel, !open && s.closedPanel)}
+                  className={[s.surface, s.panel, !open && s.closedPanel].filter(Boolean).join(' ')}
                 >
-                  <div {...stylex.props(s.panelHeading)}>
-                    <Dialog.Title {...stylex.props(c.heading)}>
+                  <div className={s.panelHeading}>
+                    <Dialog.Title className={c.heading}>
                       {labels.parameters}
                     </Dialog.Title>
                     <Dialog.Close
-                      render={<IconButton label={labels.close} variant="ghost" xstyle={c.dialogClose}><XIcon size={20} aria-hidden /></IconButton>}
+                      render={<IconButton label={labels.close} variant="ghost" className={c.dialogClose}><XIcon size={20} aria-hidden /></IconButton>}
                     />
                   </div>
-                  <div {...stylex.props(s.panelContent)}>{right}</div>
+                  <div className={s.panelContent}>{right}</div>
                 </Dialog.Popup>
               </Dialog.Portal>
             </>
@@ -203,190 +201,3 @@ export default function WorkbenchShell({
     </section>
   );
 }
-
-const s = stylex.create({
-  shell: { minWidth: 0, color: tokens.textPrimary, fontSize: 14 },
-  canvas: { height: '100dvh', position: 'relative', overflow: 'clip' },
-  viewport: { position: 'absolute', inset: 0, minWidth: 0, minHeight: 0 },
-  overlay: { position: 'absolute', inset: 0, pointerEvents: 'none' },
-  surface: {
-    backgroundColor: tokens.surfaceFloating,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: tokens.border,
-    borderRadius: tokens.radiusLg,
-    boxShadow: tokens.shadowSoft,
-    pointerEvents: 'auto',
-  },
-  localHeader: {
-    zIndex: tokens.layerDock,
-    position: 'absolute',
-    top: 'max(80px, calc(env(safe-area-inset-top) + 64px))',
-    left: 'max(16px, env(safe-area-inset-left))',
-    maxWidth: 'calc(100% - 32px)',
-    padding: tokens.space8,
-  },
-  dock: {
-    zIndex: tokens.layerDock,
-    display: { default: 'contents', '@media (max-width: 900px)': 'flex' },
-    position: { default: null, '@media (max-width: 900px)': 'absolute' },
-    bottom: 'max(16px, env(safe-area-inset-bottom))',
-    left: 'max(16px, env(safe-area-inset-left))',
-    right: 'max(16px, env(safe-area-inset-right))',
-    alignItems: 'center',
-    gap: tokens.space8,
-    justifyContent: 'space-between',
-  },
-  left: {
-    zIndex: tokens.layerDock,
-    position: { default: 'absolute', '@media (max-width: 900px)': 'static' },
-    top: 'max(144px, calc(env(safe-area-inset-top) + 128px))',
-    left: 'max(16px, env(safe-area-inset-left))',
-    padding: tokens.space4,
-    flexShrink: 0,
-    maxHeight: 'calc(100dvh - 240px)',
-    overflowY: 'auto',
-  },
-  closedLeft: {
-    display: { default: 'none', '@media (max-width: 900px)': 'block' },
-  },
-  switches: {
-    zIndex: tokens.layerDock,
-    display: 'flex',
-    gap: tokens.space8,
-    pointerEvents: 'auto',
-    flexShrink: 0,
-    position: { default: 'absolute', '@media (max-width: 900px)': 'static' },
-    top: 'max(16px, env(safe-area-inset-top))',
-    right: 'max(16px, env(safe-area-inset-right))',
-  },
-  icon: { paddingInline: tokens.space8, flexShrink: 0 },
-  desktopOnly: {
-    display: { default: 'inline-flex', '@media (max-width: 900px)': 'none' },
-  },
-  bottom: {
-    zIndex: tokens.layerDock,
-    position: { default: 'absolute', '@media (max-width: 900px)': 'static' },
-    bottom: 'max(16px, env(safe-area-inset-bottom))',
-    left: '50%',
-    transform: {
-      default: 'translateX(-50%)',
-      '@media (max-width: 900px)': 'none',
-    },
-    maxWidth: {
-      default: 'calc(100% - 160px)',
-      '@media (max-width: 900px)': 'none',
-    },
-    minWidth: 0,
-    display: 'flex',
-    alignItems: 'center',
-    gap: tokens.space8,
-    padding: tokens.space4,
-    paddingLeft: tokens.space12,
-  },
-  panelHost: { position: 'absolute', inset: 0, pointerEvents: 'none' },
-  // Nested Base UI portals inherit here (not necessarily document.body).
-  // This zero-height wrapper restores interaction without covering the viewport.
-  portal: { pointerEvents: 'auto' },
-  panel: {
-    // Desktop inspector is a persistent surface; the mobile modal sheet floats.
-    borderWidth: { default: 0, '@media (max-width: 900px)': 1 },
-    backgroundColor: {
-      default: tokens.surfaceFloating,
-      '@media (max-width: 900px)': tokens.surfaceFloating,
-    },
-    position: { default: 'absolute', '@media (max-width: 900px)': 'fixed' },
-    top: {
-      default: 'max(80px, calc(env(safe-area-inset-top) + 64px))',
-      '@media (max-width: 900px)': 'auto',
-    },
-    right: {
-      default: 'max(16px, env(safe-area-inset-right))',
-      '@media (max-width: 900px)': 0,
-    },
-    bottom: { default: 'auto', '@media (max-width: 900px)': 0 },
-    width: { default: 320, '@media (max-width: 900px)': '100%' },
-    maxHeight: {
-      default: 'calc(100dvh - 160px)',
-      '@media (max-width: 900px)':
-        'min(80dvh, calc(100dvh - env(safe-area-inset-top) - 16px))',
-    },
-    display: 'flex',
-    flexDirection: 'column',
-    zIndex: tokens.layerSheet,
-    boxShadow: {
-      default: tokens.shadowNone,
-      '@media (max-width: 900px)': tokens.shadowFloating,
-    },
-    borderRadius: {
-      default: tokens.radiusLg,
-      '@media (max-width: 900px)': '16px 16px 0 0',
-    },
-  },
-  closedPanel: { display: 'none' },
-  panelHeading: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexShrink: 0,
-    gap: tokens.space12,
-    padding: tokens.space12,
-    paddingLeft: 'max(16px, env(safe-area-inset-left))',
-    paddingRight: 'max(12px, env(safe-area-inset-right))',
-    borderBottomWidth: 1,
-    borderBottomStyle: 'solid',
-    borderBottomColor: tokens.border,
-  },
-  panelContent: {
-    padding: tokens.space16,
-    paddingLeft: 'max(16px, env(safe-area-inset-left))',
-    paddingRight: 'max(16px, env(safe-area-inset-right))',
-    paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
-    minHeight: 0,
-    overflowY: 'auto',
-    overscrollBehavior: 'contain',
-  },
-  backdrop: {
-    position: 'fixed',
-    inset: 0,
-    backgroundColor: tokens.overlay,
-    zIndex: tokens.layerBackdrop,
-    pointerEvents: 'auto',
-  },
-  main: { minWidth: 0 },
-  flowHeader: { padding: tokens.space16 },
-  flow: {
-    display: 'grid',
-    gridTemplateColumns: 'minmax(0, 1fr)',
-    gap: tokens.space24,
-    paddingBlock: tokens.space24,
-    marginInline: 'auto',
-    alignItems: 'start',
-  },
-  form: { maxWidth: 760 },
-  formWide: {
-    maxWidth: 1400,
-  },
-  batch: { maxWidth: 'none' },
-  formColumns: {
-    maxWidth: 'none',
-    gridTemplateColumns: {
-      default: 'minmax(0, 1fr) 320px',
-      '@media (max-width: 900px)': 'minmax(0, 1fr)',
-    },
-  },
-  batchColumns: {
-    gridTemplateColumns: {
-      default: 'minmax(0, 1fr) 320px',
-      '@media (max-width: 900px)': 'minmax(0, 1fr)',
-    },
-  },
-  flowLeft: { gridColumn: '1 / -1', minWidth: 0 },
-  custom: { padding: tokens.space16 },
-  flowBottom: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: tokens.space12,
-    padding: tokens.space16,
-  },
-});

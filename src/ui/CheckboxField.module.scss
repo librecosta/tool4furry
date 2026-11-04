@@ -1,0 +1,57 @@
+// Below legacy StyleX priority layers until tool migration in V0.9-C.
+@layer t4f-ui {
+  .label {
+    display: flex;
+    align-items: center;
+    gap: var(--t4f-space-8);
+    font-weight: 500;
+    min-height: 44px;
+    cursor: pointer;
+  }
+
+  .box {
+    display: inline-flex;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    justify-content: center;
+    align-items: center;
+    border-width: var(--t4f-control-border-width);
+    border-style: solid;
+    border-color: var(--t4f-control-border);
+    background-color: var(--t4f-surface);
+    border-radius: var(--t4f-radius-sm);
+    outline-color: var(--t4f-focus);
+
+    &:where(:hover) {
+      background-color: var(--t4f-surface-hover);
+    }
+
+    &:where(:disabled) {
+      background-color: var(--t4f-surface);
+    }
+  }
+
+  .checked {
+    background-color: var(--t4f-action);
+    border-color: transparent;
+    color: var(--t4f-on-action);
+
+    &:where(:hover) {
+      background-color: var(--t4f-action-hover);
+    }
+
+    &:where(:active) {
+      background-color: var(--t4f-action-pressed);
+    }
+
+    &:where(:disabled) {
+      background-color: var(--t4f-action);
+    }
+  }
+
+  .indicator {
+    display: flex;
+  }
+
+}

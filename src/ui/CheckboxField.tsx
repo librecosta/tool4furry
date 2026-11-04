@@ -1,10 +1,10 @@
+import styles from './CheckboxField.module.scss';
+import fieldStyles from './Field.module.scss';
 import { Checkbox } from '@base-ui/react/checkbox';
 import { CheckIcon } from '@phosphor-icons/react';
-import * as stylex from '@stylexjs/stylex';
-import { motion } from '../styles/motion';
-import { tokens } from '../styles/tokens.stylex';
-import { controls } from '../styles/controls';
-import { FieldFeedback, useField, fieldStyles, type FieldProps } from './Field';
+import motion from '../styles/motion.module.scss';
+import controls from './controls.module.scss';
+import { FieldFeedback, useField, type FieldProps } from './Field';
 
 export interface CheckboxFieldProps extends FieldProps {
   checked: boolean;
@@ -19,10 +19,10 @@ export function CheckboxField({
 }: CheckboxFieldProps) {
   const ids = useField(field);
   return (
-    <div {...stylex.props(controls.field)}>
+    <div className={controls.field}>
       <label
         htmlFor={ids.id}
-        {...stylex.props(styles.label, field.disabled && fieldStyles.disabled)}
+        className={[styles.label, field.disabled && fieldStyles.disabled].filter(Boolean).join(' ')}
       >
         <Checkbox.Root
           id={ids.id}
@@ -34,14 +34,14 @@ export function CheckboxField({
           aria-labelledby={ids.labelId}
           aria-describedby={ids.describedBy}
           aria-invalid={!!field.error || undefined}
-          {...stylex.props(
+          className={[
             styles.box,
             motion.selection,
             checked && styles.checked,
             !!field.error && controls.invalid,
-          )}
+          ].filter(Boolean).join(' ')}
         >
-          <Checkbox.Indicator {...stylex.props(styles.indicator)}>
+          <Checkbox.Indicator className={styles.indicator}>
             <CheckIcon size={18} weight="bold" aria-hidden="true" />
           </Checkbox.Indicator>
         </Checkbox.Root>
@@ -54,42 +54,3 @@ export function CheckboxField({
     </div>
   );
 }
-const styles = stylex.create({
-  label: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: tokens.space8,
-    fontWeight: 500,
-    minHeight: 44,
-    cursor: 'pointer',
-  },
-  box: {
-    display: 'inline-flex',
-    flexShrink: 0,
-    width: 20,
-    height: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: tokens.controlBorderWidth,
-    borderStyle: 'solid',
-    borderColor: tokens.controlBorder,
-    backgroundColor: {
-      default: tokens.surface,
-      ':hover': tokens.surfaceHover,
-      ':disabled': tokens.surface,
-    },
-    borderRadius: tokens.radiusSm,
-    outlineColor: tokens.focus,
-  },
-  checked: {
-    backgroundColor: {
-      default: tokens.action,
-      ':hover': tokens.actionHover,
-      ':active': tokens.actionPressed,
-      ':disabled': tokens.action,
-    },
-    borderColor: 'transparent',
-    color: tokens.onAction,
-  },
-  indicator: { display: 'flex' },
-});

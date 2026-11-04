@@ -1,0 +1,165 @@
+// Below legacy StyleX priority layers until tool migration in V0.9-C.
+@layer t4f-ui {
+  .list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: var(--t4f-space-8);
+    row-gap: 2px;
+    min-height: 64px;
+    padding-block: var(--t4f-space-8);
+    padding-inline: var(--t4f-space-8);
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: var(--t4f-border);
+    background-color: transparent;
+
+    &:where(:hover) {
+      background-color: var(--t4f-surface-panel);
+    }
+
+    @media (max-width: 600px) {
+      grid-template-columns: auto minmax(0, 1fr);
+      padding-block: var(--t4f-space-4);
+    }
+  }
+
+  .heading {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--t4f-space-8);
+    min-width: 0;
+  }
+
+  .media {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    min-width: 44px;
+    min-height: 44px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: var(--t4f-radius-sm);
+    background-color: transparent;
+    color: var(--t4f-text-secondary);
+  }
+
+  .name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .status {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 12px;
+    color: var(--t4f-text-secondary);
+  }
+
+  .metadataRow {
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    align-items: center;
+    gap: var(--t4f-space-8);
+    min-width: 0;
+  }
+
+  .metadata {
+    min-width: 0;
+    flex-grow: 1;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--t4f-text-secondary);
+    font-variant-numeric: tabular-nums;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    @media (max-width: 600px) {
+      white-space: normal;
+    }
+  }
+
+  .progress {
+    width: 80px;
+    height: 3px;
+    flex-shrink: 0;
+    overflow: hidden;
+    background-color: var(--t4f-border);
+    border-radius: 2px;
+  }
+
+  .bar {
+    display: block;
+    height: 100%;
+    background-color: var(--t4f-accent);
+  }
+
+  .indeterminate {
+    width: 35%;
+    animation-name: animation0;
+    animation-duration: 1.5s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    transform: translateX(90%);
+
+    @media (prefers-reduced-motion: reduce) {
+      animation-name: none;
+    }
+  }
+
+  .output {
+    color: var(--t4f-text-primary);
+  }
+
+  .actions {
+    grid-column: 3;
+    grid-row: 1 / 3;
+    display: flex;
+    align-items: center;
+    justify-self: end;
+
+    @media (max-width: 600px) {
+      grid-column: 1 / -1;
+      grid-row: 3;
+    }
+  }
+
+  .action {
+    width: 44px;
+    height: 44px;
+    padding-inline: 0;
+    flex-shrink: 0;
+  }
+
+  .ready {
+    color: var(--t4f-positive);
+  }
+
+  .error {
+    color: var(--t4f-danger);
+  }
+
+  @keyframes animation0 {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(280%);
+    }
+  }
+}

@@ -1,9 +1,8 @@
+import styles from './SelectField.module.scss';
 import { Select } from '@base-ui/react/select';
 import { CaretDownIcon, CheckIcon } from '@phosphor-icons/react';
-import * as stylex from '@stylexjs/stylex';
-import { motion } from '../styles/motion';
-import { controls } from '../styles/controls';
-import { tokens } from '../styles/tokens.stylex';
+import motion from '../styles/motion.module.scss';
+import controls from './controls.module.scss';
 import { FieldFrame, useField, type FieldProps } from './Field';
 
 export interface SelectOption {
@@ -44,12 +43,12 @@ export function SelectField({
           aria-labelledby={ids.labelId}
           aria-describedby={ids.describedBy}
           aria-invalid={!!field.error || undefined}
-          {...stylex.props(
+          className={[
             controls.input,
             styles.trigger,
             appearance === 'quiet' && styles.quiet,
             !!field.error && controls.invalid,
-          )}
+          ].filter(Boolean).join(' ')}
         >
           <Select.Value placeholder={placeholder} />
           <Select.Icon>
@@ -62,27 +61,21 @@ export function SelectField({
             alignItemWithTrigger={false}
             sideOffset={6}
             collisionPadding={12}
-            {...stylex.props(styles.positioner)}
+            className={styles.positioner}
           >
-            <Select.Popup {...stylex.props(styles.popup, appearance === 'quiet' && styles.quietPopup)}>
+            <Select.Popup className={[styles.popup, appearance === 'quiet' && styles.quietPopup].filter(Boolean).join(' ')}>
               {options.map((option) => (
                 <Select.Item
                   key={option.value}
                   value={option.value}
                   disabled={option.disabled}
-                  className={(state) =>
-                    stylex.props(
-                      styles.item,
-                      motion.selection,
-                      state.highlighted && appearance !== 'quiet' && styles.highlighted,
-                      state.selected && styles.selected,
-                      appearance === 'quiet' && styles.quietItem,
-                      appearance === 'quiet' && state.selected && styles.quietSelected,
-                      state.disabled && styles.disabled,
-                    ).className
-                  }
+                  className={[
+                    styles.item,
+                    motion.selection,
+                    appearance === 'quiet' && styles.quietItem,
+                  ].filter(Boolean).join(' ')}
                 >
-                  <Select.ItemIndicator {...stylex.props(styles.check)}>
+                  <Select.ItemIndicator className={styles.check}>
                     <CheckIcon size={18} aria-hidden="true" />
                   </Select.ItemIndicator>
                   <Select.ItemText>{option.label}</Select.ItemText>
@@ -95,78 +88,3 @@ export function SelectField({
     </FieldFrame>
   );
 }
-const styles = stylex.create({
-  quiet: {
-    borderWidth: 0,
-    backgroundColor: { default: tokens.surfacePanel, ':hover': tokens.surfaceHover, ':disabled': tokens.surfacePanel },
-    // Replace the input's inset focus with one external keyboard ring.
-    boxShadow: 'none',
-    outlineStyle: { default: 'none', ':focus-visible': 'solid' },
-    outlineWidth: 2,
-    outlineColor: tokens.focus,
-    outlineOffset: 2,
-    ':focus-visible': { boxShadow: 'none' },
-  },
-  quietPopup: { borderWidth: 0, boxShadow: tokens.shadowFloating },
-  quietItem: {
-    ':is([data-highlighted])': { backgroundColor: tokens.surfaceHover, color: tokens.textPrimary },
-    outlineStyle: { default: 'none', ':is([data-highlighted]):focus-visible': 'solid' },
-    outlineWidth: 2,
-    outlineColor: tokens.focus,
-    outlineOffset: -2,
-  },
-  quietSelected: {
-    backgroundColor: `color-mix(in srgb, ${tokens.supportLavender} 8%, ${tokens.surfaceFloating})`,
-    color: tokens.supportLavender,
-    ':is([data-highlighted])': { backgroundColor: `color-mix(in srgb, ${tokens.supportLavender} 10%, ${tokens.surfaceFloating})`, color: tokens.supportLavender },
-  },
-  trigger: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: tokens.space12,
-    textAlign: 'start',
-    cursor: { default: 'pointer', ':disabled': 'not-allowed' },
-    overflowWrap: 'anywhere',
-  },
-  positioner: { zIndex: tokens.layerFloating, maxWidth: 'calc(100vw - 24px)' },
-  popup: {
-    width: 'var(--anchor-width)',
-    maxWidth: 'calc(100vw - 24px)',
-    maxHeight: 'min(320px, var(--available-height))',
-    overflowY: 'auto',
-    overscrollBehavior: 'contain',
-    backgroundColor: tokens.surfaceFloating,
-    color: tokens.textPrimary,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: tokens.border,
-    borderRadius: tokens.radiusLg,
-    padding: tokens.space4,
-    boxShadow: tokens.shadowFloating,
-  },
-  item: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: tokens.space8,
-    minHeight: 44,
-    paddingBlock: tokens.space8,
-    paddingInline: tokens.space12,
-    marginBlock: 2,
-    borderRadius: tokens.radiusSm,
-    fontSize: 14,
-    fontWeight: 500,
-    outline: 'none',
-    cursor: 'pointer',
-    overflowWrap: 'anywhere',
-  },
-  selected: { backgroundColor: tokens.actionTint, color: tokens.accent },
-  highlighted: {
-    backgroundColor: tokens.surfaceHover,
-    color: tokens.textPrimary,
-    outline: `2px solid ${tokens.focus}`,
-    outlineOffset: -2,
-  },
-  disabled: { opacity: 0.5, cursor: 'not-allowed' },
-  check: { display: 'flex', width: 18, flexShrink: 0 },
-});

@@ -31,7 +31,7 @@ export default defineConfig({
         dev: process.env.NODE_ENV === 'development',
         devMode: 'css-only',
         runtimeInjection: false,
-        useCSSLayers: { before: ['reset', 'base'] },
+        useCSSLayers: { before: ['reset', 'base', 't4f-controls', 't4f-ui'] },
         // Every static page links SiteLayout CSS. A tool's local CSS must not
         // become the plugin's default first-asset target for shared StyleX.
         cssInjectionTarget: (fileName) => /(?:^|\/)SiteLayout(?:[.-][^/]*)?\.css$/.test(fileName),

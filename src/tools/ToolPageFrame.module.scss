@@ -1,0 +1,99 @@
+.frame {
+  position: relative;
+  min-width: 0;
+}
+
+// Canvas owns the viewport even if its document host has a footer or restored
+// scroll position. Keep this local: Form/Batch and body scrolling are unchanged.
+.canvasFrame {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  isolation: isolate;
+}
+
+.header {
+  padding: var(--t4f-space-16);
+  padding-top: max(16px, env(safe-area-inset-top));
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+
+.floating {
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: calc(100% - 160px);
+  z-index: var(--t4f-layer-dock);
+  pointer-events: none;
+
+  &:where(:has(details[open])) {
+    z-index: var(--t4f-layer-floating);
+  }
+
+  @media (max-width: 900px) {
+    max-width: 100%;
+  }
+}
+
+.entry {
+  --t4f-focus: var(--t4f-nav-focus);
+  color: var(--t4f-nav-text);
+  display: flex;
+  align-items: center;
+  gap: var(--t4f-space-4);
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
+  padding: var(--t4f-space-4);
+  background-color: var(--t4f-nav-background);
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--t4f-border);
+  border-radius: var(--t4f-radius-lg);
+  pointer-events: auto;
+}
+
+.entry .brand {
+  padding-inline: var(--t4f-space-8);
+  flex-shrink: 0;
+  color: var(--t4f-nav-text);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  gap: var(--t4f-space-4);
+  background-color: transparent;
+
+  &:where(:hover) {
+    background-color: var(--t4f-nav-hover);
+  }
+}
+
+.canvasLinks {
+  display: flex;
+  align-items: center;
+  gap: var(--t4f-space-4);
+}
+
+.elevated {
+  box-shadow: var(--t4f-shadow-soft);
+}
+
+.title {
+  min-width: 0;
+  margin: 0;
+  padding-inline: var(--t4f-space-8);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.debug {
+  @media (max-width: 600px) {
+    position: absolute;
+    right: 16px;
+    top: 80px;
+  }
+}

@@ -1,0 +1,263 @@
+// Below legacy StyleX priority layers until tool migration in V0.9-C.
+@layer t4f-controls {
+  .workspaceFocus {
+    outline-style: none;
+    outline-width: 2px;
+    outline-color: var(--t4f-focus);
+    outline-offset: 2px;
+
+    &:where(:focus-visible:not([data-pointer-focus])) {
+      outline-style: solid;
+    }
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--t4f-space-8);
+    min-height: 44px;
+    min-width: 44px;
+    padding-block: var(--t4f-space-8);
+    padding-inline: var(--t4f-space-16);
+    border-width: var(--t4f-control-border-width);
+    border-style: solid;
+    border-color: var(--t4f-control-border);
+    border-radius: var(--t4f-radius-md);
+    background-color: var(--t4f-surface);
+    color: var(--t4f-text-primary);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    opacity: 1;
+    transition-property: background-color, border-color, color, transform;
+    transition-timing-function: ease-out;
+    transition-duration: 200ms;
+    text-decoration: none;
+    position: relative;
+    cursor: pointer;
+    outline-color: var(--t4f-focus);
+    transform: translateY(0);
+
+    &:where(:hover) {
+      background-color: var(--t4f-surface-hover);
+    }
+
+    &:where(:active) {
+      background-color: var(--t4f-surface-muted);
+      transform: translateY(1px);
+    }
+
+    &:where(:disabled) {
+      background-color: var(--t4f-surface);
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: 0s;
+    }
+  }
+
+  .primary {
+    background-color: var(--t4f-action);
+    border-color: transparent;
+    color: var(--t4f-on-action);
+
+    &:where(:hover) {
+      background-color: var(--t4f-action-hover);
+    }
+
+    &:where(:active) {
+      background-color: var(--t4f-action-pressed);
+    }
+
+    &:where(:disabled) {
+      background-color: var(--t4f-action);
+    }
+  }
+
+  .ghost {
+    background-color: transparent;
+    border-color: transparent;
+
+    &:where(:hover) {
+      background-color: var(--t4f-surface-hover);
+    }
+
+    &:where(:active) {
+      background-color: var(--t4f-surface-muted);
+    }
+
+    &:where(:disabled) {
+      background-color: transparent;
+    }
+  }
+
+  .dialogClose {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    flex-shrink: 0;
+    border-width: 0;
+    background-color: var(--t4f-surface-panel);
+    text-decoration: none;
+
+    &:where(:hover) {
+      background-color: var(--t4f-surface-hover);
+    }
+
+    &:where(:active) {
+      background-color: var(--t4f-surface-muted);
+    }
+  }
+
+  .danger {
+    background-color: var(--t4f-danger);
+    border-color: var(--t4f-danger);
+    color: var(--t4f-on-danger);
+
+    &:where(:hover) {
+      background-color: var(--t4f-danger-hover);
+    }
+
+    &:where(:active) {
+      background-color: var(--t4f-danger-hover);
+    }
+
+    &:where(:disabled) {
+      background-color: var(--t4f-danger);
+    }
+  }
+
+  .small {
+    padding-inline: var(--t4f-space-12);
+    font-size: 13px;
+  }
+
+  .active {
+    background-color: var(--t4f-action-tint);
+    border-color: var(--t4f-accent);
+    color: var(--t4f-accent);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+
+    &:where(:hover) {
+      background-color: var(--t4f-action-tint);
+    }
+
+    &:where(:active) {
+      background-color: var(--t4f-action-tint);
+    }
+  }
+
+  .field {
+    display: grid;
+    gap: var(--t4f-space-8);
+    min-width: 0;
+    font-size: 14px;
+  }
+
+  .input {
+    transition-property: background-color, border-color, color;
+    transition-duration: 200ms;
+    transition-timing-function: ease-out;
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding-block: var(--t4f-space-8);
+    padding-inline: var(--t4f-space-12);
+    border-width: var(--t4f-control-border-width);
+    border-style: solid;
+    border-color: var(--t4f-control-border);
+    border-radius: var(--t4f-radius-md);
+    background-color: var(--t4f-input-surface);
+    color: var(--t4f-text-primary);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    outline-style: none;
+    box-shadow: var(--t4f-shadow-none);
+    opacity: 1;
+    cursor: auto;
+
+    &:where(:hover) {
+      border-color: var(--t4f-text-secondary);
+    }
+
+    &:where(:focus) {
+      border-color: var(--t4f-focus);
+    }
+
+    &:where(:is([aria-invalid="true"]):focus) {
+      border-color: var(--t4f-danger);
+    }
+
+    &:where(:disabled) {
+      border-color: var(--t4f-control-border);
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    &::placeholder {
+      color: var(--t4f-text-secondary);
+      opacity: 1;
+    }
+
+    &:where(:focus-visible) {
+      box-shadow: inset 0 0 0 1px var(--t4f-focus);
+    }
+
+    &:where(:is([aria-invalid="true"]):focus-visible) {
+      box-shadow: inset 0 0 0 1px var(--t4f-danger);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: 0ms;
+    }
+  }
+
+  .stack {
+    display: grid;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--t4f-space-8);
+    align-items: center;
+  }
+
+  .muted {
+    color: var(--t4f-text-secondary);
+    font-size: 13px;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .heading {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .card {
+    padding: var(--t4f-space-24);
+    min-width: 0;
+    background-color: var(--t4f-surface-panel);
+    border-radius: var(--t4f-radius-lg);
+  }
+
+}
+
+@layer t4f-ui {
+  // Error is a final native state, after Checkbox/Slider/dropzone borders.
+  // Repeated specificity makes this independent of lazy CSS chunk ordering;
+  // tool-owned StyleX overrides still occupy the higher priority layers.
+  .invalid.invalid {
+    border-color: var(--t4f-danger);
+  }
+}

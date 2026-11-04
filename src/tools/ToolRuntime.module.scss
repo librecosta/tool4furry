@@ -1,0 +1,12 @@
+// Below legacy StyleX priority layers until tool migration in V0.9-C.
+@layer t4f-ui {
+  .status {
+    padding: var(--t4f-space-24);
+    margin: 0;
+  }
+
+  .canvasStatus {
+    padding-top: 96px;
+  }
+
+}

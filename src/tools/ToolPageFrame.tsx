@@ -2,15 +2,16 @@ import { localizedPath, type Locale } from '../i18n/locale';
 import type { ReactNode } from 'react';
 import { Popover } from '@base-ui/react/popover';
 import { DotsThreeIcon } from '@phosphor-icons/react';
-import * as stylex from '@stylexjs/stylex';
 import type { Region } from '../config/region';
 import type { WorkspaceMode } from './types';
 import { messages } from '../i18n/messages';
-import { controls as c } from '../styles/controls';
-import { tokens } from '../styles/tokens.stylex';
-import { menuStyles as menu } from '../styles/menu';
-import { siteStyles as site } from '../styles/site';
-import { navigationStyles as n } from '../styles/navigation';
+import c from '../ui/controls.module.scss';
+import menu from '../styles/menu.module.scss';
+import site from '../layouts/SiteLayout.module.scss';
+import brand from '../components/site/Brand.module.scss';
+import introStyles from '../components/site/ToolIntro.module.scss';
+import n from '../components/site/NavigationControls.module.scss';
+import s from './ToolPageFrame.module.scss';
 import { NavigationControls } from '../components/site/NavigationControls';
 import { ToolboxDisclosure } from '../components/site/ToolboxDisclosure';
 import { languageLink, type LanguageLink } from '../site/language';
@@ -40,60 +41,60 @@ export default function ToolPageFrame({
   const floating = mode === 'canvas' && !intro;
   const alternate = navigation ?? languageLink(localizedPath('/tools/', region, locale), region);
   return (
-    <div {...stylex.props(s.frame)}>
+    <div className={[s.frame, floating && s.canvasFrame].filter(Boolean).join(' ')}>
       <header
         data-tool-page-entry
-        {...stylex.props(
+        className={[
           !floating && site.productHeader,
           !floating && site.fullBleed,
           floating && s.header,
           floating && s.floating,
-        )}
+        ].filter(Boolean).join(' ')}
       >
         <nav
           aria-label={t.headerNav}
-          {...stylex.props(
+          className={[
             !floating && site.fluid,
             !floating && site.nav,
             floating && s.entry,
             floating && s.elevated,
-          )}
+          ].filter(Boolean).join(' ')}
         >
           <div
-            {...stylex.props(
+            className={[
               !floating && site.navLinks,
               floating && s.canvasLinks,
-            )}
+            ].filter(Boolean).join(' ')}
           >
             <a
               href={localizedPath('/', region, locale)}
               aria-label={`Tool4Furry · ${t.home}`}
-              {...stylex.props(
-                !floating && site.brand,
-                n.brand,
+              className={[
+                !floating && brand.brand,
+                brand.navigationBrand,
                 floating && c.button,
                 floating && c.ghost,
                 floating && s.brand,
-              )}
+              ].filter(Boolean).join(' ')}
             >
               <span
                 data-brand-symbol aria-hidden="true"
-                {...stylex.props(n.symbol, !floating && site.mark)}
+                className={[brand.symbol, !floating && brand.mark].filter(Boolean).join(' ')}
               />
-              <span data-brand-wordmark {...stylex.props(n.brandFull)}>Tool4Furry</span>
-              <span aria-hidden {...stylex.props(n.brandShort)}>T4F</span>
+              <span data-brand-wordmark className={brand.brandFull}>Tool4Furry</span>
+              <span aria-hidden className={brand.brandShort}>T4F</span>
             </a>
             <ToolboxDisclosure region={region} locale={locale} currentToolId={currentToolId} compact={floating} />
           </div>
           {floating && (
-            <h1 title={title} {...stylex.props(s.title)}>
+            <h1 title={title} className={s.title}>
               {title}
             </h1>
           )}
           {!floating && (
-            <div {...stylex.props(n.actions)}>
+            <div className={n.actions}>
               <NavigationControls region={region} locale={locale} link={alternate} />
-              {debug && <div {...stylex.props(n.debug)}>{debug}</div>}
+              {debug && <div className={s.debug}>{debug}</div>}
             </div>
           )}
           {floating && debug}
@@ -101,18 +102,18 @@ export default function ToolPageFrame({
             <Popover.Root>
               <Popover.Trigger
                 aria-label={t.navigationOptions}
-                {...stylex.props(n.control)}
+                className={n.control}
               >
                 <DotsThreeIcon size={22} aria-hidden />
               </Popover.Trigger>
               <Popover.Portal>
                 <Popover.Positioner
                   align="end" sideOffset={8} collisionPadding={16}
-                  {...stylex.props(menu.positioner)}
+                  className={menu.positioner}
                 >
                   <Popover.Popup
                     aria-label={t.navigationOptions}
-                    {...stylex.props(menu.popup, n.chrome)}
+                    className={[menu.popup, n.chrome].filter(Boolean).join(' ')}
                   >
                     <NavigationControls region={region} locale={locale} link={alternate} />
                   </Popover.Popup>
@@ -123,8 +124,8 @@ export default function ToolPageFrame({
         </nav>
       </header>
       {!intro && !floating && (
-        <div {...stylex.props(site.fluid, site.toolIntro)}>
-          <h1 {...stylex.props(site.toolTitle)}>{title}</h1>
+        <div className={[site.fluid, introStyles.toolIntro].filter(Boolean).join(' ')}>
+          <h1 className={introStyles.toolTitle}>{title}</h1>
         </div>
       )}
       {intro}
@@ -132,55 +133,3 @@ export default function ToolPageFrame({
     </div>
   );
 }
-
-const s = stylex.create({
-  frame: { position: 'relative', minWidth: 0 },
-  header: {
-    padding: tokens.space16,
-    paddingTop: 'max(16px, env(safe-area-inset-top))',
-    paddingLeft: 'max(16px, env(safe-area-inset-left))',
-    paddingRight: 'max(16px, env(safe-area-inset-right))',
-  },
-  floating: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    maxWidth: {
-      default: 'calc(100% - 160px)',
-      '@media (max-width: 900px)': '100%',
-    },
-    zIndex: { default: tokens.layerDock, ':has(details[open])': tokens.layerFloating },
-    pointerEvents: 'none',
-  },
-  entry: {
-    '--t4f-focus': tokens.navFocus,
-    color: tokens.navText,
-    display: 'flex',
-    alignItems: 'center',
-    gap: tokens.space4,
-    width: 'fit-content',
-    maxWidth: '100%',
-    minWidth: 0,
-    padding: tokens.space4,
-    backgroundColor: tokens.navBackground,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: tokens.border,
-    borderRadius: tokens.radiusLg,
-    pointerEvents: 'auto',
-  },
-  brand: { paddingInline: tokens.space8, flexShrink: 0, color: tokens.navText, fontSize: 16, fontWeight: 700, letterSpacing: '-0.035em', gap: tokens.space4,
-    backgroundColor: { default: 'transparent', ':hover': tokens.navHover } },
-  canvasLinks: { display: 'flex', alignItems: 'center', gap: tokens.space4 },
-  elevated: { boxShadow: tokens.shadowSoft },
-  title: {
-    minWidth: 0,
-    margin: 0,
-    paddingInline: tokens.space8,
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    fontSize: 14,
-    fontWeight: 600,
-  },
-});

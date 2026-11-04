@@ -1,8 +1,7 @@
+import styles from './ScrollDock.module.scss';
 import { useEffect, useState } from 'react';
 import { ArrowUpIcon } from '@phosphor-icons/react';
-import * as stylex from '@stylexjs/stylex';
-import { controls } from '../styles/controls';
-import { tokens } from '../styles/tokens.stylex';
+import controls from './controls.module.scss';
 import { getScrollMetrics } from './scroll-metrics';
 
 export interface ScrollDockProps {
@@ -60,7 +59,7 @@ export function ScrollDock({ getLabel }: ScrollDockProps) {
     <button
       type="button"
       aria-label={getLabel(view.percent)}
-      {...stylex.props(controls.button, styles.dock)}
+      className={[controls.button, styles.dock].filter(Boolean).join(' ')}
       onClick={() => {
         window.scrollTo({
           top: measureDocument().stepTarget,
@@ -74,9 +73,9 @@ export function ScrollDock({ getLabel }: ScrollDockProps) {
       <svg
         viewBox="0 0 48 48"
         aria-hidden="true"
-        {...stylex.props(styles.ring)}
+        className={styles.ring}
       >
-        <circle cx="24" cy="24" r="21" {...stylex.props(styles.track)} />
+        <circle cx="24" cy="24" r="21" className={styles.track} />
         <circle
           cx="24"
           cy="24"
@@ -85,45 +84,10 @@ export function ScrollDock({ getLabel }: ScrollDockProps) {
           strokeDasharray="100"
           strokeDashoffset={100 - view.percent}
           transform="rotate(-90 24 24)"
-          {...stylex.props(styles.progress)}
+          className={styles.progress}
         />
       </svg>
       <ArrowUpIcon size={20} aria-hidden="true" />
     </button>
   );
 }
-
-const styles = stylex.create({
-  dock: {
-    position: 'fixed',
-    display: {
-      default: 'none',
-      '@media (min-width: 900px) and (pointer: fine)': 'inline-flex',
-    },
-    right: 'max(20px, env(safe-area-inset-right))',
-    bottom: 'max(20px, env(safe-area-inset-bottom))',
-    zIndex: tokens.layerDock,
-    width: 48,
-    height: 48,
-    padding: 0,
-    borderWidth: 0,
-    borderRadius: '50%',
-    backgroundColor: { default: tokens.surfaceFloating, ':hover': tokens.page },
-    color: tokens.accent,
-    boxShadow: tokens.shadowSoft,
-  },
-  ring: {
-    position: 'absolute',
-    inset: 0,
-    width: '100%',
-    height: '100%',
-    pointerEvents: 'none',
-  },
-  track: { fill: 'none', stroke: tokens.border, strokeWidth: 2 },
-  progress: {
-    fill: 'none',
-    stroke: tokens.accent,
-    strokeWidth: 2,
-    strokeLinecap: 'round',
-  },
-});
