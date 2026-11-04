@@ -65,7 +65,14 @@ it('merges the latest keyboard order, preserves metadata and invalidates downloa
   expect(names()).toEqual(['A.pdf', 'B.pdf', 'C.pdf']);
   expect(screen.queryByRole('button', { name: /Move up|Move down/ })).toBeNull();
   await merge(); fireEvent.click(download());
-  expect(saveBlob).toHaveBeenCalledWith(expect.any(Blob), 'merged.pdf');
+  const result = await vi.mocked(mergePdfs).mock.results.at(-1)!.value;
+  const first = vi.mocked(saveBlob).mock.calls.at(-1)!;
+  expect(first[0]).toBe(result);
+  expect(first[1]).toMatch(/^merged-\d{8}-\d{6}-\d{3}(?:-\d+)?\.pdf$/);
+  fireEvent.click(download());
+  const second = vi.mocked(saveBlob).mock.calls.at(-1)!;
+  expect(second[0]).toBe(result); expect(second[1]).not.toBe(first[1]);
+  expect(mergePdfs).toHaveBeenCalledTimes(1);
   const handle = screen.getByRole('button', { name: 'Reorder A.pdf' }); handle.focus();
   fireEvent.keyDown(handle, { key: 'ArrowDown' });
   expect(names()).toEqual(['B.pdf', 'A.pdf', 'C.pdf']);

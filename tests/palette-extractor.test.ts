@@ -251,6 +251,7 @@ it('registers the third bilingual Published tool in both regions', () => {
       'image-watermark',
       'exif-metadata',
       'pdf-merge',
+      'pdf-split',
     ]);
     expect(getAvailableTools(region, true)).toContain(tool);
     for (const locale of ['zh', 'en'] as const) {

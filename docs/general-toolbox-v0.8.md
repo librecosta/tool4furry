@@ -1,6 +1,6 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge 已获得 CN/Global Published 源码资格，其余 21 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（8 Published / 21 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split 已获得 CN/Global Published 源码资格，其余 20 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（9 Published / 20 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
 | ID | 实际能力 | 主要边界 |
 | --- | --- | --- |
@@ -62,6 +62,17 @@
 - `pnpm check` 通过（424 文件、0 错误/警告）；17 项 PDF Split/发布定向测试通过，CN/Global 各一次正式构建及隔离守卫通过。仍为 CN/Global Draft，正式产物不包含 PDF.js、Worker、私有资源或专属 CSS；未运行无关全量矩阵。Firefox/Safari、真实移动设备、复杂 PDF 字体/表单全矩阵及临界规模压力未测。
 
 定向入口：`tests/pdf-split-core.test.ts`、`tests/pdf-split-preview.test.ts`、`tests/pdf-split-ui.test.tsx`、`tests/pdf-split-loader.test.ts`。
+
+## PDF Split — V0.8-B2-D1 Beta 资格（2026-11-04）
+
+- 按维护者授权完成双语静态 SEO：4 项步骤、6 项限制、4 组 FAQ；唯一 H1、Title/Description、Canonical/hreflang、OG、Sitemap 和 llms 沿用现有静态系统。只提升 PDF Split 为 CN/Global Published，当前 9 Published / 20 Draft，历史两批 ID 不变；工作室关联继续使用原人工配置。
+- 两款 PDF 在每次 Download 点击时命名：`merged-YYYYMMDD-HHmmss-SSS.pdf`、`源文件名-extracted-YYYYMMDD-HHmmss-SSS.pdf`、`源文件名-pages-YYYYMMDD-HHmmss-SSS.zip`。使用本地时间，同毫秒碰撞追加 `-2`、`-3`；源名去掉末尾 PDF 扩展名、过滤路径/控制字符和 Windows 非法字符，按 UTF-8 字节有界截断，空名用 `document`。重复下载复用同一 Blob，不重新处理，也不改变 ZIP 内的页名。
+- 真实 Chromium 156 完成默认全选、点击/有序输入、已选视图、旋转页放大/Escape/焦点恢复、替换和错误范围拒绝。下载的选页为 8→1→2→3→5，重新解析确认 5 页内容流、尺寸和旋转与来源一致；ZIP 解压为 `page-008/001/002/003/005.pdf`，各自内容与来源对应。PDF/ZIP 连续下载名称不同且字节完全相同；另复检 PDF Merge 真实三页合并和重复下载。500 页中选择 10 页的证据复用上轮 D1，不重复压力验证。
+- CN 中文 Dark 桌面、Global 英文 Light 390px 的缩略图、Dialog、紫色主操作和禁用态可用，无横向溢出；卸载/更换/清空沿用取消与版本隔离，清空后无残留 Canvas/Worker。PDF.js 的惰性导入、独立读取字节、24 页批次、串行与像素/超时预算不变；未引入 Viewer UI 或远程 Worker。
+- 158 项命名/PDF UI/输出/预览/发布/发现定向测试和 `pnpm check` 通过（426 文件，0 错误/警告）。CN/Global 正式构建各生成 18 个双语工具页面；产物守卫核对四个 PDF Split 页面、28 条公开发现 URL、Worker/CMap/字体/编解码资源原始字节与完整 PDF.js/pdf-lib/fflate 许可，其他 20 款 Draft 仍隔离。真实静态预览中再次下载 PDF/ZIP、核对连续下载字节与本地 Worker，未见资源错误或运行异常。
+- 基线 `c1e0123` 的[既有 CI 全部通过](https://github.com/librecosta/tool4furry/actions/runs/41830254636)；本次提交仍由相同 GitHub Actions 执行，不将本地构建当作远程 CI 结果。Firefox/Safari、真实 iOS/Android、复杂 PDF 全矩阵和临界内存压力属于未测 L3；桌面手机视口不是真机证据。源码资格不代表部署，未部署。
+
+新增命名定向入口：`tests/pdf-download-name.test.ts`；既有 PDF 输出内容、任务失效和资源检查均保留。
 
 ## PDF Merge — V0.8-B1-D1 Beta资格（2026-11-04）
 

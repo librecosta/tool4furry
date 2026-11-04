@@ -7,6 +7,7 @@ import { FileDropzone } from '../../ui/FileDropzone';
 import { Frame, ErrorText, errorText, tr, saveBlob } from '../general/ui';
 import { useJob } from '../general/use-job';
 import { readPdf, pageRange, abort } from '../general/pdf';
+import { pdfDownloadName } from '../general/pdf-download-name';
 import { formatPages, togglePage } from './selection';
 import { createOutput, outputIssue, type OutputKind } from './output';
 import { PdfPages } from './PdfPages';
@@ -64,7 +65,7 @@ export default function PdfSplit({ locale }: ToolProps) {
         const indices = [...pages];
         void job.run(async signal => ({ blob: await createOutput(source.doc, indices, kind, signal), kind }));
       }}>{kind === 'pdf' ? tr(locale, '提取 PDF', 'Extract') : tr(locale, '生成 ZIP', 'Create ZIP')}</Button>
-      <Button className={[s.action, s.secondary].join(' ')} disabled={job.busy || intake.busy || !job.result} onClick={() => { if (job.result && !job.busy) saveBlob(job.result.blob, job.result.kind === 'pdf' ? 'split.pdf' : 'split-pages.zip'); }}>{tr(locale, '下载', 'Download')}</Button>
+      <Button className={[s.action, s.secondary].join(' ')} disabled={job.busy || intake.busy || !job.result} onClick={() => { if (source && job.result && !job.busy && !intake.busy) saveBlob(job.result.blob, pdfDownloadName(job.result.kind === 'pdf' ? 'extracted' : 'pages', source.file.name)); }}>{tr(locale, '下载', 'Download')}</Button>
       <Button className={[s.action, s.secondary].join(' ')} onClick={reset}>{tr(locale, '清空', 'Clear')}</Button>
     </div>
   </Frame>;

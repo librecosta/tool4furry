@@ -78,7 +78,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -938,6 +938,7 @@ for (const page of htmlFiles) {
   }
   if (toolPages.includes(page)) {
     if (page === 'tools/pdf-merge/index.html') assertToolContent(dom, locale, generalToolboxContent['pdf-merge'], 3, 4, 6);
+    if (page === 'tools/pdf-split/index.html') assertToolContent(dom, locale, generalToolboxContent['pdf-split'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1358,12 +1359,37 @@ if (!published.some(tool => tool.id === 'pdf-split')) {
   for (const file of files.filter(file => /\.(?:m?js)$/.test(file)))
     assert(!/pdfjsVersion|pdfjsWorker|data-pdf-split-actions/.test(await readFile(resolve(root, file), 'utf8')),
       `Draft PDF.js implementation leaked: ${file}`);
+} else {
+  const scripts = await Promise.all(files.filter(file => file.endsWith('.js')).map(file => readFile(resolve(root, file), 'utf8')));
+  assert(scripts.some(js => js.includes('data-pdf-split-actions') && js.includes('data-page-number')),
+    'Published PDF Split includes its real selection, preview and export UI');
+  const resources = ['build/pdf.worker.min.mjs'];
+  for (const [directory, pattern] of [['cmaps', /\.bcmap$/], ['standard_fonts', /\.(?:pfb|ttf)$/], ['wasm', /\.wasm$/]])
+    resources.push(...(await readdir(`node_modules/pdfjs-dist/${directory}`)).filter(name => pattern.test(name)).map(name => `${directory}/${name}`));
+  for (const source of resources) {
+    const name = source.split('/').at(-1), extension = extname(name), stem = name.slice(0, -extension.length);
+    const emitted = files.filter(file => {
+      const output = file.split('/').at(-1);
+      return (output.startsWith(stem + '-') || output.startsWith(stem + '.')) && output.endsWith(extension) && output !== name;
+    });
+    assert.equal(emitted.length, 1, `One local, hashed PDF.js resource: ${source}`);
+    assert((await readFile(resolve(root, emitted[0]))).equals(await readFile(`node_modules/pdfjs-dist/${source}`)),
+      `PDF.js resource retains its original bytes: ${source}`);
+    assert(scripts.some(js => js.includes(emitted[0].split('/').at(-1))), `PDF.js lazy graph references ${source}`);
+  }
+  for (const source of ['src/tools/pdf-split/pdfjs.NOTICE.txt', 'src/tools/comic-page-organizer/pdf-lib.NOTICE.txt', 'src/tools/general/fflate.NOTICE.txt']) {
+    const notice = await readFile(source), stem = source.split('/').at(-1).replace('.txt', '');
+    const emitted = files.filter(file => file.includes(stem));
+    const delivered = scripts.some(js => js.includes(notice.toString('base64'))) ||
+      (await Promise.all(emitted.map(file => readFile(resolve(root, file))))).some(bytes => bytes.equals(notice));
+    assert(delivered, `Published PDF Split distributes the complete license: ${source}`);
+  }
 }
 for (const [id, marker] of [
   ['image-converter', 'settingsHeader'], ['image-resize-crop', 'focusedWorkspace'],
   ['palette-extractor', 'composerFields'], ['image-compressor', 'stepperButton'],
   ['comic-page-organizer', 'exportTuning'], ['image-watermark', 'colorField'],
-  ['exif-metadata', 'tableRow'], ['pdf-merge', 'handle'],
+  ['exif-metadata', 'tableRow'], ['pdf-merge', 'handle'], ['pdf-split', 'pageScroll'],
 ]) {
   // CSS Modules retain the local name followed by the build's content hash.
   if (published.some(tool => tool.id === id))

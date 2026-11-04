@@ -12,6 +12,7 @@ import {
 import { useJob } from '../general/use-job';
 import { boundedFiles } from '../general/bounds';
 import { readPdf, mergePdfs } from '../general/pdf';
+import { pdfDownloadName } from '../general/pdf-download-name';
 import notice from '../comic-page-organizer/pdf-lib.NOTICE.txt?url';
 import sortingNotice from './dnd-kit.NOTICE.txt?url';
 import { PdfFileList } from './PdfFileList';
@@ -76,7 +77,7 @@ export default function PdfMerge({ locale }: ToolProps) {
           {tr(locale, '合并 PDF', 'Merge')}
         </Button>
         <Button className={[s.button, s.secondary].filter(Boolean).join(' ')} disabled={job.busy || sorting || !job.result?.size}
-          onClick={() => { if (!job.busy && !sorting && job.result?.size) saveBlob(job.result, 'merged.pdf'); }}>
+          onClick={() => { if (!job.busy && !sorting && job.result?.size) saveBlob(job.result, pdfDownloadName('merged')); }}>
           {tr(locale, '下载 PDF', 'Download')}
         </Button>
         <Button className={[s.button, s.clear].filter(Boolean).join(' ')} onClick={() => change([])}>

@@ -1,4 +1,4 @@
-// PDF.js-owned data only. Vite emits local, hashed URLs in this lazy Draft graph;
+// PDF.js-owned data only. Vite emits local, hashed URLs in this lazy tool graph;
 // the factory fetches only the exact resource requested by the document worker.
 const assets = {
   ...import.meta.glob<string>('../../../node_modules/pdfjs-dist/cmaps/*.bcmap', { eager: true, query: '?url&no-inline', import: 'default' }),

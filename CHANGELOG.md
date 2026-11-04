@@ -25,6 +25,8 @@
 
 ### Changed
 
+- PDF Split 完成 V0.8-B2-D1 双语 SEO、真实选页 PDF/ZIP 复检与 CN/Global 源码 Published 资格收尾，按需交付 PDF.js 本地预览及完整许可；当前 29 款工具为 9 Published / 20 Draft。PDF Merge / Split 下载改为点击时生成安全源名与本地毫秒时间戳，重复下载不重建文件；未部署。
+
 - PDF Split（Draft）增加本地 PDF.js 真实缩略图和放大预览、点击/有序范围统一选页、全部/已选视图及紧凑的提取/下载/清空操作行；逐页 ZIP 改为只导出所选页面并保留原页码。预览按需串行且有界，pdf-lib 输出与正式资源隔离保持不变。
 
 - V0.9 全站 Astro、React、29 款工具与 DEV Lab 完成 SCSS Modules / CSS Variables 迁移；移除 StyleX 依赖、插件、主题类及兼容刷新链路。保留紫色交互、Base UI、Motion、dnd-kit 和 8 Published / 21 Draft 资格，未部署。

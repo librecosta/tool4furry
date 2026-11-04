@@ -6,19 +6,19 @@ export const definition = {
   group: 'pdf-tools',
   roles: ['studio'],
   mode: 'form',
-  status: 'draft',
+  status: 'published',
   regions: ['cn', 'global'],
   copy: {
     zh: {
       title: 'PDF 拆分',
-      description: '提取指定页码，或将每一页保存为独立 PDF。',
-      summary: '提取指定页码，或将每一页保存为独立 PDF。',
+      description: '本地预览选页，提取 PDF 或将所选页面逐页打包 ZIP。',
+      summary: '本地预览选页，提取 PDF 或将所选页面逐页打包 ZIP。',
     },
     en: {
       title: 'PDF Split',
       description:
-        'Extract selected pages or save every page as a separate PDF.',
-      summary: 'Extract selected pages or save every page as a separate PDF.',
+        'Preview and select pages locally, then extract a PDF or a per-page ZIP.',
+      summary: 'Preview and select pages locally, then extract a PDF or a per-page ZIP.',
     },
   },
 } satisfies ToolDefinition;

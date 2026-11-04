@@ -46,12 +46,22 @@ it('keeps three actions visible, defaults all pages, and synchronizes clicks and
   fireEvent.click(screen.getByRole('button', { name: 'Extract' }));
   await waitFor(() => expect(download().disabled).toBe(false));
   expect(vi.mocked(createOutput).mock.calls[0][1]).toEqual([7,0,1,2,4]);
-  fireEvent.click(download()); expect(saveBlob).toHaveBeenCalledWith(expect.any(Blob), 'split.pdf');
+  fireEvent.click(download());
+  const result = await vi.mocked(createOutput).mock.results[0].value;
+  const first = vi.mocked(saveBlob).mock.calls.at(-1)!;
+  expect(first[0]).toBe(result);
+  expect(first[1]).toMatch(/^ten-extracted-\d{8}-\d{6}-\d{3}(?:-\d+)?\.pdf$/);
+  fireEvent.click(download());
+  expect(vi.mocked(saveBlob).mock.calls.at(-1)![0]).toBe(result);
+  expect(vi.mocked(saveBlob).mock.calls.at(-1)![1]).not.toBe(first[1]);
+  expect(createOutput).toHaveBeenCalledTimes(1);
   fireEvent.click(screen.getByRole('button', { name: 'Per-page ZIP' })); expect(download().disabled).toBe(true);
   fireEvent.click(screen.getByRole('button', { name: 'Create ZIP' }));
   await waitFor(() => expect(download().disabled).toBe(false));
   expect(vi.mocked(createOutput).mock.calls[1][1]).toEqual([7,0,1,2,4]);
-  fireEvent.click(download()); expect(saveBlob).toHaveBeenLastCalledWith(expect.any(Blob), 'split-pages.zip');
+  fireEvent.click(download());
+  expect(vi.mocked(saveBlob).mock.calls.at(-1)![0]).toBe(await vi.mocked(createOutput).mock.results[1].value);
+  expect(vi.mocked(saveBlob).mock.calls.at(-1)![1]).toMatch(/^ten-pages-\d{8}-\d{6}-\d{3}(?:-\d+)?\.zip$/);
 });
 it('rejects empty, duplicate, reversed and out-of-range input without using the last valid selection', async () => {
   setup(); await upload();
