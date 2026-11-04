@@ -5,12 +5,11 @@
   .mode[aria-pressed='true']:where(:hover) { background: color-mix(in srgb, var(--t4f-support-lavender) 22%, var(--t4f-surface-panel)); }
   .zipWorkspace { display: grid; grid-template-columns: minmax(320px, .8fr) minmax(0, 1.2fr); align-items: start; gap: 20px 24px; min-width: 0; }
   .intake { display: grid; gap: 16px; min-width: 0; }
-  .summary { display: grid; gap: 6px; min-width: 0; }
-  .summary p, .note { margin: 0; color: var(--t4f-text-secondary); font-size: 13px; overflow-wrap: anywhere; }
-  .archiveName { font-weight: 600; overflow-wrap: anywhere; }
+  .summary, .note { margin: 0; color: var(--t4f-text-secondary); font-size: 13px; overflow-wrap: anywhere; }
   .browser { display: grid; gap: 12px; min-width: 0; }
   .listHeader { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; min-height: 36px; }
   .listTitle { margin: 0; font-size: 14px; font-weight: 600; }
+  .listTitle .note { display: inline-block; margin-inline-start: 8px; font-weight: 400; }
   .selection { display: flex; flex-wrap: wrap; gap: 6px; }
   .selection .lightButton { min-height: 36px; padding: 4px 10px; font-size: 12px; }
   .list { max-height: min(580px, 65dvh); overflow: auto; min-width: 0; border-radius: var(--t4f-radius-md); background: var(--t4f-surface-panel); padding: 4px; overscroll-behavior: contain; }

@@ -19,7 +19,7 @@ const button = (name:string) => screen.getByRole('button',{name});
 const mode = (name:string) => within(screen.getByRole('group',{name:'ZIP mode'})).getByRole('button',{name});
 const action = () => within(document.querySelector('[data-zip-actions]') as HTMLElement);
 const download = () => action().getByRole('button',{name:'Download'});
-function setup() {return render(<Tooltip.Provider><ZipManager locale="en" region="cn" /></Tooltip.Provider>);}
+function setup(locale: 'zh' | 'en' = 'en') {return render(<Tooltip.Provider><ZipManager locale={locale} region="cn" /></Tooltip.Provider>);}
 function add(paths:string[]) {
   const files=paths.map(path=>Object.defineProperty(new File([path],path.split('/').at(-1)!), 'webkitRelativePath', {value:path.includes('/')?path:''}));
   fireEvent.change(document.querySelector('input[type=file]')!,{target:{files}});
@@ -31,24 +31,52 @@ async function open(name='project.zip') {
   await screen.findByText(name); await waitFor(()=>expect(mode('Open ZIP')).toHaveProperty('disabled',false));
 }
 
-it('shows one mode and three persistent actions; keeps independent names, files, selections and outputs', async()=>{
+it('keeps independent files, selections and outputs and names downloads automatically without regenerating ZIPs', async()=>{
   setup(); expect(mode('Create ZIP').getAttribute('aria-pressed')).toBe('true'); expect(download()).toHaveProperty('disabled',true);
   expect(action().getAllByRole('button').map(e=>e.textContent)).toEqual(['Create ZIP','Download','Clear']);
-  add(['素材/a.txt','素材/sub/b.txt']); expect(screen.getByLabelText('Archive name')).toHaveProperty('value','素材');
-  fireEvent.change(screen.getByLabelText('Archive name'),{target:{value:'角色合集'}}); await generate();
+  add(['素材/a.txt','素材/sub/b.txt']); expect(screen.queryByRole('textbox')).toBeNull(); await generate();
   fireEvent.click(download()); fireEvent.click(download());
-  const first=vi.mocked(saveBlob).mock.calls[0]; expect(first[0]).toBe(createBlob); expect(first[1]).toMatch(/^角色合集-\d{8}-\d{6}-\d{3}(?:-\d+)?\.zip$/);
+  const first=vi.mocked(saveBlob).mock.calls[0]; expect(first[0]).toBe(createBlob); expect(first[1]).toMatch(/^素材-\d{8}-\d{6}-\d{3}(?:-\d+)?\.zip$/);
   expect(vi.mocked(saveBlob).mock.calls[1][0]).toBe(createBlob); expect(vi.mocked(saveBlob).mock.calls[1][1]).not.toBe(first[1]); expect(createZip).toHaveBeenCalledOnce();
   await open(); expect(download()).toHaveProperty('disabled',true); expect(document.querySelector('[data-zip-path="素材/a.txt"]')).toBeNull();
-  expect(screen.getByLabelText('Output name')).toHaveProperty('value','project');
-  vi.mocked(createZip).mockResolvedValueOnce(selectedBlob); await generate(); fireEvent.click(download());
+  expect(screen.queryByRole('textbox')).toBeNull();
+  vi.mocked(createZip).mockResolvedValueOnce(selectedBlob); await generate(); fireEvent.click(download()); fireEvent.click(download());
   expect(vi.mocked(saveBlob).mock.calls.at(-1)![0]).toBe(selectedBlob); expect(vi.mocked(saveBlob).mock.calls.at(-1)![1]).toMatch(/^project-selected-\d{8}-\d{6}-\d{3}(?:-\d+)?\.zip$/);
-  fireEvent.click(mode('Create ZIP')); expect(download()).toHaveProperty('disabled',false); expect(screen.getByLabelText('Archive name')).toHaveProperty('value','角色合集');
+  expect(vi.mocked(saveBlob).mock.calls.at(-1)![1]).not.toBe(vi.mocked(saveBlob).mock.calls.at(-2)![1]); expect(createZip).toHaveBeenCalledTimes(2);
+  fireEvent.click(mode('Create ZIP')); expect(download()).toHaveProperty('disabled',false); expect(screen.getByText('b.txt')).toBeTruthy();
   fireEvent.click(download()); expect(vi.mocked(saveBlob).mock.calls.at(-1)![0]).toBe(createBlob);
   fireEvent.click(button('Remove：素材/a.txt')); expect(download()).toHaveProperty('disabled',true); expect(screen.queryByText('a.txt')).toBeNull();
   fireEvent.click(mode('Open ZIP')); expect(download()).toHaveProperty('disabled',false);
   fireEvent.click(button('Clear')); expect(download()).toHaveProperty('disabled',true); expect(screen.queryByText('project.zip')).toBeNull();
   fireEvent.click(mode('Create ZIP')); expect(screen.getByText('b.txt')).toBeTruthy();
+});
+
+it.each(['zh', 'en'] as const)('omits naming fields, empty statistics and repeated technical guidance in the %s workspace', async locale => {
+  const {container} = setup(locale);
+  const workspace = () => container.querySelector('[data-zip-manager]')!;
+  const checkQuietWorkspace = () => {
+    expect(screen.queryByRole('textbox')).toBeNull();
+    expect(workspace().textContent).not.toMatch(/下载时自动添加|最多 500 项|所选文件会保留目录路径|读取 ZIP 最大|timestamp and \.zip|Up to 500 files|Selected files keep their folder paths|ZIP input:/);
+  };
+  checkQuietWorkspace(); expect(workspace().textContent).not.toMatch(/0 (?:个文件|files)|0 B/);
+  const modes = within(screen.getByRole('group',{name:locale === 'zh' ? 'ZIP 模式' : 'ZIP mode'}));
+  fireEvent.click(modes.getByRole('button',{name:locale === 'zh' ? '打开 ZIP' : 'Open ZIP'}));
+  checkQuietWorkspace(); expect(workspace().textContent).not.toMatch(/0 (?:个文件|files)|0 B|已选|Selected/);
+  fireEvent.change(document.querySelector('input[type=file]')!, {target:{files:[new File(['archive'],'source.ZIP')]}});
+  const source = await screen.findByText('source.ZIP');
+  expect(source.closest('p')!.textContent).toBe(`source.ZIP · 3 ${locale === 'zh' ? '个文件' : 'files'} · 7 B`);
+  const selected = screen.getByRole('status');
+  expect(selected.textContent).toBe(locale === 'zh' ? '已选 3 / 3' : 'Selected 3 / 3');
+  expect(selected.closest('section')).toBe(screen.getByRole('region',{name:locale === 'zh' ? '文件列表' : 'File list'}));
+  checkQuietWorkspace();
+});
+
+it('uses archive for mixed/loose inputs and the source ZIP stem for selected downloads', async()=>{
+  setup(); add(['first.txt','目录/second.txt']); await generate(); fireEvent.click(download());
+  expect(vi.mocked(saveBlob).mock.calls.at(-1)![1]).toMatch(/^archive-\d{8}-\d{6}-\d{3}(?:-\d+)?\.zip$/);
+  expect(vi.mocked(createZip).mock.calls[0][0].map(entry=>entry.name)).toEqual(['first.txt','目录/second.txt']);
+  await open('角色素材.v2.ZIP'); await generate(); fireEvent.click(download());
+  expect(vi.mocked(saveBlob).mock.calls.at(-1)![1]).toMatch(/^角色素材\.v2-selected-\d{8}-\d{6}-\d{3}(?:-\d+)?\.zip$/);
 });
 
 it('folds folders, selects descendants with a mixed state, and downloads a single checked-CRC extraction without destroying the batch result',async()=>{
