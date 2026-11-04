@@ -5,7 +5,7 @@
 | ID | 实际能力 | 主要边界 |
 | --- | --- | --- |
 | `pdf-merge` | 文件排序、页数检查、顺序合并与 PDF 下载 | 100 文件、累计 96 MiB、1000 页；拒绝损坏/加密文件 |
-| `pdf-split` | 有序页码范围提取、全部逐页 PDF ZIP | 单文件 32 MiB；重复/倒序/越界拒绝；逐页最多 200 页、96 MiB |
+| `pdf-split` | 真实页面缩略图/放大、点击或有序范围选页、单个 PDF / 所选逐页 ZIP | 单文件 32 MiB / 1000 页；PDF 输出 128 MiB；ZIP 所选最多 200 页 / 96 MiB；预览每批 24 页 |
 | `images-to-pdf` | PNG/JPEG 排序、原比例多页 PDF、方向与透明度 | 复用 Comic PDF；40 页、32 MiB、2400 万总像素及既有图片预算 |
 | `zip-manager` | 文件/文件夹 ZIP、目录浏览、选择提取、选中项 ZIP | 创建 500 项/96 MiB；读取 64 MiB；展开单项 32 MiB、累计 128 MiB；拒绝 ZIP64/加密/不安全路径/异常压缩率，验证 CRC |
 | `batch-file-renamer` | 前后缀、查找替换、序号、保留扩展名、名称预览及 ZIP | 100 文件、单个 32 MiB、累计 96 MiB；非法/重复名称拒绝，原字节不变 |
@@ -50,6 +50,18 @@
 - 七款工具逐一检查 390px 视口，无横向溢出；覆盖 CN 中文与 Global 英文主要路径。手机视口不是触控真机证据。Firefox/Safari、真实移动设备、其他视频编解码及大型媒体压力仍未测，不宣称 Beta 或 Published。
 
 定向入口：`tests/general-toolbox-a2.test.ts`、`tests/regex-worker.test.ts`，继续使用第一批发布与目录契约测试。后续仅按反馈集中打磨操作密度、正式 SEO、专属图标和兼容性。
+
+## PDF Split — D1 可视选页（2026-11-04）
+
+- 上传后默认全选；真实缩略图、范围输入和全部/已选视图共用选页状态。手动范围保留指定顺序，点击页卡按原页码升序整理。无效/空范围、文件更换、模式变化和清空立即使旧结果失效；提取、下载、清空三个按钮始终等宽显示。
+- PDF.js 固定为 `6.5.438`，只在有效文件导入后动态加载。Worker 及所需 CMap、标准字体、编解码资源使用 Vite 本地哈希 URL；完整 Apache-2.0 和附带字体/编解码许可随私有模块分发。另读一份 File 数据供 Worker 转移，pdf-lib 仍独立负责输出和验证，不将 Canvas 用于导出。
+- 预览每批 24 页、进入视口后排队串行绘制；缩略图最多 10 万像素，放大页最多 200 万像素，PDF.js 嵌入图像栅格化预算为 16 MiB。文档加载 20 秒、单页 15 秒超时回收；切批/关闭/更换/清空会取消任务并释放 Canvas，文档卸载释放 Worker。PDF.js 内部解析/原始解码可能有额外瞬时内存，不承诺所有复杂 PDF 的固定峰值。
+- 单个 PDF 使用当前选页顺序，仍受 128 MiB 输出限制；逐页 ZIP 只导出已选页面，最多 200 页/96 MiB，文件名保留原页码，例如 `page-008.pdf`。从 500 页来源选择 10 页可以导出，不按来源总页数错误拒绝。
+- 定向测试覆盖实际 PDF 内容流/方向/顺序、ZIP 解压、范围双向同步、旧任务隔离、取消/超时和许可完整性。真实 Chromium 156 完成 10 页缩略图、键盘选择、放大/Escape/焦点恢复、PDF 和 ZIP 下载复检，以及 500 页来源选择 491–500 页的 ZIP；逐页解析的内容流、尺寸和旋转与来源一致。
+- CN/Global 中英文、Dark/Light、1280px/390px 视口未见横向溢出；三按钮为 44px 等宽无边框。抽样已选 10 页共约 80 万 Canvas 像素、一个 Worker；清空后为零 Canvas/Worker。损坏/超大输入安全拒绝，预览加载失败会明确提示且仍可提取原 PDF。
+- `pnpm check` 通过（424 文件、0 错误/警告）；17 项 PDF Split/发布定向测试通过，CN/Global 各一次正式构建及隔离守卫通过。仍为 CN/Global Draft，正式产物不包含 PDF.js、Worker、私有资源或专属 CSS；未运行无关全量矩阵。Firefox/Safari、真实移动设备、复杂 PDF 字体/表单全矩阵及临界规模压力未测。
+
+定向入口：`tests/pdf-split-core.test.ts`、`tests/pdf-split-preview.test.ts`、`tests/pdf-split-ui.test.tsx`、`tests/pdf-split-loader.test.ts`。
 
 ## PDF Merge — V0.8-B1-D1 Beta资格（2026-11-04）
 

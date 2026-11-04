@@ -25,6 +25,8 @@
 
 ### Changed
 
+- PDF Split（Draft）增加本地 PDF.js 真实缩略图和放大预览、点击/有序范围统一选页、全部/已选视图及紧凑的提取/下载/清空操作行；逐页 ZIP 改为只导出所选页面并保留原页码。预览按需串行且有界，pdf-lib 输出与正式资源隔离保持不变。
+
 - V0.9 全站 Astro、React、29 款工具与 DEV Lab 完成 SCSS Modules / CSS Variables 迁移；移除 StyleX 依赖、插件、主题类及兼容刷新链路。保留紫色交互、Base UI、Motion、dnd-kit 和 8 Published / 21 Draft 资格，未部署。
 
 - 接入已验收的 22 款新工具像素图标，共 29 款 / 58 张原字节 PNG；导航总精选独立于首页四槽，增加六种身份筛选与像素工具网格。Astro、React 和 Canvas 共用原生交互与 Registry 过滤，工具发布资格不变。

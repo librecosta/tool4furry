@@ -1351,6 +1351,14 @@ const outputCSS = await Promise.all(files.filter(file => file.endsWith('.css')).
 for (const css of outputCSS)
   assert(!/@layer priority|virtual:stylex|stylex-dev-css|@stylexjs/.test(css), 'All CSS uses the native styling pipeline');
 const combinedCSS = outputCSS.join('\n');
+if (!published.some(tool => tool.id === 'pdf-split')) {
+  assert(!files.some(file => /pdf\.worker|pdfjs\.NOTICE|\.bcmap$|(?:jbig2|openjpeg|qcms_bg|quickjs-eval).*\.wasm$|(?:Foxit\w*|LiberationSans-[\w]+)[.-]/.test(file)),
+    'Draft PDF Split must not emit PDF.js worker, CMaps, fonts, codecs or notices');
+  assert(!/\._?pageScroll[_-]/.test(combinedCSS), 'Draft PDF Split preview CSS stays private');
+  for (const file of files.filter(file => /\.(?:m?js)$/.test(file)))
+    assert(!/pdfjsVersion|pdfjsWorker|data-pdf-split-actions/.test(await readFile(resolve(root, file), 'utf8')),
+      `Draft PDF.js implementation leaked: ${file}`);
+}
 for (const [id, marker] of [
   ['image-converter', 'settingsHeader'], ['image-resize-crop', 'focusedWorkspace'],
   ['palette-extractor', 'composerFields'], ['image-compressor', 'stepperButton'],
