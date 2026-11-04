@@ -78,7 +78,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -940,6 +940,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/pdf-merge/index.html') assertToolContent(dom, locale, generalToolboxContent['pdf-merge'], 3, 4, 6);
     if (page === 'tools/pdf-split/index.html') assertToolContent(dom, locale, generalToolboxContent['pdf-split'], 4, 4, 6);
     if (page === 'tools/images-to-pdf/index.html') assertToolContent(dom, locale, generalToolboxContent['images-to-pdf'], 4, 4, 6);
+    if (page === 'tools/zip-manager/index.html') assertToolContent(dom, locale, generalToolboxContent['zip-manager'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1365,6 +1366,16 @@ const combinedCSS = outputCSS.join('\n');
     'ZIP Manager local CSS follows its Draft/Published qualification');
   assert.equal(scripts.some(js => js.includes('data-zip-manager')), zipAvailable,
     'ZIP Manager mode/tree implementation stays in its own lazy publication graph');
+  if (zipAvailable) {
+    const notice = await readFile('src/tools/general/fflate.NOTICE.txt');
+    assert(notice.toString('utf8').replace(/\r\n/g, '\n').includes((await readFile('node_modules/fflate/LICENSE', 'utf8')).replace(/\r\n/g, '\n').trim()),
+      'The shared fflate notice includes the complete installed MIT license');
+    const emitted = files.filter(file => file.includes('fflate.NOTICE'));
+    const delivered = scripts.some(js => js.includes(notice.toString('base64'))) ||
+      (await Promise.all(emitted.map(file => readFile(resolve(root, file))))).some(bytes => bytes.equals(notice));
+    assert(delivered, 'Published ZIP Manager distributes the complete shared fflate MIT notice');
+    assert(scripts.some(js => js.includes('data-zip-license')), 'ZIP Manager retains its own license reference');
+  }
   if (available) {
     const notice = await readFile('src/tools/comic-page-organizer/pdf-lib.NOTICE.txt');
     const emitted = files.filter(file => file.includes('pdf-lib.NOTICE'));

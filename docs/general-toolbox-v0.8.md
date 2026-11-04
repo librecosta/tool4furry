@@ -1,6 +1,15 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF 已获得 CN/Global Published 源码资格，其余 19 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（10 Published / 19 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager 已获得 CN/Global Published 源码资格，其余 18 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（11 Published / 18 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+
+## ZIP Manager — V0.8-B4-D3 Beta 资格（2026-11-05）
+
+- 依据维护者本轮授权，只提升 ZIP Manager 的 CN/Global Published 源码资格；当前 11 Published / 18 Draft，历史 15 + 7 工具集合不变。D1/D2 双模式、紧凑布局、目录树、图标操作、自动命名和任务隔离全部冻结；未修改工作区组件、样式或 ZIP 核心。
+- 中英文 Astro 静态 SEO 各包含 4 项步骤、6 项限制、4 组 FAQ。四个正式页面唯一 H1、Title/Description、同地区 Canonical/hreflang、Sitemap、llms.txt 和目录检查通过；原有首页四槽与身份人工映射不变，工作室可发现 ZIP，开发者不因 Definition roles 自动补入。
+- 创建使用 ZipPassThrough / Store 原始字节打包，不保证压缩率；读取支持 Store/Deflate。保留创建 500 文件 / 单项 32 MiB / 累计 96 MiB / 输出 128 MiB、读取 64 MiB / 500 条目、展开单项 32 MiB / 累计 128 MiB。所选重打包仍受创建预算约束，不向本地目录直接写入；完整 fflate MIT 通知从工具懒加载入口交付。
+- 14 个相关文件共 191 项定向测试通过（修正一处旧数量断言后单文件复验）；新增 Store/Deflate、同名不同目录、Unicode/二进制、绝对/穿越/重复路径、ZIP64、方法/编码拒绝、声明/实际解压大小和预算验证，保留 CRC、加密、异常压缩比、取消和迟到结果测试。`pnpm check`（440 文件）与 CN/Global 各一次正式构建及守卫通过；每地区 22 个工具详情页、32 条公开发现 URL，其余 Draft / Lab / Fixture 私有资源仍隔离。
+- Chrome 156 正式预览复核 CN 中文 Dark / 1280px、Global 英文 Light / 390px（另查 320px）：文件与文件夹添加、移除、树折叠/选择/部分选中、单文件下载、所选重打包、模式恢复、取消和失效均通过；按钮等宽 44px / 无边框 / Purple，无横向溢出或 Hydration 报错。fflate 与 Python 标准库独立核对 10 个实际下载 ZIP 的路径、CRC 和逐项原始字节，重复下载名称不同、SHA-256 相同；清空后活动 Object URL 为零。未变功能同时复用下方 D1/D2 证据。
+- 提交前核对：[D1 CI 已通过](https://github.com/librecosta/tool4furry/actions/runs/41856773953)，[最新 D2 `82a34d8` CI 已通过](https://github.com/librecosta/tool4furry/actions/runs/41864131756)；较早 `aba7238` CI 失败于未改动的 PDF 预览 Actual size/scale 断言，后续基线在相同 PDF 代码上通过，本轮未改动 PDF 工具。本轮提交后的既有工作流结果需单独核对，不以本地通过声称 L2 七项全通过。Firefox/Safari、真实 iOS/Android 和极限内存/大规模压力为 L3 未测；390px 为桌面 Chromium 视口与触控模拟。未部署。
 
 ## ZIP Manager — V0.8-B4-D1 交互打磨（2026-11-04）
 

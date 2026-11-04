@@ -4,19 +4,20 @@ import { toolPageContents, getToolPageContent } from '../src/site/tool-content';
 import { toolLoaders } from '../src/tools/loaders';
 import { groups } from '../src/site/taxonomy';
 import { draftIds, generalToolboxIds, firstBatchIds, secondBatchIds } from './fixtures/general-toolbox';
-it('keeps both implementation batches intact with ten Published and nineteen Draft tools', () => {
+it('keeps both implementation batches intact with eleven Published and eighteen Draft tools', () => {
   expect(tools).toHaveLength(29);
   expect(firstBatchIds).toHaveLength(15);
   expect(firstBatchIds).toContain('pdf-merge');
   expect(firstBatchIds).toContain('pdf-split');
   expect(firstBatchIds).toContain('images-to-pdf');
+  expect(firstBatchIds).toContain('zip-manager');
   expect(secondBatchIds).toHaveLength(7);
-  expect(draftIds).toHaveLength(19);
+  expect(draftIds).toHaveLength(18);
   expect(tools.filter((t) => t.status === 'draft').map((t) => t.id)).toEqual(
     draftIds,
   );
   for (const region of ['cn', 'global'] as const) {
-    expect(getAvailableTools(region, false)).toHaveLength(10);
+    expect(getAvailableTools(region, false)).toHaveLength(11);
     expect(getAvailableTools(region, true)).toHaveLength(29);
     for (const id of generalToolboxIds) {
       const tool = tools.find((t) => t.id === id)!;
@@ -35,7 +36,7 @@ it('keeps both implementation batches intact with ten Published and nineteen Dra
         expect(c.limitations?.length).toBeGreaterThan(0);
         if (locale === 'en')
           expect(JSON.stringify(c)).not.toMatch(/[\u4e00-\u9fff]/);
-        if (id === 'pdf-merge' || id === 'pdf-split' || id === 'images-to-pdf') {
+        if (id === 'pdf-merge' || id === 'pdf-split' || id === 'images-to-pdf' || id === 'zip-manager') {
           expect(tool.status).toBe('published');
           expect(getToolPageContent(tool, region, toolPageContents, false, locale)).toBe(c);
           expect(c.steps).toHaveLength(4);
@@ -105,4 +106,35 @@ it('delivers Images to PDF bilingual static SEO with its current resource and pr
     id: 'images-to-pdf', slug: 'images-to-pdf', category: 'documents', group: 'pdf-tools',
     roles: ['studio', 'painter'], mode: 'form', status: 'published', regions: ['cn', 'global'],
   });
+});
+
+it('publishes ZIP Manager static SEO with accurate packaging, extraction and resource limits', () => {
+  const tool = tools.find(tool => tool.id === 'zip-manager')!;
+  expect(tool).toMatchObject({ id: 'zip-manager', slug: 'zip-manager', category: 'files', group: 'file-operations', roles: ['studio', 'developer'], mode: 'form', status: 'published', regions: ['cn', 'global'] });
+  const expected = {
+    zh: {
+      title: '在线 ZIP 创建与解压工具 - 文件打包和提取 | Tool4Furry',
+      description: '在浏览器本地创建和打开 ZIP 文件。支持文件夹打包、目录浏览、选择文件、单项提取和批量 ZIP 下载。无需上传服务器，保留文件目录结构。',
+      h1: 'ZIP 管理', intro: '把文件整理成 ZIP，或打开已有压缩包，选择需要的内容下载。',
+    },
+    en: {
+      title: 'ZIP Creator & Extractor - Browse Files Online | Tool4Furry',
+      description: 'Create ZIP archives, browse folders, and extract selected files in your browser. Pack files with their folder paths or download selected ZIP contents without uploads.',
+      h1: 'ZIP Manager', intro: 'Create a ZIP from your files, or open an existing archive to browse and download what you need.',
+    },
+  };
+  for (const region of ['cn', 'global'] as const) for (const locale of ['zh', 'en'] as const) {
+    const content = getToolPageContent(tool, region, toolPageContents, false, locale);
+    expect(content).toMatchObject(expected[locale]);
+    expect(content.title.match(/Tool4Furry/g)).toHaveLength(1);
+    expect(content.steps).toHaveLength(4); expect(content.limitations).toHaveLength(6); expect(content.faq).toHaveLength(4);
+    expect(content.limitations?.join(' ')).toMatch(/500.*32 MiB.*96 MiB/);
+    expect(content.limitations?.join(' ')).toMatch(/128 MiB/);
+    expect(content.limitations?.join(' ')).toMatch(/64 MiB.*500/);
+    expect(content.limitations?.join(' ')).toMatch(/ZIP64/);
+    expect(content.limitations?.join(' ')).toMatch(/CRC32/);
+    if (locale === 'en') expect(JSON.stringify(content)).not.toMatch(/\p{Script=Han}/u);
+  }
+  expect(toolPageContents['zip-manager'].zh!.limitations).toContain('批量提取会将所选文件重新打包为 ZIP，仍需满足创建 ZIP 的资源限制；不会直接写入本地文件夹。');
+  expect(toolPageContents['zip-manager'].en!.faq![1].answer).toContain('smaller output is not guaranteed');
 });

@@ -1,3 +1,4 @@
+import { definition as zipManagerDefinition } from '../src/tools/zip-manager/definition';
 import { definition as pdfMergeDefinition } from '../src/tools/pdf-merge/definition';
 import { definition as pdfSplitDefinition } from '../src/tools/pdf-split/definition';
 import { definition as imagesToPdfDefinition } from '../src/tools/images-to-pdf/definition';
@@ -94,14 +95,14 @@ describe('homepage editorial role projection', () => {
   });
 
   const associatedRoles = ['painter', 'developer', 'animator', 'operations', 'studio'];
-  const publishedTools = [imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, comicPageOrganizerDefinition, imageWatermarkDefinition, exifMetadataDefinition, pdfMergeDefinition, pdfSplitDefinition, imagesToPdfDefinition];
-  const roleTools = (id: string, list = publishedTools) => id === 'studio' ? list.filter(tool => ['pdf-merge', 'pdf-split', 'images-to-pdf'].includes(tool.id)) : associatedRoles.includes(id)
-    ? list.filter(tool => !['pdf-merge', 'pdf-split', 'images-to-pdf'].includes(tool.id) && (tool.id !== 'palette-extractor' || ['painter', 'animator'].includes(id)) &&
+  const publishedTools = [imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, comicPageOrganizerDefinition, imageWatermarkDefinition, exifMetadataDefinition, pdfMergeDefinition, pdfSplitDefinition, imagesToPdfDefinition, zipManagerDefinition];
+  const roleTools = (id: string, list = publishedTools) => id === 'studio' ? list.filter(tool => ['pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager'].includes(tool.id)) : associatedRoles.includes(id)
+    ? list.filter(tool => !['pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager'].includes(tool.id) && (tool.id !== 'palette-extractor' || ['painter', 'animator'].includes(id)) &&
       (tool.id !== 'comic-page-organizer' || ['painter', 'animator'].includes(id)) &&
       (tool.id !== 'exif-metadata' || ['painter', 'operations'].includes(id)) &&
       (tool.id !== 'image-watermark' || ['painter', 'animator', 'operations'].includes(id))) : [];
 
-  it.each(['cn', 'global'] as const)('projects ten Published tools in %s editorial order without filling unrelated roles', region => {
+  it.each(['cn', 'global'] as const)('projects eleven Published tools in %s editorial order without filling unrelated roles', region => {
     for (const locale of ['zh', 'en'] as const) {
       const production = getRoleShowcases(region, locale);
       expect(production).toHaveLength(6);
@@ -123,7 +124,7 @@ describe('homepage editorial role projection', () => {
         expect(role.entries.filter(entry => entry.status === 'draft').map(entry=>entry.id)).toEqual(role.toolIds.filter(id=>tools.some(tool=>tool.id===id&&tool.status==='draft')).slice(0,12-productionRole.entries.length));
       }
     }
-    expect(publishedTools.map(tool => tool.status)).toEqual(Array(10).fill('published'));
+    expect(publishedTools.map(tool => tool.status)).toEqual(Array(11).fill('published'));
   });
 
   it.each(['cn', 'global'] as const)('keeps %s editorial IDs behind Registry Draft and region filtering in both locales', region => {
@@ -147,7 +148,7 @@ describe('homepage editorial role projection', () => {
       expect(getRoleShowcases(region, locale, false, list).flatMap(role => role.entries)).toEqual([]);
       expect(getRoleShowcases(region, locale, true, list).flatMap(role => role.entries)).toEqual([]);
     }
-    expect(publishedTools.map(tool => tool.status)).toEqual(Array(10).fill('published'));
+    expect(publishedTools.map(tool => tool.status)).toEqual(Array(11).fill('published'));
   });
 
   it('deduplicates editorial IDs, ignores unknown/unavailable IDs, and caps each role at twelve', () => {

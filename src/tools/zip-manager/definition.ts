@@ -6,7 +6,7 @@ export const definition = {
   group: 'file-operations',
   roles: ['studio', 'developer'],
   mode: 'form',
-  status: 'draft',
+  status: 'published',
   regions: ['cn', 'global'],
   copy: {
     zh: {

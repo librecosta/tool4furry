@@ -1,11 +1,19 @@
 // @vitest-environment node
 import { expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { zipSync, unzipSync, strToU8 } from 'fflate';
 import { createZip, inspectZip, extractZip, safePath } from '../src/tools/zip-manager/core';
 import { checkFiles, filePath, folderStem, zipTree, selectionState, selectPaths } from '../src/tools/zip-manager/tree';
 import { createZipDownloadNamer, zipStem } from '../src/tools/zip-manager/download-name';
 
 const file = (path: string, text = path) => Object.defineProperty(new File([text], path.split('/').at(-1)!), 'webkitRelativePath', { value: path.includes('/') ? path : '' });
+
+it('ships the complete installed fflate MIT license through the ZIP Manager lazy entry', () => {
+  const notice = readFileSync('src/tools/general/fflate.NOTICE.txt', 'utf8').replace(/\r\n/g, '\n');
+  const license = readFileSync('node_modules/fflate/LICENSE', 'utf8').replace(/\r\n/g, '\n').trim();
+  expect(notice).toContain(license);
+  expect(readFileSync('src/tools/zip-manager/ZipManager.tsx', 'utf8')).toContain('data-zip-license={zipNotice}');
+});
 
 it('keeps real directory paths, distinguishes duplicate basenames and checks the full intake', () => {
   const files = [file('作品/人物/正面.txt'), file('作品/背景/正面.txt'), file('作品/说明.txt')];
@@ -68,6 +76,51 @@ it('retains invalid-path, CRC, encrypted, bomb, duplicate-path and cancellation 
   const read = delayed.arrayBuffer.bind(delayed);
   delayed.arrayBuffer = async () => {duringRead.abort(); return read();};
   await expect(inspectZip(delayed, duringRead.signal)).rejects.toThrow('Cancelled');
+});
+
+it.each([0, 6] as const)('reads Store/Deflate level %i with Unicode paths and duplicate basenames in different folders', async level => {
+  const originals = { '作品/人物/说明.txt': strToU8('角色 🦊\nUTF-8'), '作品/背景/说明.txt': strToU8('背景'), '作品/data.bin': new Uint8Array([0, 255, 128, 4]) };
+  const archive = new Blob([zipSync(originals, { level }) as Uint8Array<ArrayBuffer>]);
+  const items = await inspectZip(archive);
+  expect(items.map(item => item.method)).toEqual(Array(3).fill(level === 0 ? 0 : 8));
+  const extracted = await extractZip(archive, items, Object.keys(originals));
+  for (const entry of extracted) expect(new Uint8Array(await entry.blob.arrayBuffer())).toEqual(originals[entry.name as keyof typeof originals]);
+});
+
+it('rejects unsafe archive paths, duplicate central entries, ZIP64 and unsupported methods/encodings', async () => {
+  for (const name of ['../outside', '/absolute', 'C:/absolute', 'a\\b'])
+    await expect(inspectZip(new Blob([zipSync({ [name]: strToU8('x') }) as Uint8Array<ArrayBuffer>]))).rejects.toThrow();
+  const duplicate = zipSync({ 'a.txt': strToU8('a'), 'A.txt': strToU8('b') });
+  await expect(inspectZip(new Blob([duplicate as Uint8Array<ArrayBuffer>]))).rejects.toThrow();
+  const original = zipSync({ 'data.txt': strToU8('original') }, { level: 0 });
+  const central = new DataView(original.buffer).getUint32(original.length - 6, true);
+  for (const alter of [
+    (view: DataView) => view.setUint16(original.length - 12, 0xffff, true),
+    (view: DataView) => { view.setUint16(8, 99, true); view.setUint16(central + 10, 99, true); },
+    (view: DataView) => { view.setUint8(30, 0xff); view.setUint8(central + 46, 0xff); },
+  ]) {
+    const bytes = original.slice(); alter(new DataView(bytes.buffer));
+    await expect(inspectZip(new Blob([bytes as Uint8Array<ArrayBuffer>]))).rejects.toThrow();
+  }
+});
+
+it('rejects declared and actual extraction overflows and the existing intake/archive budgets', async () => {
+  const tooBig = Object.defineProperty(new File([], 'large.bin'), 'size', { value: 32 * 1024 ** 2 + 1 });
+  expect(() => checkFiles([tooBig])).toThrow();
+  const excessive = Object.defineProperty(new Blob(), 'size', { value: 96 * 1024 ** 2 + 1 });
+  await expect(createZip([{ name: 'large.bin', blob: excessive }])).rejects.toThrow();
+  const oversizedArchive = Object.defineProperty(new Blob(), 'size', { value: 64 * 1024 ** 2 + 1 });
+  await expect(inspectZip(oversizedArchive)).rejects.toThrow();
+  const many = zipSync(Object.fromEntries(Array.from({ length: 501 }, (_, i) => [`${i}.txt`, strToU8('x')])));
+  await expect(inspectZip(new Blob([many as Uint8Array<ArrayBuffer>]))).rejects.toThrow();
+  for (const claimedSize of [32 * 1024 ** 2 + 1, 2]) {
+    const bytes = zipSync({ 'data.txt': strToU8('Actual content exceeds the claimed size.') });
+    const view = new DataView(bytes.buffer), central = view.getUint32(bytes.length - 6, true);
+    view.setUint32(22, claimedSize, true); view.setUint32(central + 24, claimedSize, true);
+    const blob = new Blob([bytes as Uint8Array<ArrayBuffer>]);
+    if (claimedSize > 32 * 1024 ** 2) await expect(inspectZip(blob)).rejects.toThrow();
+    else await expect(extractZip(blob, await inspectZip(blob), ['data.txt'])).rejects.toThrow();
+  }
 });
 
 it('uses local millisecond ZIP names with short collisions and safe Unicode stems', () => {

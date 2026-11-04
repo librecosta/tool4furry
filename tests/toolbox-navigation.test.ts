@@ -11,7 +11,7 @@ describe('native toolbox selections', () => {
     for (const locale of ['zh', 'en'] as const) for (const dev of [false, true]) {
       const selections = getToolboxGroups(region, locale, dev);
       expect(selections.map(group => group.id)).toEqual(['featured', 'painter', 'composer', 'developer', 'animator', 'operations', 'studio']);
-      expect(selections[0].entries.map(entry => entry.id)).toEqual(dev ? navigationToolIds : navigationToolIds.slice(0, 5));
+      expect(selections[0].entries.map(entry => entry.id)).toEqual(dev ? navigationToolIds : navigationToolIds.slice(0, 6));
       const home = getRoleShowcases(region, locale, dev);
       for (const group of selections.slice(1)) {
         expect(group.label).toBe(roles[group.id as RoleId][locale]);
@@ -36,6 +36,6 @@ describe('native toolbox selections', () => {
     expect(getNavigationEntries('cn', registry, false, 'en', selection).map(entry => entry.id)).toEqual(fixtures.slice(0, 9).map(tool => tool.id));
     expect(getNavigationEntries('cn', registry, true, 'en', selection).map(entry => entry.id)).toEqual(['draft', ...fixtures.slice(0, 8).map(tool => tool.id)]);
     expect(getToolboxGroups('cn', 'zh', false).find(group => group.id === 'composer')!.entries).toEqual([]);
-    expect(getToolboxGroups('global', 'en', false).find(group => group.id === 'studio')!.entries.map(entry => entry.id)).toEqual(['pdf-merge', 'pdf-split', 'images-to-pdf']);
+    expect(getToolboxGroups('global', 'en', false).find(group => group.id === 'studio')!.entries.map(entry => entry.id)).toEqual(['pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager']);
   });
 });
