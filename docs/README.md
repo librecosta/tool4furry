@@ -10,7 +10,7 @@
 
 - [架构](../.agents/architecture.md)：系统分层、依赖方向与非目标。
 - [工作流](../.agents/playbook.md)：实际 pnpm 命令、风险分级验证、提交边界。
-- [工程基础](foundation.md)：StyleX 集成、静态页面与构建审计入口。
+- [工程基础](foundation.md)：SCSS 集成、静态页面与构建审计入口。
 - [工具平台](tool-platform-image-foundation.md)：Registry、Loader、静态工具内容与新增工具边界。
 - [工作区](workbench-appearance.md)：Canvas/Form/Batch 布局及状态所有权。
 - [首页与站点外壳](site-homepage.md)：静态首页、导航、品牌、主题与受控增强。
@@ -24,7 +24,7 @@
 - [视觉基础](visual-foundation.md)：当前主题/品牌入口与历代视觉变更；色值以源码为准。
 - [Pixel Icon V1](visual/tool-icon-prompts.md)：六条维护者确认的原始 Prompt、共同母本与透明 PNG 交付规则；素材是否已提供见文内检查记录。
 
-- [V0.9 样式基础](styling-foundation-v0.9.md)：Astro / React 公共组件的 SCSS、CSS Variables、Hydration 与工具 StyleX 过渡边界。
+- [V0.9 样式基础](styling-foundation-v0.9.md)：全站 SCSS Modules、CSS Variables、Cascade Layer 与 Hydration 验证。
 
 ## Contracts · 稳定约束
 
@@ -60,7 +60,7 @@
 
 | 原路径 / 新的当前说明 | 完整历史归档 | 当前承接重点 |
 | --- | --- | --- |
-| [foundation.md](foundation.md) | [foundation-v0.1.md](history/foundation-v0.1.md) | SSG/StyleX 与验证入口 |
+| [foundation.md](foundation.md) | [foundation-v0.1.md](history/foundation-v0.1.md) | SSG/SCSS 与验证入口 |
 | [site-homepage.md](site-homepage.md) | [site-homepage-v0.3-v0.6.md](history/site-homepage-v0.3-v0.6.md) | 品牌、首页与脚本审计 |
 | [tool-platform-image-foundation.md](tool-platform-image-foundation.md) | [tool-platform-image-foundation-v0.4.md](history/tool-platform-image-foundation-v0.4.md) | 发布、内容和工具依赖边界 |
 | [workbench-appearance.md](workbench-appearance.md) | [workbench-appearance-v0.3-v0.6.md](history/workbench-appearance-v0.3-v0.6.md) | 可选工作区布局与单实例状态 |

@@ -1,24 +1,27 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { compile } from 'sass-embedded';
+import { initCompiler } from 'sass-embedded';
 import { act, fireEvent } from '@testing-library/react';
 import { renderToString } from 'react-dom/server';
 import { hydrateRoot, type Root } from 'react-dom/client';
-import { describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
 import WorkbenchShell from '../src/workbench/WorkbenchShell';
 import { messages } from '../src/lab/messages';
 import { setViewport } from './setup';
 
 const source = (file: string) => readFileSync(resolve(file), 'utf8');
+const compiler = initCompiler();
+const compile = (file: string) => compiler.compile(file);
+afterAll(() => compiler.dispose());
 const ui = readdirSync('src/ui').filter(file => file.endsWith('.tsx')).map(file => 'src/ui/' + file);
 const migrated = [...ui, 'src/workbench/WorkbenchShell.tsx', 'src/tools/ToolPageFrame.tsx',
   'src/tools/ToolRuntime.tsx', 'src/components/site/ToolboxDisclosure.tsx', 'src/components/site/NavigationControls.tsx'];
 
-describe('React native styling and legacy boundary', () => {
+describe('React native styling and cascade ownership', () => {
   it('compiles and resolves every public component class without StyleX base styling', () => {
     for (const file of migrated) {
       const text = source(file);
-      if (!file.endsWith('/Button.tsx')) expect(text, file).not.toContain('@stylexjs/stylex');
+      expect(text, file).not.toContain('@stylexjs/stylex');
       expect(text, file).not.toContain('stylex.create');
       for (const [, alias, module] of text.matchAll(/import (\w+) from '([^']+\.module\.scss)'/g)) {
         const css = compile(resolve(dirname(file), module)).css;
@@ -36,18 +39,21 @@ describe('React native styling and legacy boundary', () => {
     }
   });
 
-  it('orders native controls below component variants and legacy tool overrides', () => {
-    const order = "['reset', 'base', 't4f-controls', 't4f-ui']";
-    expect(source('astro.config.mjs')).toContain('before: ' + order);
-    expect(compile('src/styles/global.scss').css).toContain('@layer reset, base, t4f-controls, t4f-ui;');
+  it('orders native controls, component variants and tool overrides without a legacy bridge', () => {
+    expect(compile('src/styles/global.scss').css).toContain('@layer reset, base, t4f-controls, t4f-ui, t4f-tools;');
     expect(compile('src/ui/controls.module.scss').css).toContain('@layer t4f-controls');
     expect(compile('src/ui/controls.module.scss').css).toContain('.invalid.invalid');
     expect(compile('src/ui/FileDropzone.module.scss').css).toContain('@layer t4f-ui');
+    const pdf = compile('src/tools/pdf-merge/merge.styles.module.scss').css;
+    expect(pdf).toContain('@layer t4f-tools');
+    expect(pdf).toContain('repeat(3, minmax(0, 1fr))');
+    expect(pdf).toContain('border-width: 0');
+    expect(pdf).toContain('height: 44px');
+    expect(compile('src/tools/ToolPageFrame.module.scss').css).toMatch(/\.canvasFrame\s*\{[^}]*z-index: 1;/);
     const button = source('src/ui/Button.tsx');
-    expect(button).toContain('stylex.props(xstyle)');
-    expect(button).not.toContain('stylex.props(controls.');
-    expect(source('src/ui/Field.tsx')).toContain("export { fieldStyles } from './Field.legacy'");
-    expect(source('src/ui/FileTaskList.tsx')).toContain("export { fileTaskStyles } from './FileTaskList.legacy'");
+    expect(button).not.toMatch(/stylex|xstyle|legacy/i);
+    expect(button).toContain('className');
+    for (const name of ['Field', 'FileTaskList']) expect(source('src/ui/' + name + '.tsx')).not.toContain('.legacy');
   });
 
   it('styles Base UI portal states without a workspace ancestor', () => {

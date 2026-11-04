@@ -38,7 +38,7 @@
 
 模拟手机视口不是 iOS/Android 真机；jsdom 不证明布局、原生编解码或浏览器文件选择器。L3 按真实反馈跟进，未验证范围必须披露。已知严重缺陷仍阻止 L2。
 
-新增或修改交互控件时，分别检查鼠标/触摸 Selected、Tab/方向键 `:focus-visible` 与程序聚焦；不要用 `:focus-within` 轮廓代替选中态。核对 reset/base 层、StyleX、Base UI 状态和浏览器默认规则的实际计算样式，避免输入与容器重复焦点。工作区主动聚焦复用 `controls.workspaceFocus` 的指针标记合同；指针标记在键盘操作/失焦时清除，不能妨碍键盘指示。相关组件/契约测试加真实 Chromium 对比，不用 jsdom 或源码匹配代替样式验收。Toast 悬停、键盘阅读与窗口失焦暂停由 Base UI 管理，不另设强制关闭计时器。
+新增或修改交互控件时，分别检查鼠标/触摸 Selected、Tab/方向键 `:focus-visible` 与程序聚焦；不要用 `:focus-within` 轮廓代替选中态。核对 reset/base/控件/工具层、Base UI 状态和浏览器默认规则的实际计算样式，避免输入与容器重复焦点。工作区主动聚焦复用 `controls.workspaceFocus` 的指针标记合同；指针标记在键盘操作/失焦时清除，不能妨碍键盘指示。相关组件/契约测试加真实 Chromium 对比，不用 jsdom 或源码匹配代替样式验收。Toast 悬停、键盘阅读与窗口失焦暂停由 Base UI 管理，不另设强制关闭计时器。
 
 ### 测试职责（不是新的风险等级）
 

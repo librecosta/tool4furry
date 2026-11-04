@@ -1,5 +1,3 @@
-import { neutralDarkTheme, neutralLightTheme } from './tokens.stylex';
-
 export type ColorTheme = 'neutral';
 export type Appearance = 'light' | 'dark';
 
@@ -21,7 +19,6 @@ export function resolveTheme(selection: ThemeSelection = defaultTheme) {
     throw new RangeError('Unsupported theme selection');
   return {
     ...selection,
-    style: selection.appearance === 'light' ? neutralLightTheme : neutralDarkTheme,
   };
 }
 

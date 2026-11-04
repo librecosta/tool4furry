@@ -4,8 +4,8 @@ import { runInNewContext } from 'node:vm';
 import { describe, expect, it, vi } from 'vitest';
 
 const source = readFileSync('src/styles/appearance-controller.js', 'utf8');
-const html = `<html class="dark-theme root-style unrelated" data-appearance="dark"><head>
-<script id="t4f-appearance" data-dark="dark-theme" data-light="light-theme" data-default="dark" data-region-origins='["https://tool4furry.cn","https://tool4furry.com","http://127.0.0.1:4321","http://127.0.0.1:4322"]'>${source}</script>
+const html = `<html class="root-style unrelated" data-appearance="dark"><head>
+<script id="t4f-appearance" data-default="dark" data-region-origins='["https://tool4furry.cn","https://tool4furry.com","http://127.0.0.1:4321","http://127.0.0.1:4322"]'>${source}</script>
 </head><body><button disabled data-appearance-toggle="static" data-light-label="Light" data-dark-label="Dark"></button></body></html>`;
 
 function page(preference, blocked = false, scripts = true, options = {}) {
@@ -19,13 +19,13 @@ function page(preference, blocked = false, scripts = true, options = {}) {
 }
 
 describe('synchronous appearance controller', () => {
-  it('restores before body parsing, replaces only theme classes, and toggles static controls', () => {
+  it('restores before body parsing, preserves unrelated root classes, and toggles static controls', () => {
     const dom = page('light');
     const { window } = dom;
     const root = window.document.documentElement;
     expect(root.dataset.appearance).toBe('light');
     expect(root.style.colorScheme).toBe('light');
-    expect(root.className).toBe('root-style unrelated light-theme');
+    expect(root.className).toBe('root-style unrelated');
     window.document.dispatchEvent(new window.Event('DOMContentLoaded'));
     const button = window.document.querySelector('button');
     expect(button.disabled).toBe(false);

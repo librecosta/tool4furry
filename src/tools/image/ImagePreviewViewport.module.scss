@@ -1,0 +1,77 @@
+@layer t4f-tools {
+  .viewer {
+    height: 100%;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    min-height: 0;
+    gap: var(--t4f-space-8);
+  }
+
+  .canvas {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    touch-action: none;
+    background-color: var(--t4f-workspace);
+    background-image: repeating-conic-gradient(var(--t4f-preview-checker) 0% 25%, transparent 0% 50%);
+    background-size: 16px 16px;
+    border-radius: var(--t4f-radius-sm);
+  }
+
+  .interactive {
+    cursor: grab;
+
+    &:where(:active) {
+      cursor: grabbing;
+    }
+  }
+
+  .image {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    max-width: none;
+    max-height: none;
+    transform-origin: center;
+    pointer-events: none;
+    user-select: none;
+    object-fit: contain;
+  }
+
+  .loadingImage {
+    opacity: 0;
+  }
+
+  .feedback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--t4f-space-12);
+    padding: var(--t4f-space-16);
+    margin: 0;
+    text-align: center;
+    color: var(--t4f-text-secondary);
+    background-color: var(--t4f-workspace);
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--t4f-space-4);
+  }
+
+  .percentage {
+    min-width: 52px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--t4f-text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+}

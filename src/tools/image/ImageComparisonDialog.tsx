@@ -1,7 +1,6 @@
+import s from './ImageComparisonDialog.module.scss';
 import { useEffect, useState, type ReactNode } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import { FilePreviewDialog } from '../../ui/FilePreviewDialog';
-import { tokens as t } from '../../styles/tokens.stylex';
 import {
   ImagePreviewViewport,
   type ImagePreviewLabels,
@@ -69,10 +68,10 @@ export function ImageComparisonDialog({
     { id: 'compare', label: labels.compare, disabled: !hasOutput },
   ] as const;
   const panel = (image: PreviewImage, label: string) => (
-    <section key={label} aria-label={label} {...stylex.props(s.panel)}>
-      <div {...stylex.props(s.caption)}>
+    <section key={label} aria-label={label} className={s.panel}>
+      <div className={s.caption}>
         <span>{label}</span>
-        <span {...stylex.props(s.metadata)}>
+        <span className={s.metadata}>
           {image.width} × {image.height} · {image.format.toUpperCase()}
         </span>
       </div>
@@ -87,7 +86,7 @@ export function ImageComparisonDialog({
           onError={image.onError}
           onLoad={image.onLoad}
         />
-      ) : <p role="status" {...stylex.props(s.metadata)}>{labels.viewer.loading}</p>}
+      ) : <p role="status" className={s.metadata}>{labels.viewer.loading}</p>}
     </section>
   );
   return (
@@ -99,7 +98,7 @@ export function ImageComparisonDialog({
       labels={{ close: labels.closePreview, maximize: labels.maximizePreview, restore: labels.restorePreview }}
       finalFocus={finalFocus}
       toolbar={
-        <div role="group" aria-label={labels.previewToggle} {...stylex.props(s.modes)}>
+        <div role="group" aria-label={labels.previewToggle} className={s.modes}>
           {modes.map(mode => (
             <button
               key={mode.id}
@@ -107,7 +106,7 @@ export function ImageComparisonDialog({
               disabled={mode.disabled}
               aria-pressed={current === mode.id}
               aria-description={mode.disabled ? labels.outputUnavailable : undefined}
-              {...stylex.props(s.mode, current === mode.id && s.current)}
+              className={[s.mode, current === mode.id && s.current].filter(Boolean).join(' ')}
               onClick={() => setSelection(mode.id)}
             >
               {mode.label}
@@ -117,12 +116,12 @@ export function ImageComparisonDialog({
       }
     >
       {current === 'composition' && composition ? (
-        <div {...stylex.props(s.draft)}>
-          <p {...stylex.props(s.metadata)}>{composition.note}</p>
+        <div className={s.draft}>
+          <p className={s.metadata}>{composition.note}</p>
           {composition.content}
         </div>
       ) : (
-        <div data-image-comparison={current} {...stylex.props(s.view, current === 'compare' && s.compare)}>
+        <div data-image-comparison={current} className={[s.view, current === 'compare' && s.compare].filter(Boolean).join(' ')}>
           {current !== 'output' && panel(source, labels.original)}
           {(current === 'output' || current === 'compare') && output && panel(output, labels.output)}
         </div>
@@ -130,24 +129,3 @@ export function ImageComparisonDialog({
     </FilePreviewDialog>
   );
 }
-const s = stylex.create({
-  modes: { display: 'flex', gap: t.space4, padding: t.space4, backgroundColor: t.inputSurface, borderRadius: t.radiusMd },
-  mode: {
-    minHeight: 44, minWidth: 44, paddingInline: t.space12, borderWidth: 0, borderRadius: t.radiusSm,
-    color: { default: t.textSecondary, ':hover': t.textPrimary, ':disabled': t.textSecondary },
-    backgroundColor: { default: 'transparent', ':hover': t.surfaceHover, ':disabled': 'transparent' },
-    fontSize: 13, fontWeight: 500, opacity: {default: 1, ':disabled': 0.5},
-    transitionProperty: 'background-color, color', transitionTimingFunction: 'ease-out', transitionDuration: {default: '280ms', '@media (prefers-reduced-motion: reduce)': '0ms'},
-  },
-  current: { backgroundColor: t.actionTint, color: t.supportLavender },
-  view: { height: '100%', minHeight: 0, minWidth: 0, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gridTemplateRows: 'minmax(0, 1fr)', gap: t.space12 },
-  compare: {
-    gridTemplateColumns: {default: 'repeat(2, minmax(0, 1fr))', '@media (max-width: 600px)': 'minmax(0, 1fr)'},
-    gridTemplateRows: {default: 'minmax(0, 1fr)', '@media (max-width: 600px)': 'repeat(2, minmax(280px, 1fr))'},
-    overflowY: 'auto',
-  },
-  panel: { display: 'grid', gridTemplateRows: 'auto minmax(0, 1fr)', gap: t.space8, minWidth: 0, minHeight: 0 },
-  caption: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: t.space8, fontSize: 13, fontWeight: 600 },
-  metadata: { fontSize: 12, lineHeight: 1.6, color: t.textSecondary, margin: 0, fontWeight: 400, overflowWrap: 'anywhere' },
-  draft: { height: '100%', minHeight: 0, display: 'grid', gridTemplateRows: 'auto minmax(0, 1fr)', gap: t.space8 },
-});

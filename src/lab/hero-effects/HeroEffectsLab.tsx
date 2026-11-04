@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { Locale } from '../../i18n/locale';
 import { messages } from '../../i18n/messages';
 import { Button } from '../../ui/Button';
 import FlowFieldWaves from './FlowFieldWaves';
 import type { Quality } from './geometry';
 import type { SceneStats, SceneStatus } from './useScene';
-import { heroLabStyles as s } from './styles';
+import s from './styles.module.scss';
 
 const copy = {
   zh: {
@@ -45,11 +44,11 @@ export default function HeroEffectsLab({ locale }: { locale: Locale }) {
     [c.frames, `${stats?.frames ?? 0} / ${stats?.draws ?? 0}`],
     [c.memory, stats ? `${(stats.meshBytes / 1048576).toFixed(2)} / ${(stats.pixelWidth * stats.pixelHeight * 4 / 1048576).toFixed(2)} MiB` : '—'],
   ];
-  return <div {...stylex.props(s.page)}>
-    <div {...stylex.props(s.controls)}>
-      <p {...stylex.props(s.note)}>{c.description}</p>
-      <div {...stylex.props(s.row)}>
-        <label {...stylex.props(s.label)}>{c.quality}<select aria-label={c.quality} value={quality} onChange={event => { setStats(null); setQuality(event.target.value as Quality); }} {...stylex.props(s.select)}>
+  return <div className={s.page}>
+    <div className={s.controls}>
+      <p className={s.note}>{c.description}</p>
+      <div className={s.row}>
+        <label className={s.label}>{c.quality}<select aria-label={c.quality} value={quality} onChange={event => { setStats(null); setQuality(event.target.value as Quality); }} className={s.select}>
           {(['low', 'medium', 'high'] as const).map(level => <option key={level} value={level}>{c[level]}</option>)}
         </select></label>
         <Button aria-pressed={overlay} onClick={() => { setStats(null); setOverlay(value => !value); }}>{overlay ? c.visual : c.overlay}</Button>
@@ -57,17 +56,17 @@ export default function HeroEffectsLab({ locale }: { locale: Locale }) {
         <Button onClick={() => { setStats(null); setReset(value => value + 1); }}>{c.reset}</Button>
       </div>
     </div>
-    <div data-hero-stage="waves" {...stylex.props(s.stage, overlay && s.tallStage)}>
+    <div data-hero-stage="waves" className={[s.stage, overlay && s.tallStage].filter(Boolean).join(' ')}>
       <FlowFieldWaves key={`${quality}-${overlay}-${reset}`} quality={quality} overlay={overlay} paused={paused} onStats={setStats} />
-      {overlay && <div {...stylex.props(s.overlay)}>
-        <h2 {...stylex.props(s.title)}>{t.heroLead}{locale === 'en' ? ' ' : ''}<span {...stylex.props(s.line)}>{t.heroAccent}</span></h2>
-        <p {...stylex.props(s.intro)}>{t.intro}</p>
+      {overlay && <div className={s.overlay}>
+        <h2 className={s.title}>{t.heroLead}{locale === 'en' ? ' ' : ''}<span className={s.line}>{t.heroAccent}</span></h2>
+        <p className={s.intro}>{t.intro}</p>
       </div>}
-      {stats?.status === 'unavailable' && <p role="status" {...stylex.props(s.fallback)}>{c.fallback}</p>}
+      {stats?.status === 'unavailable' && <p role="status" className={s.fallback}>{c.fallback}</p>}
     </div>
-    <dl data-hero-metrics data-status={stats?.status} data-frames={stats?.frames ?? 0} data-draws={stats?.draws ?? 0} data-fps={stats?.fps ?? ''} data-draw-fps={stats?.drawFps ?? ''} {...stylex.props(s.metrics)}>
-      {rows.map(([label, value]) => <div key={label} {...stylex.props(s.metric)}><dt {...stylex.props(s.term)}>{label}</dt><dd {...stylex.props(s.value)}>{value}</dd></div>)}
+    <dl data-hero-metrics data-status={stats?.status} data-frames={stats?.frames ?? 0} data-draws={stats?.draws ?? 0} data-fps={stats?.fps ?? ''} data-draw-fps={stats?.drawFps ?? ''} className={s.metrics}>
+      {rows.map(([label, value]) => <div key={label} className={s.metric}><dt className={s.term}>{label}</dt><dd className={s.value}>{value}</dd></div>)}
     </dl>
-    <div {...stylex.props(s.controls)}><p {...stylex.props(s.note)}>{c.explanation}</p></div>
+    <div className={s.controls}><p className={s.note}>{c.explanation}</p></div>
   </div>;
 }

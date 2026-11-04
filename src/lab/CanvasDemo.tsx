@@ -1,3 +1,4 @@
+import s from './CanvasDemo.module.scss';
 import { useState, type ReactNode } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import {
@@ -5,11 +6,9 @@ import {
   StarIcon,
   ArrowCounterClockwiseIcon,
 } from '@phosphor-icons/react';
-import * as stylex from '@stylexjs/stylex';
 import WorkbenchShell from '../workbench/WorkbenchShell';
 import type { LabMessages as Messages } from './messages';
-import { controls as c } from '../styles/controls';
-import { tokens } from '../styles/tokens.stylex';
+import c from '../ui/controls.module.scss';
 import { IconButton } from '../ui/Button';
 import { Tooltip } from '../ui/Tooltip';
 import { TextField } from '../ui/TextField';
@@ -44,7 +43,7 @@ export default function CanvasDemo({
       labels={t}
       header={header}
       left={
-        <div {...stylex.props(s.toolbar)}>
+        <div className={s.toolbar}>
           <Tooltip content={t.select}>
             <IconButton
               label={t.select}
@@ -80,7 +79,7 @@ export default function CanvasDemo({
         </div>
       }
       right={
-        <div {...stylex.props(c.stack)}>
+        <div className={c.stack}>
           <TextField
             label={t.label}
             maxLength={80}
@@ -104,12 +103,12 @@ export default function CanvasDemo({
               { value: 'orange', label: t.orange },
             ]}
           />
-          <p {...stylex.props(c.muted)}>{t.canvasHint}</p>
+          <p className={c.muted}>{t.canvasHint}</p>
         </div>
       }
       bottom={
         <>
-          <span role="status" {...stylex.props(c.muted, s.status)}>
+          <span role="status" className={[c.muted, s.status].filter(Boolean).join(' ')}>
             {t.marks}: {marks}
             {selected ? ` · ${t.selected}` : ''}
           </span>
@@ -122,83 +121,33 @@ export default function CanvasDemo({
       <button
         type="button"
         aria-label={t.canvasAction}
-        {...stylex.props(s.stage)}
+        className={s.stage}
         onClick={() =>
           action === 'stamp'
             ? setMarks((value) => value + 1)
             : setSelected((value) => !value)
         }
       >
-        <span {...stylex.props(s.caption)}>
+        <span className={s.caption}>
           {t.preview} / {t[action]}
         </span>
-        <span {...stylex.props(s.canvasButton, selected && s.selected)}>
+        <span className={[s.canvasButton, selected && s.selected].filter(Boolean).join(' ')}>
           <motion.span
             key={marks}
             initial={false}
             animate={{ scale: reduce || marks === 0 ? 1 : [1, 1.06, 1] }}
             transition={{ duration: reduce ? 0 : 0.18 }}
-            {...stylex.props(s.symbol, accent === 'orange' && s.orange)}
+            className={[s.symbol, accent === 'orange' && s.orange].filter(Boolean).join(' ')}
           >
             <StarIcon size={size} weight="duotone" aria-hidden />
           </motion.span>
-          <strong {...stylex.props(s.label)}>{label || '—'}</strong>
-          <span {...stylex.props(c.muted)}>
+          <strong className={s.label}>{label || '—'}</strong>
+          <span className={c.muted}>
             {t.marks}: {marks}
           </span>
         </span>
-        <span {...stylex.props(c.muted, s.hint)}>{t.canvasHint}</span>
+        <span className={[c.muted, s.hint].filter(Boolean).join(' ')}>{t.canvasHint}</span>
       </button>
     </WorkbenchShell>
   );
 }
-const s = stylex.create({
-  toolbar: {
-    display: 'flex',
-    flexDirection: { default: 'column', '@media (max-width: 900px)': 'row' },
-    justifyContent: 'center',
-    gap: 4,
-  },
-  stage: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: { default: 16, '@media (max-height: 500px)': 8 },
-    width: '100%',
-    height: '100%',
-    borderWidth: 0,
-    color: tokens.textPrimary,
-    backgroundColor: tokens.workspace,
-    padding: '80px 16px',
-    outlineOffset: -4,
-    backgroundImage: `radial-gradient(${tokens.border} 1px, transparent 1px)`,
-    backgroundSize: '20px 20px',
-  },
-  caption: { fontSize: 12, color: tokens.textSecondary },
-  canvasButton: {
-    width: 'min(100%, 320px)',
-    padding: {
-      default: tokens.space24,
-      '@media (max-height: 500px)': tokens.space12,
-    },
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: { default: 16, '@media (max-height: 500px)': 8 },
-    backgroundColor: tokens.surface,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: tokens.border,
-    borderRadius: 16,
-    color: tokens.textPrimary,
-  },
-  selected: { outline: `2px solid ${tokens.accent}`, outlineOffset: 4 },
-  // Demo content colors are decorative, independent of the primary action.
-  symbol: { display: 'flex', color: tokens.sage },
-  orange: { color: tokens.brand },
-  label: { maxWidth: '100%', overflowWrap: 'anywhere', fontSize: 20 },
-  status: { fontSize: { default: 13, '@media (max-width: 900px)': 12 } },
-  hint: { display: { default: 'block', '@media (max-height: 500px)': 'none' } },
-});

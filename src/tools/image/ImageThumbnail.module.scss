@@ -1,0 +1,22 @@
+@layer t4f-tools {
+  .frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+  }
+
+  .image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .loading {
+    opacity: 0;
+  }
+
+}

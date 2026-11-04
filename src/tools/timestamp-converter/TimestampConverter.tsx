@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import { TextField } from '../../ui/TextField';
 import { SelectField } from '../../ui/SelectField';
 import { Button } from '../../ui/Button';
-import { Frame, s, tr, ErrorText, errorText, Copy } from '../general/ui';
+import { Frame, tr, ErrorText, errorText, Copy } from '../general/ui';
+import s from '../general/ui.module.scss';
 import { fromTimestamp, fromIso, timestampValues } from './core';
 export default function TimestampConverter({ locale }: ToolProps) {
   const [input, setInput] = useState(''),
@@ -54,10 +54,10 @@ export default function TimestampConverter({ locale }: ToolProps) {
       />
       <ErrorText error={error} />
       {result && (
-        <div {...stylex.props(s.stack)}>
+        <div className={s.stack}>
           {Object.entries(result).map(([k, v]) => (
-            <div key={k} {...stylex.props(s.row)}>
-              <span {...stylex.props(s.grow)}>
+            <div key={k} className={s.row}>
+              <span className={s.grow}>
                 {
                   (
                     {

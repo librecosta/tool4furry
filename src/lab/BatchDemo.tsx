@@ -1,10 +1,9 @@
+import s from './BatchDemo.module.scss';
 import { useRef, useState, type ReactNode } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import { PlusIcon, PlayIcon, TrashIcon } from '@phosphor-icons/react';
 import WorkbenchShell from '../workbench/WorkbenchShell';
 import type { LabMessages as Messages } from './messages';
-import { controls as c } from '../styles/controls';
-import { tokens } from '../styles/tokens.stylex';
+import c from '../ui/controls.module.scss';
 import { advanceTasks, type DemoTask } from './demo-logic';
 import { Button, IconButton } from '../ui/Button';
 import { SelectField } from '../ui/SelectField';
@@ -27,8 +26,8 @@ export default function BatchDemo({
       labels={t}
       header={header}
       right={
-        <section {...stylex.props(c.card, c.stack)}>
-          <h2 {...stylex.props(c.heading)}>{t.parameters}</h2>
+        <section className={[c.card, c.stack].filter(Boolean).join(' ')}>
+          <h2 className={c.heading}>{t.parameters}</h2>
           <SelectField
             label={t.batchSetting}
             value={format}
@@ -38,16 +37,16 @@ export default function BatchDemo({
               { value: 'WEBP', label: 'WEBP' },
             ]}
           />
-          <p {...stylex.props(c.muted)}>{t.batchNote}</p>
+          <p className={c.muted}>{t.batchNote}</p>
           <p role="status">
             {t.completed}: {complete} / {tasks.length}
           </p>
         </section>
       }
     >
-      <section {...stylex.props(c.card, c.stack)} aria-label={t.tasks}>
-        <h2 {...stylex.props(c.heading)}>{t.tasks}</h2>
-        <div {...stylex.props(c.row)}>
+      <section className={[c.card, c.stack].filter(Boolean).join(' ')} aria-label={t.tasks}>
+        <h2 className={c.heading}>{t.tasks}</h2>
+        <div className={c.row}>
           <Button
             type="button"
             variant="primary"
@@ -79,16 +78,16 @@ export default function BatchDemo({
           </Button>
         </div>
         {tasks.length === 0 ? (
-          <p {...stylex.props(c.muted)}>{t.queueEmpty}</p>
+          <p className={c.muted}>{t.queueEmpty}</p>
         ) : (
-          <ul {...stylex.props(s.list)}>
+          <ul className={s.list}>
             {tasks.map((task) => (
-              <li key={task.id} {...stylex.props(s.task)}>
-                <div {...stylex.props(s.taskText)}>
+              <li key={task.id} className={s.task}>
+                <div className={s.taskText}>
                   <strong>
                     Demo {String(task.id).padStart(2, '0')} · {task.format}
                   </strong>
-                  <span {...stylex.props(c.muted)}>{t[task.status]}</span>
+                  <span className={c.muted}>{t[task.status]}</span>
                 </div>
                 <IconButton
                   type="button"
@@ -109,16 +108,3 @@ export default function BatchDemo({
     </WorkbenchShell>
   );
 }
-const s = stylex.create({
-  list: { listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 10 },
-  task: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 16,
-    padding: 14,
-    backgroundColor: tokens.page,
-    borderRadius: 8,
-  },
-  taskText: { display: 'grid', gap: 4, minWidth: 0, overflowWrap: 'anywhere' },
-});

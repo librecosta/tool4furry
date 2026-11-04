@@ -1,6 +1,6 @@
 # Tool4Furry
 
-面向 Furry 创作者的开源浏览器工具箱。使用 Astro 静态站点、React 按需交互、TypeScript 与 StyleX，工具在浏览器本地处理用户文件；当前没有后端、数据库或用户系统。
+面向 Furry 创作者的开源浏览器工具箱。使用 Astro 静态站点、React 按需交互、TypeScript 与 SCSS Modules，工具在浏览器本地处理用户文件；当前没有后端、数据库或用户系统。
 
 ![Tool4Furry 双兽首图形与字标](public/brand/tool4furry-og.png)
 
@@ -24,7 +24,7 @@ DEV 另提供完整 Draft：**Comic Page Organizer**。能力与验收入口见 
 
 ## 技术与架构
 
-Astro 输出页面正文和 SEO，React 只负责工具等必要交互，StyleX 提取静态样式。CN/Global 独立构建，每个地区同时支持中文和英文；Registry 统一控制工具可用性。结构与依赖方向见 [.agents/architecture.md](.agents/architecture.md)。
+Astro 输出页面正文和 SEO，React 只负责工具等必要交互，SCSS Modules 与原生 CSS Variables 提供静态样式和主题。CN/Global 独立构建，每个地区同时支持中文和英文；Registry 统一控制工具可用性。结构与依赖方向见 [.agents/architecture.md](.agents/architecture.md)。
 
 ## 快速开始
 
@@ -70,7 +70,7 @@ pnpm build:global
 | `src/config/`、`src/i18n/` | 地区与语言配置 |
 | `src/tools/` | Registry、懒加载与独立工具业务 |
 | `src/ui/`、`src/workbench/` | 受控原语与可选工作区布局 |
-| `src/styles/`、`src/visuals/` | StyleX、受控页面增强与 Wavefield |
+| `src/styles/`、`src/visuals/` | SCSS、受控页面增强与 Wavefield |
 | `src/lab/` | DEV-only 演示 |
 | `tests/`、`scripts/` | 行为测试、隔离夹具与构建审计 |
 | `src/assets/` | 组件内部图片、插画与工具图标，通过静态导入参与构建 |

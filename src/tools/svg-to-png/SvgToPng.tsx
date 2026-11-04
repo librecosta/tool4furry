@@ -1,19 +1,10 @@
 import { useMemo, useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import { TextField, TextAreaField } from '../../ui/TextField';
 import { Button } from '../../ui/Button';
 import { CheckboxField } from '../../ui/CheckboxField';
-import {
-  Frame,
-  Picker,
-  ErrorText,
-  errorText,
-  tr,
-  s,
-  useBlobUrl,
-  saveBlob,
-} from '../general/ui';
+import { Frame, Picker, ErrorText, errorText, tr, useBlobUrl, saveBlob,  } from '../general/ui';
+import s from '../general/ui.module.scss';
 import { fail } from '../general/bounds';
 import { useJob } from '../general/use-job';
 import { readSvg, svgOutputSize, rasterizeSvg } from './core';
@@ -120,10 +111,10 @@ export default function SvgToPng({ locale }: ToolProps) {
               width={parsed.svg.width}
               height={parsed.svg.height}
               alt={tr(locale, 'SVG 预览', 'SVG preview')}
-              {...stylex.props(s.canvas)}
+              className={s.canvas}
             />
           )}
-          <div {...stylex.props(s.columns)}>
+          <div className={s.columns}>
             <TextField
               label={tr(locale, '输出宽度', 'Output width')}
               value={width}
@@ -199,7 +190,7 @@ export default function SvgToPng({ locale }: ToolProps) {
           <img
             src={output}
             alt={tr(locale, 'PNG 结果', 'PNG output')}
-            {...stylex.props(s.canvas)}
+            className={s.canvas}
           />
           <Button onClick={() => saveBlob(job.result!, 'converted.png')}>
             {tr(locale, '下载 PNG', 'Download PNG')}

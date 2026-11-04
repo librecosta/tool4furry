@@ -1,9 +1,8 @@
 import { useId } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { Capabilities } from '../image/browser-codec';
 import type { NativeImageFormat } from '../image/types';
-import { converterStyles as c } from '../image-converter/converter.styles';
-import { resizeStyles as s } from './resize.styles';
+import c from '../image-converter/converter.styles.module.scss';
+import s from './resize.styles.module.scss';
 import type { resizeMessages } from './messages';
 
 export type ResizeMessages = (typeof resizeMessages)['zh'];
@@ -19,20 +18,20 @@ export function ParameterChoices<Value extends string>({
 }) {
   const name = useId();
   return (
-    <fieldset {...stylex.props(c.group)}>
-      <legend {...stylex.props(c.legend)}>{label}</legend>
-      <div {...stylex.props(s.parameterChoices)}>
+    <fieldset className={c.group}>
+      <legend className={c.legend}>{label}</legend>
+      <div className={s.parameterChoices}>
         {options.map(option => (
-          <label key={option.value} {...stylex.props(
+          <label key={option.value} className={[
             s.parameterChoice, c.parameterControl,
             value === option.value && s.parameterChosen,
             disabled && c.disabled,
-          )}>
+          ].filter(Boolean).join(' ')}>
             <input
               type="radio" name={name} value={option.value}
               checked={value === option.value} disabled={disabled}
               onChange={() => onValueChange(option.value)}
-              {...stylex.props(c.radio)}
+              className={c.radio}
             />
             <span>{option.label}</span>
           </label>
@@ -52,17 +51,17 @@ export function ParameterModes({
   t: ResizeMessages;
 }) {
   return (
-    <div role="group" aria-label={t.parameterModes} {...stylex.props(c.modes)}>
+    <div role="group" aria-label={t.parameterModes} className={c.modes}>
       {([false, true] as const).map((value) => (
         <button
           key={String(value)}
           type="button"
           aria-pressed={advanced === value}
-          {...stylex.props(
+          className={[
             c.mode,
             c.parameterControl,
             advanced === value && c.currentParameterMode,
-          )}
+          ].filter(Boolean).join(' ')}
           onClick={() => onChange(value)}
         >
           {value ? t.advanced : t.quick}
@@ -87,19 +86,19 @@ export function FormatChoices({
 }) {
   const name = useId();
   return (
-    <fieldset {...stylex.props(c.group)}>
-      <legend {...stylex.props(c.legend)}>{t.format}</legend>
-      <div {...stylex.props(c.choices, s.formats)}>
+    <fieldset className={c.group}>
+      <legend className={c.legend}>{t.format}</legend>
+      <div className={[c.choices, s.formats].filter(Boolean).join(' ')}>
         {(['png', 'jpeg', 'webp'] as const).map((format) => {
           const unavailable = disabled || !capabilities?.[format]?.supported;
           return (
             <label
               key={format}
-              {...stylex.props(
+              className={[
                 c.choice,
                 value === format && !unavailable && c.chosen,
                 unavailable && c.disabled,
-              )}
+              ].filter(Boolean).join(' ')}
             >
               <input
                 type="radio"
@@ -113,9 +112,9 @@ export function FormatChoices({
                     : undefined
                 }
                 onChange={() => onChange(format)}
-                {...stylex.props(c.radio)}
+                className={c.radio}
               />
-              <span {...stylex.props(c.choiceLabel)}>
+              <span className={c.choiceLabel}>
                 {format === 'jpeg' ? 'JPEG' : format.toUpperCase()}
               </span>
             </label>

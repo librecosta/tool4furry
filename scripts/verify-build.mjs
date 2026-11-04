@@ -157,7 +157,8 @@ function assertAppearanceScript(dom) {
   assert.equal(script.textContent.trim(), appearanceSource.trim(), 'Only the audited theme controller is allowed');
   assert.equal(script.dataset.default, 'dark');
   assert.deepEqual(JSON.parse(script.dataset.regionOrigins), ['https://tool4furry.cn', 'https://tool4furry.com']);
-  assert(script.dataset.dark && script.dataset.light && script.dataset.dark !== script.dataset.light);
+  assert.deepEqual([...script.attributes].map(attribute => attribute.name), ['id', 'data-default', 'data-region-origins'],
+    'Appearance needs no legacy theme-class payload');
   return script;
 }
 function assertStaticNavigation(dom, homepage = false) {
@@ -397,10 +398,10 @@ assert.equal(principles.getAttribute('aria-labelledby'), 'principles-heading');
 assert.equal(principles.querySelectorAll('h2').length, 1);
 assert.equal(principles.querySelector('h2').textContent, locale === 'zh' ? '技术与工程' : 'Technology & Engineering');
 assert.deepEqual([...principles.querySelectorAll('p')].map(p => p.textContent), locale === 'zh' ? [
-  'Tool4Furry 基于 Astro、React 与 StyleX 构建，面向 Furry 创作者开发实用的浏览器工具。我们从浏览器原生图像处理起步，逐步拓展至创作流程中的更多任务。',
+  'Tool4Furry 基于 Astro、React 与 SCSS Modules 构建，面向 Furry 创作者开发实用的浏览器工具。我们从浏览器原生图像处理起步，逐步拓展至创作流程中的更多任务。',
   '在技术实现上，我们也将按需探索 WebAssembly、WebGL、WebGPU 与 Three.js，以支持更复杂的图像计算、实时渲染和交互式创作。',
 ] : [
-  'Tool4Furry is built with Astro, React, and StyleX to develop practical browser-based tools for furry creators. Starting with native browser image processing, we aim to support more tasks across the creative workflow.',
+  'Tool4Furry is built with Astro, React, and SCSS Modules to develop practical browser-based tools for furry creators. Starting with native browser image processing, we aim to support more tasks across the creative workflow.',
   "On the technical side, we'll explore WebAssembly, WebGL, WebGPU, and Three.js as needed to support more advanced image computation, real-time rendering, and interactive creation.",
 ]);
 assert.equal(principles.querySelectorAll('a').length, 1);
@@ -1222,23 +1223,32 @@ for (const page of htmlFiles) {
   }
   const css = linkedCSS.join('\n');
   assert(css.includes(symbol), `Missing extracted brand mask in ${page}`);
-  for (const appearance of ['dark', 'light'])
-    for (const className of appearanceScript.dataset[appearance].split(' '))
-      assert(css.includes(`.${className}`), `Missing extracted ${appearance} theme in ${page}`);
+  assert(!appearanceScript.hasAttribute('data-dark') && !appearanceScript.hasAttribute('data-light'),
+    'Native appearance does not ship legacy theme classes');
   assert(
     /color-scheme:\s*var\(--/.test(css),
     `Appearance must control native color-scheme in ${page}`,
   );
-  assert(
-    css.includes('@layer priority') && css.includes('--'),
-    'Linked CSS must include extracted StyleX styles and tokens',
-  );
+  // Minification may replace the first two entries of the order statement with
+  // their actual blocks. Validate the browser's first-declaration order instead
+  // of requiring one unminified spelling of that equivalent cascade.
+  const layerOrder = [...new Set([...css.matchAll(/@layer\s+([^{};]+)[{;]/g)]
+    .flatMap(([, names]) => names.split(',').map(name => name.trim())))];
+  assert.deepEqual(layerOrder, ['reset', 'base', 't4f-controls', 't4f-ui', 't4f-tools'],
+    'Linked CSS must establish the native cascade before tool styles');
   assert(
     /--t4f-page\s*:/.test(css) && /--t4f-action\s*:/.test(css) &&
       /--t4f-radius-sm\s*:/.test(css) && /var\(--t4f-text-primary\)/.test(css) &&
       /html\[data-appearance\s*=\s*["']?light["']?\]/.test(css),
     `Missing native SCSS shell tokens or runtime Light theme in ${page}`,
   );
+  assert(!/@layer priority|virtual:stylex|stylex-dev-css|@stylexjs/.test(css), 'No retired styling runtime in CSS');
+  for (const [appearance, selector] of [['dark', /:root\s*\{([^}]+)\}/], ['light', /html\[data-appearance=["']?light["']?\]\s*\{([^}]+)\}/]]) {
+    const variables = selector.exec(css)?.[1];
+    assert(variables, 'Missing native ' + appearance + ' theme');
+    assert(new RegExp('--t4f-action:\\s*' + (appearance === 'dark' ? '#755c8c' : '#745f8d'), 'i').test(variables), 'Approved purple action');
+    assert(/--t4f-on-action:\s*#fff(?:fff)?(?:;|$)/i.test(variables), 'Action text preserved');
+  }
   if (dom.querySelector('[data-tool-runtime]')) {
     assert(css.includes('@layer t4f-controls') && css.includes('@layer t4f-ui'),
       `React shell and UI CSS must be linked before hydration in ${page}`);
@@ -1287,6 +1297,7 @@ for (const font of ['dm-sans', 'noto-sans-sc']) {
 }
 for (const file of files.filter((file) => file.endsWith('.js'))) {
   const js = await readFile(resolve(root, file), 'utf8');
+  assert(!/@stylexjs|virtual:stylex|stylex-dev-css/.test(js), `Retired styling runtime leaked: ${file}`);
   for (const id of ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'])
     if (!files.includes(`tools/${id}/index.html`)) assert(!js.includes(`data-${id}`), `Draft ${id} implementation leaked: ${file}`);
   if (!files.includes('tools/palette-extractor/index.html'))
@@ -1325,6 +1336,26 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
     `Unused workbench leaked without published tools: ${file}`,
   );
 }
+// Styles remain static assets owned by the same lazy tool graph. In particular,
+// extracting native modules must not pull private Draft/Lab CSS into production.
+const outputCSS = await Promise.all(files.filter(file => file.endsWith('.css')).map(file => readFile(resolve(root, file), 'utf8')));
+for (const css of outputCSS)
+  assert(!/@layer priority|virtual:stylex|stylex-dev-css|@stylexjs/.test(css), 'All CSS uses the native styling pipeline');
+const combinedCSS = outputCSS.join('\n');
+for (const [id, marker] of [
+  ['image-converter', 'settingsHeader'], ['image-resize-crop', 'focusedWorkspace'],
+  ['palette-extractor', 'composerFields'], ['image-compressor', 'stepperButton'],
+  ['comic-page-organizer', 'exportTuning'], ['image-watermark', 'colorField'],
+  ['exif-metadata', 'tableRow'], ['pdf-merge', 'handle'],
+]) {
+  // CSS Modules retain the local name followed by the build's content hash.
+  if (published.some(tool => tool.id === id))
+    assert(new RegExp('\\.' + '_?' + marker + '[_-]').test(combinedCSS), `Published ${id} delivers its local CSS`);
+}
+for (const marker of ['t4f-markdown-preview'])
+  assert(!combinedCSS.includes(marker), `Draft-only content CSS leaked: ${marker}`);
+for (const marker of ['canvasButton', 'tallStage'])
+  assert(!new RegExp('\\.' + '_?' + marker + '[_-]').test(combinedCSS), `Lab-only CSS leaked: ${marker}`);
 if (files.includes('tools/pdf-merge/index.html')) {
   const scripts = await Promise.all(files.filter(file => file.endsWith('.js')).map(file => readFile(resolve(root, file), 'utf8')));
   assert(scripts.some(js => js.includes('data-pdf-file-list') && js.includes('data-pdf-actions')),
@@ -1423,7 +1454,7 @@ if (!files.includes('tools/image-resize-crop/index.html')) {
 }
 assert((await stat(root)).isDirectory());
 console.log(
-  `Verified ${region}/${locale}: ${htmlFiles.length} static pages, exact static/homepage/catalog script contracts, SEO/OG/favicon, ${cards.length} real homepage cards, extracted dark/light StyleX CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
+  `Verified ${region}/${locale}: ${htmlFiles.length} static pages, exact static/homepage/catalog script contracts, SEO/OG/favicon, ${cards.length} real homepage cards, native dark/light SCSS + tool CSS, ${fontAssets.size} local WOFF2 assets + ${inlineFonts.size} embedded subsets, correct locale/canonical, no Lab routes or demo implementation.`,
 );
 
 }

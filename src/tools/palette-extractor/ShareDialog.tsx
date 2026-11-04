@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
-import * as stylex from '@stylexjs/stylex';
 import { XIcon } from '@phosphor-icons/react';
 import { Button, IconButton } from '../../ui/Button';
-import { controls } from '../../styles/controls';
-import { motion } from '../../styles/motion';
-import { styles as s } from './styles';
+import controls from '../../ui/controls.module.scss';
+import motion from '../../styles/motion.module.scss';
+import s from './styles.module.scss';
 import type { Labels } from './messages';
 import type { PaletteSession, PaletteView } from './session';
 import { shareDefaults, shareLayout, visibleColors, type Framing } from './render';
@@ -51,19 +50,19 @@ export function ShareDialog({session, view, t}: {session: PaletteSession; view: 
     return () => { generation.current++; clearTimeout(timer); };
   }, [open, interacting, key, view.version, session, layout, t.exportError, t.layoutError]);
   return <Dialog.Root open={open} onOpenChange={changeOpen}>
-    <Dialog.Trigger render={<Button variant="ghost" xstyle={s.accent} disabled={!view.source || view.busy}/>}>{t.share}</Dialog.Trigger>
+    <Dialog.Trigger render={<Button variant="ghost" className={s.accent} disabled={!view.source || view.busy}/>}>{t.share}</Dialog.Trigger>
     <Dialog.Portal>
-      <Dialog.Backdrop {...stylex.props(s.backdrop, motion.backdrop)}/>
-      <Dialog.Popup {...stylex.props(s.dialog, s.composerDialog, motion.dialog)}>
-        <header {...stylex.props(s.row)}>
-          <div {...stylex.props(s.grow)}><Dialog.Title {...stylex.props(s.heading)}>{t.composer}</Dialog.Title><Dialog.Description {...stylex.props(s.muted)}>PNG · {layout ? `${layout.width} × ${layout.height}` : '—'}</Dialog.Description></div>
-          <Dialog.Close render={<IconButton label={t.close} variant="ghost" xstyle={controls.dialogClose}><XIcon size={20} aria-hidden/></IconButton>}/>
+      <Dialog.Backdrop className={[s.backdrop, motion.backdrop].filter(Boolean).join(' ')}/>
+      <Dialog.Popup className={[s.dialog, s.composerDialog, motion.dialog].filter(Boolean).join(' ')}>
+        <header className={s.row}>
+          <div className={s.grow}><Dialog.Title className={s.heading}>{t.composer}</Dialog.Title><Dialog.Description className={s.muted}>PNG · {layout ? `${layout.width} × ${layout.height}` : '—'}</Dialog.Description></div>
+          <Dialog.Close render={<IconButton label={t.close} variant="ghost" className={controls.dialogClose}><XIcon size={20} aria-hidden/></IconButton>}/>
         </header>
-        {view.source && <div {...stylex.props(s.shareGrid)}>
+        {view.source && <div className={s.shareGrid}>
           {layout ? <ShareCanvas layout={layout} image={view.source.canvas} colors={colors} options={options} onFrame={onFrame} onInteraction={setInteracting} onError={failPreview} t={t}/> : <div/>}
           <ComposerControls image={view.source.canvas} layout={layout} colorCount={colors.length} options={options} change={setOptions} onFrame={onFrame} t={t}>
-            {(!layout || error) && <p role="alert" {...stylex.props(s.error)}>{!layout ? t.layoutError : error}</p>}
-            <Button variant="ghost" xstyle={s.accent} disabled={!current} loading={!!layout && !error && !current && !interacting} onClick={() => {
+            {(!layout || error) && <p role="alert" className={s.error}>{!layout ? t.layoutError : error}</p>}
+            <Button variant="ghost" className={s.accent} disabled={!current} loading={!!layout && !error && !current && !interacting} onClick={() => {
               if (current) session.download(current.blob, session.filename('share'));
             }}>{t.download}</Button>
           </ComposerControls>

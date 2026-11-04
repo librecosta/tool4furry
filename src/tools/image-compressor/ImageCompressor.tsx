@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import WorkbenchShell from '../../workbench/WorkbenchShell';
 import { FileDropzone } from '../../ui/FileDropzone';
 import { Button } from '../../ui/Button';
@@ -12,12 +11,12 @@ import { ImageComparisonDialog } from '../image/ImageComparisonDialog';
 import type { ImageOutputFormat } from '../image/types';
 import type { ToolProps } from '../types';
 import { imageAccept, sortedFolderFiles } from '../image-converter/intake';
-import { converterStyles as c } from '../image-converter/converter.styles';
+import c from '../image-converter/converter.styles.module.scss';
 import { CompressorSession, type CompressionTask, type CompressionView } from './session';
 import { quickSettings, recommendedSettings, sameCompressionSettings, supportsTarget, validSettings, type CompressionSettings, type CompressionStrength } from './compress';
 import { messages, comparisonLabels } from './messages';
 import { LongestSideStepper } from './LongestSideStepper';
-import { s } from './styles';
+import s from './styles.module.scss';
 
 export const bytesLabel = (bytes: number) => Math.abs(bytes) < 1024 * 1024 ? `${(bytes / 1024).toFixed(1)} KB` : `${(bytes / 1024 ** 2).toFixed(2)} MB`;
 export default function ImageCompressor({locale}: ToolProps) {
@@ -82,8 +81,8 @@ export default function ImageCompressor({locale}: ToolProps) {
   const taskItems: FileTaskItem[] = view.tasks.map(task => ({
     id: task.id, name: task.file.name, status: task.status, statusLabel: label(task),
     media: <ImageTaskMedia source={task.sourceUrl} output={!draftDirty ? task.result?.url : undefined} checking={task.status === 'validating'} labels={t}/>,
-    metadata: <span {...stylex.props(s.fileDetails)}><span>{bytesLabel(task.file.size)}{task.source ? ` · ${task.source.width}×${task.source.height}` : ''}</span>
-      {task.result && <span {...stylex.props(s.output)}>→ {task.result.format.toUpperCase()} · {task.result.width}×{task.result.height} · {bytesLabel(task.result.blob.size)} · {Math.abs(task.result.saved / task.file.size * 100).toFixed(1)}% {task.result.saved > 0 ? t.saved : t.increase}</span>}</span>,
+    metadata: <span className={s.fileDetails}><span>{bytesLabel(task.file.size)}{task.source ? ` · ${task.source.width}×${task.source.height}` : ''}</span>
+      {task.result && <span className={s.output}>→ {task.result.format.toUpperCase()} · {task.result.width}×{task.result.height} · {bytesLabel(task.result.blob.size)} · {Math.abs(task.result.saved / task.file.size * 100).toFixed(1)}% {task.result.saved > 0 ? t.saved : t.increase}</span>}</span>,
     error: task.error ? errorMessage(task.error) : undefined,
     actions: [
       ...(task.source ? [{kind: 'preview' as const, label: t.preview, id: `compressor-preview-${task.id}`, onClick: () => setPreviewId(task.id)}] : []),
@@ -94,47 +93,47 @@ export default function ImageCompressor({locale}: ToolProps) {
   }));
   const preview = view.tasks.find(task => task.id === previewId);
   return <WorkbenchShell mode="form" formWidth="wide" labels={{parameters: t.settings, main: t.title, toolbar: t.tasks, close: t.close, showParameters: t.settings, hideParameters: t.settings, showTools: t.import, hideTools: t.import}}>
-    <div data-image-compressor {...stylex.props(s.stack)}>
-      <div {...stylex.props(hasFiles ? s.intake : s.emptyIntake)}>
+    <div data-image-compressor className={s.stack}>
+      <div className={[hasFiles ? s.intake : s.emptyIntake].filter(Boolean).join(' ')}>
         <FileDropzone id="compressor-source" label={hasFiles ? t.append : t.import} hint={hasFiles ? undefined : 'PNG / JPEG / WebP / AVIF'} disabled={!session} multiple accept={imageAccept} appearance={hasFiles ? 'compact' : 'expanded'} issueMessages={{count: t.failed, size: t.failed, type: t.failed}} onFilesReceived={files => session?.add(files)}/>
         <input type="file" hidden multiple ref={node => {folderInput.current = node; node?.setAttribute('webkitdirectory', '');}} aria-label={t.folder} onChange={event => {const input = event.currentTarget; try {if (input.files) session?.add(sortedFolderFiles(Array.from(input.files)));} finally {input.value = '';}}}/>
-        <Button variant="ghost" xstyle={s.action} disabled={!session || folderSupported === false} onClick={() => folderInput.current?.click()}>{t.folder}</Button>
-        {hasFiles && <Button variant="ghost" xstyle={s.action} onClick={() => {session?.clear(); setPreviewId(undefined);}}>{t.clear}</Button>}
+        <Button variant="ghost" className={s.action} disabled={!session || folderSupported === false} onClick={() => folderInput.current?.click()}>{t.folder}</Button>
+        {hasFiles && <Button variant="ghost" className={s.action} onClick={() => {session?.clear(); setPreviewId(undefined);}}>{t.clear}</Button>}
       </div>
-      {folderSupported === false && <p {...stylex.props(s.note)}>{t.folderUnavailable}</p>}
-      <details {...stylex.props(s.help)}><summary>{t.limits}</summary><p>{t.limitText}</p>{session && <p>≤ {session.limits.files} · {bytesLabel(session.limits.bytes)} {t.perFile} · {session.limits.pixels / 1e6} MP · {session.limits.edge}px · {bytesLabel(session.limits.totalBytes)}</p>}</details>
-      {view.issues.length > 0 && <p role="alert" {...stylex.props(s.error)}>{t.rejected} {view.issues.join('、')}</p>}
-      {hasFiles && <div data-compressor-workspace {...stylex.props(s.workspace)}>
-        <section aria-label={t.tasks} {...stylex.props(s.stack)}>
-          <div {...stylex.props(s.row)}><h2 {...stylex.props(s.heading)}>{t.tasks}</h2><span role="status" {...stylex.props(s.note)}>{t.completed}: {ready} · {t.failedCount}: {failed}</span></div>
+      {folderSupported === false && <p className={s.note}>{t.folderUnavailable}</p>}
+      <details className={s.help}><summary>{t.limits}</summary><p>{t.limitText}</p>{session && <p>≤ {session.limits.files} · {bytesLabel(session.limits.bytes)} {t.perFile} · {session.limits.pixels / 1e6} MP · {session.limits.edge}px · {bytesLabel(session.limits.totalBytes)}</p>}</details>
+      {view.issues.length > 0 && <p role="alert" className={s.error}>{t.rejected} {view.issues.join('、')}</p>}
+      {hasFiles && <div data-compressor-workspace className={s.workspace}>
+        <section aria-label={t.tasks} className={s.stack}>
+          <div className={s.row}><h2 className={s.heading}>{t.tasks}</h2><span role="status" className={s.note}>{t.completed}: {ready} · {t.failedCount}: {failed}</span></div>
           <FileTaskList label={t.tasks} items={taskItems}/>
         </section>
-        <section aria-label={t.settings} data-compressor-parameters={advanced ? 'advanced' : 'quick'} {...stylex.props(s.settings)}>
-          <div {...stylex.props(s.panelHeading)}><h2 {...stylex.props(s.heading)}>{t.settings}</h2>
-            <div role="group" aria-label={t.parameterModes} {...stylex.props(c.modes)}>{([false, true] as const).map(value => <button key={String(value)} type="button" aria-pressed={advanced === value} {...stylex.props(c.mode, c.parameterControl, advanced === value && c.currentParameterMode)} onClick={() => switchMode(value)}>{value ? t.advanced : t.quick}</button>)}</div>
+        <section aria-label={t.settings} data-compressor-parameters={advanced ? 'advanced' : 'quick'} className={s.settings}>
+          <div className={s.panelHeading}><h2 className={s.heading}>{t.settings}</h2>
+            <div role="group" aria-label={t.parameterModes} className={c.modes}>{([false, true] as const).map(value => <button key={String(value)} type="button" aria-pressed={advanced === value} className={[c.mode, c.parameterControl, advanced === value && c.currentParameterMode].filter(Boolean).join(' ')} onClick={() => switchMode(value)}>{value ? t.advanced : t.quick}</button>)}</div>
           </div>
           <SelectField appearance="quiet" label={t.format} value={settings.format} onValueChange={value => changeFormat(value as ImageOutputFormat)} options={['webp', 'jpeg', 'png', 'avif'].map(value => ({value, label: value.toUpperCase(), disabled: value === 'avif' && !session?.avifSupported}))}/>
-          {!session?.avifSupported && <p {...stylex.props(s.note)}>{t.avifDevice}</p>}
-          {!advanced && settings.format !== 'png' && <fieldset {...stylex.props(c.group)}><legend {...stylex.props(c.legend)}>{t.strength}</legend>
-            <div {...stylex.props(s.strengths)}>{(['light', 'balanced', 'strong'] as const).map(value => <button type="button" key={value} aria-pressed={strength === value} {...stylex.props(c.mode, c.parameterControl, s.strength, strength === value && c.currentParameterMode)} onClick={() => {setStrength(value); configure(quickSettings(settings.format, value));}}>{t[value]}</button>)}</div>
-            <p {...stylex.props(s.note)}>{t.qualityLabel}: {settings.quality}%</p>
+          {!session?.avifSupported && <p className={s.note}>{t.avifDevice}</p>}
+          {!advanced && settings.format !== 'png' && <fieldset className={c.group}><legend className={c.legend}>{t.strength}</legend>
+            <div className={s.strengths}>{(['light', 'balanced', 'strong'] as const).map(value => <button type="button" key={value} aria-pressed={strength === value} className={[c.mode, c.parameterControl, s.strength, strength === value && c.currentParameterMode].filter(Boolean).join(' ')} onClick={() => {setStrength(value); configure(quickSettings(settings.format, value));}}>{t[value]}</button>)}</div>
+            <p className={s.note}>{t.qualityLabel}: {settings.quality}%</p>
           </fieldset>}
           {advanced && <>
-            {settings.format !== 'png' && <fieldset {...stylex.props(c.group)}><legend {...stylex.props(c.legend)}>{t.strategy}</legend><div {...stylex.props(s.row)}>{(['quality', 'target'] as const).map(mode => <button type="button" key={mode} disabled={mode === 'target' && !supportsTarget(settings.format)} aria-pressed={settings.mode === mode} {...stylex.props(c.mode, c.parameterControl, settings.mode === mode && c.currentParameterMode)} onClick={() => {configure({mode}); setInvalid(false);}}>{t[mode]}</button>)}</div></fieldset>}
+            {settings.format !== 'png' && <fieldset className={c.group}><legend className={c.legend}>{t.strategy}</legend><div className={s.row}>{(['quality', 'target'] as const).map(mode => <button type="button" key={mode} disabled={mode === 'target' && !supportsTarget(settings.format)} aria-pressed={settings.mode === mode} className={[c.mode, c.parameterControl, settings.mode === mode && c.currentParameterMode].filter(Boolean).join(' ')} onClick={() => {configure({mode}); setInvalid(false);}}>{t[mode]}</button>)}</div></fieldset>}
             {settings.format !== 'png' && <SliderField label={settings.mode === 'target' ? t.maxQuality : t.qualityLabel} value={settings.quality} onValueChange={quality => configure({quality})} min={1} max={100} unit="%" accent="lavender"/>}
-            {settings.mode === 'target' && <div {...stylex.props(s.unit)}><TextField label={t.targetLabel} value={target} onChange={value => {setTarget(value); setInvalid(false);}} inputMode="decimal" onBlur={commit} onKeyDown={enter}/><SelectField appearance="quiet" label={t.unit} value={unit} onValueChange={value => {setUnit(value); setTarget(String(settings.targetBytes / (value === 'KB' ? 1024 : 1024 ** 2)));}} options={[{value: 'KB', label: 'KB'}, {value: 'MB', label: 'MB'}]}/></div>}
+            {settings.mode === 'target' && <div className={s.unit}><TextField label={t.targetLabel} value={target} onChange={value => {setTarget(value); setInvalid(false);}} inputMode="decimal" onBlur={commit} onKeyDown={enter}/><SelectField appearance="quiet" label={t.unit} value={unit} onValueChange={value => {setUnit(value); setTarget(String(settings.targetBytes / (value === 'KB' ? 1024 : 1024 ** 2)));}} options={[{value: 'KB', label: 'KB'}, {value: 'MB', label: 'MB'}]}/></div>}
             <LongestSideStepper label={t.longest} value={settings.longestEdge} noLimit={t.noLimit} decrease={t.decreaseLongest} increase={t.increaseLongest} onChange={longestEdge => configure({longestEdge})}/>
             {settings.format === 'jpeg' && <TextField label={t.background} value={background} onChange={value => {setBackground(value); setInvalid(false);}} onBlur={commit} onKeyDown={enter} maxLength={7} spellCheck={false}/>}
           </>}
-          {settings.format === 'avif' && <p {...stylex.props(s.note)}>{t.avifHint}</p>}
-          {settings.format === 'png' && <p {...stylex.props(s.note)}>{t.pngHint}</p>}
-          {invalid && <p role="alert" {...stylex.props(s.error)}>{t.invalid}</p>}
-          <div {...stylex.props(s.delivery)}><Button variant="ghost" xstyle={s.main} disabled={!session || !canStart || pending} onClick={() => {if (commit()) session?.start();}}>{startLabel}</Button>
-            {pending && <Button variant="ghost" xstyle={s.action} onClick={() => session?.cancel()}>{t.cancel}</Button>}
-            {ready > 0 && <Button variant="ghost" xstyle={s.action} disabled={archivePending || packing || draftDirty} onClick={() => {setPacking(true); setZipError(false); void session?.zip().catch(() => setZipError(true)).finally(() => setPacking(false));}}>{packing ? t.packing : t.zip}</Button>}
+          {settings.format === 'avif' && <p className={s.note}>{t.avifHint}</p>}
+          {settings.format === 'png' && <p className={s.note}>{t.pngHint}</p>}
+          {invalid && <p role="alert" className={s.error}>{t.invalid}</p>}
+          <div className={s.delivery}><Button variant="ghost" className={s.main} disabled={!session || !canStart || pending} onClick={() => {if (commit()) session?.start();}}>{startLabel}</Button>
+            {pending && <Button variant="ghost" className={s.action} onClick={() => session?.cancel()}>{t.cancel}</Button>}
+            {ready > 0 && <Button variant="ghost" className={s.action} disabled={archivePending || packing || draftDirty} onClick={() => {setPacking(true); setZipError(false); void session?.zip().catch(() => setZipError(true)).finally(() => setPacking(false));}}>{packing ? t.packing : t.zip}</Button>}
           </div>
-          {failed > 0 && ready > 0 && <p {...stylex.props(s.note)}>{t.zipPartial}</p>}
-          {zipError && <p role="alert" {...stylex.props(s.error)}>{t.zipError}</p>}
+          {failed > 0 && ready > 0 && <p className={s.note}>{t.zipPartial}</p>}
+          {zipError && <p role="alert" className={s.error}>{t.zipError}</p>}
         </section>
       </div>}
       {preview?.source && <ImageComparisonDialog open onOpenChange={open => {if (!open) setPreviewId(undefined);}} name={preview.file.name} labels={comparisonLabels[locale]} finalFocus={() => document.getElementById(`compressor-preview-${preview.id}`) ?? document.getElementById('compressor-source-button')}

@@ -1,0 +1,714 @@
+@layer t4f-tools {
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+    min-width: 0;
+  }
+
+  .stack {
+    display: grid;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  .help {
+    color: var(--t4f-text-secondary);
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+
+  .parameters {
+    display: flex;
+    gap: 16px 24px;
+    flex-wrap: wrap;
+    align-items: end;
+    min-width: 0;
+  }
+
+  .direction {
+    width: 200px;
+    min-width: 0;
+
+    @media (max-width: 480px) {
+      width: 100%;
+    }
+  }
+
+  .counts {
+    border-width: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .legend {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .count {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-width: 40px;
+    min-height: 44px;
+    padding-inline: 8px;
+    border-radius: var(--t4f-radius-sm);
+    cursor: pointer;
+    color: var(--t4f-text-secondary);
+    background-color: transparent;
+
+    &:where(:hover) {
+      background-color: var(--t4f-surface-hover);
+    }
+
+    &:where(:has(input:focus-visible)) {
+      outline: 2px solid var(--t4f-focus);
+      outline-offset: 2px;
+    }
+  }
+
+  .radio {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    margin: 0;
+    cursor: pointer;
+
+    &:where(:disabled) {
+      cursor: not-allowed;
+    }
+  }
+
+  .colorList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 4px;
+  }
+
+  .row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .muted {
+    color: var(--t4f-text-secondary);
+    font-size: 13px;
+    margin: 0;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+
+  .heading {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .field {
+    display: grid;
+    gap: 8px;
+    font-size: 14px;
+    min-width: 0;
+  }
+
+  .accent {
+    background-color: var(--t4f-action);
+    color: var(--t4f-on-action);
+    border-color: transparent;
+
+    &:where(:hover) {
+      background-color: var(--t4f-action-hover);
+    }
+
+    &:where(:active) {
+      background-color: var(--t4f-action-pressed);
+    }
+
+    &:where(:disabled) {
+      background-color: var(--t4f-action);
+    }
+  }
+
+  .secondary {
+    border-width: 0;
+    background-color: var(--t4f-surface-panel);
+    color: var(--t4f-text-primary);
+
+    &:where(:hover) {
+      background-color: var(--t4f-surface-hover);
+    }
+
+    &:where(:active) {
+      background-color: var(--t4f-surface-muted);
+    }
+
+    &:where(:disabled) {
+      background-color: var(--t4f-surface-panel);
+    }
+  }
+
+  .stage {
+    position: relative;
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    order: 1;
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--t4f-radius-lg);
+    background-color: var(--t4f-workspace);
+    touch-action: none;
+    cursor: grab;
+    isolation: isolate;
+
+    &:where(:active) {
+      cursor: grabbing;
+    }
+
+    @media (max-width: 600px) {
+      touch-action: pan-y;
+    }
+  }
+
+  .workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .workspaceBody {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px;
+    grid-template-rows: minmax(0, 1fr);
+    gap: 12px;
+    height: clamp(420px, 60dvh, 560px);
+    min-width: 0;
+    min-height: 0;
+
+    @media (max-width: 700px) {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) auto;
+      height: 360px;
+    }
+  }
+
+  .focusedBody {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+  }
+
+  .focusedWorkspace {
+    height: 100%;
+  }
+
+  .focusedStage {
+    height: 100%;
+    min-height: 0;
+    touch-action: none;
+  }
+
+  .picking {
+    cursor: crosshair;
+    touch-action: none;
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .viewTools {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 4px;
+    order: 2;
+    min-width: 0;
+
+    @media (max-width: 700px) {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+
+  .zoomLabel {
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--t4f-text-secondary);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    min-width: 40px;
+  }
+
+  .tool {
+    width: 44px;
+    height: 44px;
+    padding-inline: 0;
+    flex-shrink: 0;
+    border-width: 0;
+    background-color: var(--t4f-surface-panel);
+
+    &:where(:hover) {
+      background-color: var(--t4f-surface-hover);
+    }
+
+    &:where(:active) {
+      background-color: var(--t4f-surface-muted);
+    }
+
+    &:where(:disabled) {
+      background-color: var(--t4f-surface-panel);
+    }
+  }
+
+  .sampleColor {
+    display: block;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--t4f-radius-sm);
+  }
+
+  .marker {
+    position: absolute;
+    z-index: 1;
+    transform: translate(-50%, -50%);
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-width: 0;
+    background-color: transparent;
+    border-radius: 50%;
+    cursor: grab;
+    touch-action: none;
+
+    &:where(:active) {
+      cursor: grabbing;
+    }
+
+    &:where(:focus-visible) {
+      outline: 2px solid var(--t4f-focus);
+      outline-offset: -2px;
+    }
+  }
+
+  .markerDot {
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #FFFFFF;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.32);
+    pointer-events: none;
+    transform: scale(1);
+    transition-property: transform;
+    transition-duration: 280ms;
+    transition-timing-function: ease-out;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: 0ms;
+    }
+  }
+
+  .markerSelected {
+    transform: scale(1.3);
+    box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+  }
+
+  .plane {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    background-color: var(--t4f-preview-checker);
+    background-image: linear-gradient(45deg, var(--t4f-workspace) 25%, transparent 25%), linear-gradient(-45deg, var(--t4f-workspace) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--t4f-workspace) 75%), linear-gradient(-45deg, transparent 75%, var(--t4f-workspace) 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+  }
+
+  .image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .loupe {
+    position: absolute;
+    z-index: 3;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background-color: var(--t4f-surface);
+    border-width: 2px;
+    border-style: solid;
+    border-color: var(--t4f-focus);
+    overflow: hidden;
+    pointer-events: none;
+    box-shadow: var(--t4f-shadow-floating);
+    display: grid;
+    place-items: center;
+  }
+
+  .magnified {
+    width: 80px;
+    height: 80px;
+    image-rendering: pixelated;
+  }
+
+  .sampleLabel {
+    position: absolute;
+    z-index: 3;
+    width: 88px;
+    padding-block: 2px;
+    text-align: center;
+    border-radius: var(--t4f-radius-sm);
+    background-color: var(--t4f-surface-floating);
+    color: var(--t4f-text-primary);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+  }
+
+  .cross {
+    position: absolute;
+    inset: 33px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #FFFFFF;
+    outline: 1px solid #000000;
+    pointer-events: none;
+  }
+
+  .colorRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    border-radius: var(--t4f-radius-md);
+    min-width: 0;
+
+    @media (max-width: 600px) {
+      gap: 6px;
+      padding: 6px 2px;
+    }
+  }
+
+  .selected {
+    background-color: color-mix(in srgb, var(--t4f-support-lavender) 14%, var(--t4f-input-surface));
+    color: var(--t4f-support-lavender);
+    text-decoration: none;
+    border-color: transparent;
+    box-shadow: none;
+
+    &:where(:hover) {
+      background-color: color-mix(in srgb, var(--t4f-support-lavender) 20%, var(--t4f-input-surface));
+      color: var(--t4f-support-lavender);
+    }
+  }
+
+  .disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .chip {
+    border-radius: var(--t4f-radius-sm);
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    padding: 0;
+    border-width: 0;
+    cursor: pointer;
+
+    &:where(:focus-visible) {
+      outline: 2px solid var(--t4f-focus);
+      outline-offset: 2px;
+    }
+  }
+
+  .hex {
+    width: 132px;
+    min-width: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hexInput {
+    padding-inline: 12px;
+    background-color: transparent;
+    border-color: transparent;
+    font-weight: 600;
+
+    &:where(:hover) {
+      border-color: var(--t4f-border);
+    }
+
+    &:where(:focus) {
+      border-color: var(--t4f-focus);
+    }
+
+    @media (max-width: 600px) {
+      padding-inline: 6px;
+    }
+  }
+
+  .rowActions {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+
+    @media (max-width: 600px) {
+      gap: 6px;
+    }
+  }
+
+  .secondaryActions {
+    gap: 8px;
+    display: flex;
+
+    @media (max-width: 600px) {
+      display: none;
+    }
+  }
+
+  .more {
+    display: none;
+
+    @media (max-width: 600px) {
+      display: inline-flex;
+    }
+  }
+
+  .popoverPositioner {
+    z-index: var(--t4f-layer-floating);
+  }
+
+  .popover {
+    display: grid;
+    padding: 8px;
+    min-width: 180px;
+    background-color: var(--t4f-surface-floating);
+    color: var(--t4f-text-primary);
+    border-radius: var(--t4f-radius-md);
+    box-shadow: var(--t4f-shadow-floating);
+  }
+
+  .srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .error {
+    color: var(--t4f-danger);
+    font-size: 14px;
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: var(--t4f-overlay);
+    z-index: var(--t4f-layer-dialog);
+  }
+
+  .dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(1000px, calc(100vw - 24px));
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 24px;
+    background-color: var(--t4f-surface-floating);
+    color: var(--t4f-text-primary);
+    border-radius: var(--t4f-radius-xl);
+    z-index: var(--t4f-layer-dialog);
+    display: grid;
+    gap: 20px;
+
+    @media (max-width: 600px) {
+      padding: 16px;
+    }
+  }
+
+  .shareGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 2.15fr) minmax(280px, 1fr);
+    gap: 24px;
+    align-items: start;
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    @media (max-width: 800px) {
+      display: block;
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .composerDialog {
+    width: min(1180px, calc(100vw - 24px));
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+    gap: 16px;
+    padding: 20px;
+
+    @media (max-width: 600px) {
+      padding: 12px;
+    }
+  }
+
+  .composerArt {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  .composerBed {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+  }
+
+  .composerCanvas {
+    display: block;
+    max-width: 100%;
+    max-height: calc(100dvh - 140px);
+    width: auto;
+    height: auto;
+    touch-action: pan-y;
+
+    @media (max-width: 800px) {
+      width: 100%;
+      max-height: none;
+    }
+  }
+
+  .composerHit {
+    position: absolute;
+    touch-action: none;
+    cursor: grab;
+    user-select: none;
+
+    &:where(:active) {
+      cursor: grabbing;
+    }
+  }
+
+  .composerControls {
+    align-content: start;
+    min-width: 0;
+    min-height: 0;
+    padding-inline: 2px;
+
+    @media (max-width: 800px) {
+      margin-top: 24px;
+    }
+  }
+
+  .composerFields {
+    display: grid;
+    gap: 20px;
+    min-width: 0;
+    padding-block: 8px;
+  }
+
+  .shareDirections {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    font-size: 13px;
+  }
+
+  .addColor {
+    display: grid;
+    gap: 12px;
+    width: min(300px, calc(100vw - 24px));
+    padding: 16px;
+  }
+
+  .addPreview {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--t4f-radius-sm);
+    flex-shrink: 0;
+  }
+
+  .addInput {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .focusDialog {
+    top: 3dvh;
+    bottom: 3dvh;
+    left: 2vw;
+    right: 2vw;
+    transform: none;
+    width: auto;
+    max-height: none;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+    padding: 20px;
+
+    @media (max-width: 600px) {
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px;
+    }
+  }
+
+  .placeholder {
+    height: clamp(420px, 60dvh, 560px);
+
+    @media (max-width: 700px) {
+      height: 360px;
+    }
+  }
+
+  .grow {
+    flex-grow: 1;
+  }
+
+}

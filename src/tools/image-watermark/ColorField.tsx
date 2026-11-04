@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { Popover } from '@base-ui/react/popover';
 import { HexColorPicker } from 'react-colorful';
-import * as stylex from '@stylexjs/stylex';
 import { Button } from '../../ui/Button';
 import { TextField } from '../../ui/TextField';
-import { motion } from '../../styles/motion';
-import { s } from './styles';
+import motion from '../../styles/motion.module.scss';
+import s from './styles.module.scss';
 import '../palette-extractor/color-picker.css';
 
 export function ColorField({label, value, draft, onDraft, onCommit, error, invalid, apply, cancel}: {
@@ -14,16 +13,16 @@ export function ColorField({label, value, draft, onDraft, onCommit, error, inval
 }) {
   const [open, setOpen] = useState(false), [color, setColor] = useState(value), [hex, setHex] = useState(value);
   const valid = /^#[a-f\d]{6}$/i.test(hex);
-  return <div {...stylex.props(s.colorField)}>
+  return <div className={s.colorField}>
     <Popover.Root open={open} onOpenChange={next => { setOpen(next); if (next) { setColor(value); setHex(value); } else onDraft(value); }}>
-      <Popover.Trigger render={<Button variant="ghost" aria-label={label} xstyle={s.swatch} style={{backgroundColor: value}}/>}/>
-      <Popover.Portal><Popover.Positioner sideOffset={8} collisionPadding={12} {...stylex.props(s.popoverPositioner)}>
-        <Popover.Popup aria-label={label} {...stylex.props(s.popover, motion.dialog)}>
+      <Popover.Trigger render={<Button variant="ghost" aria-label={label} className={s.swatch} style={{backgroundColor: value}}/>}/>
+      <Popover.Portal><Popover.Positioner sideOffset={8} collisionPadding={12} className={s.popoverPositioner}>
+        <Popover.Popup aria-label={label} className={[s.popover, motion.dialog].filter(Boolean).join(' ')}>
           <div data-palette-color-picker><HexColorPicker color={color} onChange={next => {setColor(next); setHex(next.toUpperCase());}}/></div>
           <TextField label="HEX" value={hex} maxLength={7} onChange={next => {setHex(next); if (/^#[a-f\d]{6}$/i.test(next)) setColor(next);}} error={valid ? undefined : invalid}/>
-          <div {...stylex.props(s.actions)}>
-            <Button variant="ghost" xstyle={s.accent} disabled={!valid} onClick={() => {onDraft(hex.toUpperCase()); onCommit(hex.toUpperCase()); setOpen(false);}}>{apply}</Button>
-            <Popover.Close render={<Button variant="ghost" xstyle={s.secondary}/>}>{cancel}</Popover.Close>
+          <div className={s.actions}>
+            <Button variant="ghost" className={s.accent} disabled={!valid} onClick={() => {onDraft(hex.toUpperCase()); onCommit(hex.toUpperCase()); setOpen(false);}}>{apply}</Button>
+            <Popover.Close render={<Button variant="ghost" className={s.secondary}/>}>{cancel}</Popover.Close>
           </div>
         </Popover.Popup>
       </Popover.Positioner></Popover.Portal>

@@ -22,7 +22,7 @@ Canvas 后的 Footer 在正常文档流，可通过页面滚动到达；不能�
 
 `WorkbenchShell mode="form" formWidth="wide"` 显式启用居中 1400px 上限与原安全边距；带 right slot 时为自适应主列 + 350px 设置列，≤1050px 堆叠。
 
-工具需要「导入 → 设置 → 结果」时，可选择 [form-tool-layout.ts](../src/workbench/form-tool-layout.ts) 的 `container/columns/split/leading/aside/main` StyleX recipe；紧凑态 960px，展开使用 wide 可用宽度。尾部弹性轨道吸收较高设置列，不强行拉伸导入/结果行。它只是布局配方，不是 Schema/文件框架；Converter 仅换 class，任务、参数、预览与结果不重挂载。
+工具需要「导入 → 设置 → 结果」时，可选择 [form-tool-layout.module.scss](../src/workbench/form-tool-layout.module.scss) 的 `container/columns/split/leading/aside/main` CSS Module 配方；紧凑态 960px，展开使用 wide 可用宽度。尾部弹性轨道吸收较高设置列，不强行拉伸导入/结果行。它只是布局配方，不是 Schema/文件框架；Converter 仅换 class，任务、参数、预览与结果不重挂载。
 
 ## 静态说明与 FAQ
 

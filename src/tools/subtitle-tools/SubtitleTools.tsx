@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import { TextField } from '../../ui/TextField';
 import { SelectField } from '../../ui/SelectField';
 import TextWorkspace from '../general/TextWorkspace';
-import { tr, s, errorText } from '../general/ui';
+import { tr, errorText } from '../general/ui';
+import s from '../general/ui.module.scss';
 import { convertSubtitles, formatTime } from './core';
 export default function SubtitleTools({ locale }: ToolProps) {
   const [input, setInput] = useState(''),
@@ -26,7 +26,7 @@ export default function SubtitleTools({ locale }: ToolProps) {
       error={error}
       filename={`subtitles.${format}`}
     >
-      <div {...stylex.props(s.columns)}>
+      <div className={s.columns}>
         <SelectField
           label={tr(locale, '输出格式', 'Output format')}
           value={format}
@@ -60,17 +60,17 @@ export default function SubtitleTools({ locale }: ToolProps) {
               `${result.cues.length} cues`,
             )}
           </summary>
-          <div {...stylex.props(s.scroll)}>
-            <table {...stylex.props(s.table)}>
+          <div className={s.scroll}>
+            <table className={s.table}>
               <tbody>
                 {result.cues.map((c, i) => (
                   <tr key={i}>
-                    <td {...stylex.props(s.cell)}>{i + 1}</td>
-                    <td {...stylex.props(s.cell)}>
+                    <td className={s.cell}>{i + 1}</td>
+                    <td className={s.cell}>
                       {formatTime(c.start, true)} → {formatTime(c.end, true)}
                     </td>
-                    <td {...stylex.props(s.cell)}>
-                      <pre {...stylex.props(s.pre)}>{c.text}</pre>
+                    <td className={s.cell}>
+                      <pre className={s.pre}>{c.text}</pre>
                     </td>
                   </tr>
                 ))}

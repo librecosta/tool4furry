@@ -1,6 +1,6 @@
+import s from './ImageThumbnail.module.scss';
 import { useState } from 'react';
 import { FileImageIcon } from '@phosphor-icons/react';
-import * as stylex from '@stylexjs/stylex';
 
 /** Receives an owned source URL; no decoding pipeline, URL creation or disposal. */
 export function ImageThumbnail({
@@ -14,7 +14,7 @@ export function ImageThumbnail({
   const [failed, setFailed] = useState<string>();
   const available = !!src && !checking && failed !== src;
   return (
-    <span data-image-thumbnail {...stylex.props(s.frame)}>
+    <span data-image-thumbnail className={s.frame}>
       {(!available || loaded !== src) && (
         <FileImageIcon size={22} aria-hidden />
       )}
@@ -27,26 +27,9 @@ export function ImageThumbnail({
           draggable={false}
           onLoad={() => setLoaded(src)}
           onError={() => setFailed(src)}
-          {...stylex.props(s.image, loaded !== src && s.loading)}
+          className={[s.image, loaded !== src && s.loading].filter(Boolean).join(' ')}
         />
       )}
     </span>
   );
 }
-const s = stylex.create({
-  frame: {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-    display: 'grid',
-    placeItems: 'center',
-  },
-  image: {
-    position: 'absolute',
-    inset: 0,
-    width: '100%',
-    height: '100%',
-    objectFit: 'contain',
-  },
-  loading: { opacity: 0 },
-});

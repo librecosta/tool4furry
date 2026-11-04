@@ -1,0 +1,24 @@
+@layer t4f-tools {
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 20px;
+
+    @media (max-width: 760px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .values {
+    min-width: 0;
+    font-size: 13px;
+  }
+
+  .pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    margin-bottom: 0;
+  }
+
+}

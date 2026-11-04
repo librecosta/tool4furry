@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import { TextAreaField, TextField } from '../../ui/TextField';
 import { SelectField } from '../../ui/SelectField';
 import { CheckboxField } from '../../ui/CheckboxField';
 import { Button } from '../../ui/Button';
-import { Frame, tr, s, ErrorText, errorText, saveBlob } from '../general/ui';
+import { Frame, tr, ErrorText, errorText, saveBlob } from '../general/ui';
+import s from '../general/ui.module.scss';
 import { useJob } from '../general/use-job';
 import { encodeCanvas } from '../general/canvas-output';
 import { drawCode, languages, type CodeSettings } from './core';
@@ -60,7 +60,7 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
   return (
     <Frame locale={locale}>
       <span hidden data-code-license={notice} />
-      <div {...stylex.props(s.columns)}>
+      <div className={s.columns}>
         <TextAreaField
           label={tr(locale, '代码', 'Code')}
           rows={16}
@@ -72,8 +72,8 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
             setSize('');
           }}
         />
-        <div {...stylex.props(s.stack)}>
-          <div {...stylex.props(s.columns)}>
+        <div className={s.stack}>
+          <div className={s.columns}>
             <SelectField
               label={tr(locale, '语言', 'Language')}
               value={settings.language}
@@ -133,10 +133,10 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
       <canvas
         ref={canvas}
         aria-label={tr(locale, '代码分享图预览', 'Code image preview')}
-        {...stylex.props(s.canvas)}
+        className={s.canvas}
       />
-      <p {...stylex.props(s.note)}>{size}</p>
-      <div {...stylex.props(s.row)}>
+      <p className={s.note}>{size}</p>
+      <div className={s.row}>
         <Button
           variant="primary"
           loading={job.busy}

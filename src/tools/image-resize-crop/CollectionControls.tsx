@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import { ArrowsClockwiseIcon, EyeIcon, TrashIcon } from '@phosphor-icons/react';
 import { Button, IconButton } from '../../ui/Button';
 import { SelectField } from '../../ui/SelectField';
@@ -8,7 +7,7 @@ import { Tooltip } from '../../ui/Tooltip';
 import { imageAccept } from '../image-converter/intake';
 import type { ResizeCollection, CollectionView } from './collection';
 import type { ResizeMessages } from './ParameterControls';
-import { resizeStyles as s } from './resize.styles';
+import s from './resize.styles.module.scss';
 
 /** The only current-file selector and replace/remove controls in single mode. */
 export function CollectionControls({
@@ -29,7 +28,7 @@ export function CollectionControls({
   const selected = view.files.find((item) => item.id === view.selectedId);
   if (!selected) return null;
   return (
-    <div {...stylex.props(s.fileManager)}>
+    <div className={s.fileManager}>
       <SelectField
         label={t.currentFile}
         value={selected.id}
@@ -39,7 +38,7 @@ export function CollectionControls({
         }))}
         onValueChange={(id) => manager.select(id)}
       />
-      <div {...stylex.props(s.actions)}>
+      <div className={s.actions}>
         {selected.source && (
           <Tooltip content={t.preview.preview}>
             <IconButton id={previewButtonId} variant="ghost" label={t.preview.preview} onClick={onPreview}>

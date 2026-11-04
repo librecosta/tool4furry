@@ -1,5 +1,5 @@
+import s from './ImagePreviewViewport.module.scss';
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import {
   ArrowCounterClockwiseIcon,
   FrameCornersIcon,
@@ -9,7 +9,6 @@ import {
 } from '@phosphor-icons/react';
 import { Button, IconButton } from '../../ui/Button';
 import { Tooltip } from '../../ui/Tooltip';
-import { tokens as t } from '../../styles/tokens.stylex';
 import {
   clamp,
   constrain,
@@ -172,7 +171,7 @@ export function ImagePreviewViewport({
   const range = zoomRange(fitScale(image, size.current));
   const disabled = !loaded || failed;
   return (
-    <div {...stylex.props(s.viewer)}>
+    <div className={s.viewer}>
       <div
         ref={canvas}
         tabIndex={0}
@@ -180,7 +179,7 @@ export function ImagePreviewViewport({
         aria-label={labels.viewport}
         aria-description={labels.instructions}
         data-image-preview-viewport
-        {...stylex.props(s.canvas, loaded && !failed && s.interactive)}
+        className={[s.canvas, loaded && !failed && s.interactive].filter(Boolean).join(' ')}
         onPointerDown={(event) => {
           if (disabled || event.button !== 0) return;
           event.preventDefault();
@@ -230,20 +229,21 @@ export function ImagePreviewViewport({
               setFailed(true);
               onError();
             }}
-            {...stylex.props(
-              s.image(width, height, view.x, view.y, view.scale),
+            className={[
+              s.image,
               !loaded && s.loadingImage,
-            )}
+            ].filter(Boolean).join(' ')}
+            style={{ width, height, transform: `translate(calc(-50% + ${view.x}px), calc(-50% + ${view.y}px)) scale(${view.scale})` }}
           />
         )}
         {failed ? (
-          <div role="alert" {...stylex.props(s.feedback)}>
+          <div role="alert" className={s.feedback}>
             <ImageBrokenIcon size={40} aria-hidden />
             <span>{labels.error}</span>
           </div>
         ) : (
           !loaded && (
-            <p role="status" {...stylex.props(s.feedback)}>
+            <p role="status" className={s.feedback}>
               {labels.loading}
             </p>
           )
@@ -252,7 +252,7 @@ export function ImagePreviewViewport({
       <div
         role="group"
         aria-label={labels.viewport}
-        {...stylex.props(s.controls)}
+        className={s.controls}
       >
         <Tooltip content={labels.zoomOut}>
           <IconButton
@@ -265,7 +265,7 @@ export function ImagePreviewViewport({
             <MinusIcon size={20} aria-hidden />
           </IconButton>
         </Tooltip>
-        <span {...stylex.props(s.percentage)}>
+        <span className={s.percentage}>
           {Math.round(view.scale * 100)}%
         </span>
         <Tooltip content={labels.zoomIn}>
@@ -314,74 +314,3 @@ export function ImagePreviewViewport({
     </div>
   );
 }
-
-const s = stylex.create({
-  viewer: {
-    height: '100%',
-    display: 'grid',
-    gridTemplateRows: 'minmax(0, 1fr) auto',
-    minHeight: 0,
-    gap: t.space8,
-  },
-  canvas: {
-    position: 'relative',
-    minWidth: 0,
-    minHeight: 0,
-    overflow: 'hidden',
-    touchAction: 'none',
-    backgroundColor: t.workspace,
-    backgroundImage: `repeating-conic-gradient(${t.previewChecker} 0% 25%, transparent 0% 50%)`,
-    backgroundSize: '16px 16px',
-    borderRadius: t.radiusSm,
-  },
-  interactive: { cursor: { default: 'grab', ':active': 'grabbing' } },
-  image: (
-    width: number,
-    height: number,
-    x: number,
-    y: number,
-    scale: number,
-  ) => ({
-    position: 'absolute',
-    left: '50%',
-    top: '50%',
-    width,
-    height,
-    maxWidth: 'none',
-    maxHeight: 'none',
-    transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${scale})`,
-    transformOrigin: 'center',
-    pointerEvents: 'none',
-    userSelect: 'none',
-    objectFit: 'contain',
-  }),
-  loadingImage: { opacity: 0 },
-  feedback: {
-    position: 'absolute',
-    inset: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: t.space12,
-    padding: t.space16,
-    margin: 0,
-    textAlign: 'center',
-    color: t.textSecondary,
-    backgroundColor: t.workspace,
-  },
-  controls: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    gap: t.space4,
-  },
-  percentage: {
-    minWidth: 52,
-    textAlign: 'center',
-    fontSize: 13,
-    color: t.textSecondary,
-    fontVariantNumeric: 'tabular-nums',
-  },
-});

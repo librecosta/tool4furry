@@ -1,11 +1,65 @@
-// Below legacy StyleX priority layers until tool migration in V0.9-C.
-@layer t4f-ui {
-  // Wide Form wins over the generic Form columns regardless of chunk order.
+@layer t4f-tools {
+  .container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--t4f-space-24);
+    align-items: start;
+    min-width: 0;
+    max-width: 960px;
+    margin-inline: auto;
+  }
+
   .columns.columns {
     grid-template-columns: minmax(0, 1fr) 350px;
 
     @media (max-width: 1050px) {
       grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .split {
+    max-width: none;
+    grid-template-rows: min-content min-content 1fr;
+    row-gap: 0;
+
+    @media (max-width: 1050px) {
+      grid-template-rows: auto;
+      row-gap: var(--t4f-space-24);
+    }
+  }
+
+  .leading.leading {
+    min-width: 0;
+    grid-column: 1;
+    grid-row: 1;
+    margin-bottom: var(--t4f-space-24);
+
+    @media (max-width: 1050px) {
+      grid-column: auto;
+      grid-row: auto;
+      margin-bottom: 0;
+    }
+  }
+
+  .aside.aside {
+    min-width: 0;
+    grid-column: 2;
+    grid-row: 1 / span 3;
+
+    @media (max-width: 1050px) {
+      grid-column: auto;
+      grid-row: auto;
+    }
+  }
+
+  .main {
+    min-width: 0;
+    grid-column: 1;
+    grid-row: 2;
+
+    @media (max-width: 1050px) {
+      grid-column: auto;
+      grid-row: auto;
     }
   }
 

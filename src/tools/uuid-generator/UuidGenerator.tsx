@@ -1,18 +1,10 @@
 import { useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import { Button } from '../../ui/Button';
 import { TextField } from '../../ui/TextField';
 import { CheckboxField } from '../../ui/CheckboxField';
-import {
-  Frame,
-  ErrorText,
-  errorText,
-  tr,
-  s,
-  Copy,
-  TextDelivery,
-} from '../general/ui';
+import { Frame, ErrorText, errorText, tr, Copy, TextDelivery,  } from '../general/ui';
+import s from '../general/ui.module.scss';
 import { integer } from '../general/bounds';
 import { generateUuids } from './core';
 export default function UuidGenerator({ locale }: ToolProps) {
@@ -32,7 +24,7 @@ export default function UuidGenerator({ locale }: ToolProps) {
   const shown = upper ? values.map((v) => v.toUpperCase()) : values;
   return (
     <Frame locale={locale}>
-      <div {...stylex.props(s.columns)}>
+      <div className={s.columns}>
         <TextField
           label={tr(locale, '生成数量（1–1000）', 'Count (1–1,000)')}
           value={count}
@@ -48,7 +40,7 @@ export default function UuidGenerator({ locale }: ToolProps) {
           onCheckedChange={setUpper}
         />
       </div>
-      <div {...stylex.props(s.row)}>
+      <div className={s.row}>
         <Button
           variant="primary"
           onClick={() => {
@@ -83,11 +75,11 @@ export default function UuidGenerator({ locale }: ToolProps) {
       </div>
       <ErrorText error={error} />
       <p role="status">{shown.length} UUIDv4</p>
-      <div {...stylex.props(s.scroll)}>
-        <ul {...stylex.props(s.list)}>
+      <div className={s.scroll}>
+        <ul className={s.list}>
           {shown.map((v, i) => (
-            <li key={i} {...stylex.props(s.item)}>
-              <code {...stylex.props(s.grow)}>{v}</code>
+            <li key={i} className={s.item}>
+              <code className={s.grow}>{v}</code>
               <Copy value={v} locale={locale} />
             </li>
           ))}

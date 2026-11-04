@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import { drawComposition, loadWatermarkFonts } from './render';
 import type { View } from './session';
-import { s } from './styles';
+import s from './styles.module.scss';
 export function WatermarkPreview({view, label, failure}: {view: View; label: string; failure: string}) {
   const canvas = useRef<HTMLCanvasElement>(null), [failed, setFailed] = useState(false);
   const source = view.tasks.find(task => task.id === view.selected)?.source;
@@ -23,5 +22,5 @@ export function WatermarkPreview({view, label, failure}: {view: View; label: str
     if (view.settings.kind === 'text') void loadWatermarkFonts(view.settings.text).then(draw, () => { if (active) setFailed(true); }); else draw();
     return () => { active = false; target.width = 0; target.height = 0; };
   }, [source, view.preview, view.settings, view.watermark]);
-  return <div {...stylex.props(s.preview)}>{failed ? <p role="alert" {...stylex.props(s.error)}>{failure}</p> : <canvas data-watermark-preview ref={canvas} role="img" aria-label={label} {...stylex.props(s.canvas)}/>}</div>;
+  return <div className={s.preview}>{failed ? <p role="alert" className={s.error}>{failure}</p> : <canvas data-watermark-preview ref={canvas} role="img" aria-label={label} className={s.canvas}/>}</div>;
 }

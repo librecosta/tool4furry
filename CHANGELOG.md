@@ -25,6 +25,8 @@
 
 ### Changed
 
+- V0.9 全站 Astro、React、29 款工具与 DEV Lab 完成 SCSS Modules / CSS Variables 迁移；移除 StyleX 依赖、插件、主题类及兼容刷新链路。保留紫色交互、Base UI、Motion、dnd-kit 和 8 Published / 21 Draft 资格，未部署。
+
 - 接入已验收的 22 款新工具像素图标，共 29 款 / 58 张原字节 PNG；导航总精选独立于首页四槽，增加六种身份筛选与像素工具网格。Astro、React 和 Canvas 共用原生交互与 Registry 过滤，工具发布资格不变。
 
 - 组件内部的工具像素图标、首页插画、社群图标/QQ 二维码与 Wavefield 海报统一迁入 `src/assets/`，通过静态 URL 导入生成带哈希资源，保留原字节、像素与页面语义。清理重复 Ko-fi 副本和弃用装饰；固定公开品牌、Favicon、OG、许可与 NOTICE 继续留在 `public/`，构建守卫改从最终 HTML 验证真实资源及既有 SHA-256。

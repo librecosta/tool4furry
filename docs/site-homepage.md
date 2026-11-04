@@ -26,10 +26,10 @@
 本次迁移验证（2026-11-03）：`pnpm check` 零诊断，7 文件 / 82 项定向测试及 CN/Global 各一次正式构建与产物守卫通过。真实 Chromium 检查 CN 中文亮色、Global 英文暗色的静态首页/工具箱，海报、全部工具图标、社群图片及插画正常；每地区 22 个迁移素材各仅一份且与原件 SHA-256 一致，10 个固定公开资源保持原字节，旧路径返回 404。没有运行全量测试矩阵或部署。
 
 - 已审核 [双兽首 Master](../public/brand/tool4furry-symbol.svg) 保留路径、两眼与负空间；Header/Footer/React 导航使用一个图形和一份字标，不重绘、不重复名称。正式横向字标为路径，Favicon 使用 ICO/PNG。源稿、正式 OG、字体和授权见 [视觉说明](visual-foundation.md)。
-- Astro 静态导航使用 SCSS Modules，React ToolPageFrame 暂用原 StyleX；两者共用 Token 值与控制语义，普通工具只出现一个产品导航；Canvas 保留浮动入口。移动端保留非交互账户位，隐藏顶部 GitHub；不伪造登录。
+- Astro 静态导航与 React ToolPageFrame 共用 SCSS Modules、原生 Token 与控制语义，普通工具只出现一个产品导航；Canvas 保留浮动入口。移动端保留非交互账户位，隐藏顶部 GitHub；不伪造登录。
 - 精选面板保持原生 details、真实工具链接、Hover/Click/键盘与安全退出；现有面板/Chevron/主题揭幕时长以导航样式和控制脚本为准，不为文档治理改动。
 - Footer 是静态三段品牌/GitHub、真实分组链接、法务/许可/版权。合规行位于最终版权行上方，CN ICP/公安左右展示与窄屏换行由 [compliance.ts](../src/config/compliance.ts) 控制；仅 CN DEV 可显示明确位置提示，生产只显示真实配置，Global 不继承中国备案。不编造许可或不存在的页面。
-- 根主题为现有 Neutral Light / GoFurry Dark，完整 CSS Variables 与过渡期 StyleX 主题、默认 Dark，head 同步恢复手动偏好。当前语言/外观状态与实际一致，存储不可用仍可本页切换，跨标签同步。语言同源，Footer 地区外链才携带受控一次性主题信息；无全局 React Provider。
+- 根主题为现有 Neutral Light / GoFurry Dark，完整 CSS Variables 主题、默认 Dark，head 同步恢复手动偏好。当前语言/外观状态与实际一致，存储不可用仍可本页切换，跨标签同步。语言同源，Footer 地区外链才携带受控一次性主题信息；无全局 React Provider。
 - 全站双侧 CSS 点阵固定在视口而非随文档移动；Canvas/沉浸 Lab 排除，Hero/导航/Footer 保留自身背景，不随局部任务重做。
 
 Footer 唯一例外是 [目录工作台](site-tools.md)：固定视口，无 Footer/合规行/文档滚动球。Canvas 保留完整视口，Footer 位于其后正常文档流。

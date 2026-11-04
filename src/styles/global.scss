@@ -1,6 +1,6 @@
 @use './tokens';
 
-@layer reset, base, t4f-controls, t4f-ui;
+@layer reset, base, t4f-controls, t4f-ui, t4f-tools;
 @layer reset {
   *,
   *::before,
@@ -44,7 +44,7 @@
     scrollbar-width: thin;
   }
   /* Root appearance keeps both static and island icons correct before hydration. */
-  /* Keep display here: a StyleX display utility would override the hidden rule. */
+  /* The HTML hidden contract must also win against local display utilities. */
   [data-appearance-icon] {
     display: flex;
   }

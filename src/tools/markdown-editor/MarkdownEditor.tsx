@@ -1,17 +1,10 @@
 import { useEffect, useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import { TextAreaField } from '../../ui/TextField';
 import { SelectField } from '../../ui/SelectField';
 import { Button } from '../../ui/Button';
-import {
-  Frame,
-  tr,
-  s,
-  TextDelivery,
-  ErrorText,
-  errorText,
-} from '../general/ui';
+import { Frame, tr, TextDelivery, ErrorText, errorText,  } from '../general/ui';
+import s from '../general/ui.module.scss';
 import { example, renderMarkdown } from './core';
 import notice from './dependencies.NOTICE.txt?url';
 import './markdown.css';
@@ -45,7 +38,7 @@ export default function MarkdownEditor({ locale }: ToolProps) {
           { value: 'preview', label: tr(locale, '预览', 'Preview') },
         ]}
       />
-      <div {...stylex.props(mode === 'split' ? s.columns : s.stack)}>
+      <div className={[mode === 'split' ? s.columns : s.stack].filter(Boolean).join(' ')}>
         {mode !== 'preview' && (
           <TextAreaField
             label="Markdown"
@@ -58,7 +51,7 @@ export default function MarkdownEditor({ locale }: ToolProps) {
         {mode !== 'edit' && (
           <section
             aria-label={tr(locale, 'Markdown 预览', 'Markdown preview')}
-            {...stylex.props(s.panel, s.scroll)}
+            className={[s.panel, s.scroll].filter(Boolean).join(' ')}
           >
             <div
               className="t4f-markdown-preview"
@@ -68,7 +61,7 @@ export default function MarkdownEditor({ locale }: ToolProps) {
         )}
       </div>
       <ErrorText error={error} />
-      <div {...stylex.props(s.row)}>
+      <div className={s.row}>
         <TextDelivery
           locale={locale}
           value={text}

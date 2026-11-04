@@ -1,17 +1,10 @@
 import { useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import { TextAreaField } from '../../ui/TextField';
 import { CheckboxField } from '../../ui/CheckboxField';
 import { Button } from '../../ui/Button';
-import {
-  Frame,
-  s,
-  tr,
-  ErrorText,
-  errorText,
-  TextDelivery,
-} from '../general/ui';
+import { Frame, tr, ErrorText, errorText, TextDelivery,  } from '../general/ui';
+import s from '../general/ui.module.scss';
 import { compareLines } from './core';
 import notice from './diff.NOTICE.txt?url';
 export default function TextDiff({ locale }: ToolProps) {
@@ -27,7 +20,7 @@ export default function TextDiff({ locale }: ToolProps) {
   return (
     <Frame locale={locale}>
       <span hidden data-diff-license={notice} />
-      <div {...stylex.props(s.columns)}>
+      <div className={s.columns}>
         <TextAreaField
           label={tr(locale, '原文', 'Original')}
           maxLength={100000}
@@ -54,13 +47,13 @@ export default function TextDiff({ locale }: ToolProps) {
           <p role="status">
             +{result.added} / −{result.removed}
           </p>
-          <div {...stylex.props(s.pre)}>
+          <div className={s.pre}>
             {result.parts.map((p, i) => (
               <div
                 key={i}
-                {...stylex.props(
+                className={[
                   p.added ? s.added : p.removed ? s.removed : undefined,
-                )}
+                ].filter(Boolean).join(' ')}
               >
                 {p.value.split('\n').map((line, j) => (
                   <div key={j}>

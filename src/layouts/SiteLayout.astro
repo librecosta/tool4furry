@@ -1,11 +1,10 @@
 ---
 import styles from './SiteLayout.module.scss';
-import * as stylex from '@stylexjs/stylex';
 import { locales, type Locale } from '../i18n/locale';
 import { languageLink } from '../site/language';
 import { region, regionConfig } from '../config/site';
 import { messages } from '../i18n/messages';
-import { resolvePageTheme, resolveTheme } from '../styles/theme';
+import { resolvePageTheme } from '../styles/theme';
 import appearanceSource from '../styles/appearance-controller.js?raw';
 import navigationSource from '../styles/navigation-disclosure.js?raw';
 import scrollMetrics from '../ui/scroll-metrics.js?raw';
@@ -35,18 +34,16 @@ const socialImageAlt = locale === 'zh'
   ? 'Tool4Furry 双兽首图形标与字标，深灰色背景'
   : 'Tool4Furry dual-animal symbol and wordmark on a dark graphite background';
 const theme = resolvePageTheme(import.meta.env.DEV, import.meta.env.T4F_DEV_APPEARANCE);
-const darkClass = stylex.attrs(resolveTheme({colorTheme:'neutral',appearance:'dark'}).style).class;
-const lightClass = stylex.attrs(resolveTheme({colorTheme:'neutral',appearance:'light'}).style).class;
 const regionOrigins = JSON.stringify(import.meta.env.DEV ? Object.values(devOrigins) : Object.values(regions).map(value => value.site));
 // One exact audited inline script; the React and Astro docks share the pure math.
 const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function ', 'function ')}\n${scrollSource}\n})();`;
 ---
 <!doctype html>
-<html lang={locales[locale].lang} data-color-theme={theme.colorTheme} data-appearance={theme.appearance} data-catalog-workbench={catalogWorkbench || undefined} class:list={[stylex.attrs(theme.style).class, styles.themeRoot, catalogWorkbench && styles.viewport]}>
+<html lang={locales[locale].lang} data-color-theme={theme.colorTheme} data-appearance={theme.appearance} data-catalog-workbench={catalogWorkbench || undefined} class:list={[styles.themeRoot, catalogWorkbench && styles.viewport]}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script is:inline id="t4f-appearance" data-dark={darkClass} data-light={lightClass} data-default={theme.appearance} data-region-origins={regionOrigins} set:html={appearanceSource} />
+    <script is:inline id="t4f-appearance" data-default={theme.appearance} data-region-origins={regionOrigins} set:html={appearanceSource} />
     <meta name="description" content={resolvedDescription} />
     <title>{resolvedTitle}</title>
     {website && <script is:inline type="application/ld+json" id="t4f-website" set:html={website} />}
@@ -73,10 +70,6 @@ const documentScrollSource = `(() => {\n${scrollMetrics.replace('export function
       <meta name="twitter:image:alt" content={socialImageAlt} />
     </>}
     {noindex && <meta name="robots" content="noindex, nofollow" />}
-    {import.meta.env.DEV && <>
-      <link rel="stylesheet" href="/virtual:stylex.css" />
-      <script is:inline type="module" src="/src/styles/stylex-dev-css.ts"></script>
-    </>}
   </head>
   <body class:list={[styles.body, catalogWorkbench && styles.viewport]}>
     <div class:list={[styles.frame, catalogWorkbench && styles.catalogFrame]}>

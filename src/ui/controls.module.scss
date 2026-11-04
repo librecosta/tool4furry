@@ -1,4 +1,3 @@
-// Below legacy StyleX priority layers until tool migration in V0.9-C.
 @layer t4f-controls {
   .workspaceFocus {
     outline-style: none;
@@ -256,7 +255,7 @@
 @layer t4f-ui {
   // Error is a final native state, after Checkbox/Slider/dropzone borders.
   // Repeated specificity makes this independent of lazy CSS chunk ordering;
-  // tool-owned StyleX overrides still occupy the higher priority layers.
+  // tool-owned overrides occupy the explicit t4f-tools layer.
   .invalid.invalid {
     border-color: var(--t4f-danger);
   }

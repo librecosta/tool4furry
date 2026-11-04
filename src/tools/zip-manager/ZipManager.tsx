@@ -1,10 +1,10 @@
 import zipNotice from '../general/fflate.NOTICE.txt?url';
 import { useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import { Button } from '../../ui/Button';
 import { CheckboxField } from '../../ui/CheckboxField';
-import { Frame, Picker, ErrorText, tr, saveBlob, s } from '../general/ui';
+import { Frame, Picker, ErrorText, tr, saveBlob } from '../general/ui';
+import s from '../general/ui.module.scss';
 import { useJob } from '../general/use-job';
 import { boundedFiles, MiB } from '../general/bounds';
 import { createZip, inspectZip, extractZip, type ZipItem } from './core';
@@ -49,10 +49,10 @@ export default function ZipManager({ locale }: ToolProps) {
         {files.length} {tr(locale, '个文件', 'files')} ·{' '}
         {(files.reduce((n, f) => n + f.size, 0) / 1024).toFixed(1)} KB
       </p>
-      <ul {...stylex.props(s.list)}>
+      <ul className={s.list}>
         {files.map((f, i) => (
-          <li key={i} {...stylex.props(s.item)}>
-            <span {...stylex.props(s.grow)}>
+          <li key={i} className={s.item}>
+            <span className={s.grow}>
               {f.webkitRelativePath || f.name}
             </span>
             <Button
@@ -112,9 +112,9 @@ export default function ZipManager({ locale }: ToolProps) {
             {archive.name} · {items.length} {tr(locale, '个文件', 'files')} ·{' '}
             {(items.reduce((n, i) => n + i.size, 0) / 1024).toFixed(1)} KB
           </p>
-          <div {...stylex.props(s.scroll)}>
+          <div className={s.scroll}>
             {items.map((item) => (
-              <div key={item.name} {...stylex.props(s.item)}>
+              <div key={item.name} className={s.item}>
                 <CheckboxField
                   label={`${item.name} · ${(item.size / 1024).toFixed(1)} KB`}
                   checked={selected.includes(item.name)}

@@ -195,6 +195,3 @@ export function FileTaskRow({ item }: { item: FileTaskItem }) {
     </li>
   );
 }
-
-// Tool-facing compatibility only; this component renders native CSS Modules.
-export { fileTaskStyles } from './FileTaskList.legacy';

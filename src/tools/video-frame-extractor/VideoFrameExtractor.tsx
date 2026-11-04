@@ -1,19 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import { Button } from '../../ui/Button';
 import { TextField } from '../../ui/TextField';
 import { SelectField } from '../../ui/SelectField';
 import { SliderField } from '../../ui/SliderField';
-import {
-  Frame,
-  Picker,
-  tr,
-  s,
-  ErrorText,
-  saveBlob,
-  useBlobUrl,
-} from '../general/ui';
+import { Frame, Picker, tr, ErrorText, saveBlob, useBlobUrl,  } from '../general/ui';
+import s from '../general/ui.module.scss';
 import { useJob } from '../general/use-job';
 import { fail, integer, MiB } from '../general/bounds';
 import { packZip } from '../image-converter/zip';
@@ -127,7 +119,7 @@ export default function VideoFrameExtractor({ locale }: ToolProps) {
         playsInline
         preload="metadata"
         onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
-        {...stylex.props(s.canvas)}
+        className={s.canvas}
       />
       <ErrorText error={job.error} />
       {source && (
@@ -153,7 +145,7 @@ export default function VideoFrameExtractor({ locale }: ToolProps) {
             step={0.01}
             disabled={job.busy}
           />
-          <div {...stylex.props(s.columns)}>
+          <div className={s.columns}>
             <TextField
               label={tr(
                 locale,
@@ -197,7 +189,7 @@ export default function VideoFrameExtractor({ locale }: ToolProps) {
               }}
             />
           </div>
-          <div {...stylex.props(s.row)}>
+          <div className={s.row}>
             <Button
               variant="primary"
               loading={job.busy}
@@ -209,7 +201,7 @@ export default function VideoFrameExtractor({ locale }: ToolProps) {
               {tr(locale, '按间隔提取', 'Extract at intervals')}
             </Button>
           </div>
-          <p role="status" {...stylex.props(s.note)}>
+          <p role="status" className={s.note}>
             {progress}
           </p>
         </>
@@ -220,13 +212,13 @@ export default function VideoFrameExtractor({ locale }: ToolProps) {
             <img
               src={preview}
               alt={tr(locale, '提取的实际画面', 'Extracted frame')}
-              {...stylex.props(s.canvas)}
+              className={s.canvas}
             />
           )}
-          <ul {...stylex.props(s.list)}>
+          <ul className={s.list}>
             {job.result.frames.map((frame) => (
-              <li key={frame.name} {...stylex.props(s.item)}>
-                <span {...stylex.props(s.grow)}>
+              <li key={frame.name} className={s.item}>
+                <span className={s.grow}>
                   {frame.time.toFixed(3)} s ·{' '}
                   {(frame.blob.size / 1024).toFixed(1)} KB
                 </span>

@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { Locale } from '../../i18n/locale';
 import { TextAreaField } from '../../ui/TextField';
 import { Button } from '../../ui/Button';
-import { Frame, s, tr, ErrorText, TextDelivery } from './ui';
+import { Frame, tr, ErrorText, TextDelivery } from './ui';
+import s from './ui.module.scss';
 export default function TextWorkspace({
   locale,
   input,
@@ -26,7 +26,7 @@ export default function TextWorkspace({
   return (
     <Frame locale={locale}>
       {children}
-      <div {...stylex.props(s.columns)}>
+      <div className={s.columns}>
         <TextAreaField
           label={tr(locale, '输入', 'Input')}
           rows={14}
@@ -43,7 +43,7 @@ export default function TextWorkspace({
         />
       </div>
       <ErrorText error={error} />
-      <div {...stylex.props(s.row)}>
+      <div className={s.row}>
         <TextDelivery
           value={output}
           locale={locale}

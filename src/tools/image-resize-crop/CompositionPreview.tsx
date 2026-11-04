@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ResizeView } from './session';
 import type { ResizeMessages } from './ParameterControls';
-import { resizeStyles as s } from './resize.styles';
+import s from './resize.styles.module.scss';
 
 export function compositionBitmapSize(output: ResizeView['output']) {
   const scale = Math.min(1200 / output.width, 800 / output.height, 1);
@@ -63,7 +62,7 @@ export function CompositionPreview({ view, url, t }: {
     };
   }, [crop, source, output, loaded, url, failed]);
   return (
-    <div data-composition-preview {...stylex.props(s.compositionStage)}>
+    <div data-composition-preview className={s.compositionStage}>
       <img
         key={url}
         hidden
@@ -74,9 +73,9 @@ export function CompositionPreview({ view, url, t }: {
         onError={() => setFailed(true)}
       />
       {failed ? (
-        <p role="alert" {...stylex.props(s.error)}>{t.preview.viewer.error}</p>
+        <p role="alert" className={s.error}>{t.preview.viewer.error}</p>
       ) : (
-        <canvas ref={preview} role="img" aria-label={t.composition} {...stylex.props(s.composition)} />
+        <canvas ref={preview} role="img" aria-label={t.composition} className={s.composition} />
       )}
     </div>
   );

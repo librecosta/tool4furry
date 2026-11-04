@@ -1,5 +1,4 @@
 import { useId, useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import {
   ArrowClockwiseIcon,
   DownloadSimpleIcon,
@@ -13,11 +12,12 @@ import { CheckboxField } from '../../ui/CheckboxField';
 import { SliderField } from '../../ui/SliderField';
 import { ConfirmDialog } from '../../ui/ConfirmDialog';
 import { Tooltip } from '../../ui/Tooltip';
-import { FileTaskList, fileTaskStyles as rows } from '../../ui/FileTaskList';
+import { FileTaskList } from '../../ui/FileTaskList';
+import rows from '../../ui/FileTaskList.module.scss';
 import { ImageTaskMedia } from '../image/ImageTaskMedia';
 import { ImageComparisonDialog } from '../image/ImageComparisonDialog';
 import { useOwnedUrl } from '../image-converter/use-owned-url';
-import { converterStyles as c } from '../image-converter/converter.styles';
+import c from '../image-converter/converter.styles.module.scss';
 import type {
   ResizeCollection,
   CollectionView,
@@ -30,7 +30,7 @@ import {
   FormatChoices,
   type ResizeMessages,
 } from './ParameterControls';
-import { resizeStyles as s } from './resize.styles';
+import s from './resize.styles.module.scss';
 
 type Save = (result?: { blob: Blob; name: string }) => void;
 export function BatchPanel({
@@ -88,13 +88,13 @@ export function BatchPanel({
   const custom =
     settings.quality !== 85 || settings.background.toUpperCase() !== '#FFFFFF';
   return (
-    <section aria-label={t.batch} {...stylex.props(s.batchGrid)}>
+    <section aria-label={t.batch} className={s.batchGrid}>
       <aside
         aria-label={t.batchSettings}
-        {...stylex.props(c.settings, s.batchSettings)}
+        className={[c.settings, s.batchSettings].filter(Boolean).join(' ')}
       >
-        <div {...stylex.props(c.settingsHeader)}>
-          <h2 {...stylex.props(c.settingsTitle)}>{t.batchSettings}</h2>
+        <div className={c.settingsHeader}>
+          <h2 className={c.settingsTitle}>{t.batchSettings}</h2>
           <ParameterModes
             advanced={advanced}
             onChange={onAdvancedChange}
@@ -156,12 +156,12 @@ export function BatchPanel({
           onChange={(format) => manager.batchSettings({ format })}
         />
         {view.capabilities && !supported && (
-          <p role="alert" {...stylex.props(c.error)}>
+          <p role="alert" className={c.error}>
             {t.unsupported}
           </p>
         )}
         {view.files.some((item) => item.source?.info.format === 'avif') && (
-          <p {...stylex.props(c.note)}>{t.avif}</p>
+          <p className={c.note}>{t.avif}</p>
         )}
         {advanced && (
           <>
@@ -176,7 +176,7 @@ export function BatchPanel({
               />
             )}
             {settings.format === 'jpeg' && (
-              <div {...stylex.props(c.backgroundControl, s.colorControl)}>
+              <div className={[c.backgroundControl, s.colorControl].filter(Boolean).join(' ')}>
                 <TextField
                   label={t.background}
                   value={background ?? settings.background}
@@ -196,7 +196,7 @@ export function BatchPanel({
                   type="color"
                   aria-label={t.pickBackground}
                   value={settings.background}
-                  {...stylex.props(s.colorPicker)}
+                  className={s.colorPicker}
                   onChange={(event) => {
                     setBackground(undefined);
                     manager.batchSettings({ background: event.target.value });
@@ -219,20 +219,20 @@ export function BatchPanel({
           </>
         )}
         {!advanced && custom && (
-          <p {...stylex.props(c.note)}>{t.customSettings}</p>
+          <p className={c.note}>{t.customSettings}</p>
         )}
         {!advanced &&
           settings.format === 'jpeg' &&
           background !== undefined && (
-            <p role="alert" {...stylex.props(c.error)}>
+            <p role="alert" className={c.error}>
               {t.checkAdvanced}
             </p>
           )}
-        <div {...stylex.props(s.download)}>
+        <div className={s.download}>
           {(needsProcessing || value !== undefined) && (
             <Button
               variant="primary"
-              xstyle={c.supportAction}
+              className={c.supportAction}
               disabled={importing || !supported}
               onClick={() => {
                 if (!commitValue()) return;
@@ -256,11 +256,9 @@ export function BatchPanel({
               variant={
                 delivery.allowed && !needsProcessing ? 'primary' : 'secondary'
               }
-              xstyle={
-                delivery.allowed && !needsProcessing
+              className={[delivery.allowed && !needsProcessing
                   ? c.supportAction
-                  : undefined
-              }
+                  : undefined].filter(Boolean).join(' ')}
               loading={view.zipStatus === 'packing'}
               disabled={pending || !delivery.allowed}
               onClick={async () => save(await manager.zip())}
@@ -271,19 +269,19 @@ export function BatchPanel({
           {!delivery.pending &&
             delivery.failed > 0 &&
             delivery.entries.length > 0 && (
-              <p {...stylex.props(c.note)}>{t.zip.partial}</p>
+              <p className={c.note}>{t.zip.partial}</p>
             )}
           {view.zipError && (
-            <p role="alert" {...stylex.props(c.error)}>
+            <p role="alert" className={c.error}>
               {t.zip[view.zipError]}
             </p>
           )}
         </div>
       </aside>
-      <div {...stylex.props(s.batchTasks)}>
-        <div {...stylex.props(s.taskHeading)}>
-          <h2 {...stylex.props(s.heading)}>{t.batchResults}</h2>
-          <span role="status" aria-live="polite" {...stylex.props(c.note)}>
+      <div className={s.batchTasks}>
+        <div className={s.taskHeading}>
+          <h2 className={s.heading}>{t.batchResults}</h2>
+          <span role="status" aria-live="polite" className={c.note}>
             {delivery.entries.length}/{view.files.length} {t.completed}
             {delivery.failed ? ` · ${delivery.failed} ${t.failedCount}` : ''}
           </span>
@@ -342,9 +340,9 @@ function ResizeTaskRow({
       aria-labelledby={nameId}
       data-task-id={item.id}
       data-task-status={item.batch.status}
-      {...stylex.props(rows.item)}
+      className={rows.item}
     >
-      <div aria-hidden="true" {...stylex.props(rows.media)}>
+      <div aria-hidden="true" className={rows.media}>
         <ImageTaskMedia
           source={sourceURL}
           output={result ? outputURL : undefined}
@@ -352,44 +350,44 @@ function ResizeTaskRow({
           labels={t.preview}
         />
       </div>
-      <div {...stylex.props(rows.heading)}>
-        <span id={nameId} title={item.file.name} {...stylex.props(rows.name)}>
+      <div className={rows.heading}>
+        <span id={nameId} title={item.file.name} className={rows.name}>
           {item.file.name}
         </span>
         <span
           role="status"
-          {...stylex.props(
+          className={[
             rows.status,
             result && s.success,
             failed && s.error,
             active && s.waiting,
-          )}
+          ].filter(Boolean).join(' ')}
         >
           {status}
         </span>
       </div>
-      <div {...stylex.props(rows.metadataRow)}>
-        <div {...stylex.props(rows.metadata)}>
+      <div className={rows.metadataRow}>
+        <div className={rows.metadata}>
           {item.source ? `${item.source.width} × ${item.source.height}` : '—'} →{' '}
           {item.batch.target
             ? `${item.batch.target.width} × ${item.batch.target.height}`
             : '—'}{' '}
           · {view.settings.format.toUpperCase()}
           {error && (
-            <p role="alert" {...stylex.props(s.error)}>
+            <p role="alert" className={s.error}>
               {t.errors[error as keyof typeof t.errors] ?? t.errors.fallback}
             </p>
           )}
         </div>
       </div>
-      <div {...stylex.props(rows.actions)}>
+      <div className={rows.actions}>
         {item.source && (
           <Tooltip content={t.preview.preview}>
             <IconButton
               id={previewButtonId}
               variant="ghost"
               label={`${t.preview.preview}: ${item.file.name}`}
-              xstyle={rows.action}
+              className={rows.action}
               onClick={() => setPreviewOpen(true)}
             >
               <EyeIcon size={18} />
@@ -400,7 +398,7 @@ function ResizeTaskRow({
           <Tooltip content={t.download}>
             <IconButton
               variant="ghost"
-              xstyle={rows.action}
+              className={rows.action}
               label={`${t.download}: ${item.file.name}`}
               onClick={() => save(manager.download(item.id))}
             >
@@ -412,7 +410,7 @@ function ResizeTaskRow({
           <Tooltip content={t.retryFile}>
             <IconButton
               variant="ghost"
-              xstyle={rows.action}
+              className={rows.action}
               label={`${t.retryFile}: ${item.file.name}`}
               disabled={blocked}
               onClick={() => manager.retry(item.id)}
@@ -425,7 +423,7 @@ function ResizeTaskRow({
           <Tooltip content={t.editFile}>
             <IconButton
               variant="ghost"
-              xstyle={rows.action}
+              className={rows.action}
               label={`${t.editFile}: ${item.file.name}`}
               onClick={() => {
                 manager.select(item.id);
@@ -448,7 +446,7 @@ function ResizeTaskRow({
           trigger={
             <IconButton
               variant="ghost"
-              xstyle={rows.action}
+              className={rows.action}
               label={`${t.remove}: ${item.file.name}`}
               title={t.remove}
             >

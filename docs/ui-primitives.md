@@ -31,17 +31,17 @@ B3-B2：列表也可接受 `children`，配合导出的纯展示 `FileTaskRow it
 
 Converter 导入区使用 `FileDropzone` 默认中性色，不启用可选的 `accent="slate"`；`SliderField accent="lavender"` 只强调已选进度与 Thumb 边界。默认调用、禁用灰阶及错误语义不变，不添加拖放监听或业务状态。
 
-`Button` 可用 `xstyle` 显式合并工具局部 StyleX 样式。Converter 的添加文件夹、转换全部复用首页辅助 CTA 色值及 220ms 过渡；禁用时仍为灰阶，不改默认 primary 或 ZIP 按钮。
+`Button` 使用 variant / size / className 和原生属性。工具局部类位于 t4f-tools 层；公共控件与组件分别位于 t4f-controls / t4f-ui，保留紫色主操作、禁用反馈与键盘焦点。旧 xstyle 接口已删除。
 
 ## 实现边界与版本差异
 
-沿用已锁定的 Base UI 1.8.0、StyleX 0.19.1、React 19.3.0 和 Astro 7.3.8，无运行依赖升级。Button/Input 使用原生语义；Select、Checkbox、Slider、Tooltip、AlertDialog、Toast 使用 Base UI，键盘导航、焦点约束、返回焦点和通知计时均由库管理。
+沿用已锁定的 Base UI 1.8.0、React 19.3.0 和 Astro 7.3.8，无运行依赖升级。Button/Input 使用原生语义；Select、Checkbox、Slider、Tooltip、AlertDialog、Toast 使用 Base UI，键盘导航、焦点约束、返回焦点和通知计时均由库管理。
 
 Base UI 1.8 的禁用 Select 项可被方向键聚焦以供发现，但不能确认选中；测试验证这一实际行为。其 Tooltip 是视觉辅助标签，不自动赋予 ARIA tooltip 角色；测试用焦点触发后可见内容验证，触发按钮另有名字，必要信息放正文或可点击反馈。参见 [Select](https://base-ui.com/react/components/select)、[Tooltip 使用规则](https://base-ui.com/react/components/tooltip)、[Toast](https://base-ui.com/react/components/toast)、[AlertDialog](https://base-ui.com/react/components/alert-dialog)。
 
 ConfirmDialog 的 Backdrop 使用 `forceRender`，保证位于 Workbench 的 Dialog 上下文中仍有独立模态遮罩。WorkbenchShell 只把原有遮罩颜色和层级改为语义 Token，没有改变参数 Portal 宿主、keepMounted 或面板状态结构。
 
-样式复用 `controls.ts` 的按钮/输入视觉及布局，新增样式均用 StyleX；global.css 无新增规则。按钮保持至少 44px 触达高度，Slider 的轨道交互区为 44px。loading 图标在 reduced-motion 下停止旋转；沿用 Canvas 原有 Motion/useReducedMotion，其余弹层不增加动画。
+样式复用 `controls.module.scss` 的按钮/输入视觉，组件局部 SCSS Module 管理状态和布局；主题来自 tokens.scss。按钮保持至少 44px 触达高度，Slider 的轨道交互区为 44px。loading 图标在 reduced-motion 下停止旋转；沿用 Canvas 原有 Motion/useReducedMotion，其余弹层不增加动画。
 
 ## 弹层与通知
 
@@ -49,7 +49,7 @@ ConfirmDialog 的 Backdrop 使用 `forceRender`，保证位于 Workbench 的 Dia
 
 Toast 位于视口上方中央（16px + safe-area），紧凑中性浮层配状态图标，以混合浮层/次级文字色的背景和 `shadowFloating` 区分页面，不重复展示状态标题或彩色左边框。按内容收缩，最大宽度 440px，窄屏两边留 16px；区域高度限制为 36dvh / 320px 并可滚动，层级仍低于模态面板。Base UI `limit=3`；超限项隐藏，库继续管理生命周期。success 默认 2.4 秒、无显式 id 时复用成功提示槽以避免连续复制堆叠；info/warning 默认 5 秒，error 8 秒且保持高优先级，允许逐条覆盖（0 表示不自动关闭）。200ms 透明度/轻位移进入退出，Reduced Motion 为 0ms。悬停、键盘阅读和窗口失焦的暂停/恢复由 Base UI 管理，提供手动关闭，不加绕过暂停的计时器或另建 live region；需要用户处理的错误继续留在对应控件附近。
 
-复合单选组将隐藏输入的 `:focus-visible` 投影到可见标签（`:has(input:focus-visible)`），不能用 `:focus-within` 轮廓表示 Selected。主动聚焦的画布显式复用 `controls.workspaceFocus` 与 `data-pointer-focus`，指针交互不绘制外框，键盘进入/操作恢复一层轮廓。StyleX 同一属性的默认态和伪类使用一致的 outline longhand，避免 shorthand/longhand 分层让键盘样式失效；全局 `:focus-visible` 仍是其他控件的基础回退。详见 [兼容性契约](../contracts/compatibility.md)。
+复合单选组将隐藏输入的 `:focus-visible` 投影到可见标签（`:has(input:focus-visible)`），不能用 `:focus-within` 轮廓表示 Selected。主动聚焦的画布显式复用 `controls.workspaceFocus` 与 `data-pointer-focus`，指针交互不绘制外框，键盘进入/操作恢复一层轮廓。同一属性的默认态和伪类使用一致的 outline longhand，避免 shorthand/longhand 分层让键盘样式失效；全局 `:focus-visible` 仍是其他控件的基础回退。详见 [兼容性契约](../contracts/compatibility.md)。
 
 ## 验收
 

@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import { Button } from '../../ui/Button';
 import { TextField } from '../../ui/TextField';
-import { Frame, Picker, ErrorText, tr, s, saveBlob } from '../general/ui';
+import { Frame, Picker, ErrorText, tr, saveBlob } from '../general/ui';
+import s from '../general/ui.module.scss';
 import { useJob } from '../general/use-job';
 import { fail, MiB } from '../general/bounds';
 import { audioRange, encodeWav, inspectDuration } from './core';
@@ -111,7 +111,7 @@ export default function AudioTrimmer({ locale }: ToolProps) {
           });
         }}
       />
-      <p {...stylex.props(s.note)}>
+      <p className={s.note}>
         {tr(
           locale,
           '支持当前浏览器可解码的音频；上限 20 MiB、180 秒、双声道。',
@@ -128,10 +128,10 @@ export default function AudioTrimmer({ locale }: ToolProps) {
             ref={canvas}
             width={640}
             height={160}
-            {...stylex.props(s.canvas)}
+            className={s.canvas}
             aria-label={tr(locale, '音频波形', 'Audio waveform')}
           />
-          <div {...stylex.props(s.columns)}>
+          <div className={s.columns}>
             <TextField
               label={tr(locale, '起点（秒）', 'Start (seconds)')}
               value={start}
@@ -143,7 +143,7 @@ export default function AudioTrimmer({ locale }: ToolProps) {
               onChange={update(setEnd)}
             />
           </div>
-          <div {...stylex.props(s.row)}>
+          <div className={s.row}>
             <Button
               disabled={job.busy}
               onClick={() => {

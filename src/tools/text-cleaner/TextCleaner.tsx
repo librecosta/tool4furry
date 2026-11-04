@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import TextWorkspace from '../general/TextWorkspace';
 import { CheckboxField } from '../../ui/CheckboxField';
-import { errorText, s, tr } from '../general/ui';
+import { errorText, tr } from '../general/ui';
+import s from '../general/ui.module.scss';
 import { cleanText, textStats, defaults, type CleanOptions } from './core';
 export default function TextCleaner({ locale }: ToolProps) {
   const [input, setInput] = useState(''),
@@ -37,7 +37,7 @@ export default function TextCleaner({ locale }: ToolProps) {
       output={output}
       error={error}
     >
-      <div {...stylex.props(s.row)}>
+      <div className={s.row}>
         {(Object.keys(labels) as (keyof CleanOptions)[]).map((k) => (
           <CheckboxField
             key={k}
@@ -47,7 +47,7 @@ export default function TextCleaner({ locale }: ToolProps) {
           />
         ))}
       </div>
-      <p {...stylex.props(s.note)}>
+      <p className={s.note}>
         {tr(locale, '处理前', 'Before')}: {stats(input)}
         <br />
         {tr(locale, '处理后', 'After')}: {stats(output)}

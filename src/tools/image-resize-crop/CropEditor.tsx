@@ -1,14 +1,13 @@
 import { useId, useRef, useState } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
-import * as stylex from '@stylexjs/stylex';
-import { motion } from '../../styles/motion';
+import motion from '../../styles/motion.module.scss';
 import { XIcon } from '@phosphor-icons/react';
 import { IconButton } from '../../ui/Button';
-import { controls } from '../../styles/controls';
+import controls from '../../ui/controls.module.scss';
 import type { ResizeView } from './session';
 import type { ResizeMessages } from './ParameterControls';
 import { CropWorkspace, type CropDisplay } from './CropWorkspace';
-import { cropWorkspaceStyles as s } from './crop-workspace.styles';
+import s from './crop-workspace.styles.module.scss';
 
 export function CropEditor({ view, url, t, onCrop, onReset }: {
   view: ResizeView;
@@ -34,21 +33,21 @@ export function CropEditor({ view, url, t, onCrop, onReset }: {
   return (
     <Dialog.Root open={focused} onOpenChange={setFocused}>
       {/* A single interactive crop instance: remounting only changes the viewport. */}
-      {focused ? <div aria-hidden="true" {...stylex.props(s.placeholder)}/> : workspace(false)}
+      {focused ? <div aria-hidden="true" className={s.placeholder}/> : workspace(false)}
       <Dialog.Portal>
-        <Dialog.Backdrop {...stylex.props(s.backdrop, motion.backdrop)}/>
+        <Dialog.Backdrop className={[s.backdrop, motion.backdrop].filter(Boolean).join(' ')}/>
         <Dialog.Popup
           data-image-resize-crop
           initialFocus={done}
           finalFocus={() => document.getElementById(focusButtonId)}
-          {...stylex.props(s.dialog, motion.dialog)}
+          className={[s.dialog, motion.dialog].filter(Boolean).join(' ')}
         >
-          <header {...stylex.props(s.dialogHeader)}>
-            <div {...stylex.props(s.identity)}>
-              <Dialog.Title {...stylex.props(s.title)}>{t.focusEdit}</Dialog.Title>
-              <Dialog.Description {...stylex.props(s.filename)}>{view.source.file.name}</Dialog.Description>
+          <header className={s.dialogHeader}>
+            <div className={s.identity}>
+              <Dialog.Title className={s.title}>{t.focusEdit}</Dialog.Title>
+              <Dialog.Description className={s.filename}>{view.source.file.name}</Dialog.Description>
             </div>
-            <Dialog.Close render={<IconButton ref={done} label={t.close} variant="ghost" xstyle={controls.dialogClose}><XIcon size={20} aria-hidden/></IconButton>}/>
+            <Dialog.Close render={<IconButton ref={done} label={t.close} variant="ghost" className={controls.dialogClose}><XIcon size={20} aria-hidden/></IconButton>}/>
           </header>
           {focused && workspace(true)}
         </Dialog.Popup>

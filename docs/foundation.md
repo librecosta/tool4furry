@@ -1,6 +1,6 @@
 # 工程基础 · 当前说明
 
-当前工具与发布状态以 [AGENTS](../AGENTS.md) 为准；V0.9-A 已迁移 Astro 静态外壳，React 保留 StyleX，两个地区均未部署。系统分层见 [架构](../.agents/architecture.md)，执行流程见 [playbook](../.agents/playbook.md)；本页只解释工程集成与验证入口。
+当前工具与发布状态以 [AGENTS](../AGENTS.md) 为准；V0.9 已将全站迁移至 SCSS Modules / CSS Variables，两个地区均未部署。系统分层见 [架构](../.agents/architecture.md)，执行流程见 [playbook](../.agents/playbook.md)；本页只解释工程集成与验证入口。
 
 ## SSG 与交互边界
 
@@ -11,20 +11,18 @@
 
 DEV Lab 与正式工具分离：UI/文件/Canvas/Form/Batch 各自持有演示状态；`src/lab/hero-effects/` 仅保留 HSN-1 Canvas 2D 实验，不恢复已删除的 Orb/WebGL，也不接入正式首页。实验的固定种子水平曲面、屏幕空间采样、实际重绘节流（与 RAF 统计分开）、暂停/隐藏/离屏/Reduced Motion 及监听/数组释放由其源码和 `tests/hero-effects.test.tsx` 负责；旧 README 独有参数完整承接在首页历史末尾。
 
-## StyleX 与字体
+## SCSS、主题与字体
 
-[astro.config.mjs](../astro.config.mjs) 使用官方 unplugin 的 Vite pre-transform、`devMode: 'css-only'`、`runtimeInjection: false`、独立生产 CSS；React 使用现有集成路径，不恢复旧 Babel 配置。生产 `cssInjectionTarget` 固定选择所有静态页引用的 SiteLayout CSS，防止工具局部 CSS 成为上游默认的首资产注入目标；不改变工具 CSS 的按需归属。Astro 静态组件使用邻近 SCSS Modules，React 暂用 `stylex.props`；`global.scss` 承载 reset、字体与基础规则，`tokens.scss` 与旧 StyleX 值保持一致。具体所有权和后续范围见 [V0.9 样式基础](styling-foundation-v0.9.md)。
+Astro/Vite 原生编译 Sass，组件、工具与 Lab 各自拥有 CSS Module；没有 StyleX 插件、虚拟 CSS、开发刷新补丁或运行时样式注入。工具 CSS 仍随显式 Loader 按需交付，不改变 Published/Draft/Lab 资源边界。
 
-原生 `defineVars/createTheme` 与 `resolveTheme` 选择一份完整主题；根 class/data/color-scheme 覆盖静态页面、Island 和 Portal。外观恢复与切换由既有受控脚本完成，不增加 React ThemeProvider。主题值、字体和品牌权威入口见 [视觉说明](visual-foundation.md)。
-
-保留虚拟 CSS 阻塞 link 及本地 FOUC 兼容模块：新样式表加载后才替换旧表，失败仍保持旧表。移除条件、上游跟踪和回归检查见 [upstream](../contracts/upstream.md#stylex-开发兼容补丁)。不要通过隐藏页面掩盖样式时序。
+`tokens.scss` 是主题变量的唯一来源，`global.scss` 提供 reset、字体与基础规则。Head 内的同步控制器在首次绘制前恢复 `html[data-appearance]`；Island 和 Base UI Portal 继承相同变量，不需要 React ThemeProvider。层叠顺序与具体所有权见 [V0.9 样式基础](styling-foundation-v0.9.md)。字体与品牌授权见 [视觉说明](visual-foundation.md)。
 
 ## 可执行验证
 
 | 边界 | 权威实现 / 检查 |
 | --- | --- |
 | 工程版本与命令 | [package.json](../package.json)、[锁文件](../pnpm-lock.yaml)、[CI](../.github/workflows/ci.yml) |
-| Astro/React/StyleX | [配置](../astro.config.mjs)、[Vitest 配置](../vitest.config.ts)、[StyleX HMR 测试](../tests/stylex-dev-css.test.ts)、[主题测试](../tests/theme.test.ts) |
+| Astro/React/SCSS | [配置](../astro.config.mjs)、[样式编译/引用测试](../tests/styling-foundation.test.ts)、[主题测试](../tests/theme.test.ts)、[主题控制器测试](../tests/appearance-controller.test.mjs) |
 | 静态与资源隔离 | [verify-build.mjs](../scripts/verify-build.mjs)、[通用平台夹具](../scripts/verify-tool-fixture.mjs)、[contracts.test.ts](../tests/contracts.test.ts) |
 | 路由、地区与发现 | [language.test.ts](../tests/language.test.ts)、[discovery.test.mjs](../tests/discovery.test.mjs)、[taxonomy.test.ts](../tests/taxonomy.test.ts) |
 

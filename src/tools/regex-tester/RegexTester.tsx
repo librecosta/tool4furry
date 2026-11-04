@@ -1,17 +1,10 @@
 import { useEffect, useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import { Button } from '../../ui/Button';
 import { TextAreaField, TextField } from '../../ui/TextField';
 import { CheckboxField } from '../../ui/CheckboxField';
-import {
-  Frame,
-  tr,
-  s,
-  TextDelivery,
-  ErrorText,
-  errorText,
-} from '../general/ui';
+import { Frame, tr, TextDelivery, ErrorText, errorText,  } from '../general/ui';
+import s from '../general/ui.module.scss';
 import { LocalError } from '../general/bounds';
 import { runRegex } from './client';
 import type { RegexResult } from './core';
@@ -64,7 +57,7 @@ export default function RegexTester({ locale }: ToolProps) {
     cursor = m.end;
     return [
       before,
-      <mark key={i} {...stylex.props(s.added)}>
+      <mark key={i} className={s.added}>
         {m.value || '▏'}
       </mark>,
     ];
@@ -81,7 +74,7 @@ export default function RegexTester({ locale }: ToolProps) {
         maxLength={500}
         onChange={setPattern}
       />
-      <div {...stylex.props(s.row)}>
+      <div className={s.row}>
         {['g', 'i', 'm', 's', 'u', 'y', 'd'].map((flag) => (
           <CheckboxField
             key={flag}
@@ -106,7 +99,7 @@ export default function RegexTester({ locale }: ToolProps) {
         value={replacement}
         onChange={setReplacement}
       />
-      <p {...stylex.props(s.note)}>
+      <p className={s.note}>
         JavaScript RegExp ·{' '}
         {tr(
           locale,
@@ -126,12 +119,12 @@ export default function RegexTester({ locale }: ToolProps) {
         <>
           <pre
             aria-label={tr(locale, '匹配高亮', 'Highlighted matches')}
-            {...stylex.props(s.pre)}
+            className={s.pre}
           >
             {highlighted}
             {text.slice(cursor)}
           </pre>
-          <div {...stylex.props(s.scroll)}>
+          <div className={s.scroll}>
             <ol>
               {result.matches.map((m, i) => (
                 <li key={i}>
@@ -139,7 +132,7 @@ export default function RegexTester({ locale }: ToolProps) {
                     {m.index}–{m.end}: {JSON.stringify(m.value)}
                   </code>
                   {m.groups.length > 0 && (
-                    <pre {...stylex.props(s.pre)}>
+                    <pre className={s.pre}>
                       {JSON.stringify(
                         { groups: m.groups, named: m.named },
                         null,

@@ -1,15 +1,14 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import WorkbenchShell from '../../workbench/WorkbenchShell';
-import { formToolLayout as form } from '../../workbench/form-tool-layout';
+import form from '../../workbench/form-tool-layout.module.scss';
 import { FileDropzone } from '../../ui/FileDropzone';
 import { Button } from '../../ui/Button';
 import { TextField } from '../../ui/TextField';
 import { CheckboxField } from '../../ui/CheckboxField';
 import { FieldFrame, useField } from '../../ui/Field';
 import { SliderField } from '../../ui/SliderField';
-import { controls as c } from '../../styles/controls';
+import c from '../../ui/controls.module.scss';
 import { FileTaskList } from '../../ui/FileTaskList';
 import { ConfirmDialog } from '../../ui/ConfirmDialog';
 import { ConverterTaskRow } from './ConverterTaskRow';
@@ -21,7 +20,7 @@ import { createProcessingState, isCustomSettings } from '../processing-state';
 import { recommendations, sameSettings, type EncodeSettings } from './presets';
 import { ConverterSession, type ConverterView } from './session';
 import { getConverterMessages } from './messages';
-import { converterStyles as s } from './converter.styles';
+import s from './converter.styles.module.scss';
 
 const bytes = (value: number) => {
   const unit =
@@ -147,14 +146,14 @@ export default function ImageConverter({ locale }: ToolProps) {
       <div
         data-image-converter
         data-form-layout={hasTasks ? 'split' : 'stack'}
-        {...stylex.props(form.container, hasTasks && form.columns, hasTasks && form.split)}
+        className={[form.container, hasTasks && form.columns, hasTasks && form.split].filter(Boolean).join(' ')}
       >
         <section
           data-converter-part="file"
           aria-label={t.file}
-          {...stylex.props(s.file, hasTasks && form.leading)}
+          className={[s.file, hasTasks && form.leading].filter(Boolean).join(' ')}
         >
-          <div {...stylex.props(s.intakeActions, hasTasks && s.compactIntake)}>
+          <div className={[s.intakeActions, hasTasks && s.compactIntake].filter(Boolean).join(' ')}>
             <FileDropzone
               id="converter-source"
               appearance={hasTasks ? 'compact' : 'expanded'}
@@ -191,7 +190,7 @@ export default function ImageConverter({ locale }: ToolProps) {
               }}
             />
             <Button
-              xstyle={s.supportAction}
+              className={s.supportAction}
               disabled={!session || folderSupported === false}
               aria-describedby={
                 folderSupported === false ? 'converter-folder-hint' : undefined
@@ -202,17 +201,17 @@ export default function ImageConverter({ locale }: ToolProps) {
             </Button>
           </div>
           {folderSupported === false && (
-            <p id="converter-folder-hint" {...stylex.props(s.note)}>
+            <p id="converter-folder-hint" className={s.note}>
               {t.folderUnavailable}
             </p>
           )}
-          <details {...stylex.props(s.help)}>
+          <details className={s.help}>
             <summary>{t.fileDetails}</summary>
-            <p {...stylex.props(s.note)}>{t.budget}</p>
-            <p {...stylex.props(s.note)}>{t.limitations}</p>
+            <p className={s.note}>{t.budget}</p>
+            <p className={s.note}>{t.limitations}</p>
           </details>
           {rejected.length > 0 && (
-            <p role="status" {...stylex.props(s.note)}>
+            <p role="status" className={s.note}>
               {t.intakeAccepted} {view.intake!.accepted} · {t.intakeSkipped}{' '}
               {rejected
                 .map(
@@ -222,9 +221,9 @@ export default function ImageConverter({ locale }: ToolProps) {
                 .join('；')}
             </p>
           )}
-          <div {...stylex.props(s.listActions)}>
+          <div className={s.listActions}>
             {hasTasks && (
-              <span {...stylex.props(s.note)}>
+              <span className={s.note}>
                 {view.tasks.length}/{limits.files} ·{' '}
                 {bytes(
                   view.tasks.reduce((total, task) => total + task.file.size, 0),
@@ -255,24 +254,24 @@ export default function ImageConverter({ locale }: ToolProps) {
         <section
           data-converter-part="settings"
           aria-labelledby="converter-settings"
-          {...stylex.props(s.settings, hasTasks && form.aside)}
+          className={[s.settings, hasTasks && form.aside].filter(Boolean).join(' ')}
         >
-          <div {...stylex.props(s.settingsHeader)}>
-            <h2 id="converter-settings" {...stylex.props(s.settingsTitle)}>
+          <div className={s.settingsHeader}>
+            <h2 id="converter-settings" className={s.settingsTitle}>
               {t.settings}
             </h2>
-            <div role="group" aria-label={t.modes} {...stylex.props(s.modes)}>
+            <div role="group" aria-label={t.modes} className={s.modes}>
               {(['quick', 'advanced'] as const).map((mode) => (
                 <button
                   key={mode}
                   type="button"
                   disabled={view.checkingCapabilities}
                   aria-pressed={state.mode === mode}
-                  {...stylex.props(
+                  className={[
                     s.mode,
                     s.parameterControl,
                     state.mode === mode && s.currentParameterMode,
-                  )}
+                  ].filter(Boolean).join(' ')}
                   onClick={() => {
                     setQualityDraft(undefined);
                     session?.mode(mode);
@@ -283,9 +282,9 @@ export default function ImageConverter({ locale }: ToolProps) {
               ))}
             </div>
           </div>
-          <fieldset {...stylex.props(s.group)}>
-            <legend {...stylex.props(s.legend)}>{t.formats}</legend>
-            <div {...stylex.props(s.choices)}>
+          <fieldset className={s.group}>
+            <legend className={s.legend}>{t.formats}</legend>
+            <div className={s.choices}>
               {formats.map((format) => {
                 const disabled =
                   view.checkingCapabilities ||
@@ -298,11 +297,11 @@ export default function ImageConverter({ locale }: ToolProps) {
                         ? format === 'avif' ? t.errors.avifDevice : t.unavailable
                         : undefined
                     }
-                    {...stylex.props(
+                    className={[
                       s.choice,
                       settings.format === format && !disabled && s.chosen,
                       disabled && s.disabled,
-                    )}
+                    ].filter(Boolean).join(' ')}
                   >
                     <input
                       type="radio"
@@ -319,9 +318,9 @@ export default function ImageConverter({ locale }: ToolProps) {
                           ? format === 'avif' ? t.errors.avifDevice : t.unavailable
                           : undefined
                       }
-                      {...stylex.props(s.radio)}
+                      className={s.radio}
                     />
-                    <span {...stylex.props(s.choiceLabel)}>
+                    <span className={s.choiceLabel}>
                       {format.toUpperCase()}
                     </span>
                   </label>
@@ -329,14 +328,14 @@ export default function ImageConverter({ locale }: ToolProps) {
               })}
             </div>
           </fieldset>
-          {settings.format === 'avif' && <p {...stylex.props(s.note)}>{t.avifLimits}</p>}
+          {settings.format === 'avif' && <p className={s.note}>{t.avifLimits}</p>}
           {!view.checkingCapabilities &&
             (view.capabilityError ||
               !formats.some(
                 (format) => view.capabilities?.[format].supported,
               )) && (
               <>
-                <p role="alert" {...stylex.props(s.error)}>
+                <p role="alert" className={s.error}>
                   {view.capabilityError
                     ? t.errors[view.capabilityError]
                     : t.none}
@@ -376,11 +375,11 @@ export default function ImageConverter({ locale }: ToolProps) {
                         inputMode="numeric"
                         disabled={view.checkingCapabilities}
                         value={qualityText}
-                        {...stylex.props(
+                        className={[
                           c.input,
                           s.qualityInput,
                           qualityInvalid && c.invalid,
-                        )}
+                        ].filter(Boolean).join(' ')}
                         onChange={(event) => {
                           const text = event.target.value;
                           setQualityDraft(text);
@@ -398,7 +397,7 @@ export default function ImageConverter({ locale }: ToolProps) {
                   />
                   <div
                     id={`${qualityId}-scale`}
-                    {...stylex.props(s.qualityScale)}
+                    className={s.qualityScale}
                   >
                     <span>{t.smallerFile}</span>
                     <span>{t.higherQuality}</span>
@@ -416,7 +415,7 @@ export default function ImageConverter({ locale }: ToolProps) {
               )}
               {settings.format === 'jpeg' && (
                 <FieldFrame {...backgroundField} ids={backgroundIds}>
-                  <div {...stylex.props(s.backgroundControl)}>
+                  <div className={s.backgroundControl}>
                     <input
                       id={backgroundIds.id}
                       disabled={view.checkingCapabilities}
@@ -424,7 +423,7 @@ export default function ImageConverter({ locale }: ToolProps) {
                       maxLength={7}
                       aria-invalid={backgroundInvalid || undefined}
                       aria-describedby={backgroundIds.describedBy}
-                      {...stylex.props(c.input, backgroundInvalid && c.invalid)}
+                      className={[c.input, backgroundInvalid && c.invalid].filter(Boolean).join(' ')}
                       onChange={(event) =>
                         session?.settings({
                           ...settings,
@@ -441,7 +440,7 @@ export default function ImageConverter({ locale }: ToolProps) {
                           ? lastValidBackground
                           : settings.jpegBackground
                       }
-                      {...stylex.props(c.input, s.colorPicker)}
+                      className={[c.input, s.colorPicker].filter(Boolean).join(' ')}
                       onChange={(event) =>
                         session?.settings({
                           ...settings,
@@ -486,7 +485,7 @@ export default function ImageConverter({ locale }: ToolProps) {
           {hasTasks && (state.mode === 'advanced' || pending) && (
             <Button
               variant="primary"
-              xstyle={s.supportAction}
+              className={s.supportAction}
               disabled={!canProcess || !pending}
               onClick={() => session?.generateAll()}
             >
@@ -506,7 +505,7 @@ export default function ImageConverter({ locale }: ToolProps) {
           hidden={!hasTasks}
           data-converter-part="tasks"
           aria-label={t.tasks}
-          {...stylex.props(hasTasks && form.main)}
+          className={[hasTasks && form.main].filter(Boolean).join(' ')}
         >
           {session && (
             <FileTaskList label={t.tasks}>
@@ -535,7 +534,7 @@ export default function ImageConverter({ locale }: ToolProps) {
           )}
         </section>
         {import.meta.env.DEV && debug && (
-          <details {...stylex.props(s.details)}>
+          <details className={s.details}>
             <summary>DEV · ownership diagnostics</summary>
             <pre data-converter-diagnostics>
               {JSON.stringify(

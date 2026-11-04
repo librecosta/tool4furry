@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import { CropIcon, StackIcon } from '@phosphor-icons/react';
 import type { ToolProps } from '../types';
 import WorkbenchShell from '../../workbench/WorkbenchShell';
@@ -8,12 +7,12 @@ import { Button } from '../../ui/Button';
 import { ConfirmDialog } from '../../ui/ConfirmDialog';
 import { mobileImageLimits, resolveImageLimits } from '../image/limits';
 import { imageAccept, sortedFolderFiles } from '../image-converter/intake';
-import { converterStyles as c } from '../image-converter/converter.styles';
+import c from '../image-converter/converter.styles.module.scss';
 import { ResizeCollection, initialCollection } from './collection';
 import { SingleEditor } from './SingleEditor';
 import { BatchPanel } from './BatchPanel';
 import { resizeMessages } from './messages';
-import { resizeStyles as s } from './resize.styles';
+import s from './resize.styles.module.scss';
 import cropLicense from './crop.NOTICE.txt?url';
 
 export default function ImageResizeCrop({ locale }: ToolProps) {
@@ -103,24 +102,24 @@ export default function ImageResizeCrop({ locale }: ToolProps) {
         <div
           data-image-resize-crop
           data-resize-mode={view.mode}
-          {...stylex.props(s.stack, !hasFiles && s.empty)}
+          className={[s.stack, !hasFiles && s.empty].filter(Boolean).join(' ')}
         >
-          <div {...stylex.props(hasFiles && s.toolbar, !hasFiles && s.stack)}>
+          <div className={[hasFiles && s.toolbar, !hasFiles && s.stack].filter(Boolean).join(' ')}>
             {hasFiles && (
               <div
                 role="group"
                 aria-label={t.workflows}
-                {...stylex.props(s.workflows)}
+                className={s.workflows}
               >
                 {(['single', 'batch'] as const).map((mode) => (
                   <button
                     type="button"
                     key={mode}
                     aria-pressed={view.mode === mode}
-                    {...stylex.props(
+                    className={[
                       s.workflow,
                       view.mode === mode && s.currentWorkflow,
-                    )}
+                    ].filter(Boolean).join(' ')}
                     onClick={() => manager?.setMode(mode)}
                   >
                     {mode === 'single' ? (
@@ -133,8 +132,8 @@ export default function ImageResizeCrop({ locale }: ToolProps) {
                 ))}
               </div>
             )}
-            <div {...stylex.props(hasFiles && s.addFiles)}>
-              <div {...stylex.props(c.intakeActions, hasFiles && c.compactIntake)}>
+            <div className={[hasFiles && s.addFiles].filter(Boolean).join(' ')}>
+              <div className={[c.intakeActions, hasFiles && c.compactIntake].filter(Boolean).join(' ')}>
                 <FileDropzone
                   id="resize-source"
                   label={hasFiles ? t.append : t.pick}
@@ -172,7 +171,7 @@ export default function ImageResizeCrop({ locale }: ToolProps) {
                   }}
                 />
                 <Button
-                  xstyle={c.supportAction}
+                  className={c.supportAction}
                   disabled={!manager || folderSupported === false}
                   aria-describedby={
                     folderSupported === false ? 'resize-folder-hint' : undefined
@@ -202,25 +201,25 @@ export default function ImageResizeCrop({ locale }: ToolProps) {
             </div>
           </div>
           {folderSupported === false && (
-            <p id="resize-folder-hint" {...stylex.props(c.note)}>
+            <p id="resize-folder-hint" className={c.note}>
               {t.folderUnavailable}
             </p>
           )}
-          <details {...stylex.props(c.help)}>
+          <details className={c.help}>
             <summary>{t.fileDetails}</summary>
-            <p {...stylex.props(c.note)}>{t.input}</p>
-            <p {...stylex.props(c.note)}>
+            <p className={c.note}>{t.input}</p>
+            <p className={c.note}>
               {t.limitPerFile} {limits.bytes / 1024 ** 2} MiB · {t.limitFiles}{' '}
               {limits.files} · {t.limitTotal} {limits.totalBytes / 1024 ** 2}{' '}
               MiB
             </p>
-            <p {...stylex.props(c.note)}>
+            <p className={c.note}>
               {t.limitSize} {limits.edge}px · {limits.pixels / 1000000} MP
             </p>
-            <p {...stylex.props(c.note)}>{t.inputLimitations}</p>
+            <p className={c.note}>{t.inputLimitations}</p>
           </details>
           {!!rejected.length && (
-            <p role="alert" {...stylex.props(c.error)}>
+            <p role="alert" className={c.error}>
               {t.intakeRejected}{' '}
               {rejected
                 .map(
@@ -234,7 +233,7 @@ export default function ImageResizeCrop({ locale }: ToolProps) {
             view.files
               .filter((item) => item.intake === 'failed')
               .map((item) => (
-                <p key={item.id} role="alert" {...stylex.props(c.error)}>
+                <p key={item.id} role="alert" className={c.error}>
                   {item.file.name}:{' '}
                   {t.errors[item.error as keyof typeof t.errors] ??
                     t.errors.fallback}

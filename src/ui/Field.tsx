@@ -68,6 +68,3 @@ export function FieldFrame({
     </div>
   );
 }
-
-// Tool-facing compatibility only; this component renders native CSS Modules.
-export { fieldStyles } from './Field.legacy';

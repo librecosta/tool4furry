@@ -1,92 +1,13 @@
+import s from './ui.module.scss';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import WorkbenchShell from '../../workbench/WorkbenchShell';
 import { Button } from '../../ui/Button';
 import { FileDropzone } from '../../ui/FileDropzone';
-import { tokens as t } from '../../styles/tokens.stylex';
 import type { Locale } from '../../i18n/locale';
 import { LocalError } from './bounds';
 export const tr = (locale: Locale, zh: string, en: string) =>
   locale === 'zh' ? zh : en;
-export const s = stylex.create({
-  stack: { display: 'grid', gap: 16, minWidth: 0 },
-  columns: {
-    display: 'grid',
-    gridTemplateColumns: {
-      default: 'repeat(2,minmax(0,1fr))',
-      '@media(max-width: 700px)': 'minmax(0,1fr)',
-    },
-    gap: 20,
-    minWidth: 0,
-  },
-  row: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    gap: 10,
-    minWidth: 0,
-  },
-  panel: {
-    padding: 16,
-    borderRadius: t.radiusLg,
-    backgroundColor: t.surfacePanel,
-    minWidth: 0,
-  },
-  list: { listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 8 },
-  item: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    gap: 8,
-    padding: 10,
-    backgroundColor: t.surfacePanel,
-    borderRadius: t.radiusSm,
-    minWidth: 0,
-  },
-  grow: { flex: 1, minWidth: 100, overflowWrap: 'anywhere' },
-  note: {
-    color: t.textSecondary,
-    fontSize: 13,
-    margin: 0,
-    overflowWrap: 'anywhere',
-  },
-  error: { color: t.danger, overflowWrap: 'anywhere' },
-  pre: {
-    whiteSpace: 'pre-wrap',
-    overflowWrap: 'anywhere',
-    margin: 0,
-    fontSize: 13,
-    maxHeight: 500,
-    overflow: 'auto',
-  },
-  table: { width: '100%', borderCollapse: 'collapse', textAlign: 'start' },
-  cell: {
-    padding: 8,
-    verticalAlign: 'top',
-    overflowWrap: 'anywhere',
-    borderBottomWidth: 1,
-    borderBottomStyle: 'solid',
-    borderBottomColor: t.border,
-  },
-  scroll: { overflow: 'auto', minWidth: 0 },
-  added: { backgroundColor: t.actionTint, color: t.positive },
-  removed: { backgroundColor: t.surfacePanel, color: t.danger },
-  canvas: {
-    display: 'block',
-    width: '100%',
-    maxWidth: 640,
-    height: 'auto',
-    backgroundColor: t.surfacePanel,
-    borderRadius: t.radiusSm,
-  },
-  qr: {
-    display: 'block',
-    width: '100%',
-    maxWidth: 320,
-    height: 'auto',
-    imageRendering: 'pixelated',
-  },
-});
+
 export function Frame({
   locale,
   children,
@@ -117,7 +38,7 @@ export function Frame({
       <div
         data-general-ready={ready || undefined}
         aria-busy={!ready}
-        {...stylex.props(s.stack)}
+        className={s.stack}
       >
         {children}
       </div>
@@ -126,7 +47,7 @@ export function Frame({
 }
 export function ErrorText({ error }: { error?: string }) {
   return error ? (
-    <p role="alert" {...stylex.props(s.error)}>
+    <p role="alert" className={s.error}>
       {error}
     </p>
   ) : null;
@@ -185,7 +106,7 @@ export function Copy({
         {tr(locale, '复制', 'Copy')}
       </Button>
       {message && (
-        <span role="status" {...stylex.props(s.note)}>
+        <span role="status" className={s.note}>
           {message}
         </span>
       )}
@@ -206,7 +127,7 @@ export function TextDelivery({
   enabled?: boolean;
 }) {
   return (
-    <div {...stylex.props(s.row)}>
+    <div className={s.row}>
       <Copy value={value} locale={locale} enabled={enabled} />
       <Button
         disabled={!enabled}
@@ -245,7 +166,7 @@ export function Picker({
     onFiles(files);
   };
   return (
-    <div {...stylex.props(s.stack)}>
+    <div className={s.stack}>
       <FileDropzone
         label={tr(
           locale,
@@ -306,12 +227,12 @@ export function FileRows({
     onChange(next);
   };
   return (
-    <ul {...stylex.props(s.list)}>
+    <ul className={s.list}>
       {rows.map((row, i) => (
-        <li key={row.id} {...stylex.props(s.item)}>
-          <div {...stylex.props(s.grow)}>
+        <li key={row.id} className={s.item}>
+          <div className={s.grow}>
             {row.file.name}
-            <p {...stylex.props(s.note)}>
+            <p className={s.note}>
               {(row.file.size / 1024).toFixed(1)} KB {row.detail}
             </p>
           </div>

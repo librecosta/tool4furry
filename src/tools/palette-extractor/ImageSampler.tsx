@@ -1,14 +1,13 @@
 import { useCallback, useEffect, useId, useRef, useState, type PointerEvent } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import { ArrowsOutIcon, FrameCornersIcon, HandIcon, MinusIcon, NumberSquareOneIcon, PlusIcon, XIcon } from '@phosphor-icons/react';
-import * as stylex from '@stylexjs/stylex';
 import { Button, IconButton } from '../../ui/Button';
 import { Tooltip } from '../../ui/Tooltip';
-import { motion } from '../../styles/motion';
-import { controls } from '../../styles/controls';
+import motion from '../../styles/motion.module.scss';
+import controls from '../../ui/controls.module.scss';
 import { clamp, constrain, fitScale, zoomAt, zoomRange, type PreviewView, type PreviewSize } from '../image/preview-geometry';
 import { samplePoint, type Swatch } from './palette';
-import { styles as s } from './styles';
+import s from './styles.module.scss';
 import type { Labels } from './messages';
 
 /** Camera only. Sampling uses the already oriented, bounded preview pixels. */
@@ -136,17 +135,17 @@ export function ImageSampler({ pixels, url, target, selected, onPick, onPreview,
     { label: t.fit, icon: FrameCornersIcon, run: () => { if (!gesture.current) fit(); } },
     { label: t.actual, icon: NumberSquareOneIcon, run: () => zoom(1) },
   ];
-  const workspace = () => <div {...stylex.props(s.workspace, focused && s.focusedWorkspace)}>
-    {focused && onTarget && <div role="group" aria-label={t.palette} {...stylex.props(s.toolbar)}>{colors.map((color, index) => <Tooltip key={color.id} content={`${t.pick} ${index + 1} · ${color.hex}`}><IconButton variant="ghost" label={`${t.pick} ${index + 1}`} aria-pressed={target === color.id} xstyle={[s.tool, motion.selection, target === color.id && s.selected]} onClick={() => onTarget(color.id)}><span {...stylex.props(s.sampleColor)} data-focus-swatch={color.id} style={{ backgroundColor: preview?.id === color.id ? preview.hex : color.hex }}/></IconButton></Tooltip>)}</div>}
-    <div {...stylex.props(s.workspaceBody, focused && s.focusedBody)}>
-    <div {...stylex.props(s.viewTools)} role="toolbar" aria-label={t.viewControls}>
-      {tools.map(tool => <Tooltip key={tool.label} content={tool.label}><IconButton variant="ghost" label={tool.label} xstyle={s.tool} disabled={tool.disabled} onClick={tool.run}><tool.icon size={20}/></IconButton></Tooltip>)}
-      <Tooltip content={t.panHint}><IconButton variant="ghost" label={t.pan} aria-pressed={!target} xstyle={[s.tool, motion.selection, !target && s.selected]} onClick={() => { release(); cancel(); }}><HandIcon size={20}/></IconButton></Tooltip>
-      {!focused && <Tooltip content={t.focus}><IconButton id={focusId} variant="ghost" label={t.focus} aria-haspopup="dialog" aria-expanded={open} xstyle={s.tool} onClick={() => { release(); setFocused(true); setOpen(true); }}><ArrowsOutIcon size={20}/></IconButton></Tooltip>}
-      <span aria-hidden="true" {...stylex.props(s.zoomLabel)}>{Math.round(view.scale * 100)}%</span>
+  const workspace = () => <div className={[s.workspace, focused && s.focusedWorkspace].filter(Boolean).join(' ')}>
+    {focused && onTarget && <div role="group" aria-label={t.palette} className={s.toolbar}>{colors.map((color, index) => <Tooltip key={color.id} content={`${t.pick} ${index + 1} · ${color.hex}`}><IconButton variant="ghost" label={`${t.pick} ${index + 1}`} aria-pressed={target === color.id} className={[s.tool, motion.selection, target === color.id && s.selected].filter(Boolean).join(' ')} onClick={() => onTarget(color.id)}><span className={s.sampleColor} data-focus-swatch={color.id} style={{ backgroundColor: preview?.id === color.id ? preview.hex : color.hex }}/></IconButton></Tooltip>)}</div>}
+    <div className={[s.workspaceBody, focused && s.focusedBody].filter(Boolean).join(' ')}>
+    <div className={s.viewTools} role="toolbar" aria-label={t.viewControls}>
+      {tools.map(tool => <Tooltip key={tool.label} content={tool.label}><IconButton variant="ghost" label={tool.label} className={s.tool} disabled={tool.disabled} onClick={tool.run}><tool.icon size={20}/></IconButton></Tooltip>)}
+      <Tooltip content={t.panHint}><IconButton variant="ghost" label={t.pan} aria-pressed={!target} className={[s.tool, motion.selection, !target && s.selected].filter(Boolean).join(' ')} onClick={() => { release(); cancel(); }}><HandIcon size={20}/></IconButton></Tooltip>
+      {!focused && <Tooltip content={t.focus}><IconButton id={focusId} variant="ghost" label={t.focus} aria-haspopup="dialog" aria-expanded={open} className={s.tool} onClick={() => { release(); setFocused(true); setOpen(true); }}><ArrowsOutIcon size={20}/></IconButton></Tooltip>}
+      <span aria-hidden="true" className={s.zoomLabel}>{Math.round(view.scale * 100)}%</span>
     </div>
     <div ref={bindHost} data-palette-sampler role="region" aria-label={t.workspace} aria-describedby={target ? `${focusId}-hint` : undefined} tabIndex={0}
-      {...stylex.props(s.stage, controls.workspaceFocus, focused && s.focusedStage, !!target && s.picking)}
+      className={[s.stage, controls.workspaceFocus, focused && s.focusedStage, !!target && s.picking].filter(Boolean).join(' ')}
       onKeyDownCapture={event => { delete event.currentTarget.dataset.pointerFocus; }}
       onBlur={event => { delete event.currentTarget.dataset.pointerFocus; }}
       onPointerDown={event => {
@@ -194,7 +193,7 @@ export function ImageSampler({ pixels, url, target, selected, onPick, onPreview,
         else return;
         event.preventDefault();
       }}>
-      <div data-palette-plane {...stylex.props(s.plane)} style={{ width: pixels.width * view.scale, height: pixels.height * view.scale, marginLeft: view.x, marginTop: view.y }}><img src={url} alt="" draggable={false} {...stylex.props(s.image)}/></div>
+      <div data-palette-plane className={s.plane} style={{ width: pixels.width * view.scale, height: pixels.height * view.scale, marginLeft: view.x, marginTop: view.y }}><img src={url} alt="" draggable={false} className={s.image}/></div>
       {colors.map((color, index) => {
         const active = (selected ?? target) === color.id;
         const previewing = preview?.id === color.id;
@@ -204,7 +203,7 @@ export function ImageSampler({ pixels, url, target, selected, onPick, onPreview,
         const top = size.current.height / 2 + view.y + (point.y + 0.5 - pixels.height / 2) * view.scale;
         if (left < 0 || top < 0 || left > size.current.width || top > size.current.height) return null;
         return <button key={color.id} type="button" data-color-marker={color.id} aria-label={`${t.selectColor} ${index + 1} · ${color.hex}`} aria-pressed={active}
-          {...stylex.props(s.marker)} style={{ left, top }} onClick={() => onSelect?.(color.id)}
+          className={s.marker} style={{ left, top }} onClick={() => onSelect?.(color.id)}
           onPointerDown={event => {
             event.stopPropagation();
             if (event.button !== 0) return;
@@ -215,20 +214,20 @@ export function ImageSampler({ pixels, url, target, selected, onPick, onPreview,
             gesture.current = { id: event.pointerId, x: event.clientX, y: event.clientY, target: color.id, url, kind: 'marker', moved: false };
             host.current?.setPointerCapture?.(event.pointerId);
           }}>
-          <span {...stylex.props(s.markerDot, active && s.markerSelected)} style={{ backgroundColor: previewing ? preview.hex : color.hex }}/>
+          <span className={[s.markerDot, active && s.markerSelected].filter(Boolean).join(' ')} style={{ backgroundColor: previewing ? preview.hex : color.hex }}/>
         </button>;
       })}
-      {preview && <div aria-hidden="true"><div {...stylex.props(s.loupe)} style={{ left: preview.left, top: preview.top }}><canvas ref={lens} width={9} height={9} {...stylex.props(s.magnified)}/><span {...stylex.props(s.cross)}/></div><span {...stylex.props(s.sampleLabel)} style={{ left: preview.left, top: preview.top + 92 }}>{preview.hex}</span></div>}
+      {preview && <div aria-hidden="true"><div className={s.loupe} style={{ left: preview.left, top: preview.top }}><canvas ref={lens} width={9} height={9} className={s.magnified}/><span className={s.cross}/></div><span className={s.sampleLabel} style={{ left: preview.left, top: preview.top + 92 }}>{preview.hex}</span></div>}
     </div>
     </div>
-    {target && <div {...stylex.props(s.row)}><p id={`${focusId}-hint`} role="status" {...stylex.props(s.muted, s.grow)}>{t.picking}</p><Button variant="ghost" size="sm" onClick={() => { release(); cancel(); }}>{t.cancel}</Button></div>}
+    {target && <div className={s.row}><p id={`${focusId}-hint`} role="status" className={[s.muted, s.grow].filter(Boolean).join(' ')}>{t.picking}</p><Button variant="ghost" size="sm" onClick={() => { release(); cancel(); }}>{t.cancel}</Button></div>}
   </div>;
   return <Dialog.Root open={open} onOpenChange={next => { release(); if (!next) cancel(); setOpen(next); if (next) setFocused(true); }} onOpenChangeComplete={next => { if (!next) { returning.current = true; setFocused(false); } }}>
-    {focused ? <div aria-hidden="true" {...stylex.props(s.placeholder)}/> : workspace()}
+    {focused ? <div aria-hidden="true" className={s.placeholder}/> : workspace()}
     <Dialog.Portal>
-      <Dialog.Backdrop {...stylex.props(s.backdrop, motion.backdrop)}/>
-      <Dialog.Popup initialFocus={done} finalFocus={false} {...stylex.props(s.dialog, s.focusDialog, motion.dialog)}>
-        <header {...stylex.props(s.row)}><Dialog.Title {...stylex.props(s.heading, s.grow)}>{t.focus}</Dialog.Title><Dialog.Close render={<IconButton ref={done} label={t.close} variant="ghost" xstyle={controls.dialogClose}><XIcon size={20} aria-hidden/></IconButton>}/></header>
+      <Dialog.Backdrop className={[s.backdrop, motion.backdrop].filter(Boolean).join(' ')}/>
+      <Dialog.Popup initialFocus={done} finalFocus={false} className={[s.dialog, s.focusDialog, motion.dialog].filter(Boolean).join(' ')}>
+        <header className={s.row}><Dialog.Title className={[s.heading, s.grow].filter(Boolean).join(' ')}>{t.focus}</Dialog.Title><Dialog.Close render={<IconButton ref={done} label={t.close} variant="ghost" className={controls.dialogClose}><XIcon size={20} aria-hidden/></IconButton>}/></header>
         {focused && workspace()}
       </Dialog.Popup>
     </Dialog.Portal>

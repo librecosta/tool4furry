@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import { Button } from '../../ui/Button';
 import { deliverySnapshot, deliveryState } from './delivery';
 import type { ConverterSession, ConverterView } from './session';
 import type { converterMessages } from './messages';
-import { converterStyles as s } from './converter.styles';
+import s from './converter.styles.module.scss';
 
 export function BatchDownload({
   session,
@@ -107,7 +106,7 @@ export function BatchDownload({
         ? t.zip.empty
         : `${t.zip.success} ${state.entries.length} · ${t.zip.failedCount} ${state.failed}`;
   return (
-    <div {...stylex.props(s.delivery)}>
+    <div className={s.delivery}>
       <Button
         disabled={busy || blocked || !state.allowed}
         onClick={start}
@@ -116,11 +115,11 @@ export function BatchDownload({
       >
         {busy ? t.zip.packing : error ? t.zip.retry : t.zip.download}
       </Button>
-      <p id="converter-zip-status" role="status" {...stylex.props(s.note)}>
+      <p id="converter-zip-status" role="status" className={s.note}>
         {reason}
       </p>
       {error && (
-        <p role="alert" {...stylex.props(s.error)}>
+        <p role="alert" className={s.error}>
           {t.zip[error]}
         </p>
       )}

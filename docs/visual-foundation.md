@@ -1,6 +1,6 @@
 # V0.3-A — Visual Foundation & Design Tokens
 
-> **当前入口 + 历史视觉记录**：实际颜色、主题组合、字体和状态以 `src/styles/tokens.scss`、过渡期 `tokens.stylex.ts`、`theme.ts`、`global.scss` 及相关测试为准；下列分阶段色卡/无切换器等描述不能覆盖后续实现。本页不迁移、不重写旧数值。当前站点结构/主题控制见 [site-homepage](site-homepage.md)，集成与授权见 [upstream](../contracts/upstream.md)。
+> **当前入口 + 历史视觉记录**：实际颜色、主题组合、字体和状态以 `src/styles/tokens.scss`、纯主题参数校验 `theme.ts`、`global.scss` 及相关测试为准；下列分阶段色卡/无切换器等描述不能覆盖后续实现。本页不迁移、不重写旧数值。当前站点结构/主题控制见 [site-homepage](site-homepage.md)，集成与授权见 [upstream](../contracts/upstream.md)。
 
 ## V0.8 — 统一 Lavender 交互色（2026-11-04）
 

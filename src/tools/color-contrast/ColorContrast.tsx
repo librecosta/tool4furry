@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import { HexColorPicker } from 'react-colorful';
 import type { ToolProps } from '../types';
 import { TextField } from '../../ui/TextField';
 import { Button } from '../../ui/Button';
-import { Frame, ErrorText, errorText, tr, s, Copy } from '../general/ui';
+import { Frame, ErrorText, errorText, tr, Copy } from '../general/ui';
+import s from '../general/ui.module.scss';
 import { parseColor, colorValues, contrast } from './core';
 import notice from '../palette-extractor/react-colorful.NOTICE.txt?url';
 export default function ColorContrast({ locale }: ToolProps) {
@@ -24,7 +24,7 @@ export default function ColorContrast({ locale }: ToolProps) {
   return (
     <Frame locale={locale}>
       <span hidden data-color-license={notice} />
-      <div {...stylex.props(s.columns)}>
+      <div className={s.columns}>
         {([foreground, background] as const).map((value, i) => (
           <div
             key={i}
@@ -34,7 +34,7 @@ export default function ColorContrast({ locale }: ToolProps) {
               i ? '背景色' : '前景色',
               i ? 'Background' : 'Foreground',
             )}
-            {...stylex.props(s.stack)}
+            className={s.stack}
           >
             <TextField
               label={tr(
@@ -53,7 +53,7 @@ export default function ColorContrast({ locale }: ToolProps) {
             />
             {colors &&
               Object.values(colors[i]).map((v) => (
-                <div key={v} {...stylex.props(s.row)}>
+                <div key={v} className={s.row}>
                   <code>{v}</code>
                   <Copy locale={locale} value={v} />
                 </div>

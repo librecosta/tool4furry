@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { neutralDarkValues, neutralLightValues } from '../src/styles/tokens.stylex';
+import { neutralDarkValues, neutralLightValues } from './fixtures/native-theme';
 
 type Color = readonly [number, number, number, number];
 function parse(value: string): Color {

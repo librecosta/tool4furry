@@ -1,19 +1,11 @@
 import zipNotice from '../general/fflate.NOTICE.txt?url';
 import { useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import { Button } from '../../ui/Button';
 import { TextField } from '../../ui/TextField';
 import { CheckboxField } from '../../ui/CheckboxField';
-import {
-  Frame,
-  Picker,
-  ErrorText,
-  errorText,
-  tr,
-  saveBlob,
-  s,
-} from '../general/ui';
+import { Frame, Picker, ErrorText, errorText, tr, saveBlob,  } from '../general/ui';
+import s from '../general/ui.module.scss';
 import { useJob } from '../general/use-job';
 import { boundedFiles } from '../general/bounds';
 import { packZip } from '../image-converter/zip';
@@ -51,7 +43,7 @@ export default function BatchFileRenamer({ locale }: ToolProps) {
           }
         }}
       />
-      <div {...stylex.props(s.columns)}>
+      <div className={s.columns}>
         {(
           ['prefix', 'suffix', 'find', 'replace', 'start', 'digits'] as const
         ).map((k) => (
@@ -75,7 +67,7 @@ export default function BatchFileRenamer({ locale }: ToolProps) {
           />
         ))}
       </div>
-      <div {...stylex.props(s.row)}>
+      <div className={s.row}>
         <CheckboxField
           label={tr(locale, '添加序号', 'Add sequence')}
           checked={rules.sequence}
@@ -88,14 +80,14 @@ export default function BatchFileRenamer({ locale }: ToolProps) {
         />
       </div>
       <ErrorText error={error || job.error} />
-      <div {...stylex.props(s.scroll)}>
-        <table {...stylex.props(s.table)}>
+      <div className={s.scroll}>
+        <table className={s.table}>
           <thead>
             <tr>
-              <th {...stylex.props(s.cell)}>
+              <th className={s.cell}>
                 {tr(locale, '原文件名', 'Original name')}
               </th>
-              <th {...stylex.props(s.cell)}>
+              <th className={s.cell}>
                 {tr(locale, '输出文件名', 'Output name')}
               </th>
               <th />
@@ -104,8 +96,8 @@ export default function BatchFileRenamer({ locale }: ToolProps) {
           <tbody>
             {files.map((f, i) => (
               <tr key={i}>
-                <td {...stylex.props(s.cell)}>{f.name}</td>
-                <td {...stylex.props(s.cell)}>{plan[i]?.name ?? '—'}</td>
+                <td className={s.cell}>{f.name}</td>
+                <td className={s.cell}>{plan[i]?.name ?? '—'}</td>
                 <td>
                   <Button
                     size="sm"

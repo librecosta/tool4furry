@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import { Button } from '../../ui/Button';
 import {
@@ -16,7 +15,7 @@ import { readPdf, mergePdfs } from '../general/pdf';
 import notice from '../comic-page-organizer/pdf-lib.NOTICE.txt?url';
 import sortingNotice from './dnd-kit.NOTICE.txt?url';
 import { PdfFileList } from './PdfFileList';
-import { mergeStyles as s } from './merge.styles';
+import s from './merge.styles.module.scss';
 export default function PdfMerge({ locale }: ToolProps) {
   const [rows, setRows] = useState<FileRow[]>([]);
   const [sorting, setSorting] = useState(false);
@@ -59,10 +58,10 @@ export default function PdfMerge({ locale }: ToolProps) {
       {rows.length > 0 && <PdfFileList rows={rows} locale={locale} disabled={job.busy} sorting={sorting}
         onSortingChange={setSorting} onChange={change} />}
       <ErrorText error={job.error} />
-      <div data-pdf-actions {...stylex.props(s.actions)}>
+      <div data-pdf-actions className={s.actions}>
         <Button
           variant="primary"
-          xstyle={[s.button, s.primary]}
+          className={[s.button, s.primary].filter(Boolean).join(' ')}
           loading={job.busy}
           disabled={!rows.length || sorting}
           onClick={() =>
@@ -76,11 +75,11 @@ export default function PdfMerge({ locale }: ToolProps) {
         >
           {tr(locale, '合并 PDF', 'Merge')}
         </Button>
-        <Button xstyle={[s.button, s.secondary]} disabled={job.busy || sorting || !job.result?.size}
+        <Button className={[s.button, s.secondary].filter(Boolean).join(' ')} disabled={job.busy || sorting || !job.result?.size}
           onClick={() => { if (!job.busy && !sorting && job.result?.size) saveBlob(job.result, 'merged.pdf'); }}>
           {tr(locale, '下载 PDF', 'Download')}
         </Button>
-        <Button xstyle={[s.button, s.clear]} onClick={() => change([])}>
+        <Button className={[s.button, s.clear].filter(Boolean).join(' ')} onClick={() => change([])}>
           {tr(locale, '清空', 'Clear')}
         </Button>
       </div>

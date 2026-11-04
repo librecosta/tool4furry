@@ -1,6 +1,6 @@
 # 当前架构
 
-Tool4Furry 是单项目的浏览器工具站：Astro SSG + 必要的 React Islands + TypeScript；V0.9-A/B 的 Astro 静态外壳、React 公共工作区与 UI 使用 SCSS Modules / CSS Variables，工具局部 StyleX 和旧接口留至 C 阶段。样式边界见 [V0.9 基础](../docs/styling-foundation-v0.9.md)。Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata 与 PDF Merge 是当前八款 Published 工具，均登记 CN/Global，两个地区均未部署。漫画整理的实际验收缺口见 [当前模块说明](../docs/image-basics.md#b2-d1--seo-与-beta-审计进展)。来源优先级见 [AGENTS](../AGENTS.md#sources-of-truth)。
+Tool4Furry 是单项目的浏览器工具站：Astro SSG + 必要的 React Islands + TypeScript；V0.9 已将 Astro、React、29 款工具和 DEV Lab 全部迁至 SCSS Modules / CSS Variables，并移除 StyleX 的依赖、编译与兼容链路。样式边界见 [V0.9 基础](../docs/styling-foundation-v0.9.md)。Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata 与 PDF Merge 是当前八款 Published 工具，均登记 CN/Global，两个地区均未部署。漫画整理的实际验收缺口见 [当前模块说明](../docs/image-basics.md#b2-d1--seo-与-beta-审计进展)。来源优先级见 [AGENTS](../AGENTS.md#sources-of-truth)。
 
 ## 静态站点层
 

@@ -1,0 +1,102 @@
+@layer t4f-tools {
+  .modes {
+    display: flex;
+    gap: var(--t4f-space-4);
+    padding: var(--t4f-space-4);
+    background-color: var(--t4f-input-surface);
+    border-radius: var(--t4f-radius-md);
+  }
+
+  .mode {
+    min-height: 44px;
+    min-width: 44px;
+    padding-inline: var(--t4f-space-12);
+    border-width: 0;
+    border-radius: var(--t4f-radius-sm);
+    color: var(--t4f-text-secondary);
+    background-color: transparent;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 1;
+    transition-property: background-color, color;
+    transition-timing-function: ease-out;
+    transition-duration: 280ms;
+
+    &:where(:hover) {
+      color: var(--t4f-text-primary);
+      background-color: var(--t4f-surface-hover);
+    }
+
+    &:where(:disabled) {
+      color: var(--t4f-text-secondary);
+      background-color: transparent;
+      opacity: 0.5;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: 0ms;
+    }
+  }
+
+  .current {
+    background-color: var(--t4f-action-tint);
+    color: var(--t4f-support-lavender);
+  }
+
+  .view {
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    gap: var(--t4f-space-12);
+  }
+
+  .compare {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+    overflow-y: auto;
+
+    @media (max-width: 600px) {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: repeat(2, minmax(280px, 1fr));
+    }
+  }
+
+  .panel {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: var(--t4f-space-8);
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .caption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--t4f-space-8);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .metadata {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--t4f-text-secondary);
+    margin: 0;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+  }
+
+  .draft {
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: var(--t4f-space-8);
+  }
+
+}

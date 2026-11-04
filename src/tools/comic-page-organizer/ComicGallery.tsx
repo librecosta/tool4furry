@@ -1,26 +1,25 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { CheckSquareIcon, EyeIcon, FileImageIcon, SquareIcon, TrashIcon } from '@phosphor-icons/react';
-import * as stylex from '@stylexjs/stylex';
 import { IconButton } from '../../ui/Button';
 import { Tooltip } from '../../ui/Tooltip';
 import type { ComicPage } from './session';
 import type { comicMessages } from './messages';
 import { galleryLayout } from './gallery-layout';
 import { useGalleryDrag } from './use-gallery-drag';
-import { comicStyles as s } from './styles';
+import s from './styles.module.scss';
 
 type Labels = typeof comicMessages.en;
 function GalleryImage({page, labels}: {page: ComicPage; labels: Labels}) {
   const [loaded, setLoaded] = useState<string>(), [failed, setFailed] = useState<string>();
   const available = page.status === 'ready' && page.url && failed !== page.url;
   return <>
-    {(!available || loaded !== page.url) && <div {...stylex.props(s.placeholder)}>
+    {(!available || loaded !== page.url) && <div className={s.placeholder}>
       <FileImageIcon size={24} aria-hidden/>
       <span>{page.status !== 'ready' ? labels[page.status] : page.thumbnailError || failed === page.url && !!page.url ? labels.imageError : labels.loading}</span>
     </div>}
     {available && <img src={page.url} alt={page.file.name} loading="lazy" decoding="async" draggable={false}
-      onLoad={() => setLoaded(page.url)} onError={() => setFailed(page.url)} {...stylex.props(s.image, loaded !== page.url && s.imageLoading)}/>}
+      onLoad={() => setLoaded(page.url)} onError={() => setFailed(page.url)} className={[s.image, loaded !== page.url && s.imageLoading].filter(Boolean).join(' ')}/>}
   </>;
 }
 
@@ -84,9 +83,9 @@ export function ComicGallery({pages, selected, labels: t, onMove, onSelect, onRe
     }
   };
   return <>
-    <span id={helpId} {...stylex.props(s.srOnly)}>{t.keyboard}</span>
-    <div ref={host} data-comic-gallery {...stylex.props(s.gallery)} onClickCapture={interaction.clickCapture}>
-      <ul ref={list} aria-label={t.pages} {...stylex.props(s.grid)} style={{height: layout.height}}>
+    <span id={helpId} className={s.srOnly}>{t.keyboard}</span>
+    <div ref={host} data-comic-gallery className={s.gallery} onClickCapture={interaction.clickCapture}>
+      <ul ref={list} aria-label={t.pages} className={s.grid} style={{height: layout.height}}>
         {pages.map((page, index) => {
           const box = layout.boxes[index], checked = selected.includes(page.id), insertion = interaction.drag?.insertion;
           return <li key={page.id} data-page-id={page.id} tabIndex={0} aria-label={`${index + 1}. ${page.file.name}`} aria-roledescription={t.reorder} aria-describedby={helpId}
@@ -95,24 +94,24 @@ export function ComicGallery({pages, selected, labels: t, onMove, onSelect, onRe
             onPointerDown={event => {if (page.status === 'ready') interaction.pointerDown(page.id, event);}}
             onTouchStart={event => {if (page.status === 'ready') interaction.touchStart(page.id, event);}}
             onContextMenu={interaction.contextMenu}
-            {...stylex.props(s.page, checked && s.selected, interaction.drag?.id === page.id && s.dragging, lifted === page.id && s.keyboardLifted,
-              insertion?.anchor === index && (insertion.side === 'before' ? s.before : s.after))}
+            className={[s.page, checked && s.selected, interaction.drag?.id === page.id && s.dragging, lifted === page.id && s.keyboardLifted,
+              insertion?.anchor === index && (insertion.side === 'before' ? s.before : s.after)].filter(Boolean).join(' ')}
             style={{left: box.x, top: box.y, width: box.width, height: box.height}}>
             <GalleryImage page={page} labels={t}/>
-            <span data-page-number aria-hidden {...stylex.props(s.number)}>{String(index + 1).padStart(2, '0')}</span>
-            <div {...stylex.props(s.overlayActions, box.width < 180 && s.narrowActions)}>
-              <Tooltip content={checked ? t.deselect : t.select}><IconButton role="checkbox" aria-checked={checked} label={`${checked ? t.deselect : t.select} ${index + 1}`} variant="ghost" xstyle={[s.overlayButton, checked && s.checked]} onClick={() => onSelect(page.id, !checked)}>{checked ? <CheckSquareIcon size={19} weight="fill"/> : <SquareIcon size={19}/>}</IconButton></Tooltip>
-              <Tooltip content={t.preview}><IconButton label={`${t.preview} ${index + 1}`} variant="ghost" xstyle={s.overlayButton} disabled={page.status !== 'ready'} onClick={event => onRead(page.id, event.currentTarget)}><EyeIcon size={18}/></IconButton></Tooltip>
-              <Tooltip content={t.remove}><IconButton label={`${t.remove} ${index + 1}`} variant="ghost" xstyle={s.overlayButton} onClick={() => onRemove(page.id)}><TrashIcon size={18}/></IconButton></Tooltip>
+            <span data-page-number aria-hidden className={s.number}>{String(index + 1).padStart(2, '0')}</span>
+            <div className={[s.overlayActions, box.width < 180 && s.narrowActions].filter(Boolean).join(' ')}>
+              <Tooltip content={checked ? t.deselect : t.select}><IconButton role="checkbox" aria-checked={checked} label={`${checked ? t.deselect : t.select} ${index + 1}`} variant="ghost" className={[s.overlayButton, checked && s.checked].filter(Boolean).join(' ')} onClick={() => onSelect(page.id, !checked)}>{checked ? <CheckSquareIcon size={19} weight="fill"/> : <SquareIcon size={19}/>}</IconButton></Tooltip>
+              <Tooltip content={t.preview}><IconButton label={`${t.preview} ${index + 1}`} variant="ghost" className={s.overlayButton} disabled={page.status !== 'ready'} onClick={event => onRead(page.id, event.currentTarget)}><EyeIcon size={18}/></IconButton></Tooltip>
+              <Tooltip content={t.remove}><IconButton label={`${t.remove} ${index + 1}`} variant="ghost" className={s.overlayButton} onClick={() => onRemove(page.id)}><TrashIcon size={18}/></IconButton></Tooltip>
             </div>
-            <div {...stylex.props(s.info)}><span title={page.file.webkitRelativePath || page.file.name} {...stylex.props(s.name)}>{page.file.name}</span>
-              <span {...stylex.props(s.metadata)}>{page.source ? `${page.source.width} × ${page.source.height} · ${(page.file.size / 1024).toFixed(1)} KB` : t[page.status]}</span>
+            <div className={s.info}><span title={page.file.webkitRelativePath || page.file.name} className={s.name}>{page.file.name}</span>
+              <span className={s.metadata}>{page.source ? `${page.source.width} × ${page.source.height} · ${(page.file.size / 1024).toFixed(1)} KB` : t[page.status]}</span>
             </div>
           </li>;
         })}
       </ul>
     </div>
-    <span role="status" aria-live="polite" {...stylex.props(s.srOnly)}>{announcement}</span>
-    {interaction.drag && dragPage?.url && createPortal(<div aria-hidden data-comic-drag-preview {...stylex.props(s.ghost)} style={{left: interaction.drag.x - interaction.drag.offsetX, top: interaction.drag.y - interaction.drag.offsetY, width: interaction.drag.width, height: interaction.drag.height}}><img src={dragPage.url} alt="" draggable={false} {...stylex.props(s.image)}/></div>, document.body)}
+    <span role="status" aria-live="polite" className={s.srOnly}>{announcement}</span>
+    {interaction.drag && dragPage?.url && createPortal(<div aria-hidden data-comic-drag-preview className={s.ghost} style={{left: interaction.drag.x - interaction.drag.offsetX, top: interaction.drag.y - interaction.drag.offsetY, width: interaction.drag.width, height: interaction.drag.height}}><img src={dragPage.url} alt="" draggable={false} className={s.image}/></div>, document.body)}
   </>;
 }

@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
 import ReactCrop from 'react-image-crop';
-import * as stylex from '@stylexjs/stylex';
-import { motion } from '../../styles/motion';
-import { controls } from '../../styles/controls';
+import motion from '../../styles/motion.module.scss';
+import controls from '../../ui/controls.module.scss';
 import {
   ArrowCounterClockwiseIcon, ArrowsOutIcon, FrameCornersIcon,
   HandIcon, MinusIcon, NumberSquareOneIcon, PlusIcon,
@@ -14,7 +13,7 @@ import { aspects, fromPercent, toPercent } from './geometry';
 import { CompositionPreview, compositionBitmapSize } from './CompositionPreview';
 import type { ResizeView } from './session';
 import type { ResizeMessages } from './ParameterControls';
-import { cropWorkspaceStyles as s } from './crop-workspace.styles';
+import s from './crop-workspace.styles.module.scss';
 import './crop.css';
 
 export type CropDisplay = 'crop' | 'preview';
@@ -177,21 +176,21 @@ export function CropWorkspace({ view, url, t, display, onDisplay, hand, onHand, 
   ];
   if (!source || !crop) return null;
   return (
-    <div data-crop-workspace {...stylex.props(s.workspace, focused && s.focusedWorkspace)}>
-      <div {...stylex.props(s.top)}>
-        <div role="group" aria-label={t.cropViews} {...stylex.props(s.modes)}>
+    <div data-crop-workspace className={[s.workspace, focused && s.focusedWorkspace].filter(Boolean).join(' ')}>
+      <div className={s.top}>
+        <div role="group" aria-label={t.cropViews} className={s.modes}>
           {(['crop', 'preview'] as const).map(mode => (
-            <Button key={mode} variant="ghost" size="sm" aria-pressed={display === mode} xstyle={[s.mode, motion.selection, display === mode && s.selected]} onClick={() => onDisplay(mode)}>
+            <Button key={mode} variant="ghost" size="sm" aria-pressed={display === mode} className={[s.mode, motion.selection, display === mode && s.selected].filter(Boolean).join(' ')} onClick={() => onDisplay(mode)}>
               {mode === 'crop' ? t.cropView : t.previewView}
             </Button>
           ))}
         </div>
         <Tooltip content={t.full}>
-          <IconButton variant="ghost" label={t.full} xstyle={s.tool} disabled={view.status === 'loading'} onClick={onReset}><ArrowCounterClockwiseIcon size={19}/></IconButton>
+          <IconButton variant="ghost" label={t.full} className={s.tool} disabled={view.status === 'loading'} onClick={onReset}><ArrowCounterClockwiseIcon size={19}/></IconButton>
         </Tooltip>
       </div>
-      <div {...stylex.props(s.body)}>
-        <p {...stylex.props(s.guide)}>
+      <div className={s.body}>
+        <p className={s.guide}>
           {display === 'preview' ? <span>{t.compositionNote}</span> : hand ? <span>{t.panHint}</span> : <><span>{t.moveHint}</span><span>{t.resizeHint}</span></>}
         </p>
         <div
@@ -201,7 +200,7 @@ export function CropWorkspace({ view, url, t, display, onDisplay, hand, onHand, 
           aria-label={t.cropCanvas}
           aria-description={t.instructions}
           tabIndex={0}
-          {...stylex.props(s.canvas, controls.workspaceFocus, focused && s.focusedCanvas, viewOnly && s.hand)}
+          className={[s.canvas, controls.workspaceFocus, focused && s.focusedCanvas, viewOnly && s.hand].filter(Boolean).join(' ')}
           onKeyDownCapture={event => { delete event.currentTarget.dataset.pointerFocus; }}
           onBlur={event => { delete event.currentTarget.dataset.pointerFocus; }}
           onPointerDownCapture={event => {
@@ -252,7 +251,7 @@ export function CropWorkspace({ view, url, t, display, onDisplay, hand, onHand, 
           <div
             data-crop-plane
             inert={hand && display === 'crop' ? true : undefined}
-            {...stylex.props(s.plane, viewOnly && s.handPlane)}
+            className={[s.plane, viewOnly && s.handPlane].filter(Boolean).join(' ')}
             style={{width: size.width * camera.scale, height: size.height * camera.scale, marginLeft: camera.x, marginTop: camera.y}}
           >
             {display === 'crop' ? (
@@ -267,25 +266,25 @@ export function CropWorkspace({ view, url, t, display, onDisplay, hand, onHand, 
                   if (!blocked.current && !hand && percent.width > 0 && percent.height > 0) onCrop(fromPercent(percent, source));
                 }}
               >
-                <img src={url} alt={source.file.name} draggable={false} {...stylex.props(s.image)}/>
+                <img src={url} alt={source.file.name} draggable={false} className={s.image}/>
               </ReactCrop>
             ) : <CompositionPreview view={view} url={url} t={t}/>}
           </div>
-          {failed && <p role="alert" {...stylex.props(s.status, s.error)}>{t.preview.viewer.error}</p>}
+          {failed && <p role="alert" className={[s.status, s.error].filter(Boolean).join(' ')}>{t.preview.viewer.error}</p>}
         </div>
-        <div role="toolbar" aria-label={t.viewControls} {...stylex.props(s.tools)}>
+        <div role="toolbar" aria-label={t.viewControls} className={s.tools}>
           {tools.map(tool => <Tooltip key={tool.label} content={tool.label}>
-            <IconButton variant="ghost" label={tool.label} xstyle={s.tool} disabled={tool.disabled} onClick={tool.action}><tool.icon size={20}/></IconButton>
+            <IconButton variant="ghost" label={tool.label} className={s.tool} disabled={tool.disabled} onClick={tool.action}><tool.icon size={20}/></IconButton>
           </Tooltip>)}
           <Tooltip content={t.handMode}>
-            <IconButton variant="ghost" label={t.handMode} aria-pressed={hand} xstyle={[s.tool, motion.selection, hand && s.selected]} onClick={() => onHand(!hand)}><HandIcon size={20}/></IconButton>
+            <IconButton variant="ghost" label={t.handMode} aria-pressed={hand} className={[s.tool, motion.selection, hand && s.selected].filter(Boolean).join(' ')} onClick={() => onHand(!hand)}><HandIcon size={20}/></IconButton>
           </Tooltip>
           {!focused && <Tooltip content={t.focusEdit}>
-            <IconButton id={focusButtonId} variant="ghost" label={t.focusEdit} xstyle={s.tool} onClick={onFocus}><ArrowsOutIcon size={20}/></IconButton>
+            <IconButton id={focusButtonId} variant="ghost" label={t.focusEdit} className={s.tool} onClick={onFocus}><ArrowsOutIcon size={20}/></IconButton>
           </Tooltip>}
         </div>
       </div>
-      <div {...stylex.props(s.summary)}>
+      <div className={s.summary}>
         <span>{t.source}: {source.width} × {source.height}</span>
         <span>{t.crop}: {crop.width} × {crop.height}</span>
         <span title={t.bitmapActual}>{t.viewZoom}: {Math.round(camera.scale * 100)}%</span>

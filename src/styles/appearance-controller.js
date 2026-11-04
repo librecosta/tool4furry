@@ -4,10 +4,6 @@
 (() => {
   const script = document.currentScript;
   const root = document.documentElement;
-  const classes = {
-    dark: script.dataset.dark.split(' ').filter(Boolean),
-    light: script.dataset.light.split(' ').filter(Boolean),
-  };
   const fallback = script.dataset.default === 'light' ? 'light' : 'dark';
   const key = 't4f.appearance';
   const origins = JSON.parse(script.dataset.regionOrigins || '[]');
@@ -23,8 +19,6 @@
     });
   };
   const apply = value => {
-    root.classList.remove(...classes.dark, ...classes.light);
-    root.classList.add(...classes[value]);
     root.dataset.appearance = value;
     root.style.colorScheme = value;
     sync();

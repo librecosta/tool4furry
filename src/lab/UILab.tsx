@@ -1,5 +1,5 @@
+import s from './UILab.module.scss';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import { QuestionIcon } from '@phosphor-icons/react';
 import WorkbenchShell from '../workbench/WorkbenchShell';
 import { Button, IconButton } from '../ui/Button';
@@ -10,7 +10,7 @@ import { SliderField } from '../ui/SliderField';
 import { Tooltip } from '../ui/Tooltip';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { useToast, type ToastType } from '../ui/Toast';
-import { controls as c } from '../styles/controls';
+import c from '../ui/controls.module.scss';
 import type { LabMessages } from './messages';
 
 export default function UILab({
@@ -51,12 +51,12 @@ export default function UILab({
   };
   return (
     <WorkbenchShell mode="custom" labels={t} header={header}>
-      <div data-ui-lab {...stylex.props(c.stack)}>
-        <p {...stylex.props(c.muted)}>{t.uiIntro}</p>
-        <div {...stylex.props(s.grid)}>
-          <section {...stylex.props(c.card, c.stack)} aria-label={t.buttons}>
-            <h2 {...stylex.props(c.heading)}>{t.buttons}</h2>
-            <div {...stylex.props(c.row)}>
+      <div data-ui-lab className={c.stack}>
+        <p className={c.muted}>{t.uiIntro}</p>
+        <div className={s.grid}>
+          <section className={[c.card, c.stack].filter(Boolean).join(' ')} aria-label={t.buttons}>
+            <h2 className={c.heading}>{t.buttons}</h2>
+            <div className={c.row}>
               <Button variant="primary" onClick={() => clickButton(t.primary)}>
                 {t.primary}
               </Button>
@@ -116,11 +116,11 @@ export default function UILab({
               {t.confirmed}: {confirmed}
             </p>
           </section>
-          <section {...stylex.props(c.card, c.stack)} aria-label={t.fields}>
-            <h2 {...stylex.props(c.heading)}>{t.fields}</h2>
+          <section className={[c.card, c.stack].filter(Boolean).join(' ')} aria-label={t.fields}>
+            <h2 className={c.heading}>{t.fields}</h2>
             <form
               noValidate
-              {...stylex.props(c.stack)}
+              className={c.stack}
               onSubmit={(event) => {
                 event.preventDefault();
                 const invalid = name.trim().length < 2;
@@ -168,9 +168,9 @@ export default function UILab({
                 {t.validate}
               </Button>
             </form>
-            <div {...stylex.props(s.values)}>
+            <div className={s.values}>
               <strong>{t.values}</strong>
-              <pre {...stylex.props(s.pre)}>
+              <pre className={s.pre}>
                 {JSON.stringify(
                   { name, notes, choice, enabled, intensity },
                   null,
@@ -179,10 +179,10 @@ export default function UILab({
               </pre>
             </div>
           </section>
-          <section {...stylex.props(c.card, c.stack)} aria-label={t.feedback}>
-            <h2 {...stylex.props(c.heading)}>{t.feedback}</h2>
-            <p {...stylex.props(c.muted)}>{t.toastDetail}</p>
-            <div {...stylex.props(c.row)}>
+          <section className={[c.card, c.stack].filter(Boolean).join(' ')} aria-label={t.feedback}>
+            <h2 className={c.heading}>{t.feedback}</h2>
+            <p className={c.muted}>{t.toastDetail}</p>
+            <div className={c.row}>
               {(['success', 'info', 'warning', 'error'] as const).map(
                 (type) => (
                   <Button
@@ -202,8 +202,8 @@ export default function UILab({
               )}
             </div>
           </section>
-          <section {...stylex.props(c.card, c.stack)} aria-label={t.disabled}>
-            <h2 {...stylex.props(c.heading)}>{t.disabled}</h2>
+          <section className={[c.card, c.stack].filter(Boolean).join(' ')} aria-label={t.disabled}>
+            <h2 className={c.heading}>{t.disabled}</h2>
             <TextField
               label={t.demoName}
               value={t.sampleLabel}
@@ -241,16 +241,3 @@ export default function UILab({
     </WorkbenchShell>
   );
 }
-const s = stylex.create({
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: {
-      default: 'repeat(2, minmax(0, 1fr))',
-      '@media (max-width: 760px)': 'minmax(0, 1fr)',
-    },
-    alignItems: 'start',
-    gap: 20,
-  },
-  values: { minWidth: 0, fontSize: 13 },
-  pre: { whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', marginBottom: 0 },
-});

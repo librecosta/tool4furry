@@ -1,21 +1,12 @@
-import * as stylex from '@stylexjs/stylex';
 import { describe, expect, it } from 'vitest';
-import { tokens, neutralDarkTheme, neutralLightTheme, neutralDarkValues, neutralLightValues } from '../src/styles/tokens.stylex';
-import { controls } from '../src/styles/controls';
+import { neutralDarkValues, neutralLightValues } from './fixtures/native-theme';
+import { compile } from 'sass-embedded';
 import {
   defaultTheme,
   resolveTheme,
   resolvePageTheme,
   type ThemeSelection,
 } from '../src/styles/theme';
-
-const semantic = stylex.create({
-  primary: {
-    backgroundColor: { default: tokens.action, ':hover': tokens.actionHover, ':active': tokens.actionPressed, ':disabled': tokens.action },
-    borderColor: 'transparent',
-    color: tokens.onAction,
-  },
-});
 
 describe('static theme selection contract', () => {
   it('defaults to dark and resolves either appearance to one compiled native theme', () => {
@@ -24,18 +15,9 @@ describe('static theme selection contract', () => {
       colorTheme: 'neutral',
       appearance: 'dark',
     });
-    expect(theme.style).toBe(neutralDarkTheme);
-    expect(stylex.props(theme.style).className).toBeTruthy();
-    expect(stylex.attrs(theme.style).class).toBe(
-      stylex.props(theme.style).className,
-    );
-    expect(tokens.page).toMatch(/^var\(--/);
-    expect(tokens.colorScheme).toMatch(/^var\(--/);
-    expect(resolveTheme({ ...defaultTheme }).style).toBe(theme.style);
-    const light = resolveTheme({ colorTheme: 'neutral', appearance: 'light' });
-    expect(light.style).toBe(neutralLightTheme);
-    expect(stylex.props(light.style).className).toBeTruthy();
-    expect(stylex.props(light.style).className).not.toBe(stylex.props(theme.style).className);
+    expect(theme).toEqual(defaultTheme);
+    expect(resolveTheme({ ...defaultTheme })).toEqual(theme);
+    expect(resolveTheme({ colorTheme: 'neutral', appearance: 'light' })).toEqual({ colorTheme: 'neutral', appearance: 'light' });
   });
   it('resolves complete groups with shared geometry and independent appearance colors', () => {
     expect(Object.keys(neutralLightValues).sort()).toEqual(Object.keys(neutralDarkValues).sort());
@@ -54,18 +36,20 @@ describe('static theme selection contract', () => {
       for (const key of ['communityAction', 'communityActionHover', 'onCommunityAction', 'supportClay', 'supportAmber', 'supportSlate'])
         expect(values).not.toHaveProperty(key);
     }
-    expect(stylex.props(controls.primary)).toEqual(stylex.props(semantic.primary));
+    const css = compile('src/ui/controls.module.scss').css;
+    for (const variable of ['action', 'action-hover', 'action-pressed', 'on-action'])
+      expect(css).toContain('var(--t4f-' + variable + ')');
   });
   it('preserves independent brand, focus, neutral selections and feedback roles', () => {
     expect(neutralLightValues).toMatchObject({ brand: '#C97849', focus: '#53616E', navFocus: '#CBD5E1', actionTint: '#DDE2E7', danger: '#A63243', dangerHover: '#8B2738', onDanger: '#FFFFFF', positive: '#28634C', warning: '#785313', info: '#365F7A' });
     expect(neutralDarkValues).toMatchObject({ brand: '#C97849', focus: '#CBD5E1', navFocus: '#CBD5E1', actionTint: 'rgba(203,213,225,0.08)', danger: '#FF9BA4', dangerHover: '#FFB2B9', onDanger: '#1D1F22', positive: '#83D6AE', warning: '#E7C47C', info: '#ACC7D1' });
   });
   it('limits environment preview to DEV and rejects invalid DEV appearances', () => {
-    expect(resolvePageTheme(true, 'light').style).toBe(neutralLightTheme);
-    expect(resolvePageTheme(true, 'dark').style).toBe(neutralDarkTheme);
-    expect(resolvePageTheme(true).style).toBe(neutralDarkTheme);
-    expect(resolvePageTheme(false, 'light').style).toBe(neutralDarkTheme);
-    expect(resolvePageTheme(false, 'invalid').style).toBe(neutralDarkTheme);
+    expect(resolvePageTheme(true, 'light').appearance).toBe('light');
+    expect(resolvePageTheme(true, 'dark').appearance).toBe('dark');
+    expect(resolvePageTheme(true).appearance).toBe('dark');
+    expect(resolvePageTheme(false, 'light').appearance).toBe('dark');
+    expect(resolvePageTheme(false, 'invalid').appearance).toBe('dark');
     expect(() => resolvePageTheme(true, 'invalid')).toThrow('T4F_DEV_APPEARANCE');
     expect(() => resolvePageTheme(true, '')).toThrow('T4F_DEV_APPEARANCE');
   });

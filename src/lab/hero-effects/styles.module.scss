@@ -1,0 +1,152 @@
+@layer t4f-tools {
+  .page {
+    padding-bottom: 40px;
+    min-width: 0;
+  }
+
+  .controls {
+    padding: 24px clamp(16px, 2vw, 36px);
+    display: grid;
+    gap: 16px;
+  }
+
+  .note {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--t4f-text-secondary);
+    max-width: 960px;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    min-height: 44px;
+  }
+
+  .select {
+    min-height: 44px;
+    padding: 8px 12px;
+    border-radius: var(--t4f-radius-sm);
+    background-color: var(--t4f-input-surface);
+    border-color: var(--t4f-control-border);
+    border-style: solid;
+    border-width: var(--t4f-control-border-width);
+    color: var(--t4f-text-primary);
+  }
+
+  .stage {
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    height: clamp(460px, 38vw, 640px);
+    overflow: hidden;
+    background-color: #060B12;
+    color: #EFF6FF;
+    touch-action: pan-y;
+
+    @media (max-width: 760px) {
+      height: 500px;
+    }
+  }
+
+  .tallStage {
+    height: clamp(460px, 38vw, 640px);
+
+    @media (max-width: 760px) {
+      height: 680px;
+    }
+  }
+
+  .canvas {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    touch-action: pan-y;
+  }
+
+  .overlay {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: clamp(16px, 3vw, 48px);
+    width: 38%;
+    pointer-events: none;
+    z-index: 2;
+
+    @media (max-width: 760px) {
+      top: 32px;
+      transform: none;
+      width: calc(100% - 32px);
+    }
+  }
+
+  .title {
+    margin-block: 0 20px;
+    font-size: clamp(28px, 3vw, 48px);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  .line {
+    display: block;
+  }
+
+  .intro {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #CBD5E1;
+    max-width: 470px;
+    margin: 0;
+  }
+
+  .fallback {
+    position: absolute;
+    inset-inline: 16px;
+    bottom: 16px;
+    margin: 0;
+    color: #CBD5E1;
+    font-size: 13px;
+    text-align: center;
+    z-index: 3;
+  }
+
+  .metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 28px;
+    margin: 0;
+    padding: 20px clamp(16px, 2vw, 36px);
+    font-size: 13px;
+  }
+
+  .metric {
+    min-width: 100px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .term {
+    color: var(--t4f-text-secondary);
+    font-size: 12px;
+  }
+
+  .value {
+    margin: 4px 0 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+}

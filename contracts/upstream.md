@@ -6,16 +6,14 @@
 | --- | --- | --- |
 | 浏览器原生编解码 | PNG/JPEG/WebP 原生优先；能显示不等于能编码，非空 toBlob 不等于所请求格式；检查实际输出和能力失败 | `browser-codec.ts`、`inspect-image.ts`、`inspect-avif.ts` 及真实浏览器证据 |
 | Astro / React | SSG 正文与固定 Island 边界；无 SSR 服务，动态工具在 ToolRuntime 内懒加载 | `astro.config.mjs`、`ToolRuntime.tsx`、静态产物守卫 |
-| StyleX unplugin | 原生 defineVars/createTheme，完整主题覆盖，生产静态 CSS，关闭运行时注入；Astro 使用编译样式 | `src/styles/`、主题与 StyleX 测试、产物 CSS |
+| Sass / CSS Modules | Astro/Vite 原生编译、工具按需 CSS、原生变量驱动主题；无运行时 CSS 注入 | `tokens.scss`、主题/样式测试、正式产物 CSS |
 | jSquash AVIF | 固定单线程 encoder 与独立哈希 WASM，只接受受限 RGBA/参数；不分发包内 decoder 或多线程变体 | `avif-encoder.ts`、`avif.worker.ts`、AVIF 检查/测试与 NOTICE |
 | Base UI / fflate | 弹层键盘/焦点/Portal 与按需 ZIP；资源和快照责任仍归工具，不由库替代业务校验 | UI、预览、ZIP 相关测试 |
 | react-image-crop | Resize & Crop 单图裁剪的指针/触控/键盘交互；只负责响应式选区，方向、Source 像素与输出仍归工具；局部变量及 Reduced Motion 覆盖 | `image-resize-crop/CropEditor.tsx`、`crop.css`、`crop.NOTICE.txt`（ISC）与 Resize 定向测试 |
 
-## StyleX 开发兼容补丁
+## 已退役的开发兼容补丁
 
-保留 `devMode: 'css-only'`、`runtimeInjection: false`、Layout 的阻塞虚拟 CSS link 与 [stylex-dev-css.ts](../src/styles/stylex-dev-css.ts)。现有证据定位为活动样式表重载空窗：替代表 load 成功才移除旧表，失败保留旧表，连续更新只接受最新响应。不可只凭上游 Issue 推断当前根因，不通过隐藏整页或延迟显示掩盖 FOUC。
-
-由 [Tool4Furry #1](https://github.com/librecosta/tool4furry/issues/1) 跟踪。仅在上游等价修复经冷启动首帧、HMR 与生产提取验证后，才考虑移除本地兼容模块；不在普通视觉任务中顺带升级 StyleX。原始证据见 [历史基础记录](../docs/history/foundation-v0.1.md)。
+V0.9-C 完成 SCSS 迁移后移除 StyleX、虚拟 CSS link 和本地刷新模块，主题只使用原生变量。原 [Tool4Furry #1](https://github.com/librecosta/tool4furry/issues/1) 与 [历史基础记录](../docs/history/foundation-v0.1.md) 保留当时的 FOUC 定位证据，不构成继续恢复该补丁或运行时样式注入的要求。
 
 ## 许可与安全维护
 

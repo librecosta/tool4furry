@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
-import * as stylex from '@stylexjs/stylex';
-import { controls } from '../../styles/controls';
+import controls from '../../ui/controls.module.scss';
 import { constrainFraming, drawShare, loadShareAssets, zoomFraming, type Framing, type ShareLayout, type ShareOptions } from './render';
-import { styles as s } from './styles';
+import s from './styles.module.scss';
 import type { Labels } from './messages';
 
 /** One bounded live canvas; no Blob generation on pointer movement. */
@@ -84,10 +83,10 @@ export function ShareCanvas({ image, colors, options, layout, onFrame, onInterac
     return { x: (event.clientX - rect.left) / rect.width * layout.width, y: (event.clientY - rect.top) / rect.height * layout.height };
   };
   const current = constrainFraming(image, layout.image, options.frame);
-  return <div {...stylex.props(s.composerArt)}>
-    <div ref={bed} {...stylex.props(s.composerBed)}>
+  return <div className={s.composerArt}>
+    <div ref={bed} className={s.composerBed}>
       <canvas ref={canvas} role="img" aria-label={t.composition} aria-description={editable ? t.compositionHelp : undefined} tabIndex={0} data-share-canvas
-        {...stylex.props(s.composerCanvas, controls.workspaceFocus)} style={{aspectRatio: `${layout.width} / ${layout.height}`}}
+        className={[s.composerCanvas, controls.workspaceFocus].filter(Boolean).join(' ')} style={{aspectRatio: `${layout.width} / ${layout.height}`}}
         onKeyDownCapture={event => { delete event.currentTarget.dataset.pointerFocus; }}
         onBlur={event => { delete event.currentTarget.dataset.pointerFocus; }}
         onKeyDown={event => {
@@ -99,7 +98,7 @@ export function ShareCanvas({ image, colors, options, layout, onFrame, onInterac
           event.preventDefault();
         }}
       />
-      {editable && <div ref={hit} aria-hidden="true" data-share-image {...stylex.props(s.composerHit)} style={hitBox}
+      {editable && <div ref={hit} aria-hidden="true" data-share-image className={s.composerHit} style={hitBox}
         onPointerDown={event => {
           if (event.button !== 0) return;
           if (gesture.current) { cancel(); return; }

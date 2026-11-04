@@ -1,9 +1,9 @@
+import s from './FormDemo.module.scss';
 import { useState, type ReactNode } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import { ArrowRightIcon } from '@phosphor-icons/react';
 import WorkbenchShell from '../workbench/WorkbenchShell';
 import type { LabMessages as Messages } from './messages';
-import { controls as c } from '../styles/controls';
+import c from '../ui/controls.module.scss';
 import { simulateText } from './demo-logic';
 import { Button } from '../ui/Button';
 import { TextField, TextAreaField } from '../ui/TextField';
@@ -26,16 +26,16 @@ export default function FormDemo({
       labels={t}
       header={header}
       right={
-        <section {...stylex.props(c.card, c.stack)} aria-label={t.output}>
-          <h2 {...stylex.props(c.heading)}>{t.output}</h2>
-          <output aria-live="polite" {...stylex.props(s.output)}>
+        <section className={[c.card, c.stack].filter(Boolean).join(' ')} aria-label={t.output}>
+          <h2 className={c.heading}>{t.output}</h2>
+          <output aria-live="polite" className={s.output}>
             {result ?? t.outputHint}
           </output>
         </section>
       }
     >
       <form
-        {...stylex.props(c.card, c.stack)}
+        className={[c.card, c.stack].filter(Boolean).join(' ')}
         onSubmit={(event) => {
           event.preventDefault();
           const next = simulateText(text, prefix, uppercase);
@@ -69,11 +69,8 @@ export default function FormDemo({
           {t.run}
           <ArrowRightIcon size={18} aria-hidden />
         </Button>
-        <p {...stylex.props(c.muted)}>{t.formNote}</p>
+        <p className={c.muted}>{t.formNote}</p>
       </form>
     </WorkbenchShell>
   );
 }
-const s = stylex.create({
-  output: { whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', minHeight: 160 },
-});

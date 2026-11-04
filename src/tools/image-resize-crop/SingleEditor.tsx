@@ -1,12 +1,11 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import { Button } from '../../ui/Button';
 import { TextField } from '../../ui/TextField';
 import { CheckboxField } from '../../ui/CheckboxField';
 import { SliderField } from '../../ui/SliderField';
 import { checkDimensions } from '../image/types';
 import { validFilenameLabel } from '../file-naming';
-import { converterStyles as c } from '../image-converter/converter.styles';
+import c from '../image-converter/converter.styles.module.scss';
 import { aspects, fullCrop, type Aspect } from './geometry';
 import { CollectionControls } from './CollectionControls';
 import { CropEditor } from './CropEditor';
@@ -21,7 +20,7 @@ import {
 } from './ParameterControls';
 import type { ResizeCollection, CollectionView } from './collection';
 import type { ResizeSession } from './session';
-import { resizeStyles as s } from './resize.styles';
+import s from './resize.styles.module.scss';
 
 export function SingleEditor({
   manager,
@@ -170,8 +169,8 @@ export function SingleEditor({
   const custom =
     output.quality !== 85 || output.background.toUpperCase() !== '#FFFFFF';
   return (
-    <div {...stylex.props(s.grid)}>
-      <section aria-label={t.editor} {...stylex.props(s.stack)}>
+    <div className={s.grid}>
+      <section aria-label={t.editor} className={s.stack}>
         <CollectionControls
           manager={manager}
           view={view}
@@ -225,9 +224,9 @@ export function SingleEditor({
         )}
       </section>
       {source && crop && (
-        <aside aria-label={t.settings} {...stylex.props(c.settings)}>
-          <div {...stylex.props(c.settingsHeader)}>
-            <h2 {...stylex.props(c.settingsTitle)}>{t.settings}</h2>
+        <aside aria-label={t.settings} className={c.settings}>
+          <div className={c.settingsHeader}>
+            <h2 className={c.settingsTitle}>{t.settings}</h2>
             <ParameterModes
               advanced={advanced}
               onChange={onAdvancedChange}
@@ -265,7 +264,7 @@ export function SingleEditor({
                 commitDimensions();
             }}
           >
-            <div {...stylex.props(s.pair)}>
+            <div className={s.pair}>
               <TextField
                 label={t.width}
                 inputMode="numeric"
@@ -360,7 +359,7 @@ export function SingleEditor({
             </>
           )}
           {dimensionsInvalid && (
-            <p role="alert" {...stylex.props(c.error)}>
+            <p role="alert" className={c.error}>
               {t.dimensionsError}
             </p>
           )}
@@ -376,12 +375,12 @@ export function SingleEditor({
           />
           {view.capabilities &&
             !view.capabilities[output.format]?.supported && (
-              <p role="alert" {...stylex.props(c.error)}>
+              <p role="alert" className={c.error}>
                 {t.unsupported}
               </p>
             )}
           {source.info.format === 'avif' && (
-            <p {...stylex.props(c.note)}>{t.avif}</p>
+            <p className={c.note}>{t.avif}</p>
           )}
           {advanced && (
             <>
@@ -400,7 +399,7 @@ export function SingleEditor({
                 />
               )}
               {output.format === 'jpeg' && (
-                <div {...stylex.props(c.backgroundControl, s.colorControl)}>
+                <div className={[c.backgroundControl, s.colorControl].filter(Boolean).join(' ')}>
                   <TextField
                     label={t.background}
                     value={background ?? output.background}
@@ -425,7 +424,7 @@ export function SingleEditor({
                     aria-label={t.pickBackground}
                     disabled={busy}
                     value={output.background}
-                    {...stylex.props(s.colorPicker)}
+                    className={s.colorPicker}
                     onChange={(event) => {
                       setBackground(undefined);
                       request.current = undefined;
@@ -457,27 +456,27 @@ export function SingleEditor({
             </>
           )}
           {!advanced && custom && (
-            <p {...stylex.props(c.note)}>{t.customSettings}</p>
+            <p className={c.note}>{t.customSettings}</p>
           )}
           {!advanced &&
             (scaleError ||
               (output.format === 'jpeg' && background !== undefined) ||
               labelInvalid) && (
-              <p role="alert" {...stylex.props(c.error)}>
+              <p role="alert" className={c.error}>
                 {t.checkAdvanced}
               </p>
             )}
-          <div {...stylex.props(s.download)}>
-            <span {...stylex.props(s.outputSize)}>
+          <div className={s.download}>
+            <span className={s.outputSize}>
               {output.width} × {output.height}
-              <span {...stylex.props(c.note)}>
+              <span className={c.note}>
                 {' '}
                 px · {output.format.toUpperCase()}
               </span>
             </span>
             <Button
               variant="primary"
-              xstyle={c.supportAction}
+              className={c.supportAction}
               loading={editor.status === 'exporting'}
               disabled={busy || dimensionsInvalid || !session?.validOutput()}
               onClick={startDownload}
@@ -485,17 +484,17 @@ export function SingleEditor({
               {editor.status === 'failed' ? t.retryDownload : t.download}
             </Button>
             {editor.status === 'ready' && editor.downloaded && (
-              <p role="status" {...stylex.props(s.success)}>
+              <p role="status" className={s.success}>
                 {t.downloaded}
               </p>
             )}
             {editor.status === 'exporting' && (
-              <p role="status" {...stylex.props(c.note)}>
+              <p role="status" className={c.note}>
                 {t.processing}
               </p>
             )}
             {editor.error && (
-              <p role="alert" {...stylex.props(c.error)}>
+              <p role="alert" className={c.error}>
                 {t.errors[editor.error as keyof typeof t.errors] ??
                   t.errors.fallback}
               </p>

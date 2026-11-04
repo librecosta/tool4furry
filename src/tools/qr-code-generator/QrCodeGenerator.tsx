@@ -1,17 +1,9 @@
 import { useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import { TextField, TextAreaField } from '../../ui/TextField';
 import { Button } from '../../ui/Button';
-import {
-  Frame,
-  ErrorText,
-  tr,
-  Copy,
-  s,
-  saveBlob,
-  useBlobUrl,
-} from '../general/ui';
+import { Frame, ErrorText, tr, Copy, saveBlob, useBlobUrl,  } from '../general/ui';
+import s from '../general/ui.module.scss';
 import { useJob } from '../general/use-job';
 import { integer, fail } from '../general/bounds';
 import { contrast, parseColor } from '../color-contrast/core';
@@ -40,7 +32,7 @@ export default function QrCodeGenerator({ locale }: ToolProps) {
         value={text}
         onChange={update(setText)}
       />
-      <div {...stylex.props(s.columns)}>
+      <div className={s.columns}>
         <TextField
           label={tr(locale, '输出尺寸（像素）', 'Output size (pixels)')}
           value={size}
@@ -82,13 +74,13 @@ export default function QrCodeGenerator({ locale }: ToolProps) {
       {job.result && url && (
         <>
           <img
-            {...stylex.props(s.qr)}
+            className={s.qr}
             src={url}
             width={Number(size)}
             height={Number(size)}
             alt={tr(locale, '生成的二维码', 'Generated QR code')}
           />
-          <div {...stylex.props(s.row)}>
+          <div className={s.row}>
             <Button onClick={() => saveBlob(job.result!.png, 'qr-code.png')}>
               {tr(locale, '下载 PNG', 'Download PNG')}
             </Button>

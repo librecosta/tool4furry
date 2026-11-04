@@ -48,7 +48,7 @@ C5-A：有累计额度的工作区可使用 `onFilesReceived(files)` 接收原�
 
 只监听文档 scroll（passive），用 requestAnimationFrame 合并；window resize、媒体条件 change 和 ResizeObserver（body/documentElement）触发重新测量。内部面板 scroll 不触发更新。整数进度及显隐均未变化时不提交 React state；卸载移除全部监听、断开 observer 并取消待执行 frame。
 
-显示条件为总可滚动距离 >320px、已滚动 >72px、宽度至少 900px 且 pointer:fine。隐藏时不渲染按钮；CSS 同样限定媒体条件。48px 圆球用 SVG 圆环、StyleX 与 Phosphor 箭头实现，进度钳制到 0–100%。单击或 Enter/Space 向上移动总可滚动距离的 25%，最低到 0；reduced-motion 使用 instant，其他情况 smooth，没有持续动画。
+显示条件为总可滚动距离 >320px、已滚动 >72px、宽度至少 900px 且 pointer:fine。隐藏时不渲染按钮；CSS 同样限定媒体条件。48px 圆球用 SVG 圆环、SCSS Modules 与 Phosphor 箭头实现，进度钳制到 0–100%。单击或 Enter/Space 向上移动总可滚动距离的 25%，最低到 0；reduced-motion 使用 instant，其他情况 smooth，没有持续动画。
 
 仅参考指定旧项目 ScrollDock 的交互体验，独立编写计算、订阅和 SVG 渲染代码，没有搬入私有仓库实现。未增加无实际需求的 ScrollArea。保留原生滚动条、滚轮、键盘和触摸滚动，未实现拖动圆球或内部 ScrollTarget。未来页面须显式选择挂载；不能为了它给静态首页增加 React。
 

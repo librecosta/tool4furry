@@ -1,18 +1,10 @@
 import { useMemo, useState } from 'react';
-import * as stylex from '@stylexjs/stylex';
 import type { ToolProps } from '../types';
 import { TextAreaField } from '../../ui/TextField';
 import { SelectField } from '../../ui/SelectField';
 import { Button } from '../../ui/Button';
-import {
-  Frame,
-  Picker,
-  ErrorText,
-  errorText,
-  tr,
-  s,
-  TextDelivery,
-} from '../general/ui';
+import { Frame, Picker, ErrorText, errorText, tr, TextDelivery,  } from '../general/ui';
+import s from '../general/ui.module.scss';
 import { useJob } from '../general/use-job';
 import { fail } from '../general/bounds';
 import { convertTable } from './core';
@@ -33,7 +25,7 @@ export default function CsvJsonConverter({ locale }: ToolProps) {
   return (
     <Frame locale={locale}>
       <span hidden data-csv-license={notice} />
-      <div {...stylex.props(s.columns)}>
+      <div className={s.columns}>
         <SelectField
           label={tr(locale, '转换方向', 'Conversion')}
           value={mode}
@@ -76,7 +68,7 @@ export default function CsvJsonConverter({ locale }: ToolProps) {
           });
         }}
       />
-      <div {...stylex.props(s.columns)}>
+      <div className={s.columns}>
         <TextAreaField
           label={tr(locale, '输入', 'Input')}
           rows={12}
@@ -98,17 +90,17 @@ export default function CsvJsonConverter({ locale }: ToolProps) {
       <ErrorText error={job.error ?? result.error} />
       {result.table && (
         <>
-          <p {...stylex.props(s.note)}>
+          <p className={s.note}>
             {result.table.rows.length} {tr(locale, '行', 'rows')} ·{' '}
             {result.table.headers.length}{' '}
             {tr(locale, '列（预览前 50 行）', 'columns (first 50 rows shown)')}
           </p>
-          <div {...stylex.props(s.scroll)}>
-            <table {...stylex.props(s.table)}>
+          <div className={s.scroll}>
+            <table className={s.table}>
               <thead>
                 <tr>
                   {result.table.headers.map((h) => (
-                    <th key={h} {...stylex.props(s.cell)}>
+                    <th key={h} className={s.cell}>
                       {h}
                     </th>
                   ))}
@@ -118,7 +110,7 @@ export default function CsvJsonConverter({ locale }: ToolProps) {
                 {result.table.rows.slice(0, 50).map((row, i) => (
                   <tr key={i}>
                     {row.map((v, j) => (
-                      <td key={j} {...stylex.props(s.cell)}>
+                      <td key={j} className={s.cell}>
                         {v}
                       </td>
                     ))}
@@ -129,7 +121,7 @@ export default function CsvJsonConverter({ locale }: ToolProps) {
           </div>
         </>
       )}
-      <div {...stylex.props(s.row)}>
+      <div className={s.row}>
         <TextDelivery
           locale={locale}
           value={result.table?.output ?? ''}

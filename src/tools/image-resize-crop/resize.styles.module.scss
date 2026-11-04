@@ -1,0 +1,275 @@
+@layer t4f-tools {
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--t4f-space-16);
+  }
+
+  .stack {
+    display: grid;
+    gap: var(--t4f-space-16);
+    min-width: 0;
+  }
+
+  .empty {
+    max-width: 960px;
+    margin-inline: auto;
+  }
+
+  .workflows {
+    display: flex;
+    align-items: center;
+    gap: var(--t4f-space-4);
+  }
+
+  .workflow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--t4f-space-8);
+    min-height: 48px;
+    padding-inline: var(--t4f-space-16);
+    border-width: 0;
+    border-radius: var(--t4f-radius-md);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--t4f-text-secondary);
+    background-color: transparent;
+    transition-property: color, background-color;
+    transition-timing-function: ease-out;
+    transition-duration: 280ms;
+
+    &:where(:hover) {
+      color: var(--t4f-text-primary);
+      background-color: var(--t4f-surface-hover);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: 0ms;
+    }
+  }
+
+  .currentWorkflow {
+    color: var(--t4f-support-lavender);
+    background-color: color-mix(in srgb, var(--t4f-support-lavender) 16%, var(--t4f-input-surface));
+    border-width: 0;
+    border-style: none;
+    text-decoration: none;
+    box-shadow: none;
+
+    &:where(:hover) {
+      color: var(--t4f-support-lavender);
+      background-color: color-mix(in srgb, var(--t4f-support-lavender) 20%, var(--t4f-input-surface));
+    }
+
+    &:where(:active) {
+      color: var(--t4f-support-lavender);
+      background-color: color-mix(in srgb, var(--t4f-support-lavender) 20%, var(--t4f-input-surface));
+    }
+  }
+
+  .addFiles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--t4f-space-8);
+    min-width: 0;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 350px;
+    align-items: start;
+    gap: var(--t4f-space-24);
+    min-width: 0;
+
+    @media (max-width: 1050px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .fileManager {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: var(--t4f-space-8);
+    min-width: 0;
+  }
+
+  .actions {
+    display: flex;
+    gap: var(--t4f-space-4);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--t4f-space-12);
+  }
+
+  .formats.formats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .parameterChoices {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: var(--t4f-space-4);
+  }
+
+  .parameterChoice {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--t4f-space-8);
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    color: var(--t4f-text-secondary);
+
+    &:where(:hover) {
+      color: var(--t4f-text-primary);
+    }
+  }
+
+  .parameterChosen.parameterChosen {
+    color: var(--t4f-support-lavender);
+
+    &:where(:hover) {
+      color: var(--t4f-support-lavender);
+    }
+  }
+
+  .heading {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .note {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--t4f-text-secondary);
+    overflow-wrap: anywhere;
+  }
+
+  .success {
+    color: var(--t4f-positive);
+    margin: 0;
+    font-size: 13px;
+  }
+
+  .error {
+    color: var(--t4f-danger);
+  }
+
+  .waiting {
+    color: var(--t4f-warning);
+  }
+
+  .composition {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    margin-inline: auto;
+    background-color: var(--t4f-preview-checker);
+    background-image: linear-gradient(45deg, var(--t4f-workspace) 25%, transparent 25%), linear-gradient(-45deg, var(--t4f-workspace) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--t4f-workspace) 75%), linear-gradient(-45deg, transparent 75%, var(--t4f-workspace) 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+  }
+
+  .compositionStage {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
+    place-items: center;
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .colorControl.colorControl {
+    align-items: end;
+  }
+
+  .colorPicker {
+    width: 44px;
+    height: 44px;
+    padding: 4px;
+    background-color: var(--t4f-input-surface);
+    border-color: var(--t4f-control-border);
+    border-width: var(--t4f-control-border-width);
+    border-style: solid;
+    border-radius: var(--t4f-radius-md);
+    cursor: pointer;
+  }
+
+  .download {
+    display: grid;
+    gap: var(--t4f-space-8);
+    padding-top: var(--t4f-space-8);
+  }
+
+  .outputSize {
+    font-size: 18px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .batchGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 350px;
+    align-items: start;
+    gap: var(--t4f-space-24);
+    min-width: 0;
+
+    @media (max-width: 1050px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .batchSettings.batchSettings {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+
+    @media (max-width: 1050px) {
+      grid-column: auto;
+      grid-row: auto;
+    }
+  }
+
+  .batchTasks {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+
+    @media (max-width: 1050px) {
+      grid-column: auto;
+      grid-row: auto;
+    }
+  }
+
+  .taskHeading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--t4f-space-8);
+    padding-block: var(--t4f-space-12);
+  }
+
+}
