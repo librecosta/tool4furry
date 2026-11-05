@@ -10,7 +10,7 @@
 - 实际复制完整 MD5/SHA-256 和批量 SHA-256；四份下载的 TXT 重新读取后摘要、名称、顺序、Unicode 及特殊名称转义均正确，重复下载名称不同且未触发重新计算。MIME `text/plain;charset=utf-8` 由现有 UI 测试验证。比对大小写/空白、空值、不完整、非法、匹配/不匹配、文件与算法切换均正确；尾部图标与隐藏无障碍状态同步。查看桌面/手机截图，行内原生 Radio、38px 复制图标、128 位 SHA-512 换行、三个等宽 44px 操作均保留，无横向溢出、阻断交互、明显样式闪现或 Hydration 报错。
 - D1 的 37 MiB + 8 字节真实文件证据继续有效：20 次读取，最大 2 MiB、主线程整文件读取为零，MD5/SHA-256 与独立实现一致；本轮未机械重复该压力样本。现有核心测试再次覆盖五算法的空/ASCII/UTF-8/二进制、跨 2 MiB 边界及 33 MiB 输入、安全失败、任务隔离和已完成项导出。
 - `hash-wasm@4.12.0` 的完整 MIT 及所用 MD5/SHA/CRC32 上游声明保持原样。每地区产物仅有一个约 52.5 kB 本地哈希 Worker，五个 WASM 二进制完整内嵌且不进入主线程 Chunk；唯一 Worker URL 引用归属 File Hash 懒加载入口。浏览器首页不请求 File Hash，实现加载后无文件时不启动 Worker；实际计算只请求同源 Worker，没有外部 WASM/CDN、哈希 API、上传请求或持久存储。浏览器读取实际许可资源并与源码全文比较一致。
-- `pnpm check`（452 文件，零错误/警告）、17 个相关文件 / 243 项定向测试、CN/Global 各一次正式构建及完整产物守卫通过；每地区 26 个工具详情页、36 条公开发现 URL，其余 16 款 Draft / Lab / Fixture 私有资源继续排除。新增正式 Worker/WASM/许可证正向交付检查，保留 Draft 反向隔离断言。基线 [`a83ac46823c3` CI 已通过](https://github.com/librecosta/tool4furry/actions/runs/42020304169)；新提交由既有工作流复检，最终远程状态单独核对，不以本地通过替代。
+- `pnpm check`（452 文件，零错误/警告）、18 个相关文件 / 262 项定向测试、CN/Global 各一次正式构建及完整产物守卫通过；每地区 26 个工具详情页、36 条公开发现 URL，其余 16 款 Draft / Lab / Fixture 私有资源继续排除。新增正式 Worker/WASM/许可证正向交付检查，保留 Draft 反向隔离断言。基线 [`a83ac46823c3` CI 已通过](https://github.com/librecosta/tool4furry/actions/runs/42020304169)；[首轮发布 CI](https://github.com/librecosta/tool4furry/actions/runs/42027449705) 的 1280 项通过，2 项因导航测试遗漏 File Hash Published 预期而失败。已补齐两地区预期，导航文件 19 项定向复验通过；未改生产代码或放宽断言。修正提交继续由既有工作流复检，最终远程状态单独核对，不以本地通过替代。
 - 未测 Firefox、Safari/WebKit、真实 iOS/Android、真实屏幕阅读器、极端大文件与浏览器进程级内存耗尽，仍属 L3；390px 为桌面 Chromium 移动视口。匹配摘要不认证来源，MD5/SHA-1 不适合抗恶意碰撞、CRC32 非密码学；TXT 为本站可读清单，不宣称普遍兼容第三方 checksum 格式。Published 不代表部署，两个地区均未部署。
 
 ## File Hash — V0.8-B6-D2 UI 精修（2026-11-05）

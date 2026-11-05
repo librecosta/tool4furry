@@ -1,4 +1,5 @@
 import { definition as batchFileRenamerDefinition } from '../src/tools/batch-file-renamer/definition';
+import { definition as fileHashDefinition } from '../src/tools/file-hash/definition';
 import { definition as pdfMergeDefinition } from '../src/tools/pdf-merge/definition';
 import { definition as pdfSplitDefinition } from '../src/tools/pdf-split/definition';
 import { definition as imagesToPdfDefinition } from '../src/tools/images-to-pdf/definition';
@@ -282,8 +283,8 @@ describe('product navigation', () => {
       .toEqual(dev ? ['/tools/image-converter-slug/', '/tools/pdf-merge-slug/'] : ['/tools/image-converter-slug/']);
     expect(registry.tools.map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', ...generalToolboxIds]); // Fixtures never populate the real registry.
     expect(imageConverterDefinition.status).toBe('published');
-    expect(original('cn', false)).toEqual([imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, comicPageOrganizerDefinition, imageWatermarkDefinition, exifMetadataDefinition, pdfMergeDefinition, pdfSplitDefinition, imagesToPdfDefinition, zipManagerDefinition, batchFileRenamerDefinition]);
-    expect(original('global', false)).toEqual([imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, comicPageOrganizerDefinition, imageWatermarkDefinition, exifMetadataDefinition, pdfMergeDefinition, pdfSplitDefinition, imagesToPdfDefinition, zipManagerDefinition, batchFileRenamerDefinition]);
+    expect(original('cn', false)).toEqual([imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, comicPageOrganizerDefinition, imageWatermarkDefinition, exifMetadataDefinition, pdfMergeDefinition, pdfSplitDefinition, imagesToPdfDefinition, zipManagerDefinition, batchFileRenamerDefinition, fileHashDefinition]);
+    expect(original('global', false)).toEqual([imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, comicPageOrganizerDefinition, imageWatermarkDefinition, exifMetadataDefinition, pdfMergeDefinition, pdfSplitDefinition, imagesToPdfDefinition, zipManagerDefinition, batchFileRenamerDefinition, fileHashDefinition]);
   });
 
   it.each([{ region: 'cn', dev: false }, { region: 'global', dev: false }, { region: 'cn', dev: true }, { region: 'global', dev: true }] as const)('links the real Published Converter in the $region toolbox (DEV=$dev)', async ({ region, dev }) => {
