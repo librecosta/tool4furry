@@ -3,10 +3,22 @@ import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { expect, it } from 'vitest';
 import { definition } from '../src/tools/text-cleaner/definition';
+import { tools } from '../src/tools/registry';
+import { toolBuildDefines } from '../src/tools/build-availability';
 
 const read = (path: string) => readFileSync(path, 'utf8');
-it('keeps the editor behind Text Cleaner’s Draft loader without migrating other text tools', () => {
-  expect(definition.status).toBe('draft');
+it('delivers the editor through Published Text Cleaner while other text tools remain Draft', () => {
+  expect(definition.status).toBe('published');
+  expect(definition.regions).toEqual(['cn', 'global']);
+  for (const region of definition.regions) {
+    const availability = toolBuildDefines(tools, region);
+    expect(availability['import.meta.env.T4F_TOOL_TEXT_CLEANER_AVAILABLE']).toBe('true');
+    for (const id of ['json-formatter', 'subtitle-tools', 'markdown-editor']) {
+      expect(tools.find(tool => tool.id === id)?.status).toBe('draft');
+      expect(availability[`import.meta.env.T4F_TOOL_${id.replaceAll('-', '_').toUpperCase()}_AVAILABLE`]).toBe('false');
+    }
+  }
+  expect(read('src/tools/loaders.ts')).toMatch(/T4F_TOOL_TEXT_CLEANER_AVAILABLE[\s\S]*?import\('\.\/text-cleaner\/TextCleaner'\)/);
   expect(read('src/tools/text-cleaner/TextCleaner.tsx')).toContain(
     "from '../../ui/text-editor/TextEditor'",
   );

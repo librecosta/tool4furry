@@ -79,7 +79,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -944,6 +944,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/zip-manager/index.html') assertToolContent(dom, locale, generalToolboxContent['zip-manager'], 4, 4, 6);
     if (page === 'tools/batch-file-renamer/index.html') assertToolContent(dom, locale, generalToolboxContent['batch-file-renamer'], 4, 4, 6);
     if (page === 'tools/file-hash/index.html') assertToolContent(dom, locale, generalToolboxContent['file-hash'], 4, 4, 6);
+    if (page === 'tools/text-cleaner/index.html') assertToolContent(dom, locale, generalToolboxContent['text-cleaner'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1501,6 +1502,39 @@ if (!published.some(tool => tool.id === 'text-cleaner')) {
     const text = await readFile(resolve(root, file), 'utf8');
     assert(!/data-text-editor|data-text-workbench|cm-editor|cm-content|cm-gutters|--t4f-editor-font/.test(text) && !text.includes(editorNotice), `Draft CodeMirror runtime/styles leaked: ${file}`);
   }
+} else {
+  const entries = files.filter(file => /(?:^|\/)TextCleaner[.-][\w-]+\.js$/.test(file));
+  assert.equal(entries.length, 1, 'Published Text Cleaner retains one separate lazy entry');
+  const entry = await readFile(resolve(root, entries[0]), 'utf8');
+  for (const marker of ['data-text-cleaner', 'data-text-editor', 'data-text-workbench', 'data-editor-license', 'cm-content'])
+    assert(entry.includes(marker), `Published Text Cleaner delivers its real editor: ${marker}`);
+  const entryName = entries[0].split('/').at(-1);
+  const otherScripts = await Promise.all(files.filter(file => file.endsWith('.js') && file !== entries[0])
+    .map(async file => ({ file, text: await readFile(resolve(root, file), 'utf8') })));
+  const owners = otherScripts.filter(({ text }) => {
+    const ast = ts.createSourceFile('chunk.js', text, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+    let found = false;
+    function visit(node) {
+      if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword &&
+        ts.isStringLiteralLike(node.arguments[0]) && node.arguments[0].text.endsWith(`/${entryName}`)) found = true;
+      ts.forEachChild(node, visit);
+    }
+    visit(ast);
+    return found;
+  });
+  assert.equal(owners.length, 1, 'One explicit dynamic import reaches the editor tool');
+  assert(owners[0].file.includes('ToolRuntime'), 'The editor is reached through the existing tool runtime loader');
+  for (const { file, text } of otherScripts)
+    assert(!/data-text-editor|cm-content|cm-gutters|--t4f-editor-font/.test(text), `CodeMirror does not enter an eager/shared script: ${file}`);
+  const styles = files.filter(file => /(?:^|\/)TextCleaner[.-][\w-]+\.css$/.test(file));
+  assert.equal(styles.length, 1, 'Text Cleaner delivers its own lazy stylesheet');
+  const css = await readFile(resolve(root, styles[0]), 'utf8');
+  assert(css.includes('@layer t4f-ui') && css.includes('@layer t4f-tools') && css.includes('--t4f-input-surface'), 'Editor and tool SCSS retain their layered theme ownership');
+  const notice = await readFile('src/ui/text-editor/codemirror.NOTICE.txt');
+  const notices = files.filter(file => file.includes('codemirror.NOTICE'));
+  assert.equal(notices.length, 1, 'One complete CodeMirror runtime license resource');
+  assert((await readFile(resolve(root, notices[0]))).equals(notice), 'Published editor distributes the complete installed MIT notices');
+  assert(entry.includes(notices[0].split('/').at(-1)), 'The editor lazy entry owns its notice URL');
 }
 for (const marker of ['t4f-markdown-preview'])
   assert(!combinedCSS.includes(marker), `Draft-only content CSS leaked: ${marker}`);

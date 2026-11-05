@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { Tooltip } from '@base-ui/react/tooltip';
+import userEvent from '@testing-library/user-event';
 import { PdfPagePreview } from '../src/tools/pdf-split/PdfPagePreview';
 import { enlargedSize, type PreviewSession } from '../src/tools/pdf-split/preview-session';
 
@@ -22,20 +23,25 @@ beforeEach(() => {
 const preview = (page = 1) => <Tooltip.Provider><PdfPagePreview session={session} page={page} locale="en" /></Tooltip.Provider>;
 
 it('uses the bounded page render in the interactive viewer, supports zoom/keyboard pan/fit, and releases its URL and canvas', async () => {
+  const user = userEvent.setup();
   const { unmount } = render(preview());
   const image = await screen.findByRole('img', { name: 'Preview of page 1' });
   fireEvent.load(image);
+  const actual = screen.getByRole('button', { name: 'Actual size' });
+  // The asynchronous raster mounts a separate viewer. Wait for its loaded state
+  // and React's committed interaction updates, rather than reading a prior fit.
+  await waitFor(() => expect(actual).toHaveProperty('disabled', false));
   const viewport = screen.getByRole('region', { name: 'PDF page preview' });
   const fitted = image.style.transform;
   expect(fitted).toContain(`scale(${600 / 1555})`);
-  fireEvent.click(screen.getByRole('button', { name: 'Actual size' }));
-  expect(image.style.transform).toContain('scale(1)');
+  await user.click(actual);
+  await waitFor(() => expect(image.style.transform).toContain('scale(1)'));
   fireEvent.wheel(viewport, { deltaY: -100, clientX: 400, clientY: 300 });
-  expect(image.style.transform).toContain(`scale(${Math.exp(0.2)})`);
+  await waitFor(() => expect(image.style.transform).toContain(`scale(${Math.exp(0.2)})`));
   fireEvent.keyDown(viewport, { key: 'ArrowRight' });
-  expect(image.style.transform).toContain('+ 40px');
-  fireEvent.click(screen.getByRole('button', { name: 'Fit to view' }));
-  expect(image.style.transform).toBe(fitted);
+  await waitFor(() => expect(image.style.transform).toContain('+ 40px'));
+  await user.click(screen.getByRole('button', { name: 'Fit to view' }));
+  await waitFor(() => expect(image.style.transform).toBe(fitted));
   const [, canvas, size, signal] = renderPage.mock.calls[0];
   expect(size).toBe(enlargedSize);
   expect(canvas.width * canvas.height).toBe(0);

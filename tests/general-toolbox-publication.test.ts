@@ -4,6 +4,27 @@ import { toolPageContents, getToolPageContent } from '../src/site/tool-content';
 import { toolLoaders } from '../src/tools/loaders';
 import { groups } from '../src/site/taxonomy';
 import { draftIds, generalToolboxIds, firstBatchIds, secondBatchIds } from './fixtures/general-toolbox';
+it('publishes Text Cleaner SEO and short copy for its frozen live editor workflow', () => {
+  const tool = tools.find(tool => tool.id === 'text-cleaner')!;
+  expect(tool).toMatchObject({ id: 'text-cleaner', slug: 'text-cleaner', category: 'text', group: 'text-processing', roles: ['operations', 'studio'], mode: 'form', status: 'published', regions: ['cn', 'global'] });
+  const expected = {
+    zh: { title: '在线文本清理工具 - 空白处理与换行格式化 | Tool4Furry', description: '在线清理文本中的行尾空白、连续空行与换行符。支持实时预览、保留缩进、高级清理规则、LF/CRLF 转换及 TXT 下载，全部在浏览器本地完成。', h1: '文本清理', intro: '粘贴文本，实时查看清理结果。整理空白、空行和换行符，让文本更整洁。' },
+    en: { title: 'Text Cleaner Online - Whitespace & Line Ending Cleanup | Tool4Furry', description: 'Clean trailing whitespace, blank lines and line endings online. Preview changes instantly, preserve indentation, choose LF or CRLF, and download a TXT file locally.', h1: 'Text Cleaner', intro: 'Paste your text and see a cleaner version instantly. Tidy up whitespace, blank lines and line endings in your browser.' },
+  };
+  for (const region of ['cn', 'global'] as const) for (const locale of ['zh', 'en'] as const) {
+    const content = getToolPageContent(tool, region, toolPageContents, false, locale);
+    expect(content).toMatchObject(expected[locale]);
+    expect(content.title.match(/Tool4Furry/g)).toHaveLength(1);
+    expect(content.steps).toHaveLength(4); expect(content.limitations).toHaveLength(6); expect(content.faq).toHaveLength(4);
+    expect(content.limitations![1]).toMatch(/不会默认移除正常的行首缩进|preserving leading indentation/);
+    expect(content.limitations![4]).toMatch(/不再设置旧|limit has been removed/);
+    expect(content.limitations![5]).toMatch(/不承诺保留|are not preserved/);
+    expect(JSON.stringify(content)).not.toMatch(/JSON|YAML|AI 改写|富文本|rich.text|spell.check/i);
+    if (locale === 'en') expect(JSON.stringify(content)).not.toMatch(/\p{Script=Han}/u);
+  }
+  expect(tool.copy.zh).toEqual({ title: '文本清理', description: '实时清理文本空白、空行与换行符，支持快速和高级模式。', summary: '粘贴文本实时清理，保留缩进并支持 LF/CRLF。' });
+  expect(tool.copy.en).toEqual({ title: 'Text Cleaner', description: 'Clean whitespace, blank lines and line endings with live previews.', summary: 'Paste text, preview cleanup and choose LF or CRLF output.' });
+});
 it('publishes File Hash bilingual static SEO and concise metadata matching its five-algorithm worker', () => {
   const tool = tools.find(tool => tool.id === 'file-hash')!;
   expect(tool).toMatchObject({ id: 'file-hash', slug: 'file-hash', category: 'files', group: 'file-operations', roles: ['developer', 'studio'], mode: 'form', regions: ['cn', 'global'], status: 'published' });
@@ -25,7 +46,7 @@ it('publishes File Hash bilingual static SEO and concise metadata matching its f
   expect(tool.copy.zh).toEqual({ title: '文件哈希', description: '批量计算 MD5、SHA 系列与 CRC32，支持本地哈希比对。', summary: '拖入文件自动计算哈希，支持多种算法与批量导出。' });
   expect(tool.copy.en).toEqual({ title: 'File Hash', description: 'Calculate MD5, SHA and CRC32 checksums locally for multiple files.', summary: 'Automatically hash files, compare checksums and export results.' });
 });
-it('keeps both implementation batches intact with thirteen Published and sixteen Draft tools', () => {
+it('keeps both implementation batches intact with fourteen Published and fifteen Draft tools', () => {
   expect(tools).toHaveLength(29);
   expect(firstBatchIds).toHaveLength(15);
   expect(firstBatchIds).toContain('pdf-merge');
@@ -34,13 +55,14 @@ it('keeps both implementation batches intact with thirteen Published and sixteen
   expect(firstBatchIds).toContain('zip-manager');
   expect(firstBatchIds).toContain('batch-file-renamer');
   expect(firstBatchIds).toContain('file-hash');
+  expect(firstBatchIds).toContain('text-cleaner');
   expect(secondBatchIds).toHaveLength(7);
-  expect(draftIds).toHaveLength(16);
+  expect(draftIds).toHaveLength(15);
   expect(tools.filter((t) => t.status === 'draft').map((t) => t.id)).toEqual(
     draftIds,
   );
   for (const region of ['cn', 'global'] as const) {
-    expect(getAvailableTools(region, false)).toHaveLength(13);
+    expect(getAvailableTools(region, false)).toHaveLength(14);
     expect(getAvailableTools(region, true)).toHaveLength(29);
     for (const id of generalToolboxIds) {
       const tool = tools.find((t) => t.id === id)!;
@@ -59,7 +81,7 @@ it('keeps both implementation batches intact with thirteen Published and sixteen
         expect(c.limitations?.length).toBeGreaterThan(0);
         if (locale === 'en')
           expect(JSON.stringify(c)).not.toMatch(/[\u4e00-\u9fff]/);
-        if (id === 'pdf-merge' || id === 'pdf-split' || id === 'images-to-pdf' || id === 'zip-manager' || id === 'batch-file-renamer' || id === 'file-hash') {
+        if (id === 'pdf-merge' || id === 'pdf-split' || id === 'images-to-pdf' || id === 'zip-manager' || id === 'batch-file-renamer' || id === 'file-hash' || id === 'text-cleaner') {
           expect(tool.status).toBe('published');
           expect(getToolPageContent(tool, region, toolPageContents, false, locale)).toBe(c);
           expect(c.steps).toHaveLength(4);

@@ -28,7 +28,7 @@ describe.each(['cn', 'global'] as const)('%s published basic image tools', regio
       expect(getRelatedTools(tool, region, undefined, true).length).toBeGreaterThan(0);
       expect(getRelatedTools(tool, region).map(item => item.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor']);
     }
-    expect(production.map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash']);
+    expect(production.map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash', 'text-cleaner']);
   });
   it.each(ids)('excludes %s from production when its Registry qualification is Draft', id => {
     const registry = tools.map(tool => tool.id === id ? {...tool, status: 'draft' as const} : tool);

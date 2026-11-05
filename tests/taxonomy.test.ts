@@ -42,11 +42,11 @@ describe('publication metadata gate', () => {
       ['palette-extractor', 'published'],
       ['image-compressor', 'published'], ['comic-page-organizer', 'published'],
       ['image-watermark', 'published'], ['exif-metadata', 'published'],
-      ['pdf-merge', 'published'], ['pdf-split', 'published'], ['images-to-pdf', 'published'], ['zip-manager', 'published'], ['batch-file-renamer', 'published'], ['file-hash', 'published'],
+      ['pdf-merge', 'published'], ['pdf-split', 'published'], ['images-to-pdf', 'published'], ['zip-manager', 'published'], ['batch-file-renamer', 'published'], ['file-hash', 'published'], ['text-cleaner', 'published'],
       ...draftIds.map(id => [id, 'draft']),
     ]);
-    expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash']);
-    expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash']);
+    expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash', 'text-cleaner']);
+    expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash', 'text-cleaner']);
   });
   it.each([0, 3, 20, 100])(
     'validates %i test-only tools without registering them',
@@ -64,11 +64,11 @@ describe('publication metadata gate', () => {
         ['palette-extractor', 'published'],
         ['image-compressor', 'published'], ['comic-page-organizer', 'published'],
         ['image-watermark', 'published'], ['exif-metadata', 'published'],
-      ['pdf-merge', 'published'], ['pdf-split', 'published'], ['images-to-pdf', 'published'], ['zip-manager', 'published'], ['batch-file-renamer', 'published'], ['file-hash', 'published'],
+      ['pdf-merge', 'published'], ['pdf-split', 'published'], ['images-to-pdf', 'published'], ['zip-manager', 'published'], ['batch-file-renamer', 'published'], ['file-hash', 'published'], ['text-cleaner', 'published'],
       ...draftIds.map(id => [id, 'draft']),
       ]);
-      expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash']);
-      expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash']);
+      expect(getPublishedTools('cn').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash', 'text-cleaner']);
+      expect(getPublishedTools('global').map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash', 'text-cleaner']);
     },
   );
   it.each([

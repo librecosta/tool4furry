@@ -1,6 +1,6 @@
 # 当前架构
 
-Tool4Furry 是单项目的浏览器工具站：Astro SSG + 必要的 React Islands + TypeScript；V0.9 已将 Astro、React、29 款工具和 DEV Lab 全部迁至 SCSS Modules / CSS Variables，并移除 StyleX 的依赖、编译与兼容链路。样式边界见 [V0.9 基础](../docs/styling-foundation-v0.9.md)。当前十三款 Published 工具包括七款图片工具、三款 PDF 工具、ZIP Manager、Batch File Renamer 与 File Hash，均登记 CN/Global，其余十六款 Draft；两个地区均未部署。漫画整理的实际验收缺口见 [当前模块说明](../docs/image-basics.md#b2-d1--seo-与-beta-审计进展)。来源优先级见 [AGENTS](../AGENTS.md#sources-of-truth)。
+Tool4Furry 是单项目的浏览器工具站：Astro SSG + 必要的 React Islands + TypeScript；V0.9 已将 Astro、React、29 款工具和 DEV Lab 全部迁至 SCSS Modules / CSS Variables，并移除 StyleX 的依赖、编译与兼容链路。样式边界见 [V0.9 基础](../docs/styling-foundation-v0.9.md)。当前十四款 Published 工具包括七款图片工具、三款 PDF 工具、ZIP Manager、Batch File Renamer、File Hash 与 Text Cleaner，均登记 CN/Global，其余十五款 Draft；两个地区均未部署。漫画整理的实际验收缺口见 [当前模块说明](../docs/image-basics.md#b2-d1--seo-与-beta-审计进展)。来源优先级见 [AGENTS](../AGENTS.md#sources-of-truth)。
 
 ## 静态站点层
 
@@ -40,7 +40,7 @@ Astro 工具路由 + 静态 Intro / Guide
 - 大段文本、结构化文本和代码编辑默认复用 `src/ui/text-editor/TextEditor.tsx` 与 TextEditorPane；短字段和简单备注继续使用原有输入原语。Text Cleaner 首先采用，不改变 JSON Formatter、Subtitle Tools、Markdown Editor 或旧 TextWorkspace。
 - TextEditor 封装 CodeMirror 6 的 EditorView、历史、选区和销毁；外部 value 通过受控事务同步，受控回流不重复提交编辑，配置与未来语言 Extension 使用 Compartment 更新。普通文本默认站点易读字体；语言工具可以在自己的入口传入扩展与等宽字体，不预装全部语言解析器。
 - TextEditorPane 只拥有标题、操作插槽、静态高度编辑区和状态栏。TextWorkbench 只管顶部规则与桌面等宽双栏、≤900px 同 DOM 上下堆叠；不使用文件工具的 350px 设置列。输入、规则、转换、延迟结果有效性及交付仍归工具，不新增 Provider/Store。
-- CodeMirror 内部未分层规则由 scoped EditorView.theme 覆盖，颜色引用既有 CSS Variables；外部布局和焦点表面属于 SCSS Modules。主题切换不重建 EditorView，不等待字体或隐藏页面。编辑器依赖和完整 MIT NOTICE 仅从使用它的工具懒加载；Text Cleaner 保持 Draft，正式产物守卫排除其编辑器实现与许可资源。
+- CodeMirror 内部未分层规则由 scoped EditorView.theme 覆盖，颜色引用既有 CSS Variables；外部布局和焦点表面属于 SCSS Modules。主题切换不重建 EditorView，不等待字体或隐藏页面。编辑器依赖和完整 MIT NOTICE 仅从使用它的工具懒加载；Text Cleaner 已 Published，正式产物守卫检查编辑器与完整许可的按需交付，其余 Draft 文本工具继续隔离。
 
 ## Image Converter 分层
 

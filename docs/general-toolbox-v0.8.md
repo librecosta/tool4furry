@@ -1,6 +1,18 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash 已获得 CN/Global Published 源码资格，其余 16 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（13 Published / 16 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner 已获得 CN/Global Published 源码资格，其余 15 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（14 Published / 15 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+
+## Text Cleaner — V0.8-B7-D2 SEO 与 Beta 资格（2026-11-05）
+
+- 依据维护者对 D1 的手动验收及本轮授权，Text Cleaner 取得 CN/Global Published 源码资格；全站仍为 29 款，现为 14 Published / 15 Draft。只更新本工具静态 SEO、Registry 短文案及发布投影；D1 编辑器、工作区、纯清理函数、资源策略和依赖版本均未改动，其他工具资格不变。
+- [D1 CI 42034819926](https://github.com/librecosta/tool4furry/actions/runs/42034819926) 实际为 1295/1296 通过，唯一失败在 PDF 预览测试点击 Actual size 后立即读取旧的 Fit transform。本地原提交两次定向重跑均 4/4，通过代码核对和真实浏览器未发现缩放功能缺陷；问题按测试同步时序处理：等待异步页面图片加载后的控件可用，使用 awaited userEvent，并以 waitFor 等待 React 提交的 transform。未增加固定 Sleep、删除断言或修改 PDF Split / 图片预览生产代码；Actual Size、Fit、滚轮、键盘平移、取消、迟到图像和 Canvas/URL 释放检查全部保留。PDF 与共享预览 11 项复验通过；Chromium 实际 Actual Size 为 scale(1)，滚轮后约 1.2214，键盘右移 40px，Fit 恢复适应比例，Escape 正常关闭。
+- 双语 Astro SEO 各含 4 项步骤、6 项支持范围与限制、4 组 FAQ。准确描述快速保留缩进/清行尾/合并空行/LF、高级独立规则与 LF/CRLF、自动结果、已移除旧 50 万代码单元配额及真实设备边界，不宣传 JSON/YAML 校验、富文本或 AI。Registry 双语短文案同步，未静态引入业务或编辑器。
+- 四个正式页面（CN 中文 `/tools/text-cleaner/`、CN 英文 `/en/tools/text-cleaner/`、Global 英文 `/tools/text-cleaner/`、Global 中文 `/zh/tools/text-cleaner/`）通过 Title/Description、唯一 H1/专属像素图标、4/6/4 静态正文、同地区 Canonical/hreflang、可索引状态、目录与 Sitemap/llms 收录守卫。正式同组暂无其他 Published 工具，因此 Text Cleaner 不渲染空的相关工具区域；DEV 和其他页面仍复用原 ToolCards 与资格过滤。运营身份按原有人工配置自然发现 Text Cleaner，不修改推荐算法或首页配置。
+- Chrome 156 在实际 CN 中文 Dark / 1280px、Global 英文 Light / 390px 正式产物完成输入、多行中英文/Tab/混合换行粘贴、Undo/Redo、三种空行规则、行首/行尾独立开关、Quick/Advanced 状态保持、主题切换、只读选择复制及清空。六份实际 TXT 重新读取，UTF-8 中文/Unicode、保留缩进、LF/CRLF 字节均与独立预期字符串一致；MIME 为 `text/plain;charset=utf-8`，重复下载名称不同。实际 clipboard.writeText 参数与当前结果完全一致；Windows 系统剪贴板读回可能规范化行尾，另以下载字节验证格式，不混淆编辑器内部 LF 与最终 CRLF。
+- 查看正式桌面/手机截图：双面板宽高在首次挂载/F5 中稳定、无横向溢出、无明显 FOUC 或 Hydration/运行错误；主题切换保持 DOM、文本与选区。D1 的 660,000 字符 / 60,000 行、120ms 大文本防抖与虚拟化证据在未修改业务代码的情况下继续有效，不机械重跑压力样本；核心/UI 测试仍覆盖超旧配额、过期导出禁用和复制失败后可手动选择。
+- CodeMirror 的 state/view/commands 与必要传递依赖沿用已锁定版本，完整 12 包 MIT NOTICE 逐项核对。每地区正式产物各有一个 Text Cleaner 动态 JS 入口、一个按需 CSS 和一个完整 NOTICE（约 15.3 kB），守卫从实际输出 AST 核对其唯一动态入口由 ToolRuntime 持有，CM 实现未进入其他 eager/shared JS。浏览器首页不请求编辑器，工具页正常按需加载 JS/CSS，读取的许可与源码全文相同。无外部编辑器/CDN、上传或文本持久存储；JSON Formatter、Subtitle Tools、Markdown Editor 等其余 15 款 Draft 的路由、私有实现和资源继续排除。
+- `pnpm check`（460 文件、零错误/警告）、186 项相关定向测试通过；CN/Global 各一次正式编译及完整产物守卫通过，每地区 28 个工具详情页、38 条公开发现 URL。CN 首轮新增动态入口审计仅识别引号而遗漏 Vite 输出的无插值模板字面量，已改为 TypeScript AST 检查并对同一产物完整复验通过，不放宽动态归属或 Draft 断言。新提交的远程 CI 另行核对，不将本地结果等同于 CI 通过。
+- 未测 Firefox、Safari/WebKit、真实 iOS/Android、系统输入法候选窗、真实屏幕阅读器及极限内存；390px 为桌面 Chromium 移动视口。未部署、创建 Tag/Release 或合并发布分支。
 
 ## Text Cleaner — V0.8-B7-D1 共享编辑器与实时清理（2026-11-05）
 

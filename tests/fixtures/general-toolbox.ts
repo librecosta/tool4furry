@@ -25,4 +25,4 @@ export const secondBatchIds = [
   'uuid-generator',
 ];
 export const generalToolboxIds = [...firstBatchIds, ...secondBatchIds];
-export const draftIds = generalToolboxIds.filter(id => !['pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash'].includes(id));
+export const draftIds = generalToolboxIds.filter(id => !['pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash', 'text-cleaner'].includes(id));

@@ -46,7 +46,7 @@ Batch File Renamer 当前使用内嵌文件名组合器，快速/高级共享名
 - 外围尺寸、圆角、表面和 Purple Focus 属于 SCSS Modules。CodeMirror 自身无 Layer 的内部样式优先于分层 CSS，因此内部覆盖使用 scoped EditorView.theme 引用现有变量；不是全站 CSS-in-JS 或另一套主题。Dark/Light 切换不重建文档，Reduced Motion 遵循既有规则。
 - Text Cleaner 快速模式保留行首缩进、清理行尾空白、合并连续空行并输出 LF；高级独立保留自定义空白/空行及 LF/CRLF 规则。编辑层统一文档为 LF，实际导出换行由纯函数明确生成，不提供虚假的“保留混合原始行尾”选项。
 
-编辑器和 Text Cleaner 保持懒加载及 Draft 隔离；完整 CodeMirror/必要传递依赖 MIT NOTICE 随实际入口交付。验证见 [编辑器生命周期测试](../tests/text-editor.test.tsx)、[交付边界测试](../tests/text-editor-delivery.test.ts)、[Cleaner 核心](../tests/text-cleaner-core.test.ts) 和 [实际编辑器 UI 测试](../tests/text-cleaner-ui.test.tsx)。真实浏览器证据与性能边界见 [通用工具说明](general-toolbox-v0.8.md#text-cleaner--v08-b7-d1-共享编辑器与实时清理2026-11-05)。
+编辑器由 Published Text Cleaner 懒加载；JSON Formatter、Subtitle Tools、Markdown Editor 等 Draft 继续隔离，完整 CodeMirror/必要传递依赖 MIT NOTICE 随实际入口交付。验证见 [编辑器生命周期测试](../tests/text-editor.test.tsx)、[交付边界测试](../tests/text-editor-delivery.test.ts)、[Cleaner 核心](../tests/text-cleaner-core.test.ts) 和 [实际编辑器 UI 测试](../tests/text-cleaner-ui.test.tsx)。真实浏览器证据与性能边界见 [通用工具说明](general-toolbox-v0.8.md#text-cleaner--v08-b7-d1-共享编辑器与实时清理2026-11-05)。
 
 ## 静态说明与 FAQ
 

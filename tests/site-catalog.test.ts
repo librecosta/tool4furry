@@ -41,7 +41,7 @@ describe('static tool discovery', () => {
   });
 
   it.each(['cn', 'global'] as const)(
-    'discovers thirteen Published and sixteen Draft tools in DEV %s',
+    'discovers fourteen Published and fifteen Draft tools in DEV %s',
     (region) => {
       const entries = getCatalogEntries(region, undefined, true);
       expect(entries.map((entry) => [entry.id, entry.href, entry.title])).toEqual([
@@ -67,11 +67,15 @@ describe('static tool discovery', () => {
       const published = entries.filter(entry => entry.status === 'published');
       expect(getCatalogEntries(region)).toEqual(published);
       expect(getHomepageEntries(region)).toEqual(published.slice(0, 9)); // Homepage projection keeps its existing nine-entry cap.
-      expect(getCatalogSections(region).flatMap(section => section.groups.flatMap(group => group.entries))).toEqual(published);
+      // Text precedes Documents/Files in the existing category order. Retain
+      // the full entry comparison, including copy, URLs and qualification.
+      expect(getCatalogSections(region).flatMap(section => section.groups.flatMap(group => group.entries))).toEqual([
+        ...published.slice(0, 7), published.find(entry => entry.id === 'text-cleaner')!, ...published.slice(7).filter(entry => entry.id !== 'text-cleaner'),
+      ]);
       expect(imageConverterDefinition.status).toBe('published');
       expect(imageResizeCropDefinition.status).toBe('published');
       expect(paletteExtractorDefinition.status).toBe('published');
-      expect(published.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash']);
+      expect(published.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash', 'text-cleaner']);
     },
   );
 
