@@ -9,9 +9,9 @@
 - 全部详情页的 `ToolIntro.astro` 由路由传入工具 ID，直接复用现有 `FeaturedToolIcon`；标题组合居中，图标固定桌面 40px / 手机 32px、装饰性且 pixelated。`ToolGuide.astro` 复用实际目录 `ToolCards.astro`，仅增加 related 布局参数（最多三列、手机单列）；推荐仍使用同组/排除自身/最多三项的原算法与 Catalog 双语文案，正式构建只含 Published，不引入目录 Fixture 或客户端业务实现。`/tools/` 的 DOM 契约不变。
 - Chromium 156 在 DEV 的 CN 中文 Dark / 1280px 与 Global 英文 Light / 390px 完成四种基本命名组合、高级参数往返、逐行冲突、增删、取消、清空和结果失效。实际下载 12 个 ZIP，Python zipfile 独立核对条目名称、CRC 和原始 PNG/JPEG/中文 UTF-8 字节；中文文件名、多点英文名、扩展名均正确。重复下载名称不同、结果 Blob 相同。复用未改业务在 `ec6893b` 的安全/资源/中文输入组合事件证据。
 - DEV 两地区各 29 个真实静态页面通过唯一 H1、图标 ID、同组推荐顺序与空推荐检查；7 类页面实际检查桌面/手机尺寸与布局。标题 PNG 延迟 800ms 时，标题组合宽高和位置变化均为 0px；查看两主题标题与相关卡片截图，无横向溢出或页面运行错误。目录搜索、分类、身份筛选及分页实测通过，Fixture 隔离保留定向测试。
-- `pnpm check`（444 文件，零错误/警告）和 15 个相关测试文件 / 216 项断言通过；CN/Global 各一次正式构建与产物守卫通过。四个 Renamer 页面静态 Title/Description、唯一 H1 图标、4/6/4 正文、同地区 Canonical/hreflang、可索引状态及 Sitemap/llms/目录均正确，每地区 24 个工具详情页 / 34 条公开发现 URL；17 款 Draft、Lab、Fixture 和专属资源仍隔离。新工具 JS/CSS 及完整 fflate MIT 正常按需交付。
+- `pnpm check`（444 文件，零错误/警告）和 17 个相关测试文件 / 248 项断言通过；CN/Global 各一次正式构建与产物守卫通过。四个 Renamer 页面静态 Title/Description、唯一 H1 图标、4/6/4 正文、同地区 Canonical/hreflang、可索引状态及 Sitemap/llms/目录均正确，每地区 24 个工具详情页 / 34 条公开发现 URL；17 款 Draft、Lab、Fixture 和专属资源仍隔离。新工具 JS/CSS 及完整 fflate MIT 正常按需交付。
 - 正式静态预览再次通过 CN 中文 Dark / 1280px 与 Global 英文 Light / 390px 的 Published 标题、相关卡片、合法跳转、目录搜索/筛选；没有页面运行错误、横向溢出或明显样式闪现。独立复检正式预览另外 12 个真实 ZIP，路径、CRC、原始字节和重复下载均通过（本轮 DEV + 正式共 24 个 ZIP）；与 DEV 的区别仅是推荐过滤隐藏 Draft。
-- [基线 `ec6893bdc6e4` 的既有 CI 已通过](https://github.com/librecosta/tool4furry/actions/runs/42001314739)；本轮新提交 CI 需单独核对，不将本地成功代替远程结果。Firefox/Safari、真实 iOS/Android、极限内存和系统输入法未重测，390px 是桌面 Chromium 视口/触控模拟。源码 Published 不代表部署，未部署。
+- [基线 `ec6893bdc6e4` 的既有 CI 已通过](https://github.com/librecosta/tool4furry/actions/runs/42001314739)；首轮新 CI 暴露导航/提色测试两处旧 Published 名单，已同步为 12 项且 2 文件 / 32 项定向复验通过；修正提交的 CI 需单独核对，不将本地成功代替远程结果。Firefox/Safari、真实 iOS/Android、极限内存和系统输入法未重测，390px 是桌面 Chromium 视口/触控模拟。源码 Published 不代表部署，未部署。
 
 ## Batch File Renamer — V0.8-B5-C 文件名组合器（2026-11-05）
 
