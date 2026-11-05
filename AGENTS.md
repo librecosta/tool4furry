@@ -6,14 +6,14 @@
 
 ## Current State
 
-- Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF、ZIP Manager 与 Batch File Renamer 十二款工具均为 Published；CN/Global 双语正式构建与产物守卫通过，**两个地区均未部署**。源码 Published 不代表部署授权。
+- Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF、ZIP Manager、Batch File Renamer 与 File Hash 十三款工具均为 Published；CN/Global 双语正式构建与产物守卫通过，**两个地区均未部署**。源码 Published 不代表部署授权。
 - 当前没有后端、数据库、SSR 服务或用户系统。Lab 仅供 DEV，不能进入生产路由/资源图。
 - Image Compressor 已完成 B1-D1 SEO 与 Beta 资格收尾，保留 C1-R1 最长边步进器；EXIF Metadata 已完成 B4-D1 双语 SEO 与 Beta 收尾；Image Watermark 已完成 B3-D1 双语 SEO 与 Beta 收尾；Comic Page Organizer 已完成 B2-D1 双语 SEO，并按维护者明确要求提升为 CN/Global Published；转换归档真实落盘验收仍缺证据，不能声明 L2 已全部通过。当前能力、审计证据和 L3 边界见 [基础图片工具说明](docs/image-basics.md)。
 - Image Resize & Crop 已完成 A1-D2 Beta 资格审计；单张裁剪、批量缩放、双语静态页面与所需资源进入两地区正式构建。实现、资格证据及 L3 未测范围见 [Resize/Crop 说明](docs/image-resize-crop-implementation.md)。A1 已收尾，不继续扩展裁剪工作区。
 - Palette Extractor 已完成 A2-D2 Beta 资格审计；有界提色、色卡编辑/图片取色和 PNG 分享卡进入两地区正式构建，首页复用既有画家/动画师精选。证据与 L3 边界见 [Palette 说明](docs/palette-extractor.md#a2-d2-beta-资格审计2026-11-01)。A2 已收尾，不继续新增功能阶段。
 - 当前能力与 D2 证据见 [Converter 说明](docs/image-converter-implementation.md)；旧阶段的 Draft、零工具、三格式和 CN-only 结论属于历史。
 
-- V0.8 两批已增加 22 款通用工具初版（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer 已完成各自双语静态 SEO 与核心输出复核并具备 CN/Global Published 源码资格，其余 17 款保持 Draft；最新远程 CI 状态单独记录，不能把本地验收等同于 L2 七项全部通过。PDF Split 的预览使用按需本地 PDF.js，真实输出仍由 pdf-lib 负责；三款 PDF 工具在点击下载时生成安全文件名和本地毫秒时间戳。Images to PDF 保留画廊排序、预览和宽松非阻断资源策略。Batch File Renamer 保留 Quick/Advanced 文件名组合器和 ZIP 原字节输出；详情页统一静态标题像素图标，相关推荐直接复用目录 ToolCards，资格过滤不变。共 29 款工具（12 Published / 17 Draft）。实际能力、限制和验证见 [通用工具说明](docs/general-toolbox-v0.8.md)。
+- V0.8 两批已增加 22 款通用工具初版（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash 已完成各自双语静态 SEO 与核心输出复核并具备 CN/Global Published 源码资格，其余 16 款保持 Draft；最新远程 CI 状态单独记录，不能把本地验收等同于 L2 七项全部通过。PDF Split 的预览使用按需本地 PDF.js，真实输出仍由 pdf-lib 负责；三款 PDF 工具在点击下载时生成安全文件名和本地毫秒时间戳。Images to PDF 保留画廊排序、预览和宽松非阻断资源策略。Batch File Renamer 保留 Quick/Advanced 文件名组合器和 ZIP 原字节输出。File Hash 默认 MD5，五算法多文件自动计算、比对、复制与 TXT 导出；单 Worker / 2 MiB 分块和内嵌 WASM 按需加载，无旧 32 MiB 配额，完整 hash-wasm / 上游许可随工具交付。详情页统一静态标题像素图标，相关推荐直接复用目录 ToolCards，资格过滤不变。共 29 款工具（13 Published / 16 Draft）。实际能力、限制和验证见 [通用工具说明](docs/general-toolbox-v0.8.md)。
 
 ## Start Here
 

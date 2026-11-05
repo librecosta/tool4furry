@@ -255,6 +255,7 @@ it('registers the third bilingual Published tool in both regions', () => {
       'images-to-pdf',
       'zip-manager',
       'batch-file-renamer',
+      'file-hash',
     ]);
     expect(getAvailableTools(region, true)).toContain(tool);
     for (const locale of ['zh', 'en'] as const) {

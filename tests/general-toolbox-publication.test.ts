@@ -4,7 +4,28 @@ import { toolPageContents, getToolPageContent } from '../src/site/tool-content';
 import { toolLoaders } from '../src/tools/loaders';
 import { groups } from '../src/site/taxonomy';
 import { draftIds, generalToolboxIds, firstBatchIds, secondBatchIds } from './fixtures/general-toolbox';
-it('keeps both implementation batches intact with twelve Published and seventeen Draft tools', () => {
+it('publishes File Hash bilingual static SEO and concise metadata matching its five-algorithm worker', () => {
+  const tool = tools.find(tool => tool.id === 'file-hash')!;
+  expect(tool).toMatchObject({ id: 'file-hash', slug: 'file-hash', category: 'files', group: 'file-operations', roles: ['developer', 'studio'], mode: 'form', regions: ['cn', 'global'], status: 'published' });
+  const expected = {
+    zh: { title: '在线文件哈希计算器 - MD5、SHA-256 与批量校验 | Tool4Furry', description: '免费在线计算文件 MD5、SHA-1、SHA-256、SHA-512 和 CRC32。支持批量文件自动校验、实时进度、哈希比对、复制结果和 TXT 下载，全部在浏览器本地完成。', h1: '文件哈希', intro: '拖入文件，即刻计算哈希值。支持常用算法、批量处理与完整性比对，无需上传文件。' },
+    en: { title: 'File Hash Calculator - MD5, SHA-256 & Batch Checksums | Tool4Furry', description: 'Calculate MD5, SHA-1, SHA-256, SHA-512 and CRC32 checksums for multiple files. Compare hashes, copy results or download a TXT list. No file uploads required.', h1: 'File Hash', intro: 'Drop files to calculate their checksums automatically. Choose an algorithm, compare results and export a list without uploading anything.' },
+  };
+  for (const region of ['cn', 'global'] as const) for (const locale of ['zh', 'en'] as const) {
+    const content = getToolPageContent(tool, region, toolPageContents, false, locale);
+    expect(content).toMatchObject(expected[locale]);
+    expect(content.title.match(/Tool4Furry/g)).toHaveLength(1);
+    expect(content.steps).toHaveLength(4); expect(content.limitations).toHaveLength(6); expect(content.faq).toHaveLength(4);
+    expect(content.limitations![0]).toMatch(/MD5.*SHA-1.*SHA-256.*SHA-512.*CRC32/);
+    expect(content.limitations![2]).toMatch(/不再设置旧的 32 MiB|without the previous fixed 32 MiB/);
+    expect(content.limitations![5]).toMatch(/非密码学|not cryptographic/);
+    expect(JSON.stringify(content)).not.toMatch(/只支持 SHA-256|单文件最大|Maximum file size|md5sum|sha256sum/);
+    if (locale === 'en') expect(JSON.stringify(content)).not.toMatch(/\p{Script=Han}/u);
+  }
+  expect(tool.copy.zh).toEqual({ title: '文件哈希', description: '批量计算 MD5、SHA 系列与 CRC32，支持本地哈希比对。', summary: '拖入文件自动计算哈希，支持多种算法与批量导出。' });
+  expect(tool.copy.en).toEqual({ title: 'File Hash', description: 'Calculate MD5, SHA and CRC32 checksums locally for multiple files.', summary: 'Automatically hash files, compare checksums and export results.' });
+});
+it('keeps both implementation batches intact with thirteen Published and sixteen Draft tools', () => {
   expect(tools).toHaveLength(29);
   expect(firstBatchIds).toHaveLength(15);
   expect(firstBatchIds).toContain('pdf-merge');
@@ -12,13 +33,14 @@ it('keeps both implementation batches intact with twelve Published and seventeen
   expect(firstBatchIds).toContain('images-to-pdf');
   expect(firstBatchIds).toContain('zip-manager');
   expect(firstBatchIds).toContain('batch-file-renamer');
+  expect(firstBatchIds).toContain('file-hash');
   expect(secondBatchIds).toHaveLength(7);
-  expect(draftIds).toHaveLength(17);
+  expect(draftIds).toHaveLength(16);
   expect(tools.filter((t) => t.status === 'draft').map((t) => t.id)).toEqual(
     draftIds,
   );
   for (const region of ['cn', 'global'] as const) {
-    expect(getAvailableTools(region, false)).toHaveLength(12);
+    expect(getAvailableTools(region, false)).toHaveLength(13);
     expect(getAvailableTools(region, true)).toHaveLength(29);
     for (const id of generalToolboxIds) {
       const tool = tools.find((t) => t.id === id)!;
@@ -37,7 +59,7 @@ it('keeps both implementation batches intact with twelve Published and seventeen
         expect(c.limitations?.length).toBeGreaterThan(0);
         if (locale === 'en')
           expect(JSON.stringify(c)).not.toMatch(/[\u4e00-\u9fff]/);
-        if (id === 'pdf-merge' || id === 'pdf-split' || id === 'images-to-pdf' || id === 'zip-manager' || id === 'batch-file-renamer') {
+        if (id === 'pdf-merge' || id === 'pdf-split' || id === 'images-to-pdf' || id === 'zip-manager' || id === 'batch-file-renamer' || id === 'file-hash') {
           expect(tool.status).toBe('published');
           expect(getToolPageContent(tool, region, toolPageContents, false, locale)).toBe(c);
           expect(c.steps).toHaveLength(4);

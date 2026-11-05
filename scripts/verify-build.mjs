@@ -79,7 +79,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -943,6 +943,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/images-to-pdf/index.html') assertToolContent(dom, locale, generalToolboxContent['images-to-pdf'], 4, 4, 6);
     if (page === 'tools/zip-manager/index.html') assertToolContent(dom, locale, generalToolboxContent['zip-manager'], 4, 4, 6);
     if (page === 'tools/batch-file-renamer/index.html') assertToolContent(dom, locale, generalToolboxContent['batch-file-renamer'], 4, 4, 6);
+    if (page === 'tools/file-hash/index.html') assertToolContent(dom, locale, generalToolboxContent['file-hash'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1450,7 +1451,7 @@ for (const [id, marker] of [
   ['image-converter', 'qualityScale'], ['image-resize-crop', 'focusedWorkspace'],
   ['palette-extractor', 'composerFields'], ['image-compressor', 'stepperButton'],
   ['comic-page-organizer', 'exportTuning'], ['image-watermark', 'colorField'],
-  ['exif-metadata', 'tableRow'], ['pdf-merge', 'handle'], ['pdf-split', 'pageScroll'],
+  ['exif-metadata', 'tableRow'], ['pdf-merge', 'handle'], ['pdf-split', 'pageScroll'], ['file-hash', 'hashRow'],
 ]) {
   // CSS Modules retain the local name followed by the build's content hash.
   if (published.some(tool => tool.id === id))
@@ -1464,6 +1465,34 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     assert(!/data-file-hash|t4f-file-hash|createMD5|createSHA512|hash-wasm \(/.test(text) && !text.includes(hashNotice), `Draft hashing runtime leaked: ${file}`);
   }
   assert(!/\._?hashRow[_-]/.test(combinedCSS), 'Draft File Hash CSS stays private');
+} else {
+  const entries = files.filter(file => /(?:^|\/)FileHash[.-][\w-]+\.js$/.test(file));
+  const workers = files.filter(file => /(?:^|\/)hash\.worker[.-][\w-]+\.js$/.test(file));
+  assert.equal(entries.length, 1, 'Published File Hash retains a separate lazy entry');
+  assert.equal(workers.length, 1, 'Published File Hash distributes one local worker');
+  const entry = await readFile(resolve(root, entries[0]), 'utf8');
+  const worker = await readFile(resolve(root, workers[0]), 'utf8');
+  const otherScripts = await Promise.all(files.filter(file => file.endsWith('.js') && file !== workers[0])
+    .map(async file => ({ file, text: await readFile(resolve(root, file), 'utf8') })));
+  assert(entry.includes('data-file-hash') && entry.includes('data-hash-license'), 'File Hash keeps its implementation and license reference');
+  assert.deepEqual(otherScripts.filter(({ text }) => text.includes(workers[0].split('/').at(-1))).map(({ file }) => file), entries,
+    'Only the lazy tool owns its local worker URL');
+  assert(worker.includes('WebAssembly'), 'Hash worker contains the local WASM loader');
+  const installed = await readFile('node_modules/hash-wasm/dist/index.esm.js', 'utf8');
+  const wasm = [...installed.matchAll(/"(md5|sha1|sha256|sha512|crc32)";\s*var data[\w$]* = "([A-Za-z0-9+/=]+)"/g)];
+  assert.equal(wasm.length, 5, 'Audit all five installed hash-wasm binaries');
+  for (const [, algorithm, data] of wasm) {
+    assert(WebAssembly.validate(Buffer.from(data, 'base64')), `Valid ${algorithm} WASM module`);
+    assert(worker.includes(data), `${algorithm} binary is embedded intact in the local worker`);
+    for (const { file, text } of otherScripts)
+      assert(!text.includes(data), `Hash WASM stays out of the main thread: ${file}`);
+  }
+  const notice = await readFile('src/tools/file-hash/hash-wasm.NOTICE.txt');
+  const license = (await readFile('node_modules/hash-wasm/LICENSE', 'utf8')).replace(/\r\n/g, '\n');
+  assert(notice.toString('utf8').replace(/\r\n/g, '\n').includes(license), 'Hash notice preserves the complete installed MIT license');
+  const notices = files.filter(file => file.includes('hash-wasm.NOTICE'));
+  assert(entry.includes(notice.toString('base64')) || (await Promise.all(notices.map(file => readFile(resolve(root, file))))).some(bytes => bytes.equals(notice)),
+    'Published File Hash delivers its complete MIT and upstream notices');
 }
 for (const marker of ['t4f-markdown-preview'])
   assert(!combinedCSS.includes(marker), `Draft-only content CSS leaked: ${marker}`);

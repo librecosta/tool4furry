@@ -9,7 +9,7 @@
 | 正式构建 | 生成可独立托管的静态页面与所需资源，不执行上传或上线 |
 | 实际部署 | 将产物发布到托管环境的独立操作，需要明确授权 |
 
-当前 Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF、ZIP Manager 与 Batch File Renamer 十二款工具均为 Published，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
+当前 Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF、ZIP Manager、Batch File Renamer 与 File Hash 十三款工具均为 Published，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
 
 Image Resize & Crop (`image-resize-crop`) 已通过 A1-D2 L2 审计，并依据维护者本任务授权提升源码资格。两地区正式构建包含其双语页面、按需实现、局部裁剪 CSS 和完整 ISC 许可声明；其他 Draft、Lab 和 Fixture 继续隔离。审计证据与 L3 边界见 [模块说明](../docs/image-resize-crop-implementation.md#a1-d2-beta-资格审计2026-10-31)。
 
@@ -31,7 +31,9 @@ Images to PDF (`images-to-pdf`) 依据 V0.8-B3-D2 授权完成双语静态 SEO �
 
 ZIP Manager (`zip-manager`) 依据 V0.8-B4-D3 维护者授权提升 CN/Global Published 源码资格。冻结创建/打开双模式、目录选择、单文件下载、所选重打包及自动时间戳命名；Store 打包不保证体积减小，读取支持 Store/Deflate，路径、CRC、加密拒绝和资源预算保持不变。双语静态 SEO 与完整 fflate MIT 通知随按需工具交付。该次发布后 29 款（11 Published / 18 Draft）；真实下载、独立解压、CI 待完成项和 L3 边界见 [通用工具说明](../docs/general-toolbox-v0.8.md#zip-manager--v08-b4-d3-beta-资格2026-11-05)。
 
-Batch File Renamer (`batch-file-renamer`) 依据 V0.8-B5-D1 授权完成双语静态 SEO、Visual Filename Composer 核心操作与真实 ZIP 原字节复核后，提升为 CN/Global Published。可选统一名称、序号及高级起始值/位数/连接符共用 `renamePlan()`，不直接修改磁盘文件；已删除的前后缀/查找替换不再宣传。保留 100 文件 / 单项 32 MiB / 累计 96 MiB / ZIP 输出 128 MiB、安全名称和完整 fflate MIT 交付。当前共 29 款（12 Published / 17 Draft）；实际证据、构建和 CI 结论见 [通用工具说明](../docs/general-toolbox-v0.8.md#batch-file-renamer--v08-b5-d1-beta-资格与详情页展示2026-11-05)。
+Batch File Renamer (`batch-file-renamer`) 依据 V0.8-B5-D1 授权完成双语静态 SEO、Visual Filename Composer 核心操作与真实 ZIP 原字节复核后，提升为 CN/Global Published。可选统一名称、序号及高级起始值/位数/连接符共用 `renamePlan()`，不直接修改磁盘文件；已删除的前后缀/查找替换不再宣传。保留 100 文件 / 单项 32 MiB / 累计 96 MiB / ZIP 输出 128 MiB、安全名称和完整 fflate MIT 交付。该次发布后共 29 款（12 Published / 17 Draft）；实际证据、构建和 CI 结论见 [通用工具说明](../docs/general-toolbox-v0.8.md#batch-file-renamer--v08-b5-d1-beta-资格与详情页展示2026-11-05)。
+
+File Hash (`file-hash`) 依据 V0.8-B6-D3 维护者授权完成双语静态 SEO、Registry 短文案及必要 Beta 输出复核，提升 CN/Global Published 源码资格。默认 MD5，可选 SHA-1/SHA-256/SHA-512/CRC32，多文件导入后自动串行计算；单 Worker 按 2 MiB 分块读取，无旧 32 MiB 配额。比对、完整复制与当前算法已完成项的 TXT 导出保持冻结 UI；MD5/SHA-1/CRC32 不宣传来源认证或现代抗碰撞能力。本地 Worker 和内嵌 WASM 仅从懒加载入口到达，完整 hash-wasm MIT 与必要上游声明随工具交付。当前共 29 款（13 Published / 16 Draft）；实际 Chromium、独立摘要复核、四个正式页面、构建、CI 与 L3 边界见 [通用工具说明](../docs/general-toolbox-v0.8.md#file-hash--v08-b6-d3-seo-与-beta-资格2026-11-05)。
 
 工具详情页的 `ToolIntro` 静态复用既有像素图标，`ToolGuide` 直接复用目录 `ToolCards`；相关推荐仍由 `getRelatedTools()` 按同组、当前地区、资格和原顺序筛选，最多三项。目录 Fixture 不参与真实推荐，不增加业务 Island 或客户端数据请求。
 

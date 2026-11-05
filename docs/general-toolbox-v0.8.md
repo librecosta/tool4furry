@@ -1,6 +1,17 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer 已获得 CN/Global Published 源码资格，其余 17 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（12 Published / 17 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash 已获得 CN/Global Published 源码资格，其余 16 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（13 Published / 16 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+
+## File Hash — V0.8-B6-D3 SEO 与 Beta 资格（2026-11-05）
+
+- 依据维护者对 D1/D2 的验收与本轮发布授权，提升 File Hash 的 CN/Global Published 源码资格；当前 29 款（13 Published / 16 Draft），历史 15 + 7 集合不变。仅更新本工具静态长文、短元数据及发布投影，UI、计算内核、队列、Worker、依赖与资源策略未改动。
+- 双语 Astro 内容各含 4 项步骤、6 项限制与 4 组 FAQ，准确说明默认 MD5、SHA-1/SHA-256/SHA-512/CRC32、多文件自动队列、比对及复制/TXT。CN 中文 `/tools/file-hash/`、CN 英文 `/en/tools/file-hash/`、Global 英文 `/tools/file-hash/`、Global 中文 `/zh/tools/file-hash/` 的静态 Title/Description、唯一 H1、专属像素图标、同地区 Canonical/hreflang、可索引性、目录、相关推荐卡片、Sitemap 与 llms.txt 均通过正式产物守卫；不增加客户端 SEO 脚本或修改人工推荐配置。
+- Chrome 156 在实际 CN/Global 正式静态产物上完成中文 Dark / 1280px 与英文 Light / 390px：六份真实文件（空、`abc`、UTF-8 中文/Unicode、二进制、`123456789`、含制表符/换行的文件名）逐项计算五种算法，与独立 Node crypto / zlib CRC32 一致。`abc` MD5 为 `900150983cd24fb0d6963f7d28e17f72`，`123456789` CRC32 为 `cbf43926`。默认 MD5、算法自动重算、选择保持、追加只处理新项、单项移除、清空恢复默认及取消/重试正确。取消场景仅延迟真实本地 Worker 的 HTTP 交付 700ms，未伪造摘要或进度，取消后未交付旧结果。
+- 实际复制完整 MD5/SHA-256 和批量 SHA-256；四份下载的 TXT 重新读取后摘要、名称、顺序、Unicode 及特殊名称转义均正确，重复下载名称不同且未触发重新计算。MIME `text/plain;charset=utf-8` 由现有 UI 测试验证。比对大小写/空白、空值、不完整、非法、匹配/不匹配、文件与算法切换均正确；尾部图标与隐藏无障碍状态同步。查看桌面/手机截图，行内原生 Radio、38px 复制图标、128 位 SHA-512 换行、三个等宽 44px 操作均保留，无横向溢出、阻断交互、明显样式闪现或 Hydration 报错。
+- D1 的 37 MiB + 8 字节真实文件证据继续有效：20 次读取，最大 2 MiB、主线程整文件读取为零，MD5/SHA-256 与独立实现一致；本轮未机械重复该压力样本。现有核心测试再次覆盖五算法的空/ASCII/UTF-8/二进制、跨 2 MiB 边界及 33 MiB 输入、安全失败、任务隔离和已完成项导出。
+- `hash-wasm@4.12.0` 的完整 MIT 及所用 MD5/SHA/CRC32 上游声明保持原样。每地区产物仅有一个约 52.5 kB 本地哈希 Worker，五个 WASM 二进制完整内嵌且不进入主线程 Chunk；唯一 Worker URL 引用归属 File Hash 懒加载入口。浏览器首页不请求 File Hash，实现加载后无文件时不启动 Worker；实际计算只请求同源 Worker，没有外部 WASM/CDN、哈希 API、上传请求或持久存储。浏览器读取实际许可资源并与源码全文比较一致。
+- `pnpm check`（452 文件，零错误/警告）、17 个相关文件 / 243 项定向测试、CN/Global 各一次正式构建及完整产物守卫通过；每地区 26 个工具详情页、36 条公开发现 URL，其余 16 款 Draft / Lab / Fixture 私有资源继续排除。新增正式 Worker/WASM/许可证正向交付检查，保留 Draft 反向隔离断言。基线 [`a83ac46823c3` CI 已通过](https://github.com/librecosta/tool4furry/actions/runs/42020304169)；新提交由既有工作流复检，最终远程状态单独核对，不以本地通过替代。
+- 未测 Firefox、Safari/WebKit、真实 iOS/Android、真实屏幕阅读器、极端大文件与浏览器进程级内存耗尽，仍属 L3；390px 为桌面 Chromium 移动视口。匹配摘要不认证来源，MD5/SHA-1 不适合抗恶意碰撞、CRC32 非密码学；TXT 为本站可读清单，不宣称普遍兼容第三方 checksum 格式。Published 不代表部署，两个地区均未部署。
 
 ## File Hash — V0.8-B6-D2 UI 精修（2026-11-05）
 

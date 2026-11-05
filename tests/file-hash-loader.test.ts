@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs';
 import { expect, it } from 'vitest';
 import { compile } from 'sass-embedded';
 import { definition } from '../src/tools/file-hash/definition';
-it('keeps the local hash worker, embedded WASM and notices under the Draft File Hash loader',()=>{
-  expect(definition.status).toBe('draft');
+it('keeps the local hash worker, embedded WASM and notices under the Published File Hash lazy loader',()=>{
+  expect(definition.status).toBe('published');
   const ui=readFileSync('src/tools/file-hash/FileHash.tsx','utf8'),queue=readFileSync('src/tools/file-hash/queue.ts','utf8'),worker=readFileSync('src/tools/file-hash/hash.worker.ts','utf8'),engine=readFileSync('src/tools/file-hash/engine.ts','utf8'),core=readFileSync('src/tools/file-hash/core.ts','utf8');
   expect(queue).toContain("new Worker(new URL('./hash.worker.ts', import.meta.url)");expect(worker).toContain("from './engine'");
   expect(engine).toContain("from 'hash-wasm'");expect(core).not.toContain('hash-wasm');expect(ui).not.toContain("from './engine'");
