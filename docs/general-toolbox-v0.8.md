@@ -2,6 +2,18 @@
 
 两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner 已获得 CN/Global Published 源码资格，其余 15 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（14 Published / 15 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
+## Text Diff — V0.8-B8-D1 正确性与工作区（2026-11-05）
+
+- Text Diff 保持 CN/Global Draft；全站仍为 29 款、14 Published / 15 Draft。本轮不改 SEO、Registry 资格、Text Cleaner 或共享编辑器实现。
+- 两个可编辑 CodeMirror 直接复用 TextEditor / TextEditorPane / TextWorkbench，桌面等宽，≤900px 同 DOM 纵向排列，各自清空。输入自动比较；结果区统一双行号、增删标识、全部/仅变化（两行上下文）、忽略行尾空白及复制/下载图标，不再使用 textarea 或手动比较按钮。
+- 保留 `diff@9.0.0`，以 `diffArrays()` 对齐逻辑行内容。结构化 DiffLine 同时保存真实原文/新文内容、各自行号与原始分隔符；统计、可视行和 TXT 报告均派生于这一结果。空文件为零行；`"\n"` 为一条空内容行；终止分隔符不会凭空生成下一条内容行。LF/CRLF/CR 作为行边界匹配，末尾换行差异独立记录，不把最后一行误判为替换。
+- `123\n134` → `123\n2\n134` 严格为 +1 / −0，`134` 为 equal 且对应原文第 2 / 新文第 3 行；新文额外带末尾换行也不会改变行匹配。忽略行尾空白只改变匹配键，输入不变；匹配后仍有尾空白差异的两份实际文本分别显示为中性行，不计入增删。
+- 无旧的每侧 10 万字符 / 4000 行 / 4000 编辑量配额。比较在工具专属 Worker 中运行，较大输入防抖 120ms；Myers 搜索保留 750ms 计算预算，另有包含初始化、分行与消息交付的 5 秒截止。新输入立即禁用旧结果并终止旧 Worker；超时、无法启动、消息错误和资源不足明确失败，不交付半截结果。500 行以上使用 28px 固定行高、可见范围加缓冲的轻量虚拟列表，长行在结果内部水平滚动，行号固定；不截断文本或生成两套有状态编辑器。
+- Chrome 156 在 CN 中文 Dark / 1280px 与 Global 英文 Light / 390px 完成真实粘贴、插入/删除/替换/空行/EOF、视图切换、空白选项、Undo/Redo、主题与选区保持、单侧清空及长行滚动。12,000 行 / 两侧约 31 万字符的局部插入实际完成，Worker 含启动与消息约 31ms，整个粘贴/显示流程约 0.4s；15,000 行大规模不同文本实际触发超时且可继续编辑恢复。该结果仅代表本机 Chromium，不保证任意输入规模或设备性能。
+- 复制和 UTF-8 `text/plain;charset=utf-8` TXT 输出为人类可读报告，含双行号、真实行内容、统计、所选视图、忽略空白和 EOF/换行元数据；不再冒充 `.diff` Patch。八份真实 TXT 落盘复读，中文/Tab/内容与已知预期一致；完整报告不受虚拟渲染范围限制，每次点击下载生成 `text-diff-YYYYMMDD-HHmmss-SSS.txt`，同毫秒用短序号去重，复制/下载不重算。
+- 依赖和完整 BSD NOTICE 沿用现有版本，CodeMirror 许可继续随共享编辑器入口提供。仅从 Text Diff 懒加载链引入专属 Worker；`pnpm check`（468 文件、零错误/警告）、8 文件 64 项定向测试、CN/Global 各一次正式构建和完整守卫通过。额外核对两地区产物不包含本工具路由、Worker、Viewer、报告实现或专属 BSD NOTICE，已发布 CodeMirror 许可全文不变。测试覆盖原文/新文逐字节重建、独立 LCS 最小编辑数、超时/取消/迟到结果、真实编辑状态与完整导出；远程 CI 与推送结果单独核对。
+- 未测 Firefox、Safari/WebKit、真实 iOS/Android、系统 IME 候选窗、真实屏幕阅读器与极限资源；390px 为 Chromium 手机视口。未部署或改变发布分支。
+
 ## Text Cleaner — V0.8-B7-D2 SEO 与 Beta 资格（2026-11-05）
 
 - 依据维护者对 D1 的手动验收及本轮授权，Text Cleaner 取得 CN/Global Published 源码资格；全站仍为 29 款，现为 14 Published / 15 Draft。只更新本工具静态 SEO、Registry 短文案及发布投影；D1 编辑器、工作区、纯清理函数、资源策略和依赖版本均未改动，其他工具资格不变。
@@ -110,7 +122,7 @@
 | `batch-file-renamer` | 快速/高级共用内嵌文件名组合器：可选名称、序号开关及高级起始值/位数/连接符；保留原扩展名、实时逐行预览与冲突提示、ZIP 下载 | 100 文件、单个 32 MiB、累计 96 MiB；非法/重复名称拒绝，原字节不变；默认仅序号，留空且关闭序号时保留完整原名 |
 | `file-hash` | 默认 MD5；MD5/SHA-1/SHA-256/SHA-512/CRC32 多文件自动队列、逐项进度与预期值、复制及 TXT 清单 | 单 Worker、2 MiB 分块，无旧 32 MiB 配额；依赖 Worker/WebAssembly 与真实设备资源；不是加密或来源认证 |
 | `text-cleaner` | CodeMirror 双编辑器、快速/高级实时清理、保留缩进、互斥空行规则、LF/CRLF、字符/行统计及复制/TXT | 无旧 50 万字符配额；大文本延迟处理与失效交付保护，实际规模依赖设备；编辑层 LF，导出明确选择换行格式 |
-| `text-diff` | 行级增删对照、忽略行末空白、数量、文本导出 | 每侧 10 万字符/4000 行；差异计算有时间和编辑量上限 |
+| `text-diff` | CodeMirror 双编辑器、结构化双行号差异、空行/EOF 标记、全部/仅变化、忽略行尾空白、实时比较与 TXT 报告 | 无固定字符/行数配额；独立 Worker 搜索 750ms / 总任务 5 秒截止，超时明确失败；长结果按需渲染 |
 | `subtitle-tools` | SRT/WebVTT 互转、毫秒偏移、多行字幕、条目检查、下载 | 5000 条；不支持 NOTE/STYLE/REGION；转 SRT 提示定位设置丢失 |
 | `json-formatter` | 校验、2/4 空格、单行压缩、复制/下载 | 50 万字符、128 层、格式化结果 400 万字符；保留原数字字面量，避免大整数舍入 |
 | `url-base64` | URL 组件与 UTF-8 Base64 编解码、复制/下载 | 50 万字符；严格检查 Base64/UTF-8；不是加密 |

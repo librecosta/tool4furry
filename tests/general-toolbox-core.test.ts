@@ -5,6 +5,7 @@ import { zipSync, strToU8, unzipSync } from 'fflate';
 import jsQR from 'jsqr';
 import { cleanText, defaults, textStats } from '../src/tools/text-cleaner/core';
 import { compareLines } from '../src/tools/text-diff/core';
+import { diffReport } from '../src/tools/text-diff/report';
 import { formatJson } from '../src/tools/json-formatter/core';
 import { transformEncoding } from '../src/tools/url-base64/core';
 import { fromIso, fromTimestamp } from '../src/tools/timestamp-converter/core';
@@ -99,9 +100,11 @@ describe('general toolbox text and data', () => {
       added: 0,
       removed: 0,
     });
-    expect(compareLines('before', 'after', false).text).toBe(
-      '- before\n+ after',
-    );
+    const result = compareLines('before', 'after', false);
+    expect(result.lines.map(line => [line.type, line.oldNumber, line.newNumber, line.text])).toEqual([
+      ['removed', 1, undefined, 'before'], ['added', undefined, 1, 'after'],
+    ]);
+    expect(diffReport(result)).toContain('1\t\t−\tbefore\n\t1\t+\tafter');
   });
   it('converts opaque colors and exact WCAG values', () => {
     expect(parseColor('hsl(120,100%,50%)')).toEqual([0, 255, 0]);
