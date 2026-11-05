@@ -1,4 +1,13 @@
 @layer t4f-tools {
+  .algorithmGroup { margin: 0; padding: 0; border: 0; min-width: 0; }
+  .algorithmLegend { margin-bottom: var(--t4f-space-8); padding: 0; font-weight: 600; }
+  .algorithms { display: flex; flex-wrap: wrap; gap: var(--t4f-space-4) var(--t4f-space-16); }
+  .algorithmOption {
+    display: inline-flex; align-items: center; gap: var(--t4f-space-8);
+    min-height: 28px; font-weight: 500; color: var(--t4f-text-secondary); cursor: pointer;
+    input { margin: 0; accent-color: var(--t4f-accent); }
+    &:has(:checked) { color: var(--t4f-accent); }
+  }
   .summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
   .taskActions { display: flex; gap: 4px; }
   .note { margin: 0; color: var(--t4f-text-secondary); font-size: 12px; line-height: 1.6; }

@@ -3,6 +3,15 @@ import { compile } from 'sass-embedded';
 import { readFileSync } from 'node:fs';
 import { expect, it } from 'vitest';
 
+it('keeps Converter style exports used by existing crop, compressor and comic controls', () => {
+  const css = compile('src/tools/image-converter/converter.styles.module.scss').css;
+  const classes = new Set([...css.matchAll(/\.([a-zA-Z_][\w-]*)/g)].map(([, name]) => name));
+  for (const file of ['image-resize-crop/ParameterControls', 'image-compressor/ImageCompressor', 'comic-page-organizer/ExportSettings']) {
+    const source = readFileSync(`src/tools/${file}.tsx`, 'utf8');
+    for (const [, name] of source.matchAll(/\bc\.(\w+)/g)) expect(classes.has(name), `${file}: c.${name}`).toBe(true);
+  }
+});
+
 it('keeps the existing Wide Form geometry and a single shared responsive recipe for file workspaces', () => {
   const shell = compile('src/workbench/WorkbenchShell.module.scss').css;
   const form = compile('src/workbench/form-tool-layout.module.scss').css;

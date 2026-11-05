@@ -9,7 +9,6 @@ import { CheckboxField } from '../../ui/CheckboxField';
 import { FieldFrame, useField } from '../../ui/Field';
 import { SliderField } from '../../ui/SliderField';
 import c from '../../ui/controls.module.scss';
-import choices from '../../ui/RadioChoices.module.scss';
 import { FileTaskList } from '../../ui/FileTaskList';
 import { ConfirmDialog } from '../../ui/ConfirmDialog';
 import { ConverterTaskRow } from './ConverterTaskRow';
@@ -283,9 +282,9 @@ export default function ImageConverter({ locale }: ToolProps) {
               ))}
             </div>
           </div>
-          <fieldset className={choices.group}>
-            <legend className={choices.legend}>{t.formats}</legend>
-            <div className={choices.choices}>
+          <fieldset className={s.group}>
+            <legend className={s.legend}>{t.formats}</legend>
+            <div className={s.choices}>
               {formats.map((format) => {
                 const disabled =
                   view.checkingCapabilities ||
@@ -299,9 +298,9 @@ export default function ImageConverter({ locale }: ToolProps) {
                         : undefined
                     }
                     className={[
-                      choices.choice,
-                      settings.format === format && !disabled && choices.chosen,
-                      disabled && choices.disabled,
+                      s.choice,
+                      settings.format === format && !disabled && s.chosen,
+                      disabled && s.disabled,
                     ].filter(Boolean).join(' ')}
                   >
                     <input
@@ -319,9 +318,9 @@ export default function ImageConverter({ locale }: ToolProps) {
                           ? format === 'avif' ? t.errors.avifDevice : t.unavailable
                           : undefined
                       }
-                      className={choices.radio}
+                      className={s.radio}
                     />
-                    <span className={choices.choiceLabel}>
+                    <span className={s.choiceLabel}>
                       {format.toUpperCase()}
                     </span>
                   </label>

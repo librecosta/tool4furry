@@ -4,10 +4,11 @@
 
 ## File Hash — V0.8-B6-D2 UI 精修（2026-11-05）
 
-- 算法改为两列原生 Radio 卡片，直接共享从 Image Converter 提取的 `src/ui/RadioChoices.module.scss`，保留其尺寸、主题、选中/禁用和 Reduced Motion 规则；不再使用 Select。右侧移除安全提示、重复算法/完成行与常驻完成统计，复制/TXT 操作后才反馈实际完成项数量。
+- 算法最终按维护者截图采用紧凑的行内原生 Radio：圆点和文字横排，窄栏自然换行，无卡片背景、逐项边框或等宽拉伸，不使用 Select。右侧移除安全提示、重复算法/完成行与常驻完成统计，复制/TXT 操作后才反馈实际完成项数量。
 - 当前文件名独立一行，完整摘要与 38px 复制图标同排；SHA-512 自然换行。工具内复用 FieldFrame/useField/controls.input 组合「哈希比对（可选）」：仅有效完整摘要显示尾部 CheckCircle/XCircle；未完成、空值或不完整输入不显示结果图标，非法值保留 aria-invalid。仅屏幕阅读器可见的状态通过 polite live region 和 aria-describedby 提供语义，无可见的结果/长度说明段落。
 - `pnpm check`（452 文件、零错误/警告）及 4 文件 / 41 项 UI、Converter、共享样式与布局测试通过。真实 Chromium 156 在 CN 中文 Dark / 1280px、Global 英文 Light / 390px 验证默认 MD5、键盘 Radio、自动 SHA-256/SHA-512 重算、完整剪贴板、比对各状态、切换隔离和四份实际 TXT 下载，均与独立 Node crypto 摘要一致；38px 复制按钮未被长摘要挤出，输入尾部图标垂直居中，无横向溢出或冷启动 Hydration 报错。查看桌面/手机及 Converter 亮暗对照截图，原卡片几何和视觉语言保留。开发态跨模块移动 CSS 后重启服务以清除旧 SSR 类名缓存；稳定冷启动验收通过。
 - 未改 core、queue、engine、Worker、协议、依赖、SEO 或资格，仍为 Draft / 12 Published / 17 Draft。本轮不重复正式构建和大型文件压力；D1 的内核与资源证据仍适用。Firefox/Safari、真实移动设备和真实屏幕阅读器未实测；无障碍属性、隐藏状态文本及真实浏览器键盘操作已验证。
+- 截图纠偏后，File Hash 使用自身的行内样式；撤回上一轮不必要的 RadioChoices 抽取，恢复 Converter 原样式及裁剪/压缩/漫画控件仍使用的 CSS 导出，增加旧消费者导出回归检查。`pnpm check` 与 File Hash UI、Resize UI、布局共 34 项定向测试通过；Chromium 再次完成 CN Dark / 1280px 与 Global Light / 390px，实际摘要、复制及四份 TXT 下载正确。已查看两视口截图：选项按内容宽度排列、无卡片背景/边框，窄栏换行、无溢出。
 
 ## File Hash — V0.8-B6-D1 多文件自动校验（2026-11-05）
 

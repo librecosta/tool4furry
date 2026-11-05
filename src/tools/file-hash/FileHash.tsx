@@ -12,7 +12,6 @@ import { HashQueue, type HashTask } from './queue';
 import notice from './hash-wasm.NOTICE.txt?url';
 import form from '../../workbench/form-tool-layout.module.scss';
 import row from '../../ui/FileTaskList.module.scss';
-import choices from '../../ui/RadioChoices.module.scss';
 import controls from '../../ui/controls.module.scss';
 import s from './hash.module.scss';
 
@@ -109,12 +108,12 @@ export default function FileHash({ locale }: ToolProps) {
       </section>
       <aside data-form-settings className={form.settingsPanel} aria-label={tr(locale, '设置与操作', 'Settings and actions')}>
         <header className={form.settingsHeader}><h2 className={form.settingsTitle}>{tr(locale, '哈希设置', 'Hash settings')}</h2></header>
-        <fieldset className={choices.group}>
-          <legend className={choices.legend}>{tr(locale, '算法', 'Algorithm')}</legend>
-          <div className={choices.choices}>
-            {(Object.keys(algorithms) as HashAlgorithm[]).map(value => <label key={value} className={[choices.choice, algorithm === value && choices.chosen].filter(Boolean).join(' ')}>
-              <input type="radio" name={algorithmGroup} value={value} checked={algorithm === value} className={choices.radio} onChange={() => { resetFeedback(); queue.setAlgorithm(value); }} />
-              <span className={choices.choiceLabel}>{algorithms[value].label}</span>
+        <fieldset className={s.algorithmGroup}>
+          <legend className={s.algorithmLegend}>{tr(locale, '算法', 'Algorithm')}</legend>
+          <div className={s.algorithms}>
+            {(Object.keys(algorithms) as HashAlgorithm[]).map(value => <label key={value} className={s.algorithmOption}>
+              <input type="radio" name={algorithmGroup} value={value} checked={algorithm === value} onChange={() => { resetFeedback(); queue.setAlgorithm(value); }} />
+              <span>{algorithms[value].label}</span>
             </label>)}
           </div>
         </fieldset>
