@@ -1456,6 +1456,15 @@ for (const [id, marker] of [
   if (published.some(tool => tool.id === id))
     assert(new RegExp('\\.' + '_?' + marker + '[_-]').test(combinedCSS), `Published ${id} delivers its local CSS`);
 }
+if (!published.some(tool => tool.id === 'file-hash')) {
+  assert(!files.some(file => /hash\.worker|hash-wasm\.NOTICE|FileHash/.test(file)), 'Draft File Hash worker, implementation and notice stay private');
+  const hashNotice = (await readFile('src/tools/file-hash/hash-wasm.NOTICE.txt')).toString('base64');
+  for (const file of files.filter(file => /\.(?:js|css)$/.test(file))) {
+    const text = await readFile(resolve(root, file), 'utf8');
+    assert(!/data-file-hash|t4f-file-hash|createMD5|createSHA512|hash-wasm \(/.test(text) && !text.includes(hashNotice), `Draft hashing runtime leaked: ${file}`);
+  }
+  assert(!/\._?hashRow[_-]/.test(combinedCSS), 'Draft File Hash CSS stays private');
+}
 for (const marker of ['t4f-markdown-preview'])
   assert(!combinedCSS.includes(marker), `Draft-only content CSS leaked: ${marker}`);
 for (const marker of ['canvasButton', 'tallStage'])

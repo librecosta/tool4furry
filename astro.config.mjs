@@ -19,7 +19,9 @@ export default defineConfig({
   vite: {
     // These are already ESM. Lazy worker discovery must not re-optimize the
     // client graph and reload a workspace containing the user's files in DEV.
-    optimizeDeps: { exclude: ['@jsquash/avif/codec/enc/avif_enc.js', '@jsquash/avif/meta.js'] },
+    // Discover the lazy worker dependency before the first file is added in DEV.
+    // Prebundling does not preload it in the browser or change the production graph.
+    optimizeDeps: { include: ['hash-wasm'], exclude: ['@jsquash/avif/codec/enc/avif_enc.js', '@jsquash/avif/meta.js'] },
     // Vite discovers dynamic imports before cross-module status checks fold away.
     // This is a projection of Registry metadata, never a second release setting.
     define: toolDefines,

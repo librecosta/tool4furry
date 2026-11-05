@@ -2,6 +2,16 @@
 
 两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer 已获得 CN/Global Published 源码资格，其余 17 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（12 Published / 17 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
+## File Hash — V0.8-B6-D1 多文件自动校验（2026-11-05）
+
+- 保持 CN/Global Draft，全站仍为 29 款（12 Published / 17 Draft），未改静态 SEO 长文和其他工具。默认 MD5，可选 SHA-1、SHA-256、SHA-512、CRC32；一次添加多文件并可追加，自动串行计算。左文件列表、右设置使用既有 Form 配方、FileTaskList 视觉资产和完整灰色设置面板；空态 960px，有文件 Wide Form，1050px 以下单列。
+- `hash-wasm@4.12.0` 固定版本，增量计算仅由 File Hash 的本地 Vite Worker 引入，WASM 嵌入 Worker，不请求远程 API/CDN。每次只读取 `File.slice()` 的 2 MiB 数据，复用并重置当前算法实例，不整体读取文件、不再执行旧 32 MiB 配额。单 Worker 有界并发不代表任意设备可处理无限输入；读取、模块初始化和资源失败逐项报告并继续队列。
+- 工具局部队列持有稳定 ID 与原始 File；切换算法、删除正在处理的文件、取消、清空和卸载均终止旧 Worker，消息按 Worker、任务 ID 和算法校验。取消保留文件与已完成结果，可重试未完成项；算法切换自动重算并清除旧摘要和预期值，避免跨算法混用。
+- 单项复制完整摘要；可选预期值按准确十六进制长度、大小写不敏感自动比对，空值/未完整输入不误报不一致。批量复制/TXT 仅含当前算法已完成项并显示数量，特殊文件名转义为单行，保留 Unicode；点击下载时生成 `checksums-md5-YYYYMMDD-HHmmss-SSS.txt` 等名称，同毫秒以短计数消重，复制/下载不重算。MD5、SHA-1 不宣称现代抗碰撞能力，CRC32 为校验和；安全性要求较高时建议 SHA-256。
+- Chromium 156 在 CN 中文 Dark / 1280px 与 Global 英文 Light / 390px 完成拖入多文件、五种算法、追加/同名文件、预期值、单项/批量复制、下载、算法重算、计算中删除/取消/重试和清空。37 MiB + 8 字节真实文件的 MD5 为 `8f10daa14f51dab410329a8e2dedba5e`，SHA-256 为 `59c4b752e5c9f626eca9119bda8e2ce5af00221d9268064d5c86c90bddb2ccb1`；Worker 实测 20 次读取，最大块 2 MiB，主线程整文件读取为零。Node crypto 和 Python hashlib/zlib 独立复核五种算法、空/中文/二进制样本、大文件摘要及四份实际 TXT 下载，顺序和内容正确。删除/取消场景仅为真实块读取添加 200ms 测试延时，未伪造摘要或进度。
+- 7 个相关测试文件 / 70 项通过（增加五种算法跨块用例后定向复验），覆盖标准向量、块边界、超过 32 MiB、初始化/读取失败、取消与迟到消息、UI 与导出；`pnpm check`（452 文件）零错误/警告。另在仓库外隔离编译生产 Worker（约 52.5 kB），真实 Chromium 校验五种算法及 37 MiB SHA-256，未为 Draft 伪造正式路由。DEV 首次导入曾触发 Vite 依赖发现重载，已将 hash-wasm 加入 DEV 预构建，重启后首次上传不再重载；这不会在浏览器预加载或进入正式公共资源图。
+- `hash-wasm.NOTICE.txt` 随私有入口包含完整 MIT 及 MD5/SHA/CRC32 上游所需声明。CN/Global 各一次正式构建与产物守卫通过，每地区仍为 24 个 Published 工具详情页；File Hash 专属 Worker、运行时代码、CSS 和通知均未泄漏，17 款 Draft 隔离不变。Frozen Lockfile 安装核对通过，远程 CI 结论另查本轮提交。Firefox/Safari、真实移动设备、超大文件/极限内存及浏览器进程级资源耗尽未测；390px 为桌面 Chromium 视口。复制仍需浏览器剪贴板权限，失败时显示手动复制反馈；无上传、持久保存或结果遥测。
+
 ## Batch File Renamer — V0.8-B5-D1 Beta 资格与详情页展示（2026-11-05）
 
 - 依据维护者验收和本轮授权，提升 Batch File Renamer 的 CN/Global Published 源码资格，当前 29 款（12 Published / 17 Draft）；历史 15 + 7 工具名单不变。冻结文件名组合器和工作区，未改 `renamePlan()`、文件预算或其他工具业务。Quick/Advanced 共用可选名称、序号、高级起始值/位数/连接符，自动保留扩展名；名称为空仅编号，两者都关闭则保留原名。旧前后缀、查找替换交互已删除，不直接重命名磁盘文件。
@@ -53,7 +63,7 @@
 | `images-to-pdf` | PNG/JPEG 画廊、拖拽/键盘排序、缩放平移预览、原比例 PDF、方向与透明度 | 独立宽松策略，原 40 页 / 32 MiB / 2400 万总像素仅用于提醒；实际解码、分配及 PDF 生成/验证失败时安全停止，不缩小原图 |
 | `zip-manager` | 独立创建/打开模式、文件夹目录树、单文件下载、所选重打包、自动时间戳命名 | 创建 500 项/96 MiB；读取 64 MiB；展开单项 32 MiB、累计 128 MiB；拒绝 ZIP64/加密/不安全路径/异常压缩率，验证 CRC |
 | `batch-file-renamer` | 快速/高级共用内嵌文件名组合器：可选名称、序号开关及高级起始值/位数/连接符；保留原扩展名、实时逐行预览与冲突提示、ZIP 下载 | 100 文件、单个 32 MiB、累计 96 MiB；非法/重复名称拒绝，原字节不变；默认仅序号，留空且关闭序号时保留完整原名 |
-| `file-hash` | SHA-256、复制、预期哈希比较 | 单文件 32 MiB；需安全上下文 Web Crypto；不是加密 |
+| `file-hash` | 默认 MD5；MD5/SHA-1/SHA-256/SHA-512/CRC32 多文件自动队列、逐项进度与预期值、复制及 TXT 清单 | 单 Worker、2 MiB 分块，无旧 32 MiB 配额；依赖 Worker/WebAssembly 与真实设备资源；不是加密或来源认证 |
 | `text-cleaner` | 独立空白/空行/换行选项、Unicode/词段/汉字统计、前后对照、复制/下载 | 50 万 UTF-16 代码单元；词段依赖浏览器分词 |
 | `text-diff` | 行级增删对照、忽略行末空白、数量、文本导出 | 每侧 10 万字符/4000 行；差异计算有时间和编辑量上限 |
 | `subtitle-tools` | SRT/WebVTT 互转、毫秒偏移、多行字幕、条目检查、下载 | 5000 条；不支持 NOTE/STYLE/REGION；转 SRT 提示定位设置丢失 |

@@ -30,7 +30,8 @@ import {
   safePath,
 } from '../src/tools/zip-manager/core';
 import { renamePlan, defaultRules } from '../src/tools/batch-file-renamer/core';
-import { hashFile, compareHash } from '../src/tools/file-hash/core';
+import { compareHash } from '../src/tools/file-hash/core';
+import { createHashEngine } from '../src/tools/file-hash/engine';
 import { qrMatrix, qrSvg } from '../src/tools/qr-code-generator/core';
 import { audioRange, encodeWav } from '../src/tools/audio-trimmer/core';
 describe('general toolbox text and data', () => {
@@ -231,15 +232,13 @@ describe('actual document and archive contents', () => {
     ).toThrow();
   });
   it('computes a known SHA-256 and validates comparisons', async () => {
-    const value = await hashFile(new Blob(['abc']));
+    const value = await createHashEngine()(new Blob(['abc']), 'sha256');
     expect(value).toBe(
       'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad',
     );
-    expect(compareHash(value, value.toUpperCase())).toBe(true);
-    expect(() => compareHash(value, 'xyz')).toThrow();
-    await expect(
-      hashFile(new Blob([new Uint8Array(33 * 1024 ** 2)])),
-    ).rejects.toThrow();
+    expect(compareHash(value, value.toUpperCase(), 'sha256')).toBe(true);
+    expect(() => compareHash(value, 'xyz', 'sha256')).toThrow();
+    // Former 32 MiB rejection is replaced by bounded-read tests in file-hash-core.test.ts.
   });
   it('generates an independently decodable Unicode QR matrix and safe SVG', () => {
     const text = 'Tool4Furry 你好 https://tool4furry.com',
