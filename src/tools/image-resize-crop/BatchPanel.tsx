@@ -18,6 +18,7 @@ import { ImageTaskMedia } from '../image/ImageTaskMedia';
 import { ImageComparisonDialog } from '../image/ImageComparisonDialog';
 import { useOwnedUrl } from '../image-converter/use-owned-url';
 import c from '../image-converter/converter.styles.module.scss';
+import form from '../../workbench/form-tool-layout.module.scss';
 import type {
   ResizeCollection,
   CollectionView,
@@ -91,10 +92,10 @@ export function BatchPanel({
     <section aria-label={t.batch} className={s.batchGrid}>
       <aside
         aria-label={t.batchSettings}
-        className={[c.settings, s.batchSettings].filter(Boolean).join(' ')}
+        className={[form.settingsPanel, s.batchSettings].filter(Boolean).join(' ')}
       >
-        <div className={c.settingsHeader}>
-          <h2 className={c.settingsTitle}>{t.batchSettings}</h2>
+        <div className={form.settingsHeader}>
+          <h2 className={form.settingsTitle}>{t.batchSettings}</h2>
           <ParameterModes
             advanced={advanced}
             onChange={onAdvancedChange}

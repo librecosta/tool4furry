@@ -1,18 +1,26 @@
 @layer t4f-tools {
   .note { margin: 0; color: var(--t4f-text-secondary); font-size: 13px; }
   .renamePreview { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; max-height: min(580px, 65dvh); overflow: auto; overscroll-behavior: contain; }
-  .fileRow { display: flex; align-items: center; gap: 12px; padding: 10px; min-width: 0; background: var(--t4f-surface-panel); border-radius: var(--t4f-radius-sm); }
-  .fileRow:where(:hover) { background: var(--t4f-surface-hover); }
+  .fileRow { display: flex; align-items: center; gap: var(--t4f-space-8); padding: var(--t4f-space-8); min-width: 0; min-height: 60px; background: color-mix(in srgb, var(--t4f-surface-panel) 45%, transparent); border-radius: var(--t4f-radius-sm); }
+  .fileRow:where(:hover) { background: var(--t4f-surface-panel); }
   .icon { flex-shrink: 0; color: var(--t4f-text-secondary); }
   .names { display: grid; gap: 2px; min-width: 0; flex: 1; }
   .original, .output { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .original { color: var(--t4f-text-secondary); font-size: 12px; }
-  .output { font-weight: 500; }
+  .output { font-size: 14px; font-weight: 500; }
   .remove { border: 0; background: var(--t4f-surface-muted); width: 36px; height: 36px; min-width: 36px; min-height: 36px; padding: 0; flex-shrink: 0; }
   .remove:where(:hover), .secondary:where(:hover) { background: var(--t4f-surface-hover); }
-  .group { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 12px; }
-  .group legend { font-weight: 600; margin-bottom: 12px; }
-  .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .renameSettings { container-type: inline-size; }
+  .ruleGroups { display: grid; gap: 20px; margin-top: var(--t4f-space-4); }
+  .group { border: 0; padding: 0; margin: 0; min-width: 0; }
+  .group legend { font-weight: 600; margin-bottom: var(--t4f-space-12); }
+  .fields, .numbering, .numberFields { display: grid; gap: var(--t4f-space-12); min-width: 0; }
+  .numberFields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @container (min-width: 600px) {
+    .ruleGroups { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--t4f-space-24); align-items: start; }
+    .group:first-child { grid-row: span 2; }
+    .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
   .action { border: 0; }
   .secondary, .secondary:where(:disabled) { background: var(--t4f-surface-muted); color: var(--t4f-text-primary); }
 }

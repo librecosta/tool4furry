@@ -151,9 +151,9 @@ export default function ImageConverter({ locale }: ToolProps) {
         <section
           data-converter-part="file"
           aria-label={t.file}
-          className={[s.file, hasTasks && form.leading].filter(Boolean).join(' ')}
+          className={[form.fileWorkspace, hasTasks && form.leading].filter(Boolean).join(' ')}
         >
-          <div className={[s.intakeActions, hasTasks && s.compactIntake].filter(Boolean).join(' ')}>
+          <div className={[form.fileIntake, hasTasks && form.compactIntake].filter(Boolean).join(' ')}>
             <FileDropzone
               id="converter-source"
               appearance={hasTasks ? 'compact' : 'expanded'}
@@ -254,13 +254,13 @@ export default function ImageConverter({ locale }: ToolProps) {
         <section
           data-converter-part="settings"
           aria-labelledby="converter-settings"
-          className={[s.settings, hasTasks && form.aside].filter(Boolean).join(' ')}
+          className={[form.settingsPanel, hasTasks && form.aside].filter(Boolean).join(' ')}
         >
-          <div className={s.settingsHeader}>
-            <h2 id="converter-settings" className={s.settingsTitle}>
+          <div className={form.settingsHeader}>
+            <h2 id="converter-settings" className={form.settingsTitle}>
               {t.settings}
             </h2>
-            <div role="group" aria-label={t.modes} className={s.modes}>
+            <div role="group" aria-label={t.modes} className={form.segmented}>
               {(['quick', 'advanced'] as const).map((mode) => (
                 <button
                   key={mode}
@@ -268,9 +268,9 @@ export default function ImageConverter({ locale }: ToolProps) {
                   disabled={view.checkingCapabilities}
                   aria-pressed={state.mode === mode}
                   className={[
-                    s.mode,
+                    form.segment,
                     s.parameterControl,
-                    state.mode === mode && s.currentParameterMode,
+                    state.mode === mode && form.segmentSelected,
                   ].filter(Boolean).join(' ')}
                   onClick={() => {
                     setQualityDraft(undefined);

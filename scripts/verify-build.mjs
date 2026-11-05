@@ -1423,7 +1423,7 @@ if (!published.some(tool => tool.id === 'pdf-split')) {
   }
 }
 for (const [id, marker] of [
-  ['image-converter', 'settingsHeader'], ['image-resize-crop', 'focusedWorkspace'],
+  ['image-converter', 'qualityScale'], ['image-resize-crop', 'focusedWorkspace'],
   ['palette-extractor', 'composerFields'], ['image-compressor', 'stepperButton'],
   ['comic-page-organizer', 'exportTuning'], ['image-watermark', 'colorField'],
   ['exif-metadata', 'tableRow'], ['pdf-merge', 'handle'], ['pdf-split', 'pageScroll'],

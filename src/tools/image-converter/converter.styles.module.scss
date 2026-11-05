@@ -1,21 +1,4 @@
 @layer t4f-tools {
-  .file {
-    min-width: 0;
-    display: grid;
-    gap: var(--t4f-space-12);
-  }
-
-  .intakeActions {
-    display: grid;
-    gap: var(--t4f-space-8);
-    align-items: start;
-    min-width: 0;
-  }
-
-  .compactIntake {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
   .supportAction {
     background-color: var(--t4f-action);
     border-color: transparent;
@@ -59,60 +42,6 @@
     gap: var(--t4f-space-8);
   }
 
-  .settings {
-    display: grid;
-    gap: var(--t4f-space-16);
-    min-width: 0;
-    padding: var(--t4f-space-16);
-    background-color: var(--t4f-surface-panel);
-    border-radius: var(--t4f-radius-lg);
-  }
-
-  .settingsHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: var(--t4f-space-12);
-  }
-
-  .settingsTitle {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0;
-  }
-
-  .modes {
-    display: flex;
-    padding: var(--t4f-space-4);
-    background-color: var(--t4f-input-surface);
-    border-radius: var(--t4f-radius-md);
-  }
-
-  .mode {
-    transition-property: color, background-color;
-    transition-timing-function: ease-out;
-    transition-duration: 280ms;
-    min-height: 44px;
-    min-width: 44px;
-    padding-inline: var(--t4f-space-12);
-    border-width: 0;
-    border-radius: var(--t4f-radius-sm);
-    background-color: transparent;
-    color: var(--t4f-text-secondary);
-    font-size: 13px;
-    font-weight: 500;
-
-    &:where(:hover) {
-      background-color: var(--t4f-surface-hover);
-      color: var(--t4f-text-primary);
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      transition-duration: 0ms;
-    }
-  }
-
   .parameterControl.parameterControl {
     transition-property: color, background-color;
     transition-timing-function: ease-out;
@@ -120,25 +49,6 @@
 
     @media (prefers-reduced-motion: reduce) {
       transition-duration: 0ms;
-    }
-  }
-
-  .currentParameterMode.currentParameterMode {
-    background-color: color-mix(in srgb, var(--t4f-support-lavender) 16%, var(--t4f-input-surface));
-    color: var(--t4f-support-lavender);
-    border-width: 0;
-    border-style: none;
-    text-decoration: none;
-    box-shadow: none;
-
-    &:where(:hover) {
-      background-color: color-mix(in srgb, var(--t4f-support-lavender) 20%, var(--t4f-input-surface));
-      color: var(--t4f-support-lavender);
-    }
-
-    &:where(:active) {
-      background-color: color-mix(in srgb, var(--t4f-support-lavender) 20%, var(--t4f-input-surface));
-      color: var(--t4f-support-lavender);
     }
   }
 

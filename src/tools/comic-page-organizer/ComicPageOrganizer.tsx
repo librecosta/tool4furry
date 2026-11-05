@@ -7,6 +7,7 @@ import { FilePreviewDialog } from '../../ui/FilePreviewDialog';
 import { ImagePreviewViewport } from '../image/ImagePreviewViewport';
 import { imageAccept } from '../image-converter/intake';
 import c from '../image-converter/converter.styles.module.scss';
+import form from '../../workbench/form-tool-layout.module.scss';
 import type { ToolProps } from '../types';
 import { ComicSession, emptyComicView, type ComicFormat } from './session';
 import { mobileComicBudget, resolveComicBudget } from './limits';
@@ -78,15 +79,15 @@ export default function ComicPageOrganizer({locale}: ToolProps) {
           onSelect={(id, selected) => session?.select(id, selected)} onRemove={id => session?.remove([id])}
           onRead={(id, trigger) => {previewTrigger.current = trigger; setReading(id);}}/>
         {errors > 0 && <p role="status" className={[s.note, s.error].filter(Boolean).join(' ')}>{errors} · {t.failedExcluded}</p>}
-        <section aria-label={t.exportSettings} data-comic-export-panel className={[c.settings, s.exportPanel].filter(Boolean).join(' ')}>
+        <section aria-label={t.exportSettings} data-comic-export-panel className={[form.settingsPanel, s.exportPanel].filter(Boolean).join(' ')}>
           <ComicExportSettings settings={settings} configure={patch => session?.configure(patch)} pdf={format === 'pdf'} cbz={format === 'cbz'} avifIssue={avifIssue} t={t}/>
           <div data-comic-export-actions className={s.row}>
-            <div role="radiogroup" aria-label={t.exportFormat} className={c.modes} onKeyDown={event => {
+            <div role="radiogroup" aria-label={t.exportFormat} className={form.segmented} onKeyDown={event => {
               if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key) || view.packing) return;
               event.preventDefault(); const values = ['zip','cbz','pdf'] as const, i = values.indexOf(format);
               const next = event.key === 'Home' ? 0 : event.key === 'End' ? 2 : (i + (event.key === 'ArrowLeft' ? 2 : 1)) % 3;
               setFormat(values[next]); (event.currentTarget.children[next] as HTMLElement).focus();
-            }}>{(['zip','cbz','pdf'] as const).map(value => <button key={value} type="button" role="radio" aria-checked={format === value} tabIndex={format === value ? 0 : -1} disabled={view.packing} className={[c.mode, c.parameterControl, format === value && c.currentParameterMode].filter(Boolean).join(' ')} onClick={() => setFormat(value)}>{value.toUpperCase()}</button>)}</div>
+            }}>{(['zip','cbz','pdf'] as const).map(value => <button key={value} type="button" role="radio" aria-checked={format === value} tabIndex={format === value ? 0 : -1} disabled={view.packing} className={[form.segment, c.parameterControl, format === value && form.segmentSelected].filter(Boolean).join(' ')} onClick={() => setFormat(value)}>{value.toUpperCase()}</button>)}</div>
             <Button className={s.primary} loading={view.packing} disabled={!ready.length || pending || large && !streaming || format !== 'pdf' && (!validSettings || settings.format === 'avif' && !!avifIssue)} onClick={() => void archive()}>{format === 'pdf' ? t.pdf : t.download}</Button>
             {view.packing && <><span role="status" className={s.note}>{t.packing} {view.progress}/{ready.length}</span><Button className={[s.action, s.exportSecondary].filter(Boolean).join(' ')} onClick={() => session?.cancelExport()}>{t.cancel}</Button></>}
           </div>

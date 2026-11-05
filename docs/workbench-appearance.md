@@ -27,10 +27,13 @@ Canvas 后的 Footer 在正常文档流，可通过页面滚动到达；不能�
 - **Empty**：`container/fileForm` 保持 960px 紧凑上限；Expanded 上传区和实际参数/操作自然排布，不渲染巨大的空列表或固定高度空面板。
 - **Split**：有文件后附加 `columns/expanded`，使用 Wide 外框的可用宽度；左主列、右 350px 设置列，沿用同一间距和 1050px 断点。上传区改为 Compact，参数及文件 owner 不重挂载。
 - **Left File Workspace**：`fileWorkspace` 包含导入、追加/更换、统计、文件列表、预览及单项操作。列表按工具需要有界滚动；文件、Blob、URL 及任务仍归具体工具。
-- **Right Settings / Actions**：`settings` 包含实际参数、模式、状态与操作；`actions/action` 提供三个等宽、44px 高的紧凑操作位，颜色与状态由现有 Button 和工具局部样式管理。ZIP Manager 没有创建参数，右侧只保留模式与真实操作，不制造填空控件。
+- **Right Settings / Actions**：`settingsPanel` 包含标题、实际参数、模式、状态与操作，背景完整包住整个区域。复用 Image Converter 的 `surface-panel`、16px 内边距/主要间距、`radius-lg` 圆角，无边框、无阴影，自然高度。`settingsHeader/settingsTitle` 提供可换行标题行及 18px/600 标题；`segmented/segment/segmentSelected` 提供 `input-surface` 上的嵌入式模式切换、44px 点击高度、280ms 克制过渡及 Reduced Motion。
+- **Actions**：`actions/action` 提供面板内三个等宽、44px 高的紧凑操作位，颜色与状态由现有 Button 和工具局部样式管理。ZIP Manager 没有创建参数，右侧只保留标题、模式与真实操作，不制造填空控件。仅复用左右列、将控件散放在页面背景上不算符合标准。
 - **Responsive Stack**：≤1050px 使用同一个 DOM 的单列，顺序为导入、文件/预览、参数和操作。键盘及屏幕阅读器顺序与此一致，不通过 matchMedia 复制或搬移有状态组件。
 
-Image Converter 已有的 `container/columns/split/leading/aside/main` 配方继续保留，导入与结果合成左列、设置在右列；尾部弹性轨道吸收较高设置列，不强行拉伸导入/结果行。Batch File Renamer 与 ZIP Manager 使用完整 `fileWorkspace/settings` 两个插槽；共享层只扩展必要布局类，不建立 Schema、FormEngine、Context 或文件框架。
+Image Converter 已有的 `container/columns/split/leading/aside/main` 配方继续保留，导入与结果合成左列、设置在右列；尾部弹性轨道吸收较高设置列，不强行拉伸导入/结果行。三款工具直接共享 `fileWorkspace/settingsPanel`、标题及模式视觉；`fileIntake/compactIntake` 保持空态纵排、有文件时上传和添加文件夹同行。原有图片工具对这些样式的调用一并改为公共类引用；仅替换 class 绑定，保持业务、DOM 和外观，不复制面板值或保留跨 SCSS 的组合层。
+
+Batch File Renamer 的普通文本字段在窄设置栏中单列、数字字段双列；宽空态由 CSS Container Query 将命名/编号分组及适合的字段并排，减少长表单高度。字段树和焦点顺序始终不变。文件区间距为 12px，列表使用克制的行填充或透明表面；不以厚重灰色整块替代清楚的文件层次。共享层只提供布局与视觉配方，不建立 Schema、FormEngine、Context 或文件框架。
 
 ## 静态说明与 FAQ
 
@@ -45,6 +48,8 @@ FAQ 标题左对齐，每个原生 details/summary 占整行，整行可点击/�
 验证入口：[workbench.test.tsx](../tests/workbench.test.tsx)、[tool-page-frame.test.tsx](../tests/tool-page-frame.test.tsx)、[file-preview-dialog.test.tsx](../tests/file-preview-dialog.test.tsx)、[image-preview.test.tsx](../tests/image-preview.test.tsx) 及 Converter UI 测试。视口模拟不能替代移动真机。
 
 文件表单契约另见 [共享布局测试](../tests/form-file-layout.test.ts)、[Renamer UI](../tests/batch-file-renamer-ui.test.tsx)、[真实重命名 ZIP](../tests/batch-file-renamer-core.test.ts) 和 [ZIP Manager UI](../tests/zip-manager-ui.test.tsx)。B5-A 在 Chromium 156 中复核 CN 中文 Dark / 1280px、Global 英文 Light / 390px，验证实时预览、目录选择、模式隔离、取消、输入失效及跨宽度状态保留；14 次实际下载由 Python zipfile 独立比对路径、CRC 和原始字节。Image Converter 原布局及状态不变，`pnpm check`、定向测试、CN/Global 构建与资源守卫通过，ZIP Manager 正式预览通过。Firefox、Safari 和真实移动设备未测。
+
+B5-B 在同一 Chromium 156 / Light / 1280px 对照三款工具的八种空态及有文件状态截图：设置面板均为 16px 内边距/间距、14px 圆角、18px/600 标题，Image Converter 有文件截图与提取前逐像素一致。另复核 CN 中文 Dark 桌面、Global 英文 Light / 390px 的真实操作，14 个下载 ZIP 的路径、CRC 和原始字节正确；模式恢复、参数实时预览、无效输入与迟到结果保护保持正常。现有四款图片工具的共享模式样式复查通过。`pnpm check`、相关定向测试及两地区正式构建/资源守卫通过；正式产物中 ZIP Manager 与 Image Converter 的桌面/390px 面板与控件正常，无横向溢出或 Hydration 错误。发布资格仍为 11 Published / 18 Draft；未扩展 Firefox、Safari、真实移动设备或极限资源验收。
 
 ## 历史
 

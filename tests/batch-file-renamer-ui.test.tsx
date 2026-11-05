@@ -26,6 +26,7 @@ it('keeps a complete left file workspace and stable right settings while input e
   const resize = setViewport(); setup();
   const left = screen.getByRole('region', {name:'File workspace'});
   const right = screen.getByRole('complementary', {name:'Settings and actions'});
+  const title = within(right).getByRole('heading', {name:'Rename settings', level:2});
   const prefix = screen.getByRole('textbox', {name:'Prefix'});
   const intake = document.querySelector('input[type=file]');
   const root = document.querySelector('[data-batch-renamer]')!;
@@ -43,6 +44,7 @@ it('keeps a complete left file workspace and stable right settings while input e
   expect(document.querySelector('input[type=file]')).toBe(intake);
   expect(screen.getByRole('region', {name:'File workspace'})).toBe(left);
   expect(screen.getByRole('complementary', {name:'Settings and actions'})).toBe(right);
+  expect(within(right).getByRole('heading', {name:'Rename settings'})).toBe(title);
 });
 
 it('uses the live rename plan and original Files for ZIP output; repeated timestamped downloads reuse the same Blob', async () => {

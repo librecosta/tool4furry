@@ -50,10 +50,13 @@ export default function BatchFileRenamer({ locale }: ToolProps) {
           </ul>
         </>}
       </section>
-      <aside data-form-settings className={form.settings} aria-label={tr(locale, '设置与操作', 'Settings and actions')}>
-        <fieldset className={s.group}><legend>{tr(locale, '基本命名', 'Naming')}</legend><div className={s.fields}>{field('prefix', '前缀', 'Prefix')}{field('suffix', '后缀', 'Suffix')}{field('find', '查找', 'Find')}{field('replace', '替换为', 'Replace with')}</div></fieldset>
-        <fieldset className={s.group}><legend>{tr(locale, '编号', 'Numbering')}</legend><CheckboxField label={tr(locale, '添加序号', 'Add sequence')} checked={rules.sequence} disabled={job.busy} onCheckedChange={value => update({ ...rules, sequence: value })} /><div className={s.fields}>{field('start', '起始序号', 'Start number')}{field('digits', '序号位数', 'Number padding')}</div></fieldset>
-        <CheckboxField label={tr(locale, '保留扩展名', 'Keep extensions')} checked={rules.keepExtension} disabled={job.busy} onCheckedChange={value => update({ ...rules, keepExtension: value })} />
+      <aside data-form-settings className={`${form.settingsPanel} ${s.renameSettings}`} aria-label={tr(locale, '设置与操作', 'Settings and actions')}>
+        <div className={form.settingsHeader}><h2 className={form.settingsTitle}>{tr(locale, '重命名设置', 'Rename settings')}</h2></div>
+        <div className={s.ruleGroups}>
+          <fieldset className={s.group}><legend>{tr(locale, '基本命名', 'Naming')}</legend><div className={s.fields}>{field('prefix', '前缀', 'Prefix')}{field('suffix', '后缀', 'Suffix')}{field('find', '查找', 'Find')}{field('replace', '替换为', 'Replace with')}</div></fieldset>
+          <fieldset className={s.group}><legend>{tr(locale, '编号', 'Numbering')}</legend><div className={s.numbering}><CheckboxField label={tr(locale, '添加序号', 'Add sequence')} checked={rules.sequence} disabled={job.busy} onCheckedChange={value => update({ ...rules, sequence: value })} /><div className={s.numberFields}>{field('start', '起始序号', 'Start number')}{field('digits', '序号位数', 'Number padding')}</div></div></fieldset>
+          <CheckboxField label={tr(locale, '保留扩展名', 'Keep extensions')} checked={rules.keepExtension} disabled={job.busy} onCheckedChange={value => update({ ...rules, keepExtension: value })} />
+        </div>
         <ErrorText error={error || job.error} />
         <div className={form.actions} data-renamer-actions>
           <Button className={`${form.action} ${s.action}`} variant="primary" loading={job.busy} disabled={job.busy || !files.length || !!error} onClick={() => void job.run(signal => packZip(files.map((file, i) => ({ name: plan[i].name, blob: file })), signal))}>{tr(locale, '生成 ZIP', 'Create ZIP')}</Button>

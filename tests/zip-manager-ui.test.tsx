@@ -60,7 +60,10 @@ it.each(['zh', 'en'] as const)('omits naming fields, empty statistics and repeat
   };
   checkQuietWorkspace(); expect(workspace().textContent).not.toMatch(/0 (?:个文件|files)|0 B/);
   const modes = within(screen.getByRole('group',{name:locale === 'zh' ? 'ZIP 模式' : 'ZIP mode'}));
+  const title = screen.getByRole('heading', {name:locale === 'zh' ? 'ZIP 操作' : 'ZIP actions', level:2});
+  expect(title.closest('aside')).toBe(document.querySelector('[data-form-settings]'));
   fireEvent.click(modes.getByRole('button',{name:locale === 'zh' ? '打开 ZIP' : 'Open ZIP'}));
+  expect(screen.getByRole('heading', {name:locale === 'zh' ? 'ZIP 操作' : 'ZIP actions'})).toBe(title);
   checkQuietWorkspace(); expect(workspace().textContent).not.toMatch(/0 (?:个文件|files)|0 B|已选|Selected/);
   fireEvent.change(document.querySelector('input[type=file]')!, {target:{files:[new File(['archive'],'source.ZIP')]}});
   const source = await screen.findByText('source.ZIP');

@@ -33,6 +33,7 @@ Astro 工具路由 + 静态 Intro / Guide
 - `src/workbench/` 只负责可选插槽、布局、面板可见性和焦点，不导入具体工具编码器，不持有文件、参数、任务或全局业务 Store。
 - 工具选择 canvas/form/batch/custom；Canvas 是独立全视口与覆盖层，Form/Batch 是自然流。具备文件导入、列表与参数/操作的 Form/Batch 默认采用左文件与预览、右设置与操作；Canvas、单一输入及不适用工具须有明确的例外理由。本次不批量改变其他工具的既有布局。
 - 标准文件表单的宽度、列宽、间距和响应式属于 Workbench，复用 [form-tool-layout.module.scss](../src/workbench/form-tool-layout.module.scss)：Wide 外框 1400px、空态紧凑、输入后主列 + 350px 设置列、≤1050px 按文件在前的 DOM 顺序堆叠。工具拥有文件、参数、任务、结果与资源释放；CSS 切换不重建这些状态。不复制双栏断点，不新增文件 Store/Context；没有参数时右侧只保留真实模式与操作。当前实例和类名见 [工作区说明](../docs/workbench-appearance.md)。
+- 文件表单的公共所有权也包括视觉配方：完整面板背景/圆角/内边距、标题、分段控件、导入间距、空态和面板内操作。Image Converter、Batch File Renamer、ZIP Manager 直接使用同一组 CSS Module 类；已有图片工具的对应 UI 样式绑定也直接引用同一配方，不重复维护主题值或增加组合兼容层。窄栏的长文本参数单列，宽面板按实际容器宽度组织字段；不通过 React 视口分支重建表单。不能仅以 Grid 列数正确作为视觉验收。
 
 ## Image Converter 分层
 

@@ -73,17 +73,17 @@ export default function ZipManager({ locale }: ToolProps) {
     <span hidden data-zip-license={zipNotice} />
     <div data-zip-manager={mode} data-form-layout={hasInput ? 'split' : 'stack'} className={[form.container, form.fileForm, hasInput && form.columns, hasInput && form.expanded].filter(Boolean).join(' ')}>
       <section data-file-workspace className={form.fileWorkspace} aria-label={tr(locale, '文件工作区', 'File workspace')}>
-        <div className={s.intake}>
+        <div className={[form.fileIntake, mode === 'create' && !!files.length && form.compactIntake].filter(Boolean).join(' ')}>
           {mode === 'create' ? <>
             <FileDropzone label={files.length ? tr(locale, '添加文件', 'Add files') : tr(locale, '选择文件或拖放到这里', 'Choose files or drop them here')} multiple disabled={busy} appearance={files.length ? 'compact' : 'expanded'} issueMessages={issueMessages} onFilesReceived={add} />
             <input hidden multiple type="file" aria-label={tr(locale, '添加文件夹', 'Add folder')} disabled={busy} ref={element => {folderInput.current = element; element?.setAttribute('webkitdirectory', '');}} onChange={event => {add(Array.from(event.currentTarget.files ?? [])); event.currentTarget.value = '';}} />
             <Button className={s.lightButton} disabled={busy} onClick={() => folderInput.current?.click()}><FolderPlusIcon size={20} aria-hidden="true" />{tr(locale, '添加文件夹', 'Add folder')}</Button>
-            {!!files.length && <p className={s.summary}>{files.length} {tr(locale, '个文件', 'files')} · {zipSize(total)}</p>}
           </> : <>
             <FileDropzone label={archive ? tr(locale, '更换 ZIP', 'Replace ZIP') : tr(locale, '选择 ZIP 或拖放到这里', 'Choose a ZIP or drop it here')} accept=".zip,application/zip" disabled={busy} appearance={archive ? 'compact' : 'expanded'} issueMessages={issueMessages} onFilesReceived={load} />
-            {archive && <p className={s.summary}><span title={archive.name}>{archive.name}</span> · {paths.length} {tr(locale, '个文件', 'files')} · {zipSize(archive.size)}</p>}
           </>}
         </div>
+        {mode === 'create' && !!files.length && <p className={s.summary}>{files.length} {tr(locale, '个文件', 'files')} · {zipSize(total)}</p>}
+        {mode === 'open' && archive && <p className={s.summary}><span title={archive.name}>{archive.name}</span> · {paths.length} {tr(locale, '个文件', 'files')} · {zipSize(archive.size)}</p>}
         {hasInput && <section className={s.zipFileBrowser} aria-label={tr(locale, '文件列表', 'File list')}>
           <h2 className={s.listTitle}>{mode === 'create' ? tr(locale, '待打包文件', 'Files to archive') : tr(locale, 'ZIP 内容', 'ZIP contents')}</h2>
           <div className={s.list}>
@@ -104,13 +104,16 @@ export default function ZipManager({ locale }: ToolProps) {
           </div>
         </section>}
       </section>
-      <aside data-form-settings className={form.settings} aria-label={tr(locale, '设置与操作', 'Settings and actions')}>
-        <div className={s.modes} role="group" aria-label={tr(locale, 'ZIP 模式', 'ZIP mode')}>
-          {(['create', 'open'] as const).map(value => <Button key={value} className={s.mode} disabled={busy} aria-pressed={mode === value} onClick={() => { if (!active.current) setMode(value); }}>{value === 'create' ? tr(locale, '创建 ZIP', 'Create ZIP') : tr(locale, '打开 ZIP', 'Open ZIP')}</Button>)}
+      <aside data-form-settings className={form.settingsPanel} aria-label={tr(locale, '设置与操作', 'Settings and actions')}>
+        <div className={form.settingsHeader}>
+          <h2 className={form.settingsTitle}>{tr(locale, 'ZIP 操作', 'ZIP actions')}</h2>
+          <div className={form.segmented} role="group" aria-label={tr(locale, 'ZIP 模式', 'ZIP mode')}>
+            {(['create', 'open'] as const).map(value => <button type="button" key={value} className={[form.segment, mode === value && form.segmentSelected].filter(Boolean).join(' ')} disabled={busy} aria-pressed={mode === value} onClick={() => { if (!active.current) setMode(value); }}>{value === 'create' ? tr(locale, '创建 ZIP', 'Create ZIP') : tr(locale, '打开 ZIP', 'Open ZIP')}</button>)}
+          </div>
         </div>
         {mode === 'open' && archive && <div className={s.selection}>
           <p className={s.note} role="status">{tr(locale, `已选 ${selectedCount} / ${paths.length}`, `Selected ${selectedCount} / ${paths.length}`)}</p>
-          <div className={s.modes}><Button className={s.lightButton} disabled={busy || !paths.length} onClick={() => select(paths, true)}>{tr(locale, '全选', 'Select all')}</Button><Button className={s.lightButton} disabled={busy || !selected.size} onClick={() => select(paths, false)}>{tr(locale, '取消全选', 'Deselect all')}</Button></div>
+          <div className={s.selectionActions}><Button className={s.lightButton} disabled={busy || !paths.length} onClick={() => select(paths, true)}>{tr(locale, '全选', 'Select all')}</Button><Button className={s.lightButton} disabled={busy || !selected.size} onClick={() => select(paths, false)}>{tr(locale, '取消全选', 'Deselect all')}</Button></div>
         </div>}
         {(busy || error) && <div className={s.feedback}><ErrorText error={error} />{busy && <><p className={s.note} role="status">{tr(locale, '正在处理 ZIP…', 'Processing ZIP…')}</p><Button className={s.lightButton} size="sm" onClick={() => {if (createJob.busy) createJob.invalidate(); if (inspectJob.busy) inspectJob.invalidate(); if (exportJob.busy) exportJob.invalidate(); if (singleJob.busy) singleJob.invalidate();}}>{tr(locale, '取消处理', 'Cancel')}</Button></>}</div>}
         <div className={form.actions} data-zip-actions>

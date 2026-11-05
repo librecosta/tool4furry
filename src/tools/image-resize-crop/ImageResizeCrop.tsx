@@ -8,6 +8,7 @@ import { ConfirmDialog } from '../../ui/ConfirmDialog';
 import { mobileImageLimits, resolveImageLimits } from '../image/limits';
 import { imageAccept, sortedFolderFiles } from '../image-converter/intake';
 import c from '../image-converter/converter.styles.module.scss';
+import form from '../../workbench/form-tool-layout.module.scss';
 import { ResizeCollection, initialCollection } from './collection';
 import { SingleEditor } from './SingleEditor';
 import { BatchPanel } from './BatchPanel';
@@ -133,7 +134,7 @@ export default function ImageResizeCrop({ locale }: ToolProps) {
               </div>
             )}
             <div className={[hasFiles && s.addFiles].filter(Boolean).join(' ')}>
-              <div className={[c.intakeActions, hasFiles && c.compactIntake].filter(Boolean).join(' ')}>
+              <div className={[form.fileIntake, hasFiles && form.compactIntake].filter(Boolean).join(' ')}>
                 <FileDropzone
                   id="resize-source"
                   label={hasFiles ? t.append : t.pick}

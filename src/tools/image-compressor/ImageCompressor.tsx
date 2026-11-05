@@ -12,6 +12,7 @@ import type { ImageOutputFormat } from '../image/types';
 import type { ToolProps } from '../types';
 import { imageAccept, sortedFolderFiles } from '../image-converter/intake';
 import c from '../image-converter/converter.styles.module.scss';
+import form from '../../workbench/form-tool-layout.module.scss';
 import { CompressorSession, type CompressionTask, type CompressionView } from './session';
 import { quickSettings, recommendedSettings, sameCompressionSettings, supportsTarget, validSettings, type CompressionSettings, type CompressionStrength } from './compress';
 import { messages, comparisonLabels } from './messages';
@@ -110,16 +111,16 @@ export default function ImageCompressor({locale}: ToolProps) {
         </section>
         <section aria-label={t.settings} data-compressor-parameters={advanced ? 'advanced' : 'quick'} className={s.settings}>
           <div className={s.panelHeading}><h2 className={s.heading}>{t.settings}</h2>
-            <div role="group" aria-label={t.parameterModes} className={c.modes}>{([false, true] as const).map(value => <button key={String(value)} type="button" aria-pressed={advanced === value} className={[c.mode, c.parameterControl, advanced === value && c.currentParameterMode].filter(Boolean).join(' ')} onClick={() => switchMode(value)}>{value ? t.advanced : t.quick}</button>)}</div>
+            <div role="group" aria-label={t.parameterModes} className={form.segmented}>{([false, true] as const).map(value => <button key={String(value)} type="button" aria-pressed={advanced === value} className={[form.segment, c.parameterControl, advanced === value && form.segmentSelected].filter(Boolean).join(' ')} onClick={() => switchMode(value)}>{value ? t.advanced : t.quick}</button>)}</div>
           </div>
           <SelectField appearance="quiet" label={t.format} value={settings.format} onValueChange={value => changeFormat(value as ImageOutputFormat)} options={['webp', 'jpeg', 'png', 'avif'].map(value => ({value, label: value.toUpperCase(), disabled: value === 'avif' && !session?.avifSupported}))}/>
           {!session?.avifSupported && <p className={s.note}>{t.avifDevice}</p>}
           {!advanced && settings.format !== 'png' && <fieldset className={c.group}><legend className={c.legend}>{t.strength}</legend>
-            <div className={s.strengths}>{(['light', 'balanced', 'strong'] as const).map(value => <button type="button" key={value} aria-pressed={strength === value} className={[c.mode, c.parameterControl, s.strength, strength === value && c.currentParameterMode].filter(Boolean).join(' ')} onClick={() => {setStrength(value); configure(quickSettings(settings.format, value));}}>{t[value]}</button>)}</div>
+            <div className={s.strengths}>{(['light', 'balanced', 'strong'] as const).map(value => <button type="button" key={value} aria-pressed={strength === value} className={[form.segment, c.parameterControl, s.strength, strength === value && form.segmentSelected].filter(Boolean).join(' ')} onClick={() => {setStrength(value); configure(quickSettings(settings.format, value));}}>{t[value]}</button>)}</div>
             <p className={s.note}>{t.qualityLabel}: {settings.quality}%</p>
           </fieldset>}
           {advanced && <>
-            {settings.format !== 'png' && <fieldset className={c.group}><legend className={c.legend}>{t.strategy}</legend><div className={s.row}>{(['quality', 'target'] as const).map(mode => <button type="button" key={mode} disabled={mode === 'target' && !supportsTarget(settings.format)} aria-pressed={settings.mode === mode} className={[c.mode, c.parameterControl, settings.mode === mode && c.currentParameterMode].filter(Boolean).join(' ')} onClick={() => {configure({mode}); setInvalid(false);}}>{t[mode]}</button>)}</div></fieldset>}
+            {settings.format !== 'png' && <fieldset className={c.group}><legend className={c.legend}>{t.strategy}</legend><div className={s.row}>{(['quality', 'target'] as const).map(mode => <button type="button" key={mode} disabled={mode === 'target' && !supportsTarget(settings.format)} aria-pressed={settings.mode === mode} className={[form.segment, c.parameterControl, settings.mode === mode && form.segmentSelected].filter(Boolean).join(' ')} onClick={() => {configure({mode}); setInvalid(false);}}>{t[mode]}</button>)}</div></fieldset>}
             {settings.format !== 'png' && <SliderField label={settings.mode === 'target' ? t.maxQuality : t.qualityLabel} value={settings.quality} onValueChange={quality => configure({quality})} min={1} max={100} unit="%" accent="lavender"/>}
             {settings.mode === 'target' && <div className={s.unit}><TextField label={t.targetLabel} value={target} onChange={value => {setTarget(value); setInvalid(false);}} inputMode="decimal" onBlur={commit} onKeyDown={enter}/><SelectField appearance="quiet" label={t.unit} value={unit} onValueChange={value => {setUnit(value); setTarget(String(settings.targetBytes / (value === 'KB' ? 1024 : 1024 ** 2)));}} options={[{value: 'KB', label: 'KB'}, {value: 'MB', label: 'MB'}]}/></div>}
             <LongestSideStepper label={t.longest} value={settings.longestEdge} noLimit={t.noLimit} decrease={t.decreaseLongest} increase={t.increaseLongest} onChange={longestEdge => configure({longestEdge})}/>

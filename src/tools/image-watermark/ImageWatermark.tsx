@@ -15,6 +15,7 @@ import { useOwnedUrl } from '../image-converter/use-owned-url';
 import type { ImageOutputFormat } from '../image/types';
 import { recommendations } from '../image-converter/presets';
 import c from '../image-converter/converter.styles.module.scss';
+import form from '../../workbench/form-tool-layout.module.scss';
 import pickerNotice from '../palette-extractor/react-colorful.NOTICE.txt?url';
 import { defaults, validSettings, type WatermarkSettings } from './render';
 import { WatermarkSession, type View } from './session';
@@ -91,7 +92,7 @@ export default function ImageWatermark({locale}: ToolProps) {
         </div>
         <div className={s.panel}>
           <div className={s.heading}><h2 className={s.title}>{t.settings}</h2>
-            <div role="group" aria-label={t.parameterModes} className={c.modes}>{([false,true] as const).map(value => <button key={String(value)} type="button" aria-pressed={advanced === value} className={[c.mode, c.parameterControl, advanced === value && c.currentParameterMode].filter(Boolean).join(' ')} onClick={() => setAdvanced(value)}>{value ? t.advanced : t.quick}</button>)}</div>
+            <div role="group" aria-label={t.parameterModes} className={form.segmented}>{([false,true] as const).map(value => <button key={String(value)} type="button" aria-pressed={advanced === value} className={[form.segment, c.parameterControl, advanced === value && form.segmentSelected].filter(Boolean).join(' ')} onClick={() => setAdvanced(value)}>{value ? t.advanced : t.quick}</button>)}</div>
           </div>
           {!advanced && settings.format === 'jpeg' && (background !== settings.background || invalid === 'background') && <p role="alert" className={s.error}>{t.errors.invalid}</p>}
           {!advanced && customized && <Button variant="ghost" size="sm" className={s.secondary} onClick={() => setAdvanced(true)}>{t.advanced}: {settings.layout === 'tile' ? `${t.tile} · ${t[settings.density]}` : `${t.single} · ${t.margin} ${settings.margin}px`} · {settings.angle}° · {settings.kind === 'text' ? `${settings.fontSize}px` : `${settings.imagePercent}%`}{settings.format !== 'png' ? ` · ${settings.quality}%` : ''}{settings.format === 'jpeg' ? ` · ${settings.background}` : ''}</Button>}

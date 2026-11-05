@@ -6,6 +6,7 @@ import { SliderField } from '../../ui/SliderField';
 import { checkDimensions } from '../image/types';
 import { validFilenameLabel } from '../file-naming';
 import c from '../image-converter/converter.styles.module.scss';
+import form from '../../workbench/form-tool-layout.module.scss';
 import { aspects, fullCrop, type Aspect } from './geometry';
 import { CollectionControls } from './CollectionControls';
 import { CropEditor } from './CropEditor';
@@ -224,9 +225,9 @@ export function SingleEditor({
         )}
       </section>
       {source && crop && (
-        <aside aria-label={t.settings} className={c.settings}>
-          <div className={c.settingsHeader}>
-            <h2 className={c.settingsTitle}>{t.settings}</h2>
+        <aside aria-label={t.settings} className={form.settingsPanel}>
+          <div className={form.settingsHeader}>
+            <h2 className={form.settingsTitle}>{t.settings}</h2>
             <ParameterModes
               advanced={advanced}
               onChange={onAdvancedChange}

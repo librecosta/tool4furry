@@ -2,6 +2,7 @@ import { useId } from 'react';
 import type { Capabilities } from '../image/browser-codec';
 import type { NativeImageFormat } from '../image/types';
 import c from '../image-converter/converter.styles.module.scss';
+import form from '../../workbench/form-tool-layout.module.scss';
 import s from './resize.styles.module.scss';
 import type { resizeMessages } from './messages';
 
@@ -51,16 +52,16 @@ export function ParameterModes({
   t: ResizeMessages;
 }) {
   return (
-    <div role="group" aria-label={t.parameterModes} className={c.modes}>
+    <div role="group" aria-label={t.parameterModes} className={form.segmented}>
       {([false, true] as const).map((value) => (
         <button
           key={String(value)}
           type="button"
           aria-pressed={advanced === value}
           className={[
-            c.mode,
+            form.segment,
             c.parameterControl,
-            advanced === value && c.currentParameterMode,
+            advanced === value && form.segmentSelected,
           ].filter(Boolean).join(' ')}
           onClick={() => onChange(value)}
         >
