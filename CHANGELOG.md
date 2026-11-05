@@ -8,6 +8,8 @@
 
 ### Added
 
+- 新增按需 CodeMirror 6 TextEditor、插槽式 TextEditorPane 和等宽双栏 TextWorkbench；Text Cleaner（仍为 Draft）改为快速/高级实时清理，默认保留缩进，支持明确 LF/CRLF、编辑器内复制/TXT 下载和基本统计。移除本工具旧 50 万字符配额，保留其他文本工具与发布资格，编辑器依赖及完整 MIT 通知按 Draft 资源隔离。
+
 - V0.8-A / A2 共新增 22 款双语通用 Draft：首批 PDF、文件、文本、编码、颜色、二维码和音频工具，以及第二批 Markdown、视频取帧、CSV/JSON、代码分享图、SVG 转 PNG、Regex 和 UUIDv4。复用既有工作区与发布门，安全预览、任务失效和输出预算由工具局部管理；原有七款 Published 不变，无专属图标或部署。能力和验收见 [通用工具说明](docs/general-toolbox-v0.8.md)。
 
 - V0.7-B 新增四款双语 Draft：Image Compressor 的有界目标大小压缩/比较/ZIP；Comic Page Organizer 的排序、封面、逐页预览与原字节 ZIP/CBZ；Image Watermark 的文字/图片批量水印与 PNG/JPEG/WebP；EXIF Metadata 的可靠字段读取、隐私标记和无损清理。复用现有资源/串行/输出验证与发布门，集中集成，不提升 Published 或部署。

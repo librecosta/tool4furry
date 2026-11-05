@@ -53,7 +53,9 @@
 - **静态与交互**：页面正文、唯一 H1、指南/FAQ 保留 Astro 静态输出；固定 ToolRuntime/LabRuntime 才挂必要 React，工具实现懒加载。无全站 React Provider/业务 Store；静态页面受精确脚本审计，不随意加 JS 或 preload。
 - **所有权**：WorkbenchShell 只管布局/插槽/面板，UI 原语受控；文件、设置、任务和释放归工具。不得因断点切换或开关面板重建业务状态。具体 Canvas/预览合同见 [工作区说明](docs/workbench-appearance.md)。
 - **文件表单布局**：具备文件导入、文件列表以及参数或操作面板的 Form/Batch 工具，默认采用左侧文件与预览、右侧设置与操作的布局。优先复用 `src/workbench/form-tool-layout.module.scss` 和既有 WorkbenchShell，不自行创建重复的双栏样式。复用同时包括完整设置面板、标题、间距、空状态、嵌入式模式切换和操作区，以 Image Converter 为视觉基准；仅复用左右列不算完成。没有真实参数时不得为了填充设置栏添加无意义控件。Canvas、单一输入工具及其他不适用场景可以例外，例外应有明确理由。
+- **文本工作区**：大段文本、结构化文本、代码及需要编辑器能力的工具默认复用 `src/ui/text-editor/` 的 TextEditor / TextEditorPane；TextWorkbench 提供上方规则、下方等宽输入/结果的布局，不套用文件工具的 350px 设置栏。短文本、单行设置和简单备注仍可用 TextField/TextAreaField，不批量迁移旧工具。编辑器只拥有编辑状态与生命周期，语言扩展按需传入；算法、规则、复制/下载与任务有效性归具体工具。
 - **样式**：组件、工具和 Lab 使用所有权内的 SCSS Modules；`global.scss` 只负责 reset、字体与基础规则，`tokens.scss` 是完整 `--t4f-*` 主题值的唯一来源。层顺序为 reset → base → t4f-controls → t4f-ui → t4f-tools；工具通过 className 在工具层覆盖公共控件，状态与响应式优先级须明确，不依赖 Chunk 顺序。同步 head 控制器只通过 `data-appearance` 管理主题与偏好，Portal 继承根变量；不恢复 StyleX、运行时 CSS 注入器或主题 Provider。见 [样式基础](docs/styling-foundation-v0.9.md)。
+- **编辑器内部样式例外**：CodeMirror 必需的运行时规则仅限 `.cm-editor` 内部；内部覆盖由引用现有变量的 scoped `EditorView.theme` 管理，因为其未分层规则优先于 layered SCSS。外壳、尺寸、面板和操作仍由 SCSS Modules 管理，不增加全站注入器或第二套主题值。编辑器、依赖及完整 NOTICE 只从使用它的工具懒加载，Draft 专用资源不得进入正式产物。
 - **静态素材**：组件内部图片、插画与工具图标默认放在 `src/assets/`，用 Astro/Vite 静态导入参与构建；只有确实需要固定公开 URL 或原样独立分发的品牌、Favicon、OG、法律声明等资源放在 `public/`。不将 Draft 私有素材提前导入公共模块；既有 Worker/WASM、局部 CSS 与按需许可证维持工具所有权。字节必须保持的 PNG/AVIF 使用 `?url&no-inline`，不交由图片优化器重编码。
 - **固定 DEV 端口**：CN `4321`、Global `4322` 由 `src/config/dev-origins.mjs` 唯一定义。未经维护者明确要求，禁止修改端口、引入备用端口或关闭 `strictPort` 来绕过占用。占用者可能是维护者自行启动的同仓库服务；先确认归属，再通过 `pnpm dev stop` 或已核实的精确 PID 停止旧实例，仍用原端口调试。归属不明时保留进程并报告，不误杀、不改端口。操作步骤见 [playbook](.agents/playbook.md#本地服务与固定端口)。
 - **本地文件与隐私**：不上传/持久存储用户文件；不削弱真实输出、默认隐私、版本隔离与取消保证，资源策略按工具授权调整。名称不触发编码，失效结果不得下载或进入 ZIP。详见图片处理契约。

@@ -1,0 +1,44 @@
+@layer t4f-ui {
+  .pane {
+    display: grid;
+    gap: var(--t4f-space-8);
+    min-width: 0;
+    padding: var(--t4f-space-12);
+    border-radius: var(--t4f-radius-lg);
+    background: var(--t4f-surface-panel);
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--t4f-space-8);
+    min-width: 0;
+    min-height: 36px;
+  }
+  .title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .actions {
+    display: flex;
+    gap: var(--t4f-space-4);
+  }
+  .body {
+    height: clamp(320px, 44vh, 460px);
+    min-width: 0;
+    overflow: hidden;
+    border-radius: var(--t4f-radius-sm);
+    background: var(--t4f-input-surface);
+  }
+  .status {
+    min-height: 20px;
+    font-size: 12px;
+    color: var(--t4f-text-secondary);
+  }
+  @media (max-width: 900px) {
+    .body {
+      height: 320px;
+    }
+  }
+}

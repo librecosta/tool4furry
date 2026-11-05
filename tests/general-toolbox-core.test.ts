@@ -35,22 +35,21 @@ import { createHashEngine } from '../src/tools/file-hash/engine';
 import { qrMatrix, qrSvg } from '../src/tools/qr-code-generator/core';
 import { audioRange, encodeWav } from '../src/tools/audio-trimmer/core';
 describe('general toolbox text and data', () => {
-  it('cleans independent line options and counts Chinese separately', () => {
+  it('cleans lines without destroying indentation and counts basic editor text', () => {
     expect(cleanText(' 你好 \r\n\r\n\r\n world \r\n', defaults)).toBe(
-      '你好\n\nworld\n',
+      ' 你好\n\n world\n',
     );
     expect(
       cleanText(' a \r\n\r\n', {
-        trim: true,
-        normalize: false,
-        removeBlank: false,
-        mergeBlank: false,
+        trimEnd: true,
+        trimStart: true,
+        lineEnding: 'crlf',
+        blankLines: 'keep',
       }),
     ).toBe('a\r\n\r\n');
-    expect(textStats('你好 world', 'zh')).toMatchObject({
+    expect(textStats('你好 world')).toMatchObject({
       characters: 8,
-      han: 2,
-      words: 2,
+      lines: 1,
     });
   });
   it('retains large JSON numbers, whitespace in strings and validates nesting', () => {

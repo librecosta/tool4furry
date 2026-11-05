@@ -2,6 +2,20 @@
 
 两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash 已获得 CN/Global Published 源码资格，其余 16 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（13 Published / 16 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
+## Text Cleaner — V0.8-B7-D1 共享编辑器与实时清理（2026-11-05）
+
+- 仅迁移 Text Cleaner，继续 CN/Global Draft；全站仍为 29 款 / 13 Published / 16 Draft。JSON Formatter、Subtitle Tools、Markdown Editor 及旧 TextWorkspace 未迁移，不修改 SEO 或资格。
+- 新增 `src/ui/text-editor/`：TextEditor 封装 CodeMirror 6；TextEditorPane 拥有中性灰外表面、标题/操作插槽和轻量状态栏；TextWorkbench 只负责顶部规则与等宽双编辑器，≤900px 同 DOM 堆叠。工具继续拥有文本、清理规则、结果有效性及复制/下载，没有全局 Provider、Store 或编辑器框架。
+- 锁定最小直接依赖 `@codemirror/state@6.7.6`、`view@6.43.15`、`commands@6.11.1`，未安装 React 包装器或语言专用解析器。必需传递依赖随实际引用进入工具图；完整 12 包 MIT 许可集中在 `codemirror.NOTICE.txt` 并通过工具 URL 交付。未来语言扩展由调用方按需传入 Extension，不静态引入 JSON/YAML/Markdown 全套功能。
+- EditorView 每次挂载只创建一次，卸载 destroy；Strict Mode、受控回流、最小外部变更映射选区、Undo/Redo、动态 Compartment、行号/换行和只读模式有定向测试。只读同时配置 readOnly/editable、保留可聚焦选择复制，并阻止直接命令修改文档。Plain Text 使用现有 sans 字体；主题跟随变量，切换不重建 View。CodeMirror 内部无 Layer 规则的覆盖使用 scoped EditorView.theme，外部 SCSS 仍拥有几何/表面/焦点；实测 Purple Focus 和亮暗颜色正确。
+- 快速模式固定清理行尾、合并连续空行、输出 LF，并保留行首缩进。高级保存独立自定义规则：行首/行尾分别开关，空行 keep/collapse/remove 互斥，明确 LF/CRLF 输出。模式切换保留同一输入及高级规则，输入/规则自动更新结果。编辑文档采用 LF 语义；导出由唯一纯函数生成实际换行字节，不声称保留混合原始行尾。清空仅清输入，不重置高级选项。
+- 不再调用本工具旧 `boundedText()` 50 万 UTF-16 配额，也不修改全局函数。清理按行单次处理，统计仅字符/行数，不执行每键 Intl.Segmenter；超过 10 万字符时用工具局部 120ms 防抖，过期结果的复制/下载立即禁用。没有引入 Worker；设备能力仍决定实际规模，资源失败报告错误，不承诺无限输入或进程级 OOM 可恢复。
+- Chromium 156 的 CN 中文 Dark / 1280px、Global 英文 Light / 390px 完成真实组合输入事件、中文/英文多行剪贴板粘贴、选区保持、Undo/Redo、规则往返、只读 Ctrl+A/C、禁止编辑、复制及实际 TXT 下载；四份 DEV 下载逐字节核对 CRLF 和 Unicode，重复下载名称不同。复制失败的手动选择反馈由 UI 测试覆盖。中文组合验证使用 Chromium CDP composition/commit，未验证操作系统候选窗或真实手机输入法。
+- 真实 660,000 字符 / 60,000 行粘贴、尾部编辑和内部滚动通过，无旧配额拒绝，DOM 只绘制约 36–40 行。DEV 粘贴至结果稳定实测约 0.17–1.94 秒（含 120ms 防抖及浏览器绘制，存在冷/热和负载波动）；清理本身约 10–28ms，基本统计约 3–8ms。另以 330 万字符测量纯函数，清理约 54–97ms、统计约 13–27ms；这不等于极限输入性能保证。
+- DEV 禁用缓存 F5 及仓库外的隔离生产构建均验证首次挂载：可见面板逐帧宽高不变，桌面编辑主体约 422px、手机 320px；主题切换不丢内容/选区，无横向溢出或运行错误。隔离生产样本直接构建实际组件、SiteLayout 主题样式和字体，实际 TXT 的 LF/CRLF 字节及完整许可资源核对通过；它不伪造 Draft 正式路由。首次 DEV 跨地区依赖发现曾导致 504，三个模块加入 DEV 预构建并冷启动复测后消除，不增加浏览器或生产预加载。
+- `pnpm check`（460 文件，零错误/警告）、10 文件 / 60 项相关测试及 Frozen Lockfile 安装核对通过。CN/Global 各一次正式构建和完整守卫通过，每地区 26 个工具详情页、36 条发现 URL，Text Cleaner / CodeMirror 的 JS、CSS 和 NOTICE 均未进入正式资源图，其余 Draft / Lab / Fixture 隔离保持。锁文件仅增加所需依赖，既有包解析未变。[基线 CI 已通过](https://github.com/librecosta/tool4furry/actions/runs/42028041735)，本轮提交的远程状态另行核对，不把本地通过当作远程 CI 通过。
+- Firefox、Safari/WebKit、真实移动设备/系统输入法、真实屏幕阅读器和进程级内存极限未测。390px 为桌面 Chromium 视口；没有进行 SEO、Beta 资格提升或部署。
+
 ## File Hash — V0.8-B6-D3 SEO 与 Beta 资格（2026-11-05）
 
 - 依据维护者对 D1/D2 的验收与本轮发布授权，提升 File Hash 的 CN/Global Published 源码资格；当前 29 款（13 Published / 16 Draft），历史 15 + 7 集合不变。仅更新本工具静态长文、短元数据及发布投影，UI、计算内核、队列、Worker、依赖与资源策略未改动。
@@ -83,7 +97,7 @@
 | `zip-manager` | 独立创建/打开模式、文件夹目录树、单文件下载、所选重打包、自动时间戳命名 | 创建 500 项/96 MiB；读取 64 MiB；展开单项 32 MiB、累计 128 MiB；拒绝 ZIP64/加密/不安全路径/异常压缩率，验证 CRC |
 | `batch-file-renamer` | 快速/高级共用内嵌文件名组合器：可选名称、序号开关及高级起始值/位数/连接符；保留原扩展名、实时逐行预览与冲突提示、ZIP 下载 | 100 文件、单个 32 MiB、累计 96 MiB；非法/重复名称拒绝，原字节不变；默认仅序号，留空且关闭序号时保留完整原名 |
 | `file-hash` | 默认 MD5；MD5/SHA-1/SHA-256/SHA-512/CRC32 多文件自动队列、逐项进度与预期值、复制及 TXT 清单 | 单 Worker、2 MiB 分块，无旧 32 MiB 配额；依赖 Worker/WebAssembly 与真实设备资源；不是加密或来源认证 |
-| `text-cleaner` | 独立空白/空行/换行选项、Unicode/词段/汉字统计、前后对照、复制/下载 | 50 万 UTF-16 代码单元；词段依赖浏览器分词 |
+| `text-cleaner` | CodeMirror 双编辑器、快速/高级实时清理、保留缩进、互斥空行规则、LF/CRLF、字符/行统计及复制/TXT | 无旧 50 万字符配额；大文本延迟处理与失效交付保护，实际规模依赖设备；编辑层 LF，导出明确选择换行格式 |
 | `text-diff` | 行级增删对照、忽略行末空白、数量、文本导出 | 每侧 10 万字符/4000 行；差异计算有时间和编辑量上限 |
 | `subtitle-tools` | SRT/WebVTT 互转、毫秒偏移、多行字幕、条目检查、下载 | 5000 条；不支持 NOTE/STYLE/REGION；转 SRT 提示定位设置丢失 |
 | `json-formatter` | 校验、2/4 空格、单行压缩、复制/下载 | 50 万字符、128 层、格式化结果 400 万字符；保留原数字字面量，避免大整数舍入 |

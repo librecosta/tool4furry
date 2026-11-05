@@ -10,7 +10,7 @@ it('keeps the local hash worker, embedded WASM and notices under the Published F
   expect(ui).toContain("from '../../ui/FileTaskList'");expect(ui).toContain('form.fileWorkspace');expect(ui).toContain('form.settingsPanel');
   expect(ui).not.toContain('boundedFiles');expect(engine).not.toMatch(/file\.arrayBuffer\(|crypto\.subtle/);
   expect(ui).toContain('hash-wasm.NOTICE.txt?url');
-  expect(readFileSync('astro.config.mjs','utf8')).toContain("include: ['hash-wasm']");
+  expect(readFileSync('astro.config.mjs','utf8')).toMatch(/include:\s*\[[^\]]*'hash-wasm'/);
   const notice=readFileSync('src/tools/file-hash/hash-wasm.NOTICE.txt','utf8'),license=readFileSync('node_modules/hash-wasm/LICENSE','utf8');
   expect(notice.replace(/\r\n/g,'\n')).toContain(license.replace(/\r\n/g,'\n'));
   for(const source of ['md5','sha1','sha256','sha512']){

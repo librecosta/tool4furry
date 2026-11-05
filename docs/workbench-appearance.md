@@ -35,6 +35,19 @@ Image Converter 已有的 `container/columns/split/leading/aside/main` 配方继
 
 Batch File Renamer 当前使用内嵌文件名组合器，快速/高级共享名称及序号规则；高级仅展开起始值、位数与连接符，数字字段双列，宽面板通过 CSS Container Query 并排组织高级控件。切换显示模式不重置规则或使有效结果失效。文件区间距为 12px，列表使用克制的行填充或透明表面；不以厚重灰色整块替代清楚的文件层次。共享层只提供布局与视觉配方，不建立 Schema、FormEngine、Context 或文件框架。
 
+## 文本编辑工作区
+
+大段普通文本、结构化文本和代码工具默认复用 [TextEditor](../src/ui/text-editor/TextEditor.tsx)、[TextEditorPane](../src/ui/text-editor/TextEditorPane.tsx) 与 [TextWorkbench](../src/ui/text-editor/TextWorkbench.tsx)。短设置、单行字段和简单备注不必改用编辑器；本轮只有 Text Cleaner 迁移，旧 TextWorkspace 的其他消费者不变。
+
+- TextWorkbench 上方放模式及必要规则，下方输入/结果等宽双栏；≤900px 按输入在前的同一 DOM 堆叠，不复制有状态编辑器。文本工作区不适用文件工具的 350px 设置栏。
+- TextEditorPane 的中性灰外表面包含轻量标题、调用方操作插槽、编辑主体和次级统计；没有大工具栏或两层明显边框。主体可视高度由静态 SCSS 确定为 320–460px，窄屏 320px，长文内部滚动，初始化不依赖内容撑高页面。
+- TextEditor 负责受控文档、行号、换行、键盘历史、选区、IME、只读和 View 生命周期；外部更新走事务，配置/未来语言扩展走 Compartment，普通文本默认站点 sans 字体。语言、格式化、业务校验、处理任务、复制下载归工具，未来语法包由工具按需引入。
+- 只读结果仍可聚焦、选择、Ctrl+A/C 和滚动，禁止输入修改。标题图标使用现有 IconButton/Tooltip；输入对应清空，结果对应复制/下载，失效结果禁用交付，不把业务写入编辑器内核。
+- 外围尺寸、圆角、表面和 Purple Focus 属于 SCSS Modules。CodeMirror 自身无 Layer 的内部样式优先于分层 CSS，因此内部覆盖使用 scoped EditorView.theme 引用现有变量；不是全站 CSS-in-JS 或另一套主题。Dark/Light 切换不重建文档，Reduced Motion 遵循既有规则。
+- Text Cleaner 快速模式保留行首缩进、清理行尾空白、合并连续空行并输出 LF；高级独立保留自定义空白/空行及 LF/CRLF 规则。编辑层统一文档为 LF，实际导出换行由纯函数明确生成，不提供虚假的“保留混合原始行尾”选项。
+
+编辑器和 Text Cleaner 保持懒加载及 Draft 隔离；完整 CodeMirror/必要传递依赖 MIT NOTICE 随实际入口交付。验证见 [编辑器生命周期测试](../tests/text-editor.test.tsx)、[交付边界测试](../tests/text-editor-delivery.test.ts)、[Cleaner 核心](../tests/text-cleaner-core.test.ts) 和 [实际编辑器 UI 测试](../tests/text-cleaner-ui.test.tsx)。真实浏览器证据与性能边界见 [通用工具说明](general-toolbox-v0.8.md#text-cleaner--v08-b7-d1-共享编辑器与实时清理2026-11-05)。
+
 ## 静态说明与 FAQ
 
 [ToolGuide](../src/components/site/ToolGuide.astro) / [ToolGuide.module.scss](../src/components/site/ToolGuide.module.scss) 的说明容器与 wide Form 共享 1400px 外框和安全起点。宽屏步骤/限制为顶部对齐 55:45，两者可独立省略；空间不足堆叠，不增加实体卡片。其他阅读正文仍使用独立 readable 宽度。

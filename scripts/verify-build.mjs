@@ -1494,6 +1494,14 @@ if (!published.some(tool => tool.id === 'file-hash')) {
   assert(entry.includes(notice.toString('base64')) || (await Promise.all(notices.map(file => readFile(resolve(root, file))))).some(bytes => bytes.equals(notice)),
     'Published File Hash delivers its complete MIT and upstream notices');
 }
+if (!published.some(tool => tool.id === 'text-cleaner')) {
+  assert(!files.some(file => /TextCleaner|TextEditor|codemirror\.NOTICE/.test(file)), 'Draft editor entries and notices stay private');
+  const editorNotice = (await readFile('src/ui/text-editor/codemirror.NOTICE.txt')).toString('base64');
+  for (const file of files.filter(file => /\.(js|css)$/.test(file))) {
+    const text = await readFile(resolve(root, file), 'utf8');
+    assert(!/data-text-editor|data-text-workbench|cm-editor|cm-content|cm-gutters|--t4f-editor-font/.test(text) && !text.includes(editorNotice), `Draft CodeMirror runtime/styles leaked: ${file}`);
+  }
+}
 for (const marker of ['t4f-markdown-preview'])
   assert(!combinedCSS.includes(marker), `Draft-only content CSS leaked: ${marker}`);
 for (const marker of ['canvasButton', 'tallStage'])

@@ -1,0 +1,60 @@
+@layer t4f-tools {
+  .toolbar {
+    display: grid;
+    justify-items: start;
+    gap: var(--t4f-space-16);
+    min-width: 0;
+  }
+  .rules {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--t4f-space-24);
+    width: 100%;
+    padding: var(--t4f-space-16);
+    border-radius: var(--t4f-radius-lg);
+    background: var(--t4f-surface-panel);
+  }
+  .group {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: start;
+    gap: var(--t4f-space-12);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+  .group legend {
+    padding: 0;
+    margin-bottom: var(--t4f-space-8);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 28px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .radio input {
+    margin: 0;
+    accent-color: var(--t4f-accent);
+  }
+  .radio:has(:checked) {
+    color: var(--t4f-accent);
+  }
+  .icon {
+    min-width: 36px;
+    min-height: 36px;
+    padding: var(--t4f-space-8);
+    border: 0;
+    background: var(--t4f-surface);
+  }
+  .feedback {
+    margin: var(--t4f-space-8) 0 0;
+    color: var(--t4f-text-secondary);
+    font-size: 13px;
+  }
+}
