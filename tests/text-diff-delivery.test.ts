@@ -14,6 +14,7 @@ it('keeps the real diff worker and viewer behind the existing Draft loader, shar
   for (const region of ['cn', 'global'] as const) expect(toolBuildDefines(tools, region)['import.meta.env.T4F_TOOL_TEXT_DIFF_AVAILABLE']).toBe('false');
   expect(read('src/tools/loaders.ts')).toMatch(/T4F_TOOL_TEXT_DIFF_AVAILABLE[\s\S]*?import\('\.\/text-diff\/TextDiff'\)/);
   expect(read('src/tools/text-diff/comparison.ts')).toContain("new URL('./diff.worker.ts', import.meta.url)");
+  expect(read('astro.config.mjs')).toMatch(/include:\s*\[[^\]]*'diff'/); // Avoid a first-task DEV optimizer reload.
   expect(read('src/tools/text-diff/diff.worker.ts')).toContain("from './core'");
   expect(read('src/tools/text-diff/TextDiff.tsx')).toContain("from '../../ui/text-editor/TextEditor'");
   expect(read('src/tools/text-diff/TextDiff.tsx')).toContain('./diff.NOTICE.txt?url');

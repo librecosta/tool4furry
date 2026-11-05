@@ -20,7 +20,7 @@ export default defineConfig({
     // Discover lazy worker/editor dependencies before users begin work in DEV;
     // late optimizer discovery can reload a workspace or invalidate module URLs.
     // Prebundling does not preload it in the browser or change the production graph.
-    optimizeDeps: { include: ['hash-wasm', '@codemirror/state', '@codemirror/view', '@codemirror/commands'], exclude: ['@jsquash/avif/codec/enc/avif_enc.js', '@jsquash/avif/meta.js'] },
+    optimizeDeps: { include: ['hash-wasm', '@codemirror/state', '@codemirror/view', '@codemirror/commands', 'diff'], exclude: ['@jsquash/avif/codec/enc/avif_enc.js', '@jsquash/avif/meta.js'] },
     // Vite discovers dynamic imports before cross-module status checks fold away.
     // This is a projection of Registry metadata, never a second release setting.
     define: toolDefines,

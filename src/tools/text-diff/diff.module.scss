@@ -14,14 +14,14 @@
   .scroll { max-height: 420px; overflow: auto; overscroll-behavior: contain; }
   .scroll:focus-visible { outline: 2px solid var(--t4f-accent); outline-offset: -2px; }
   .rows { width: max-content; min-width: 100%; }
-  .row { --t4f-diff-row-surface: var(--t4f-input-surface); height: 28px; min-width: 100%; background: var(--t4f-diff-row-surface); font-family: var(--t4f-font-mono); font-size: 13px; line-height: 28px; }
-  .number { position: sticky; left: 0; background: var(--t4f-diff-row-surface); color: var(--t4f-text-secondary); text-align: right; padding-right: 12px; font-size: 11px; user-select: none; }
+  .row { --diff-row-surface: var(--t4f-input-surface); height: 28px; min-width: 100%; background: var(--diff-row-surface); font-family: var(--t4f-font-mono); font-size: 13px; line-height: 28px; }
+  .number { position: sticky; left: 0; background: var(--diff-row-surface); color: var(--t4f-text-secondary); text-align: right; padding-right: 12px; font-size: 11px; user-select: none; }
   .number:nth-child(2) { left: 48px; }
-  .sign { position: sticky; left: 96px; background: var(--t4f-diff-row-surface); text-align: center; font-weight: 600; user-select: none; }
+  .sign { position: sticky; left: 96px; background: var(--diff-row-surface); text-align: center; font-weight: 600; user-select: none; }
   .text { white-space: pre; tab-size: 4; padding-right: var(--t4f-space-16); }
   .blank .text::after { content: '↵'; color: var(--t4f-text-secondary); opacity: .6; }
-  .added { --t4f-diff-row-surface: color-mix(in srgb, var(--t4f-positive) 10%, var(--t4f-input-surface)); }
-  .removed { --t4f-diff-row-surface: color-mix(in srgb, var(--t4f-danger) 10%, var(--t4f-input-surface)); }
+  .added { --diff-row-surface: color-mix(in srgb, var(--t4f-positive) 10%, var(--t4f-input-surface)); }
+  .removed { --diff-row-surface: color-mix(in srgb, var(--t4f-danger) 10%, var(--t4f-input-surface)); }
   .added .sign { color: var(--t4f-positive); }
   .removed .sign { color: var(--t4f-danger); }
   .gap { height: 28px; padding: 0 12px; font-size: 12px; line-height: 28px; color: var(--t4f-text-secondary); background: var(--t4f-surface-panel); }
