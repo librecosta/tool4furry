@@ -2,6 +2,13 @@
 
 两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer 已获得 CN/Global Published 源码资格，其余 17 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（12 Published / 17 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
+## File Hash — V0.8-B6-D2 UI 精修（2026-11-05）
+
+- 算法改为两列原生 Radio 卡片，直接共享从 Image Converter 提取的 `src/ui/RadioChoices.module.scss`，保留其尺寸、主题、选中/禁用和 Reduced Motion 规则；不再使用 Select。右侧移除安全提示、重复算法/完成行与常驻完成统计，复制/TXT 操作后才反馈实际完成项数量。
+- 当前文件名独立一行，完整摘要与 38px 复制图标同排；SHA-512 自然换行。工具内复用 FieldFrame/useField/controls.input 组合「哈希比对（可选）」：仅有效完整摘要显示尾部 CheckCircle/XCircle；未完成、空值或不完整输入不显示结果图标，非法值保留 aria-invalid。仅屏幕阅读器可见的状态通过 polite live region 和 aria-describedby 提供语义，无可见的结果/长度说明段落。
+- `pnpm check`（452 文件、零错误/警告）及 4 文件 / 41 项 UI、Converter、共享样式与布局测试通过。真实 Chromium 156 在 CN 中文 Dark / 1280px、Global 英文 Light / 390px 验证默认 MD5、键盘 Radio、自动 SHA-256/SHA-512 重算、完整剪贴板、比对各状态、切换隔离和四份实际 TXT 下载，均与独立 Node crypto 摘要一致；38px 复制按钮未被长摘要挤出，输入尾部图标垂直居中，无横向溢出或冷启动 Hydration 报错。查看桌面/手机及 Converter 亮暗对照截图，原卡片几何和视觉语言保留。开发态跨模块移动 CSS 后重启服务以清除旧 SSR 类名缓存；稳定冷启动验收通过。
+- 未改 core、queue、engine、Worker、协议、依赖、SEO 或资格，仍为 Draft / 12 Published / 17 Draft。本轮不重复正式构建和大型文件压力；D1 的内核与资源证据仍适用。Firefox/Safari、真实移动设备和真实屏幕阅读器未实测；无障碍属性、隐藏状态文本及真实浏览器键盘操作已验证。
+
 ## File Hash — V0.8-B6-D1 多文件自动校验（2026-11-05）
 
 - 保持 CN/Global Draft，全站仍为 29 款（12 Published / 17 Draft），未改静态 SEO 长文和其他工具。默认 MD5，可选 SHA-1、SHA-256、SHA-512、CRC32；一次添加多文件并可追加，自动串行计算。左文件列表、右设置使用既有 Form 配方、FileTaskList 视觉资产和完整灰色设置面板；空态 960px，有文件 Wide Form，1050px 以下单列。

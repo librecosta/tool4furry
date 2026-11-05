@@ -1,0 +1,78 @@
+// Extracted unchanged from Image Converter's native format cards.
+@layer t4f-ui {
+  .group {
+    border-width: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .legend {
+    font-weight: 600;
+    margin-bottom: var(--t4f-space-8);
+  }
+
+  .choices {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--t4f-space-8);
+  }
+
+  .choice {
+    transition-property: opacity, color, background-color, border-color;
+    transition-timing-function: ease-out;
+    transition-duration: 280ms;
+    display: flex;
+    align-items: center;
+    gap: var(--t4f-space-8);
+    min-height: 44px;
+    padding: var(--t4f-space-8);
+    min-width: 0;
+    border-width: var(--t4f-control-border-width);
+    border-style: solid;
+    border-color: var(--t4f-control-border);
+    border-radius: var(--t4f-radius-md);
+    cursor: pointer;
+    background-color: var(--t4f-surface);
+    font-weight: 500;
+
+    &:where(:hover) {
+      background-color: var(--t4f-surface-hover);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: 0ms;
+    }
+  }
+
+  .choiceLabel {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .chosen {
+    background-color: var(--t4f-action-tint);
+    border-color: var(--t4f-support-lavender);
+
+    &:where(:hover) {
+      background-color: var(--t4f-surface-hover);
+    }
+  }
+
+  .disabled.disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .radio {
+    accent-color: var(--t4f-support-lavender);
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    flex-shrink: 0;
+
+    &:where(:disabled) {
+      accent-color: var(--t4f-accent);
+    }
+  }
+}

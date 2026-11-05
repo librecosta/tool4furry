@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { ArrowClockwiseIcon, CopyIcon, FileIcon, TrashIcon, XIcon } from '@phosphor-icons/react';
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
+import { ArrowClockwiseIcon, CheckCircleIcon, CopyIcon, FileIcon, TrashIcon, XCircleIcon, XIcon } from '@phosphor-icons/react';
 import type { ToolProps } from '../types';
 import { Button, IconButton } from '../../ui/Button';
 import { FileDropzone } from '../../ui/FileDropzone';
 import { FileTaskList } from '../../ui/FileTaskList';
-import { SelectField } from '../../ui/SelectField';
-import { TextField } from '../../ui/TextField';
+import { FieldFrame, useField } from '../../ui/Field';
 import { Tooltip } from '../../ui/Tooltip';
 import { Frame, tr, saveBlob } from '../general/ui';
 import { algorithms, comparison, checksumText, checksumDownloadName, type HashAlgorithm, type HashFailure } from './core';
@@ -13,6 +12,8 @@ import { HashQueue, type HashTask } from './queue';
 import notice from './hash-wasm.NOTICE.txt?url';
 import form from '../../workbench/form-tool-layout.module.scss';
 import row from '../../ui/FileTaskList.module.scss';
+import choices from '../../ui/RadioChoices.module.scss';
+import controls from '../../ui/controls.module.scss';
 import s from './hash.module.scss';
 
 const size = (bytes: number) => bytes < 1024 ? `${bytes} B` : bytes < 1024 ** 2 ? `${(bytes / 1024).toFixed(1)} KiB` : bytes < 1024 ** 3 ? `${(bytes / 1024 ** 2).toFixed(1)} MiB` : `${(bytes / 1024 ** 3).toFixed(1)} GiB`;
@@ -51,11 +52,31 @@ function HashTaskRow({ task, selected, locale, queue, copy }: { task: HashTask; 
     </div>
   </li>;
 }
+function HashComparison({ task, locale, onChange }: { task: HashTask; locale: ToolProps['locale']; onChange: (value: string) => void }) {
+  const label = tr(locale, '哈希比对（可选）', 'Compare hash (optional)');
+  const ids = useField({ label });
+  const state = comparison(task.digest, task.expected, task.algorithm);
+  const invalid = state === 'invalid';
+  const result = state === 'match' ? tr(locale, '一致', 'Match')
+    : state === 'mismatch' ? tr(locale, '不一致', 'Mismatch')
+    : invalid ? tr(locale, '哈希格式无效', 'Invalid hash format') : '';
+  return <FieldFrame label={label} ids={ids}>
+    <div className={s.compareControl}>
+      <input id={ids.id} className={[controls.input, s.compareInput, invalid && controls.invalid].filter(Boolean).join(' ')}
+        value={task.expected} onChange={event => onChange(event.target.value)} spellCheck={false} autoComplete="off"
+        aria-invalid={invalid || undefined} aria-describedby={result ? ids.hintId : undefined} />
+      {state === 'match' && <CheckCircleIcon data-hash-indicator="match" className={`${s.indicator} ${s.match}`} size={20} aria-hidden="true" />}
+      {state === 'mismatch' && <XCircleIcon data-hash-indicator="mismatch" className={`${s.indicator} ${s.error}`} size={20} aria-hidden="true" />}
+    </div>
+    <span id={ids.hintId} role="status" aria-live="polite" aria-atomic="true" className={s.srOnly} data-hash-comparison>{result}</span>
+  </FieldFrame>;
+}
 export default function FileHash({ locale }: ToolProps) {
   const [queue] = useState(() => new HashQueue());
   const state = useSyncExternalStore(queue.subscribe, queue.getSnapshot, queue.getSnapshot);
   const [message, setMessage] = useState('');
   const feedback = useRef(0);
+  const algorithmGroup = useId();
   useEffect(() => { queue.activate(); return () => { feedback.current++; queue.dispose(); }; }, [queue]);
   const resetFeedback = () => { feedback.current++; setMessage(''); };
   const copy = async (text: string, count?: number) => {
@@ -71,8 +92,6 @@ export default function FileHash({ locale }: ToolProps) {
   const checklist = () => checksumText(algorithm, completed.map(item => ({ name: item.file.name, digest: item.digest! })));
   const busy = items.some(item => ['queued','processing'].includes(item.status));
   const retry = items.some(item => ['error','cancelled'].includes(item.status));
-  const compare = selected ? comparison(selected.digest, selected.expected, algorithm) : 'empty';
-  const invalid = compare === 'invalid' ? tr(locale, `请输入 ${algorithms[algorithm].length} 位十六进制。`, `Enter ${algorithms[algorithm].length} hexadecimal characters.`) : undefined;
   return <Frame locale={locale}>
     <span hidden data-hash-license={notice} />
     <div data-file-hash data-form-layout={items.length ? 'split' : 'stack'} className={[form.container, form.fileForm, !!items.length && form.columns, !!items.length && form.expanded].filter(Boolean).join(' ')}>
@@ -90,21 +109,30 @@ export default function FileHash({ locale }: ToolProps) {
       </section>
       <aside data-form-settings className={form.settingsPanel} aria-label={tr(locale, '设置与操作', 'Settings and actions')}>
         <header className={form.settingsHeader}><h2 className={form.settingsTitle}>{tr(locale, '哈希设置', 'Hash settings')}</h2></header>
-        <SelectField label={tr(locale, '算法', 'Algorithm')} value={algorithm} options={Object.entries(algorithms).map(([value, item]) => ({value, label:item.label}))} onValueChange={value => { resetFeedback(); queue.setAlgorithm(value as HashAlgorithm); }} />
-        <p className={s.note}>{tr(locale, '安全性要求较高时，推荐 SHA-256。', 'Use SHA-256 for security-sensitive verification.')}</p>
-        {selected && <section className={s.details} aria-label={tr(locale, '文件校验详情', 'Verification details')}>
-          <div className={s.summary}><strong className={s.filename} title={selected.file.name}>{selected.file.name}</strong>
-            <Tooltip content={tr(locale, '复制哈希', 'Copy hash')}><IconButton variant="ghost" size="sm" label={tr(locale, '复制当前摘要', 'Copy current digest')} disabled={!selected.digest} onClick={() => { if (selected.digest) void copy(selected.digest); }}><CopyIcon size={18} aria-hidden="true" /></IconButton></Tooltip>
+        <fieldset className={choices.group}>
+          <legend className={choices.legend}>{tr(locale, '算法', 'Algorithm')}</legend>
+          <div className={choices.choices}>
+            {(Object.keys(algorithms) as HashAlgorithm[]).map(value => <label key={value} className={[choices.choice, algorithm === value && choices.chosen].filter(Boolean).join(' ')}>
+              <input type="radio" name={algorithmGroup} value={value} checked={algorithm === value} className={choices.radio} onChange={() => { resetFeedback(); queue.setAlgorithm(value); }} />
+              <span className={choices.choiceLabel}>{algorithms[value].label}</span>
+            </label>)}
           </div>
-          <span className={s.note}>{algorithms[algorithm].label} · {status(selected, locale)}</span>
-          {selected.digest && <code className={s.fullDigest} data-hash-digest>{selected.digest}</code>}
-          <TextField label={tr(locale, '预期哈希（可选）', 'Expected hash (optional)')} value={selected.expected} onChange={value => queue.setExpected(selected.id, value)} error={invalid} spellCheck={false} autoComplete="off" hint={compare === 'incomplete' ? tr(locale, `需要 ${algorithms[algorithm].length} 位十六进制。`, `${algorithms[algorithm].length} hexadecimal characters required.`) : undefined} />
-          <span role="status" data-hash-comparison className={compare === 'match' ? s.match : compare === 'mismatch' ? s.error : s.note}>{compare === 'match' ? tr(locale, '一致', 'Match') : compare === 'mismatch' ? tr(locale, '不一致', 'Mismatch') : compare === 'pending' ? tr(locale, '等待计算完成', 'Waiting for the result') : ''}</span>
+        </fieldset>
+        {selected && <section className={s.details} aria-label={tr(locale, '文件校验详情', 'Verification details')}>
+          <strong className={s.filename} title={selected.file.name}>{selected.file.name}</strong>
+          <div className={s.digestRow} data-hash-value>
+            <code className={s.fullDigest} data-hash-digest>{selected.digest}</code>
+            <Tooltip content={tr(locale, '复制哈希', 'Copy hash')}><IconButton variant="ghost" size="sm" className={s.copyDigest} label={tr(locale, '复制哈希', 'Copy hash')} disabled={!selected.digest} onClick={() => { if (selected.digest) void copy(selected.digest); }}><CopyIcon size={18} aria-hidden="true" /></IconButton></Tooltip>
+          </div>
+          <HashComparison task={selected} locale={locale} onChange={value => queue.setExpected(selected.id, value)} />
         </section>}
-        {!!items.length && <p className={s.note} data-completed-count>{tr(locale, `已完成 ${completed.length} / ${items.length} · 仅导出已完成结果`, `${completed.length} / ${items.length} completed · Exports include completed results only`)}</p>}
         <div className={form.actions} data-hash-actions>
           <Button className={`${form.action} ${s.action}`} variant="primary" disabled={!completed.length} onClick={() => void copy(checklist(), completed.length)}>{tr(locale, '复制结果', 'Copy results')}</Button>
-          <Button className={`${form.action} ${s.action} ${s.secondary}`} disabled={!completed.length} onClick={() => saveBlob(new Blob([checklist()], {type:'text/plain;charset=utf-8'}), checksumDownloadName(algorithm))}>{tr(locale, '下载 TXT', 'Download TXT')}</Button>
+          <Button className={`${form.action} ${s.action} ${s.secondary}`} disabled={!completed.length} onClick={() => {
+            saveBlob(new Blob([checklist()], {type:'text/plain;charset=utf-8'}), checksumDownloadName(algorithm));
+            feedback.current++;
+            setMessage(tr(locale, `已导出 ${completed.length} 个已完成结果`, `Exported ${completed.length} completed results`));
+          }}>{tr(locale, '下载 TXT', 'Download TXT')}</Button>
           <Button className={`${form.action} ${s.action} ${s.secondary}`} disabled={!items.length} onClick={() => { resetFeedback(); queue.clear(); }}>{tr(locale, '清空', 'Clear')}</Button>
         </div>
         {!!message && <span role="status">{message}</span>}

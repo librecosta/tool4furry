@@ -19,6 +19,12 @@
   .details { display: grid; min-width: 0; gap: 12px; }
   .filename { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
   .fullDigest { display: block; overflow-wrap: anywhere; font-size: 13px; line-height: 1.7; user-select: text; }
+  .digestRow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--t4f-space-8); align-items: start; min-width: 0; }
+  .copyDigest { min-width: 38px; min-height: 38px; width: 38px; height: 38px; padding: 0; border: 0; background-color: var(--t4f-surface-muted); }
+  .compareControl { position: relative; min-width: 0; }
+  .compareInput { padding-inline-end: 40px; }
+  .indicator { position: absolute; inset-inline-end: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+  .srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
   .match { color: var(--t4f-positive); font-size: 13px; }
   .error { color: var(--t4f-danger); font-size: 12px; overflow-wrap: anywhere; }
   .action { border: 0; }
