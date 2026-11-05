@@ -1362,10 +1362,15 @@ const combinedCSS = outputCSS.join('\n');
   assert.equal(scripts.some(js => js.includes('data-images-pdf-actions')), available,
     'Images to PDF implementation stays in its own lazy publication graph');
   const zipAvailable = published.some(tool => tool.id === 'zip-manager');
-  assert.equal(/\._?zipWorkspace[_-]/.test(combinedCSS), zipAvailable,
+  assert.equal(/\._?zipFileBrowser[_-]/.test(combinedCSS), zipAvailable,
     'ZIP Manager local CSS follows its Draft/Published qualification');
   assert.equal(scripts.some(js => js.includes('data-zip-manager')), zipAvailable,
     'ZIP Manager mode/tree implementation stays in its own lazy publication graph');
+  const renamerAvailable = published.some(tool => tool.id === 'batch-file-renamer');
+  assert.equal(/\._?renamePreview[_-]/.test(combinedCSS), renamerAvailable,
+    'Batch File Renamer preview CSS follows its own publication status');
+  assert.equal(scripts.some(js => js.includes('data-batch-renamer')), renamerAvailable,
+    'Sharing the Form recipe does not pull the Draft renamer into Published tools');
   if (zipAvailable) {
     const notice = await readFile('src/tools/general/fflate.NOTICE.txt');
     assert(notice.toString('utf8').replace(/\r\n/g, '\n').includes((await readFile('node_modules/fflate/LICENSE', 'utf8')).replace(/\r\n/g, '\n').trim()),

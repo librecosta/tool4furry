@@ -1,6 +1,6 @@
 # 工作区布局 · 当前说明
 
-公共工作区只提供布局，不持有工具参数、文件、输出或算法。当前唯一正式工具是 Form 模式 Image Converter；Canvas/Batch 等 Lab 用于验证公共能力，不是已发布产品。
+公共工作区只提供布局，不持有工具参数、文件、输出或算法。Image Converter、Batch File Renamer 与 ZIP Manager 是标准文件表单的当前实例；Canvas/Batch 等 Lab 用于验证公共能力，不是已发布产品。
 
 ## 导航与所有权
 
@@ -18,15 +18,23 @@ Canvas 后的 Footer 在正常文档流，可通过页面滚动到达；不能�
 
 ## Form、Batch、Custom
 
-默认 Form/Batch 自然文档滚动；Custom 不强加画布或两栏语义。现有尺寸和断点以 Shell/样式为准，不把一个工具的布局迁移强加给所有调用方。
+默认 Form/Batch 自然文档滚动。具备文件导入、文件列表及参数或操作面板时，默认使用左侧 File Workspace、右侧 Settings / Actions；不再为同类工具各写一套相反方向的双栏。Custom、Canvas、单一输入及其他不适用场景可以例外，但须有明确理由。本次不批量改造其他工具。
 
 `WorkbenchShell mode="form" formWidth="wide"` 显式启用居中 1400px 上限与原安全边距；带 right slot 时为自适应主列 + 350px 设置列，≤1050px 堆叠。
 
-工具需要「导入 → 设置 → 结果」时，可选择 [form-tool-layout.module.scss](../src/workbench/form-tool-layout.module.scss) 的 `container/columns/split/leading/aside/main` CSS Module 配方；紧凑态 960px，展开使用 wide 可用宽度。尾部弹性轨道吸收较高设置列，不强行拉伸导入/结果行。它只是布局配方，不是 Schema/文件框架；Converter 仅换 class，任务、参数、预览与结果不重挂载。
+默认复用 [form-tool-layout.module.scss](../src/workbench/form-tool-layout.module.scss)，布局不持有业务状态：
+
+- **Empty**：`container/fileForm` 保持 960px 紧凑上限；Expanded 上传区和实际参数/操作自然排布，不渲染巨大的空列表或固定高度空面板。
+- **Split**：有文件后附加 `columns/expanded`，使用 Wide 外框的可用宽度；左主列、右 350px 设置列，沿用同一间距和 1050px 断点。上传区改为 Compact，参数及文件 owner 不重挂载。
+- **Left File Workspace**：`fileWorkspace` 包含导入、追加/更换、统计、文件列表、预览及单项操作。列表按工具需要有界滚动；文件、Blob、URL 及任务仍归具体工具。
+- **Right Settings / Actions**：`settings` 包含实际参数、模式、状态与操作；`actions/action` 提供三个等宽、44px 高的紧凑操作位，颜色与状态由现有 Button 和工具局部样式管理。ZIP Manager 没有创建参数，右侧只保留模式与真实操作，不制造填空控件。
+- **Responsive Stack**：≤1050px 使用同一个 DOM 的单列，顺序为导入、文件/预览、参数和操作。键盘及屏幕阅读器顺序与此一致，不通过 matchMedia 复制或搬移有状态组件。
+
+Image Converter 已有的 `container/columns/split/leading/aside/main` 配方继续保留，导入与结果合成左列、设置在右列；尾部弹性轨道吸收较高设置列，不强行拉伸导入/结果行。Batch File Renamer 与 ZIP Manager 使用完整 `fileWorkspace/settings` 两个插槽；共享层只扩展必要布局类，不建立 Schema、FormEngine、Context 或文件框架。
 
 ## 静态说明与 FAQ
 
-[ToolGuide](../src/components/site/ToolGuide.astro) / [site.ts](../src/styles/site.ts) 的说明容器与 wide Form 共享 1400px 外框和安全起点。宽屏步骤/限制为顶部对齐 55:45，两者可独立省略；空间不足堆叠，不增加实体卡片。其他阅读正文仍使用独立 readable 宽度。
+[ToolGuide](../src/components/site/ToolGuide.astro) / [ToolGuide.module.scss](../src/components/site/ToolGuide.module.scss) 的说明容器与 wide Form 共享 1400px 外框和安全起点。宽屏步骤/限制为顶部对齐 55:45，两者可独立省略；空间不足堆叠，不增加实体卡片。其他阅读正文仍使用独立 readable 宽度。
 
 FAQ 标题左对齐，每个原生 details/summary 占整行，整行可点击/键盘开合，Chevron 靠右；答案文字单独限制阅读宽度，不把 FAQ 外框缩成居中窄栏。布局不改变实际业务或静态 SEO 文本。
 
@@ -35,6 +43,8 @@ FAQ 标题左对齐，每个原生 details/summary 占整行，整行可点击/�
 [FileTaskList](../src/ui/FileTaskList.tsx) 仅持展示数据/回调/媒体槽，紧凑两行与真实进度，不持有 File/Blob/URL；[FilePreviewDialog](../src/ui/FilePreviewDialog.tsx) 负责模态、关闭、焦点、全屏/最大化及生命周期，不处理图像变换。图片 Viewport 由工具装配，URL owner 与列表共享时不能过早释放。接口见 [UI 原语](ui-primitives.md) / [文件交互](file-interactions.md)，安全约束见 [图片处理](../contracts/image-processing.md)。
 
 验证入口：[workbench.test.tsx](../tests/workbench.test.tsx)、[tool-page-frame.test.tsx](../tests/tool-page-frame.test.tsx)、[file-preview-dialog.test.tsx](../tests/file-preview-dialog.test.tsx)、[image-preview.test.tsx](../tests/image-preview.test.tsx) 及 Converter UI 测试。视口模拟不能替代移动真机。
+
+文件表单契约另见 [共享布局测试](../tests/form-file-layout.test.ts)、[Renamer UI](../tests/batch-file-renamer-ui.test.tsx)、[真实重命名 ZIP](../tests/batch-file-renamer-core.test.ts) 和 [ZIP Manager UI](../tests/zip-manager-ui.test.tsx)。B5-A 在 Chromium 156 中复核 CN 中文 Dark / 1280px、Global 英文 Light / 390px，验证实时预览、目录选择、模式隔离、取消、输入失效及跨宽度状态保留；14 次实际下载由 Python zipfile 独立比对路径、CRC 和原始字节。Image Converter 原布局及状态不变，`pnpm check`、定向测试、CN/Global 构建与资源守卫通过，ZIP Manager 正式预览通过。Firefox、Safari 和真实移动设备未测。
 
 ## 历史
 

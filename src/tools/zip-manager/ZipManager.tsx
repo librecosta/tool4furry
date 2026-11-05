@@ -12,6 +12,7 @@ import { ArchiveTree, zipSize } from './ArchiveTree';
 import { checkFiles, filePath, folderStem, selectPaths, zipTree } from './tree';
 import { zipDownloadName } from './download-name';
 import s from './zip.module.scss';
+import form from '../../workbench/form-tool-layout.module.scss';
 
 type Mode = 'create' | 'open';
 export default function ZipManager({ locale }: ToolProps) {
@@ -30,6 +31,7 @@ export default function ZipManager({ locale }: ToolProps) {
   const openTree = useMemo(() => zipTree(items ?? []), [items]);
   const total = files.reduce((sum, file) => sum + file.size, 0);
   const selectedCount = paths.filter(path => selected.has(path)).length;
+  const hasInput = mode === 'create' ? !!files.length : !!archive;
   // A cancelled native operation retains the shared slot until it actually settles.
   const perform = async <T,>(job: ReturnType<typeof useJob<T>>, work: (signal: AbortSignal) => Promise<T>) => {
     if (active.current) return;
@@ -69,52 +71,60 @@ export default function ZipManager({ locale }: ToolProps) {
   const issueMessages = { type: tr(locale, '不支持的文件类型', 'Unsupported file type'), size: tr(locale, '文件过大', 'File is too large'), count: tr(locale, '请一次选择一个 ZIP', 'Select one ZIP at a time') };
   return <Frame locale={locale}>
     <span hidden data-zip-license={zipNotice} />
-    <div className={s.modes} role="group" aria-label={tr(locale, 'ZIP 模式', 'ZIP mode')}>
-      {(['create', 'open'] as const).map(value => <Button key={value} className={s.mode} disabled={busy} aria-pressed={mode === value} onClick={() => { if (!active.current) setMode(value); }}>{value === 'create' ? tr(locale, '创建 ZIP', 'Create ZIP') : tr(locale, '打开 ZIP', 'Open ZIP')}</Button>)}
-    </div>
-    <div className={s.zipWorkspace} data-zip-manager={mode}>
-      <div className={s.intake}>
-        {mode === 'create' ? <>
-          <FileDropzone label={files.length ? tr(locale, '添加文件', 'Add files') : tr(locale, '选择文件或拖放到这里', 'Choose files or drop them here')} multiple disabled={busy} appearance={files.length ? 'compact' : 'expanded'} issueMessages={issueMessages} onFilesReceived={add} />
-          <input hidden multiple type="file" aria-label={tr(locale, '添加文件夹', 'Add folder')} disabled={busy} ref={element => {folderInput.current = element; element?.setAttribute('webkitdirectory', '');}} onChange={event => {add(Array.from(event.currentTarget.files ?? [])); event.currentTarget.value = '';}} />
-          <Button className={s.lightButton} disabled={busy} onClick={() => folderInput.current?.click()}><FolderPlusIcon size={20} aria-hidden="true" />{tr(locale, '添加文件夹', 'Add folder')}</Button>
-          {!!files.length && <p className={s.summary}>{files.length} {tr(locale, '个文件', 'files')} · {zipSize(total)}</p>}
-        </> : <>
-          <FileDropzone label={archive ? tr(locale, '更换 ZIP', 'Replace ZIP') : tr(locale, '选择 ZIP 或拖放到这里', 'Choose a ZIP or drop it here')} accept=".zip,application/zip" disabled={busy} appearance={archive ? 'compact' : 'expanded'} issueMessages={issueMessages} onFilesReceived={load} />
-          {archive && <p className={s.summary}><span title={archive.name}>{archive.name}</span> · {paths.length} {tr(locale, '个文件', 'files')} · {zipSize(archive.size)}</p>}
-        </>}
-      </div>
-      <section className={s.browser} aria-label={tr(locale, '文件列表', 'File list')}>
-        <div className={s.listHeader}><h2 className={s.listTitle}>{mode === 'create' ? tr(locale, '待打包文件', 'Files to archive') : tr(locale, 'ZIP 内容', 'ZIP contents')}{mode === 'open' && archive && <span className={s.note} role="status">{tr(locale, `已选 ${selectedCount} / ${paths.length}`, `Selected ${selectedCount} / ${paths.length}`)}</span>}</h2>{mode === 'open' && <div className={s.selection}><Button className={s.lightButton} disabled={busy || !paths.length} onClick={() => select(paths, true)}>{tr(locale, '全选', 'Select all')}</Button><Button className={s.lightButton} disabled={busy || !selected.size} onClick={() => select(paths, false)}>{tr(locale, '取消全选', 'Deselect all')}</Button></div>}</div>
-        <div className={s.list}>
-          {(mode === 'create' ? files.length : paths.length) ? <ArchiveTree nodes={mode === 'create' ? createTree : openTree} locale={locale} disabled={busy} folds={mode === 'create' ? createFolds : openFolds} onFold={toggleFold}
-            selected={mode === 'open' ? selected : undefined} onSelect={mode === 'open' ? select : undefined}
-            onRemove={mode === 'create' ? path => {
-              if (active.current) return;
-              createJob.invalidate(); setFiles(files.filter(file => filePath(file) !== path));
-            } : undefined}
-            onDownload={mode === 'open' ? path => {
-              if (!archive || !items) return;
-              exportJob.setError(undefined);
-              void perform(singleJob, async signal => {
-                const [entry] = await extractZip(archive, items, [path], signal);
-                if (!signal.aborted) saveBlob(entry.blob, entry.name.split('/').at(-1)!);
-              });
-            } : undefined} /> : <p className={s.empty}>{mode === 'create' ? tr(locale, '添加文件后在这里查看目录。', 'Add files to see their folders here.') : tr(locale, '打开 ZIP 后在这里浏览内容。', 'Open a ZIP to browse its contents here.')}</p>}
+    <div data-zip-manager={mode} data-form-layout={hasInput ? 'split' : 'stack'} className={[form.container, form.fileForm, hasInput && form.columns, hasInput && form.expanded].filter(Boolean).join(' ')}>
+      <section data-file-workspace className={form.fileWorkspace} aria-label={tr(locale, '文件工作区', 'File workspace')}>
+        <div className={s.intake}>
+          {mode === 'create' ? <>
+            <FileDropzone label={files.length ? tr(locale, '添加文件', 'Add files') : tr(locale, '选择文件或拖放到这里', 'Choose files or drop them here')} multiple disabled={busy} appearance={files.length ? 'compact' : 'expanded'} issueMessages={issueMessages} onFilesReceived={add} />
+            <input hidden multiple type="file" aria-label={tr(locale, '添加文件夹', 'Add folder')} disabled={busy} ref={element => {folderInput.current = element; element?.setAttribute('webkitdirectory', '');}} onChange={event => {add(Array.from(event.currentTarget.files ?? [])); event.currentTarget.value = '';}} />
+            <Button className={s.lightButton} disabled={busy} onClick={() => folderInput.current?.click()}><FolderPlusIcon size={20} aria-hidden="true" />{tr(locale, '添加文件夹', 'Add folder')}</Button>
+            {!!files.length && <p className={s.summary}>{files.length} {tr(locale, '个文件', 'files')} · {zipSize(total)}</p>}
+          </> : <>
+            <FileDropzone label={archive ? tr(locale, '更换 ZIP', 'Replace ZIP') : tr(locale, '选择 ZIP 或拖放到这里', 'Choose a ZIP or drop it here')} accept=".zip,application/zip" disabled={busy} appearance={archive ? 'compact' : 'expanded'} issueMessages={issueMessages} onFilesReceived={load} />
+            {archive && <p className={s.summary}><span title={archive.name}>{archive.name}</span> · {paths.length} {tr(locale, '个文件', 'files')} · {zipSize(archive.size)}</p>}
+          </>}
         </div>
+        {hasInput && <section className={s.zipFileBrowser} aria-label={tr(locale, '文件列表', 'File list')}>
+          <h2 className={s.listTitle}>{mode === 'create' ? tr(locale, '待打包文件', 'Files to archive') : tr(locale, 'ZIP 内容', 'ZIP contents')}</h2>
+          <div className={s.list}>
+            {(mode === 'create' ? files.length : paths.length) ? <ArchiveTree nodes={mode === 'create' ? createTree : openTree} locale={locale} disabled={busy} folds={mode === 'create' ? createFolds : openFolds} onFold={toggleFold}
+              selected={mode === 'open' ? selected : undefined} onSelect={mode === 'open' ? select : undefined}
+              onRemove={mode === 'create' ? path => {
+                if (active.current) return;
+                createJob.invalidate(); setFiles(files.filter(file => filePath(file) !== path));
+              } : undefined}
+              onDownload={mode === 'open' ? path => {
+                if (!archive || !items) return;
+                exportJob.setError(undefined);
+                void perform(singleJob, async signal => {
+                  const [entry] = await extractZip(archive, items, [path], signal);
+                  if (!signal.aborted) saveBlob(entry.blob, entry.name.split('/').at(-1)!);
+                });
+              } : undefined} /> : <p className={s.empty}>{mode === 'create' ? tr(locale, '添加文件后在这里查看目录。', 'Add files to see their folders here.') : tr(locale, '打开 ZIP 后在这里浏览内容。', 'Open a ZIP to browse its contents here.')}</p>}
+          </div>
+        </section>}
       </section>
-      {(busy || error) && <div className={s.feedback}><ErrorText error={error} />{busy && <><p className={s.note} role="status">{tr(locale, '正在处理 ZIP…', 'Processing ZIP…')}</p><Button className={s.lightButton} size="sm" onClick={() => {if (createJob.busy) createJob.invalidate(); if (inspectJob.busy) inspectJob.invalidate(); if (exportJob.busy) exportJob.invalidate(); if (singleJob.busy) singleJob.invalidate();}}>{tr(locale, '取消处理', 'Cancel')}</Button></>}</div>}
-      <div className={s.actions} data-zip-actions>
-        <Button className={s.action} variant="primary" loading={mode === 'create' ? createJob.busy : exportJob.busy} disabled={busy || (mode === 'create' ? !files.length : !archive || !selected.size)} onClick={() => {
-          if (mode === 'create') void perform(createJob, signal => createZip(files.map(file => ({name: filePath(file), blob: file})), signal));
-          else if (archive && items) {
-            singleJob.setError(undefined);
-            void perform(exportJob, async signal => createZip(await extractZip(archive, items, paths.filter(path => selected.has(path)), signal), signal));
-          }
-        }}>{mode === 'create' ? tr(locale, '创建 ZIP', 'Create ZIP') : tr(locale, '导出所选', 'Export selected')}</Button>
-        <Button className={`${s.action} ${s.secondary}`} disabled={busy || !result} onClick={() => {if (!active.current && result) saveBlob(result, zipDownloadName(mode === 'create' ? folderStem(files) : archive?.name ?? 'archive', mode === 'open'));}}>{tr(locale, '下载', 'Download')}</Button>
-        <Button className={`${s.action} ${s.secondary}`} onClick={clear}>{tr(locale, '清空', 'Clear')}</Button>
-      </div>
+      <aside data-form-settings className={form.settings} aria-label={tr(locale, '设置与操作', 'Settings and actions')}>
+        <div className={s.modes} role="group" aria-label={tr(locale, 'ZIP 模式', 'ZIP mode')}>
+          {(['create', 'open'] as const).map(value => <Button key={value} className={s.mode} disabled={busy} aria-pressed={mode === value} onClick={() => { if (!active.current) setMode(value); }}>{value === 'create' ? tr(locale, '创建 ZIP', 'Create ZIP') : tr(locale, '打开 ZIP', 'Open ZIP')}</Button>)}
+        </div>
+        {mode === 'open' && archive && <div className={s.selection}>
+          <p className={s.note} role="status">{tr(locale, `已选 ${selectedCount} / ${paths.length}`, `Selected ${selectedCount} / ${paths.length}`)}</p>
+          <div className={s.modes}><Button className={s.lightButton} disabled={busy || !paths.length} onClick={() => select(paths, true)}>{tr(locale, '全选', 'Select all')}</Button><Button className={s.lightButton} disabled={busy || !selected.size} onClick={() => select(paths, false)}>{tr(locale, '取消全选', 'Deselect all')}</Button></div>
+        </div>}
+        {(busy || error) && <div className={s.feedback}><ErrorText error={error} />{busy && <><p className={s.note} role="status">{tr(locale, '正在处理 ZIP…', 'Processing ZIP…')}</p><Button className={s.lightButton} size="sm" onClick={() => {if (createJob.busy) createJob.invalidate(); if (inspectJob.busy) inspectJob.invalidate(); if (exportJob.busy) exportJob.invalidate(); if (singleJob.busy) singleJob.invalidate();}}>{tr(locale, '取消处理', 'Cancel')}</Button></>}</div>}
+        <div className={form.actions} data-zip-actions>
+          <Button className={`${form.action} ${s.action}`} variant="primary" loading={mode === 'create' ? createJob.busy : exportJob.busy} disabled={busy || (mode === 'create' ? !files.length : !archive || !selected.size)} onClick={() => {
+            if (mode === 'create') void perform(createJob, signal => createZip(files.map(file => ({name: filePath(file), blob: file})), signal));
+            else if (archive && items) {
+              singleJob.setError(undefined);
+              void perform(exportJob, async signal => createZip(await extractZip(archive, items, paths.filter(path => selected.has(path)), signal), signal));
+            }
+          }}>{mode === 'create' ? tr(locale, '创建 ZIP', 'Create ZIP') : tr(locale, '导出所选', 'Export selected')}</Button>
+          <Button className={`${form.action} ${s.action} ${s.secondary}`} disabled={busy || !result} onClick={() => {if (!active.current && result) saveBlob(result, zipDownloadName(mode === 'create' ? folderStem(files) : archive?.name ?? 'archive', mode === 'open'));}}>{tr(locale, '下载', 'Download')}</Button>
+          <Button className={`${form.action} ${s.action} ${s.secondary}`} onClick={clear}>{tr(locale, '清空', 'Clear')}</Button>
+        </div>
+      </aside>
     </div>
   </Frame>;
 }

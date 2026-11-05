@@ -67,8 +67,32 @@ it.each(['zh', 'en'] as const)('omits naming fields, empty statistics and repeat
   expect(source.closest('p')!.textContent).toBe(`source.ZIP · 3 ${locale === 'zh' ? '个文件' : 'files'} · 7 B`);
   const selected = screen.getByRole('status');
   expect(selected.textContent).toBe(locale === 'zh' ? '已选 3 / 3' : 'Selected 3 / 3');
-  expect(selected.closest('section')).toBe(screen.getByRole('region',{name:locale === 'zh' ? '文件列表' : 'File list'}));
+  expect(selected.closest('aside')).toBe(screen.getByRole('complementary',{name:locale === 'zh' ? '设置与操作' : 'Settings and actions'}));
   checkQuietWorkspace();
+});
+
+it('keeps file content before the settings DOM, expands only with input, and preserves both slots across responsive updates', async () => {
+  const resize = setViewport();
+  setup();
+  const root = document.querySelector('[data-zip-manager]')!;
+  const left = screen.getByRole('region', {name:'File workspace'});
+  const right = screen.getByRole('complementary', {name:'Settings and actions'});
+  expect(root.getAttribute('data-form-layout')).toBe('stack');
+  expect(screen.queryByRole('region', {name:'File list'})).toBeNull();
+  expect(right.contains(screen.getByRole('group', {name:'ZIP mode'}))).toBe(true);
+  expect(right.contains(document.querySelector('[data-zip-actions]'))).toBe(true);
+  expect(left.compareDocumentPosition(right) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  add(['folder/a.txt']); await generate();
+  expect(root.getAttribute('data-form-layout')).toBe('split');
+  expect(left.contains(screen.getByRole('region', {name:'File list'}))).toBe(true);
+  act(() => resize(true)); act(() => resize(false));
+  expect(screen.getByRole('region', {name:'File workspace'})).toBe(left);
+  expect(screen.getByRole('complementary', {name:'Settings and actions'})).toBe(right);
+  expect(download()).toHaveProperty('disabled', false);
+  await open();
+  expect(left.contains(screen.getByRole('checkbox', {name:'Select project/'}))).toBe(true);
+  expect(right.contains(button('Select all'))).toBe(true);
+  fireEvent.click(mode('Create ZIP')); expect(download()).toHaveProperty('disabled', false);
 });
 
 it('uses archive for mixed/loose inputs and the source ZIP stem for selected downloads', async()=>{

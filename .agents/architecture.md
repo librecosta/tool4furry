@@ -1,6 +1,6 @@
 # 当前架构
 
-Tool4Furry 是单项目的浏览器工具站：Astro SSG + 必要的 React Islands + TypeScript；V0.9 已将 Astro、React、29 款工具和 DEV Lab 全部迁至 SCSS Modules / CSS Variables，并移除 StyleX 的依赖、编译与兼容链路。样式边界见 [V0.9 基础](../docs/styling-foundation-v0.9.md)。Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata 与 PDF Merge 是当前八款 Published 工具，均登记 CN/Global，两个地区均未部署。漫画整理的实际验收缺口见 [当前模块说明](../docs/image-basics.md#b2-d1--seo-与-beta-审计进展)。来源优先级见 [AGENTS](../AGENTS.md#sources-of-truth)。
+Tool4Furry 是单项目的浏览器工具站：Astro SSG + 必要的 React Islands + TypeScript；V0.9 已将 Astro、React、29 款工具和 DEV Lab 全部迁至 SCSS Modules / CSS Variables，并移除 StyleX 的依赖、编译与兼容链路。样式边界见 [V0.9 基础](../docs/styling-foundation-v0.9.md)。Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF 与 ZIP Manager 是当前十一款 Published 工具，均登记 CN/Global，两个地区均未部署。漫画整理的实际验收缺口见 [当前模块说明](../docs/image-basics.md#b2-d1--seo-与-beta-审计进展)。来源优先级见 [AGENTS](../AGENTS.md#sources-of-truth)。
 
 ## 静态站点层
 
@@ -31,7 +31,8 @@ Astro 工具路由 + 静态 Intro / Guide
 - [ToolRuntime](../src/tools/ToolRuntime.tsx) 负责已知工具的加载边界、Provider 和导航装配；Astro 不能给动态组件标签临时附加 hydration 指令。
 - `src/ui/` 是受控 UI 原语，业务数据属于调用方；UiProvider 只放在固定 ToolRuntime / LabRuntime 根，不放进全站 SiteLayout。
 - `src/workbench/` 只负责可选插槽、布局、面板可见性和焦点，不导入具体工具编码器，不持有文件、参数、任务或全局业务 Store。
-- 工具选择 canvas/form/batch/custom；Canvas 是独立全视口与覆盖层，Form/Batch 是自然流。共享可选布局不会改变未 opt-in 的工具。详见 [工作区说明](../docs/workbench-appearance.md)。
+- 工具选择 canvas/form/batch/custom；Canvas 是独立全视口与覆盖层，Form/Batch 是自然流。具备文件导入、列表与参数/操作的 Form/Batch 默认采用左文件与预览、右设置与操作；Canvas、单一输入及不适用工具须有明确的例外理由。本次不批量改变其他工具的既有布局。
+- 标准文件表单的宽度、列宽、间距和响应式属于 Workbench，复用 [form-tool-layout.module.scss](../src/workbench/form-tool-layout.module.scss)：Wide 外框 1400px、空态紧凑、输入后主列 + 350px 设置列、≤1050px 按文件在前的 DOM 顺序堆叠。工具拥有文件、参数、任务、结果与资源释放；CSS 切换不重建这些状态。不复制双栏断点，不新增文件 Store/Context；没有参数时右侧只保留真实模式与操作。当前实例和类名见 [工作区说明](../docs/workbench-appearance.md)。
 
 ## Image Converter 分层
 

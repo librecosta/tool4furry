@@ -253,6 +253,7 @@ it('registers the third bilingual Published tool in both regions', () => {
       'pdf-merge',
       'pdf-split',
       'images-to-pdf',
+      'zip-manager',
     ]);
     expect(getAvailableTools(region, true)).toContain(tool);
     for (const locale of ['zh', 'en'] as const) {
