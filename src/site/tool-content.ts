@@ -1,4 +1,5 @@
 import { generalToolboxContent } from './general-toolbox-content';
+import { getCatalogEntries } from './catalog';
 import { generalToolboxA2Content } from './general-toolbox-a2-content';
 import { defaultLocale, locales, type Locale } from '../i18n/locale';
 import type { Region } from '../config/region';
@@ -83,4 +84,16 @@ export function getRelatedTools(
   return getAvailableTools(region, dev, registry)
     .filter((entry) => entry.id !== tool.id && entry.group === tool.group)
     .slice(0, 3);
+}
+
+/** Catalog presentation of the existing related selection; no catalog-only fixtures. */
+export function getRelatedCatalogEntries(
+  tool: ToolDefinition, region: Region, registry = tools, dev = false,
+  locale: Locale = defaultLocale(region),
+) {
+  const entries = new Map(getCatalogEntries(region, registry, dev, locale).map(entry => [entry.id, entry]));
+  return getRelatedTools(tool, region, registry, dev).flatMap(related => {
+    const entry = entries.get(related.id);
+    return entry ? [entry] : [];
+  });
 }

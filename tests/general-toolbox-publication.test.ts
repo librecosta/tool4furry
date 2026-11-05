@@ -4,20 +4,21 @@ import { toolPageContents, getToolPageContent } from '../src/site/tool-content';
 import { toolLoaders } from '../src/tools/loaders';
 import { groups } from '../src/site/taxonomy';
 import { draftIds, generalToolboxIds, firstBatchIds, secondBatchIds } from './fixtures/general-toolbox';
-it('keeps both implementation batches intact with eleven Published and eighteen Draft tools', () => {
+it('keeps both implementation batches intact with twelve Published and seventeen Draft tools', () => {
   expect(tools).toHaveLength(29);
   expect(firstBatchIds).toHaveLength(15);
   expect(firstBatchIds).toContain('pdf-merge');
   expect(firstBatchIds).toContain('pdf-split');
   expect(firstBatchIds).toContain('images-to-pdf');
   expect(firstBatchIds).toContain('zip-manager');
+  expect(firstBatchIds).toContain('batch-file-renamer');
   expect(secondBatchIds).toHaveLength(7);
-  expect(draftIds).toHaveLength(18);
+  expect(draftIds).toHaveLength(17);
   expect(tools.filter((t) => t.status === 'draft').map((t) => t.id)).toEqual(
     draftIds,
   );
   for (const region of ['cn', 'global'] as const) {
-    expect(getAvailableTools(region, false)).toHaveLength(11);
+    expect(getAvailableTools(region, false)).toHaveLength(12);
     expect(getAvailableTools(region, true)).toHaveLength(29);
     for (const id of generalToolboxIds) {
       const tool = tools.find((t) => t.id === id)!;
@@ -36,7 +37,7 @@ it('keeps both implementation batches intact with eleven Published and eighteen 
         expect(c.limitations?.length).toBeGreaterThan(0);
         if (locale === 'en')
           expect(JSON.stringify(c)).not.toMatch(/[\u4e00-\u9fff]/);
-        if (id === 'pdf-merge' || id === 'pdf-split' || id === 'images-to-pdf' || id === 'zip-manager') {
+        if (id === 'pdf-merge' || id === 'pdf-split' || id === 'images-to-pdf' || id === 'zip-manager' || id === 'batch-file-renamer') {
           expect(tool.status).toBe('published');
           expect(getToolPageContent(tool, region, toolPageContents, false, locale)).toBe(c);
           expect(c.steps).toHaveLength(4);
@@ -137,4 +138,18 @@ it('publishes ZIP Manager static SEO with accurate packaging, extraction and res
   }
   expect(toolPageContents['zip-manager'].zh!.limitations).toContain('批量提取会将所选文件重新打包为 ZIP，仍需满足创建 ZIP 的资源限制；不会直接写入本地文件夹。');
   expect(toolPageContents['zip-manager'].en!.faq![1].answer).toContain('smaller output is not guaranteed');
+});
+
+it('publishes the Visual Filename Composer SEO without advertising removed or direct-disk rename operations', () => {
+  const tool=tools.find(tool=>tool.id==='batch-file-renamer')!;
+  expect(tool).toMatchObject({id:'batch-file-renamer',slug:'batch-file-renamer',category:'files',group:'file-operations',roles:['studio','operations'],mode:'form',status:'published',regions:['cn','global']});
+  const expected={zh:{title:'批量文件重命名在线工具 - 实时预览与序号命名 | Tool4Furry',description:'在浏览器本地批量重命名文件。直接设置统一名称、开启或关闭序号，实时预览新文件名。支持自定义编号与连接符，打包为 ZIP 下载，无需上传文件。',h1:'批量文件重命名',intro:'轻松整理一批文件的名称。编辑统一名称或序号，实时检查结果，再打包下载。'},en:{title:'Batch Rename Files Online - Preview & Number | Tool4Furry',description:'Rename multiple files in your browser. Enter an optional shared name, add sequence numbers, preview every result, and download a ZIP without uploading files.',h1:'Batch File Renamer',intro:'Give your files consistent names. Set an optional name and numbering pattern, preview the results, and download them together.'}};
+  for(const region of ['cn','global'] as const) for(const locale of ['zh','en'] as const){
+    const content=getToolPageContent(tool,region,toolPageContents,false,locale);
+    expect(content).toMatchObject(expected[locale]); expect(content.title.match(/Tool4Furry/g)).toHaveLength(1);
+    expect(content.steps).toHaveLength(4); expect(content.limitations).toHaveLength(6); expect(content.faq).toHaveLength(4);
+    expect(content.limitations?.join(' ')).toMatch(/100.*32 MiB.*96 MiB/);
+    expect(JSON.stringify(content)).not.toMatch(/前缀|后缀|查找|替换|prefix|suffix|find\s*\/\s*replace/i);
+    if(locale==='en') expect(JSON.stringify(content)).not.toMatch(/\p{Script=Han}/u);
+  }
 });

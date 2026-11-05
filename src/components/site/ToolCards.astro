@@ -4,10 +4,10 @@ import type { CatalogDisplayEntry } from '../../site/catalog-fixture';
 import type { Locale } from '../../i18n/locale';
 import { catalogCopy } from '../../site/catalog-copy';
 import FeaturedToolIcon from '../home/FeaturedToolIcon.astro';
-interface Props { entries: readonly CatalogDisplayEntry[]; locale: Locale }
-const { entries, locale } = Astro.props;
+interface Props { entries: readonly CatalogDisplayEntry[]; locale: Locale; layout?: 'catalog' | 'related' }
+const { entries, locale, layout = 'catalog' } = Astro.props;
 ---
-<ul data-catalog-cards class={styles.cards}>{entries.map(tool => { const Tag = tool.fixture ? 'div' : 'a'; return <li data-catalog-item data-catalog-fixture={tool.fixture || undefined} data-id={tool.id} data-category={tool.categoryId} data-group={tool.groupId} data-roles={tool.roles.join(' ')} data-search={[tool.title, tool.summary, tool.description, tool.category, tool.group].filter(Boolean).join(' ')}>
+<ul data-catalog-cards class:list={[styles.cards, layout === 'related' && styles.related]}>{entries.map(tool => { const Tag = tool.fixture ? 'div' : 'a'; return <li data-catalog-item data-catalog-fixture={tool.fixture || undefined} data-id={tool.id} data-category={tool.categoryId} data-group={tool.groupId} data-roles={tool.roles.join(' ')} data-search={[tool.title, tool.summary, tool.description, tool.category, tool.group].filter(Boolean).join(' ')}>
   <Tag href={tool.fixture ? undefined : tool.href} data-tool-card={tool.fixture ? undefined : tool.id} class:list={[styles.card, tool.fixture && styles.fixtureCard]}>
     <span class={styles.cardTop}><FeaturedToolIcon id={tool.id} size={40} />{(tool.fixture || tool.status === 'draft') && <span class={styles.muted}>{tool.fixture ? catalogCopy[locale].fixtureBadge : catalogCopy[locale].draft}</span>}</span>
     <h3 class={styles.cardTitle}>{tool.title}</h3>

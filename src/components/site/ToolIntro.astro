@@ -1,10 +1,11 @@
 ---
 import styles from './ToolIntro.module.scss';
 import type { ToolPageContent } from '../../site/tool-content';
-interface Props { content: ToolPageContent }
-const { content } = Astro.props;
+import FeaturedToolIcon from '../home/FeaturedToolIcon.astro';
+interface Props { content: ToolPageContent; toolId: string }
+const { content, toolId } = Astro.props;
 ---
 <section data-tool-intro aria-labelledby="tool-heading" class:list={[styles.fluid, styles.toolIntro]}>
-  <h1 id="tool-heading" class={styles.toolTitle}>{content.h1}</h1>
+  <div data-tool-title class={styles.titleRow}><span aria-hidden="true" class={styles.titleIcon}><FeaturedToolIcon id={toolId} size={40} /></span><h1 id="tool-heading" class={styles.toolTitle}>{content.h1}</h1></div>
   <p class={styles.toolDescription}>{content.intro}</p>
 </section>

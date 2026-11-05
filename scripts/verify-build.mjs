@@ -43,6 +43,7 @@ const { imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent
 const { generalToolboxContent } = await staticData('src/site/general-toolbox-content.ts');
 const { tools } = await staticData('src/tools/registry.ts');
 const { getToolIcon } = await staticData('src/site/tool-icons.ts');
+const { getRelatedCatalogEntries } = await staticData('src/site/tool-content.ts');
 const { roleShowcases } = await staticData('src/site/homepage-showcase.ts');
 const { getToolboxGroups } = await staticData('src/site/toolbox-navigation.ts');
 const verifiedAssets = new Map();
@@ -78,7 +79,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -941,6 +942,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/pdf-split/index.html') assertToolContent(dom, locale, generalToolboxContent['pdf-split'], 4, 4, 6);
     if (page === 'tools/images-to-pdf/index.html') assertToolContent(dom, locale, generalToolboxContent['images-to-pdf'], 4, 4, 6);
     if (page === 'tools/zip-manager/index.html') assertToolContent(dom, locale, generalToolboxContent['zip-manager'], 4, 4, 6);
+    if (page === 'tools/batch-file-renamer/index.html') assertToolContent(dom, locale, generalToolboxContent['batch-file-renamer'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -987,6 +989,11 @@ for (const page of htmlFiles) {
       'Navigation identity is not the SEO H1',
     );
     const intro = dom.querySelector('[data-tool-intro]');
+    const tool = tools.find(tool => tool.id === main.dataset.toolId);
+    const titleRow = intro.querySelector('[data-tool-title]');
+    assert.equal(titleRow?.querySelector('h1')?.id, 'tool-heading', 'Title and icon share one static row');
+    await assertToolIcon(titleRow, tool.id, 40);
+    assert.equal(titleRow.querySelector('img')?.parentElement.getAttribute('aria-hidden'), 'true', 'Title icon is decorative');
     assert.equal(intro.querySelectorAll('ul, ol').length, 0, 'Tool introduction stays concise; feature lists belong in the static guide');
     const runtime = dom.querySelector('[data-tool-runtime]');
     const guide = dom.querySelector('[data-tool-guide]');
@@ -1012,6 +1019,22 @@ for (const page of htmlFiles) {
       0,
       'No unpublished/noindex/alternate tool routes',
     );
+    const related = dom.querySelector('[data-related-tools]');
+    const expectedRelated = getRelatedCatalogEntries(tool, region, tools, false, locale);
+    assert.equal(!!related, expectedRelated.length > 0, 'No empty related section');
+    const relatedCards = [...dom.querySelectorAll('[data-related-tools] [data-tool-card]')];
+    assert.deepEqual(relatedCards.map(card => card.dataset.toolCard), expectedRelated.map(entry => entry.id), 'Related catalog cards preserve the existing selection and order');
+    assert.equal(dom.querySelector('[data-related-tools] [data-catalog-fixture]'), null, 'Catalog-only fixtures never enter related tools');
+    assert.equal(related?.querySelectorAll('a').length ?? 0, relatedCards.length, 'Whole-card links replace the plain related link list');
+    for (const [index, card] of relatedCards.entries()) {
+      const entry = expectedRelated[index];
+      assert.equal(card.getAttribute('href'), entry.href);
+      assert.equal(card.querySelector('h3')?.textContent.trim(), entry.title);
+      assert.equal(card.querySelector('p')?.textContent.trim(), entry.summary ?? entry.description);
+      assert(card.textContent.includes(`${entry.category} / ${entry.group}`), 'Shared catalog taxonomy is visible');
+      assert(card.closest('[data-catalog-cards]'), 'Related tools use the real catalog card renderer');
+      await assertToolIcon(card, entry.id, 40);
+    }
     for (const link of dom.querySelectorAll('[data-related-tools] a'))
       assert(
         toolLinks.has(link.getAttribute('href')) &&
@@ -1371,15 +1394,16 @@ const combinedCSS = outputCSS.join('\n');
     'Batch File Renamer preview CSS follows its own publication status');
   assert.equal(scripts.some(js => js.includes('data-batch-renamer')), renamerAvailable,
     'Sharing the Form recipe does not pull the Draft renamer into Published tools');
-  if (zipAvailable) {
+  if (zipAvailable || renamerAvailable) {
     const notice = await readFile('src/tools/general/fflate.NOTICE.txt');
     assert(notice.toString('utf8').replace(/\r\n/g, '\n').includes((await readFile('node_modules/fflate/LICENSE', 'utf8')).replace(/\r\n/g, '\n').trim()),
       'The shared fflate notice includes the complete installed MIT license');
     const emitted = files.filter(file => file.includes('fflate.NOTICE'));
     const delivered = scripts.some(js => js.includes(notice.toString('base64'))) ||
       (await Promise.all(emitted.map(file => readFile(resolve(root, file))))).some(bytes => bytes.equals(notice));
-    assert(delivered, 'Published ZIP Manager distributes the complete shared fflate MIT notice');
-    assert(scripts.some(js => js.includes('data-zip-license')), 'ZIP Manager retains its own license reference');
+    assert(delivered, 'Published ZIP consumers distribute the complete shared fflate MIT notice');
+    if (zipAvailable) assert(scripts.some(js => js.includes('data-zip-manager') && js.includes('data-zip-license')), 'ZIP Manager retains its own license reference');
+    if (renamerAvailable) assert(scripts.some(js => js.includes('data-batch-renamer') && js.includes('data-zip-license')), 'Batch File Renamer retains its own license reference');
   }
   if (available) {
     const notice = await readFile('src/tools/comic-page-organizer/pdf-lib.NOTICE.txt');

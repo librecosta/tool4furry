@@ -9,7 +9,7 @@
 | 正式构建 | 生成可独立托管的静态页面与所需资源，不执行上传或上线 |
 | 实际部署 | 将产物发布到托管环境的独立操作，需要明确授权 |
 
-当前 Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF 与 ZIP Manager 十一款工具均为 Published，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
+当前 Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF、ZIP Manager 与 Batch File Renamer 十二款工具均为 Published，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
 
 Image Resize & Crop (`image-resize-crop`) 已通过 A1-D2 L2 审计，并依据维护者本任务授权提升源码资格。两地区正式构建包含其双语页面、按需实现、局部裁剪 CSS 和完整 ISC 许可声明；其他 Draft、Lab 和 Fixture 继续隔离。审计证据与 L3 边界见 [模块说明](../docs/image-resize-crop-implementation.md#a1-d2-beta-资格审计2026-10-31)。
 
@@ -29,7 +29,11 @@ PDF Split (`pdf-split`) 依据 V0.8-B2-D1 授权完成双语静态 SEO、真实 
 
 Images to PDF (`images-to-pdf`) 依据 V0.8-B3-D2 授权完成双语静态 SEO 与 L2 输出复核，提升为 CN/Global Published。冻结 PNG/JPEG 画廊、排序与预览、直接嵌入和宽松非阻断资源策略；共享 Comic PDF 模块及完整 pdf-lib MIT 通知按实际依赖交付，不改变其他工具资格。该次发布后共 29 款（10 Published / 19 Draft）；实际下载、既有大批量证据、构建与 L3 范围见 [通用工具说明](../docs/general-toolbox-v0.8.md#images-to-pdf--v08-b3-d2-beta-资格2026-11-04)。
 
-ZIP Manager (`zip-manager`) 依据 V0.8-B4-D3 维护者授权提升 CN/Global Published 源码资格。冻结创建/打开双模式、目录选择、单文件下载、所选重打包及自动时间戳命名；Store 打包不保证体积减小，读取支持 Store/Deflate，路径、CRC、加密拒绝和资源预算保持不变。双语静态 SEO 与完整 fflate MIT 通知随按需工具交付。当前 29 款（11 Published / 18 Draft）；真实下载、独立解压、CI 待完成项和 L3 边界见 [通用工具说明](../docs/general-toolbox-v0.8.md#zip-manager--v08-b4-d3-beta-资格2026-11-05)。
+ZIP Manager (`zip-manager`) 依据 V0.8-B4-D3 维护者授权提升 CN/Global Published 源码资格。冻结创建/打开双模式、目录选择、单文件下载、所选重打包及自动时间戳命名；Store 打包不保证体积减小，读取支持 Store/Deflate，路径、CRC、加密拒绝和资源预算保持不变。双语静态 SEO 与完整 fflate MIT 通知随按需工具交付。该次发布后 29 款（11 Published / 18 Draft）；真实下载、独立解压、CI 待完成项和 L3 边界见 [通用工具说明](../docs/general-toolbox-v0.8.md#zip-manager--v08-b4-d3-beta-资格2026-11-05)。
+
+Batch File Renamer (`batch-file-renamer`) 依据 V0.8-B5-D1 授权完成双语静态 SEO、Visual Filename Composer 核心操作与真实 ZIP 原字节复核后，提升为 CN/Global Published。可选统一名称、序号及高级起始值/位数/连接符共用 `renamePlan()`，不直接修改磁盘文件；已删除的前后缀/查找替换不再宣传。保留 100 文件 / 单项 32 MiB / 累计 96 MiB / ZIP 输出 128 MiB、安全名称和完整 fflate MIT 交付。当前共 29 款（12 Published / 17 Draft）；实际证据、构建和 CI 结论见 [通用工具说明](../docs/general-toolbox-v0.8.md#batch-file-renamer--v08-b5-d1-beta-资格与详情页展示2026-11-05)。
+
+工具详情页的 `ToolIntro` 静态复用既有像素图标，`ToolGuide` 直接复用目录 `ToolCards`；相关推荐仍由 `getRelatedTools()` 按同组、当前地区、资格和原顺序筛选，最多三项。目录 Fixture 不参与真实推荐，不增加业务 Island 或客户端数据请求。
 
 ## 唯一可用性来源
 

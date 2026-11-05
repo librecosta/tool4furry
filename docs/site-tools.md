@@ -25,6 +25,8 @@ localized search metadata. With no JS they remain complete and scrollable;
 search/filter controls are disabled with a noscript explanation. One owned Astro
 module enhances only this route; no Island, new dependency, API or global store.
 
+Tool detail pages also render the same `ToolCards.astro`, using a small `layout="related"` grid variant (at most three columns, one on phones). `getRelatedCatalogEntries()` adapts the existing `getRelatedTools()` selection to real Catalog entries without fixtures; selection order and regional publication filtering stay unchanged. The directory keeps its default layout and all `data-catalog-*` contracts. Each detail H1 statically reuses `FeaturedToolIcon` with the route tool ID; the combined title is centered with a reserved 40px / 32px decorative icon.
+
 URL whitelist: `category` OR `group`, `role`, `q`, `page`. Valid group wins a
 conflict. Unknown/unavailable IDs and parameters are dropped; q is NFKC/whitespace
 normalized, limited to 160 characters; invalid page becomes 1 and excessive page
