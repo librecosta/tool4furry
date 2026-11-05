@@ -33,7 +33,7 @@ Canvas 后的 Footer 在正常文档流，可通过页面滚动到达；不能�
 
 Image Converter 已有的 `container/columns/split/leading/aside/main` 配方继续保留，导入与结果合成左列、设置在右列；尾部弹性轨道吸收较高设置列，不强行拉伸导入/结果行。三款工具直接共享 `fileWorkspace/settingsPanel`、标题及模式视觉；`fileIntake/compactIntake` 保持空态纵排、有文件时上传和添加文件夹同行。原有图片工具对这些样式的调用一并改为公共类引用；仅替换 class 绑定，保持业务、DOM 和外观，不复制面板值或保留跨 SCSS 的组合层。
 
-Batch File Renamer 的普通文本字段在窄设置栏中单列、数字字段双列；宽空态由 CSS Container Query 将命名/编号分组及适合的字段并排，减少长表单高度。字段树和焦点顺序始终不变。文件区间距为 12px，列表使用克制的行填充或透明表面；不以厚重灰色整块替代清楚的文件层次。共享层只提供布局与视觉配方，不建立 Schema、FormEngine、Context 或文件框架。
+Batch File Renamer 当前使用内嵌文件名组合器，快速/高级共享名称及序号规则；高级仅展开起始值、位数与连接符，数字字段双列，宽面板通过 CSS Container Query 并排组织高级控件。切换显示模式不重置规则或使有效结果失效。文件区间距为 12px，列表使用克制的行填充或透明表面；不以厚重灰色整块替代清楚的文件层次。共享层只提供布局与视觉配方，不建立 Schema、FormEngine、Context 或文件框架。
 
 ## 静态说明与 FAQ
 

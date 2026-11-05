@@ -216,10 +216,10 @@ describe('actual document and archive contents', () => {
   });
   it('renames safely without re-encoding and rejects duplicates', () => {
     expect(
-      renamePlan(['a.jpg', 'b.png'], { ...defaultRules, prefix: '作品-' }).map(
+      renamePlan(['a.jpg', 'b.png'], { ...defaultRules, name: '作品' }).map(
         (i) => i.name,
       ),
-    ).toEqual(['作品-a-001.jpg', '作品-b-002.png']);
+    ).toEqual(['作品-001.jpg', '作品-002.png']);
     expect(() =>
       renamePlan(['same.txt', 'same.txt'], {
         ...defaultRules,
@@ -227,7 +227,7 @@ describe('actual document and archive contents', () => {
       }),
     ).toThrow();
     expect(() =>
-      renamePlan(['a'], { ...defaultRules, prefix: '../' }),
+      renamePlan(['a'], { ...defaultRules, name: '../' }),
     ).toThrow();
   });
   it('computes a known SHA-256 and validates comparisons', async () => {

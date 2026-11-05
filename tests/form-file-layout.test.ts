@@ -37,6 +37,7 @@ it('owns the Converter panel, header and segmented visuals as well as the respon
   }
   const renamer = compile('src/tools/batch-file-renamer/renamer.module.scss').css;
   expect(renamer).toContain('container-type: inline-size');
-  expect(renamer).toMatch(/\.fields, \.numbering, \.numberFields\s*\{[^}]*display:\s*grid/);
-  expect(renamer).toMatch(/@container \(min-width: 600px\)[\s\S]*\.fields\s*\{\s*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/);
+  expect(renamer).toMatch(/\.numberFields\s*\{\s*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/);
+  expect(renamer).toMatch(/@container \(min-width: 600px\)[\s\S]*\.advanced\s*\{\s*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/);
+  expect(renamer).toMatch(/\.nameInput\s*\{[^}]*max-width:\s*100%/);
 });
