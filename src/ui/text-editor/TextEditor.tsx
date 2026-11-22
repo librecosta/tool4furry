@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useImperativeHandle, useLayoutEffect, useRef, useState, type Ref } from 'react';
 import {
   Annotation,
   Compartment,
@@ -17,6 +17,10 @@ import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import notice from './codemirror.NOTICE.txt?url';
 import s from './TextEditor.module.scss';
 
+export interface TextEditorHandle {
+  focusAt(offset: number): void;
+}
+
 export interface TextEditorProps {
   value: string;
   onChange?: (value: string) => void;
@@ -27,6 +31,7 @@ export interface TextEditorProps {
   lineWrapping?: boolean;
   extensions?: Extension;
   className?: string;
+  editorRef?: Ref<TextEditorHandle>;
 }
 const external = Annotation.define<boolean>();
 const noExtensions: Extension = [];
@@ -81,11 +86,24 @@ export function TextEditor({
   lineWrapping = true,
   extensions = noExtensions,
   className,
+  editorRef,
 }: TextEditorProps) {
   const host = useRef<HTMLDivElement>(null),
     view = useRef<EditorView | null>(null);
   const callback = useRef(onChange),
     lastValue = useRef(value);
+  useImperativeHandle(editorRef, () => ({
+    focusAt(offset) {
+      const editor = view.current;
+      if (!editor || !Number.isFinite(offset)) return;
+      const anchor = Math.max(0, Math.min(editor.state.doc.length, Math.trunc(offset)));
+      editor.dispatch({
+        selection: { anchor },
+        effects: EditorView.scrollIntoView(anchor, { y: 'center' }),
+      });
+      editor.focus();
+    },
+  }), []);
   const [slots] = useState(() => ({
     config: new Compartment(),
     extra: new Compartment(),

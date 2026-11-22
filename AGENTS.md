@@ -15,6 +15,8 @@
 
 - V0.8 两批已增加 22 款通用工具初版（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools 已完成各自双语静态 SEO 与核心输出复核并具备 CN/Global Published 源码资格，其余 13 款保持 Draft；最新远程 CI 状态单独记录，不能把本地验收等同于 L2 七项全部通过。PDF Split 的预览使用按需本地 PDF.js，真实输出仍由 pdf-lib 负责；三款 PDF 工具在点击下载时生成安全文件名和本地毫秒时间戳。Images to PDF 保留画廊排序、预览和宽松非阻断资源策略。Batch File Renamer 保留 Quick/Advanced 文件名组合器和 ZIP 原字节输出。File Hash 默认 MD5，五算法多文件自动计算、比对、复制与 TXT 导出；单 Worker / 2 MiB 分块和内嵌 WASM 按需加载，无旧 32 MiB 配额，完整 hash-wasm / 上游许可随工具交付。Text Cleaner 使用按需 CodeMirror 双编辑器，快速模式保留缩进，高级规则独立保存并明确生成 LF/CRLF；无旧 50 万字符配额，完整编辑器 MIT 通知与 Text Diff、Subtitle Tools 共享。Text Diff 使用专属 Worker 进行实时逐行比较，支持双行号、两行上下文、EOF 差异、忽略行尾空白与可读 TXT 报告，完整 diff BSD 通知随工具交付。Subtitle Tools 保留 SRT/WebVTT 双向转换、默认示例、分页 Cue 列表、整体偏移、单条编辑与通过校验后才应用的 CodeMirror 源码草稿；不支持 NOTE/STYLE/REGION，转换到 SRT 提示元数据损失。详情页统一静态标题像素图标，相关推荐直接复用目录 ToolCards，资格过滤不变。共 29 款工具（16 Published / 13 Draft）。实际能力、限制和验证见 [通用工具说明](docs/general-toolbox-v0.8.md)。
 
+- JSON Formatter 已完成 B10-D1 JSON 工作区，仍为 CN/Global Draft。复用 CodeMirror 双编辑器，支持严格保真的格式化与压缩、行列定位、分页只读树和完整 JSON 下载。专属同源 Worker、按需 JSON 语言包及 MIT 通知受正式产物守卫约束。验证和实际资源边界见 [通用工具说明](docs/general-toolbox-v0.8.md#json-formatter--v08-b10-d1-json-工作区与结构浏览)。
+
 ## Start Here
 
 1. 核对当前分支、工作区、任务范围和禁止事项。

@@ -36,6 +36,10 @@ it('shares the editor across three Published tools while JSON Formatter and Mark
     "from '../../ui/text-editor/TextEditor'",
   );
   expect(read('src/tools/subtitle-tools/definition.ts')).not.toMatch(/@codemirror|TextEditor|SubtitleTools|['"]\.\/core['"]/);
+  expect(read('src/tools/json-formatter/JsonFormatter.tsx')).toContain("from '../../ui/text-editor/TextEditor'");
+  expect(read('src/tools/json-formatter/definition.ts')).not.toMatch(/@codemirror|TextEditor|JsonFormatter|['"]\.\/core['"]/);
+  expect(read('src/tools/json-formatter/editor.ts')).toContain("from '@codemirror/lang-json'");
+  expect(read('src/tools/loaders.ts')).toMatch(/T4F_TOOL_JSON_FORMATTER_AVAILABLE\s*\?\s*\(\) => import\('\.\/json-formatter\/JsonFormatter'\)/);
   for (const path of [
     'src/tools/ToolRuntime.tsx',
     'src/tools/registry.ts',
@@ -46,11 +50,31 @@ it('shares the editor across three Published tools while JSON Formatter and Mark
   ]) {
     expect(read(path), path).not.toMatch(/@codemirror|ui\/text-editor/);
     expect(read(path), path).not.toMatch(/subtitle-tools\/(?:SubtitleTools|SubtitleEditor|core|delivery)/);
+    expect(read(path), path).not.toMatch(/json-formatter\/(?:JsonFormatter|JsonTree|core|editor|processing)/);
   }
   const editor = read('src/ui/text-editor/TextEditor.tsx');
   expect(editor).toContain('./codemirror.NOTICE.txt?url');
   expect(editor).not.toMatch(/@codemirror\/lang-|@uiw\/|monaco|ace-builds/);
   expect(editor).toContain('slots.extra.reconfigure(extensions)');
+});
+
+it('ships the complete JSON language and grammar notices separately from the shared editor', () => {
+  const toolNotice = read('src/tools/json-formatter/json-language.NOTICE.txt').replace(/\r\n/g, '\n');
+  const sharedNotice = read('src/ui/text-editor/codemirror.NOTICE.txt');
+  const resolvePackage = (name: string, resolver: ReturnType<typeof createRequire>) => {
+    let root = dirname(resolver.resolve(name));
+    while (!existsSync(join(root, 'package.json'))) root = dirname(root);
+    return { root, manifest: JSON.parse(read(join(root, 'package.json'))) };
+  };
+  const language = resolvePackage('@codemirror/lang-json', createRequire(import.meta.url));
+  const grammar = resolvePackage('@lezer/json', createRequire(join(language.root, 'package.json')));
+  for (const { root, manifest: pkg } of [language, grammar]) {
+    expect(pkg.license).toBe('MIT');
+    expect(toolNotice).toContain(`${pkg.name}@${pkg.version}`);
+    expect(toolNotice).toContain(read(join(root, 'LICENSE')).replace(/\r\n/g, '\n'));
+    expect(sharedNotice).not.toContain(`${pkg.name}@`);
+  }
+  expect(read('src/tools/json-formatter/JsonFormatter.tsx')).toContain('./json-language.NOTICE.txt?url');
 });
 
 it('ships the complete MIT license of every installed editor runtime dependency', () => {

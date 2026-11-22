@@ -493,7 +493,7 @@ export const generalToolboxContent = {
       intro: '校验、格式化或压缩 JSON，保留数字字面量。',
       steps: ['输入 JSON', '选择缩进或压缩', '检查错误并复制下载。'],
       limitations: [
-        '最多 50 万字符、128 层嵌套。不支持 JSON Schema 或注释语法。',
+        '支持读取最大 32 MiB 的 UTF-8 JSON 文件。较大输入受设备资源和处理预算限制。不支持 JSON Schema 或注释语法。',
         '所有文件与文本均在当前浏览器本地处理，不上传、不持久保存。',
       ],
     },
@@ -510,7 +510,7 @@ export const generalToolboxContent = {
         'review errors and copy or download.',
       ],
       limitations: [
-        'Up to 500,000 characters and 128 nesting levels. JSON Schema and comments are unsupported.',
+        'Reads UTF-8 JSON files up to 32 MiB. Large inputs are subject to device resources and processing limits. JSON Schema and comments are unsupported.',
         'Files and text stay in your browser, without uploads or persistent storage.',
       ],
     },

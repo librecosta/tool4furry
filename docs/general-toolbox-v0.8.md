@@ -2,6 +2,15 @@
 
 两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools 已获得 CN/Global Published 源码资格，其余 13 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（16 Published / 13 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
+## JSON Formatter — V0.8-B10-D1 JSON 工作区与结构浏览
+
+- JSON Workspace 默认载入合法示例。快速模式支持 UTF-8 `.json` 文件选择、拖放和编辑器粘贴，自动校验并以 2 空格格式化或压缩。高级模式保留独立的 2/4 空格选项及代码/树形视图。复制和下载始终交付当前完整结果，文件名使用安全来源名称和毫秒时间戳。
+- 严格解析器以原文范围记录 JSON 值和字段，用迭代方式重放 Token，保留数字字面量、字符串转义、字段顺序及重复字段。支持顶层标量和空集合。诊断显示真实 UTF-16 行列并可跳到标记，输入变更后旧结果立即失效。文件支持 UTF-8 BOM，读入失败保留当前输入。
+- 工具专属同源 Worker 保存解析索引并重用同一文档的格式化与树形查询。较大输入防抖，旧请求可以终止，后台处理有 12 秒截止。每个展开分支每页挂载最多 40 个直属子节点，完整值可在详情中分页查看。文件读取上限 32 MiB，输入与输出上限分别为 16,777,216 和 33,554,432 个 UTF-16 代码单元，索引上限 500,000 个 JSON 值。没有固定嵌套深度，缩进扩张达到输出预算时可以尝试压缩。实际容量取决于浏览器和设备。
+- 共享 CodeMirror 负责编辑生命周期，工具入口按需加载 `@codemirror/lang-json@6.0.2` 高亮扩展和 `@lezer/json@1.0.3` 语法包，完整 MIT 通知随 JSON 工具交付。JSON Formatter 保持 CN/Global Draft。两地区正式产物守卫覆盖其路由、私有 JS/CSS、Worker、语法包及通知。全站 29 款（16 Published / 13 Draft）。
+- Chromium 157 在 CN 中文深色 1280px 和 Global 英文浅色 390px 模拟视口核对截图，实测语法高亮、错误定位、分页树、文件导入、剪贴板、主题及刷新。共复读 10 份实际下载的 UTF-8 JSON，并核对完整内容、MIME 与安全去重文件名。每个视口均导出 28,000 项数组的格式化与压缩结果，输入约 157 万 UTF-16 代码单元，本机样本最长主线程任务约 205ms。Firefox、Safari/WebKit、真实移动设备、系统 IME 和极限资源压力尚未复测。
+- `pnpm check`、142 项定向及共享编辑器、布局回归测试与 CN/Global 正式构建通过。另用 20,000 次固定种子语法扰动比对原生严格校验，并复核可接受结果的格式化稳定性。DEV 指南同步移除旧配额，SEO 元数据和发布资格保持原样。
+
 ## Subtitle Tools — V0.8-B9-D2 SEO 与 Beta 资格（2026-11-22）
 
 - 维护者验收 Subtitle Studio Lite 后授权提升 CN/Global Published 源码资格。双语 Title、Meta Description、H1、四项步骤、六项限制与四组 FAQ 随 Astro 静态输出。地区语言、Canonical、hreflang、OG/Twitter、普通工具卡片、Sitemap 与 llms.txt 继续沿用现有投影。每地区 32 个工具详情页，现有动画师与运营的 Registry 角色保持原样。
@@ -152,7 +161,7 @@
 | `text-cleaner` | CodeMirror 双编辑器、快速/高级实时清理、保留缩进、互斥空行规则、LF/CRLF、字符/行统计及复制/TXT | 无旧 50 万字符配额；大文本延迟处理与失效交付保护，实际规模依赖设备；编辑层 LF，导出明确选择换行格式 |
 | `text-diff` | CodeMirror 双编辑器、结构化双行号差异、空行/EOF 标记、全部/仅变化、忽略行尾空白、实时比较与 TXT 报告 | 无固定字符/行数配额；独立 Worker 搜索 750ms / 总任务 5 秒截止，超时明确失败；长结果按需渲染 |
 | `subtitle-tools` | SRT/WebVTT 导入、逐条预览、整体偏移、单条和源码编辑、复制及下载 | 单文件 32 MiB、字幕文本 16M UTF-16 代码单元、10 万条；不支持 NOTE/STYLE/REGION；转 SRT 提示元数据损失 |
-| `json-formatter` | 校验、2/4 空格、单行压缩、复制/下载 | 50 万字符、128 层、格式化结果 400 万字符；保留原数字字面量，避免大整数舍入 |
+| `json-formatter` | CodeMirror 双区、严格校验和定位、格式化与压缩、只读结构树、复制和 JSON 下载 | 保留原字面量、字段与重复项的顺序；解析、输出和树索引在专属 Worker，资源边界见 B10-D1 |
 | `url-base64` | URL 组件与 UTF-8 Base64 编解码、复制/下载 | 50 万字符；严格检查 Base64/UTF-8；不是加密 |
 | `timestamp-converter` | 明确秒/毫秒/带时区 ISO、UTC/本地展示、复制 | 不猜单位；拒绝无时区 ISO、非法日期和闰秒 |
 | `qr-code-generator` | 标准二维码、尺寸/前背景色、PNG/SVG 下载、内容复制 | 2000 字符、128–2048px；深色前景、浅色背景、对比度与模块尺寸检查 |

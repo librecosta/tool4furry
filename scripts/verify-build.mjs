@@ -1573,6 +1573,15 @@ if (!published.some(tool => tool.id === 'file-hash')) {
   for (const [id, stem] of [['json-formatter', 'JsonFormatter'], ['markdown-editor', 'MarkdownEditor']])
     if (!published.some(tool => tool.id === id))
       assert(!findAsset(stem, '.js').length && !findAsset(stem, '.css').length, 'Draft editor has no private entry: ' + id);
+  if (!published.some(tool => tool.id === 'json-formatter')) {
+    const jsonNotice = await readFile('src/tools/json-formatter/json-language.NOTICE.txt');
+    const jsonMarkers = /data-json-language-license|t4f-json-workspace|trailingComma.{0,30}expectedKey|JsonText True False Null Number String/;
+    assert(!files.some(file => /(?:^|\/)(?:json\.worker|json-language\.NOTICE)[.-]/.test(file)),
+      'Draft JSON Worker and language notice stay out of the build');
+    assert(![...scripts.values()].some(text => jsonMarkers.test(text) || text.includes(jsonNotice.toString('base64'))),
+      'Draft JSON workspace, parser, Lezer grammar and inline notice stay out of shared chunks');
+    assert(!/\._?(?:nodeLabel|endMarker)[_-]/.test(combinedCSS), 'Draft JSON tree and diagnostics styles stay private');
+  }
 
   if (editorTools.length === 0) {
     assert(!files.some(file => /SubtitleTools|TextCleaner|TextDiff|TextEditor|TextWorkbench|codemirror\.NOTICE/.test(file)), 'Unavailable editor entries and notices stay private');

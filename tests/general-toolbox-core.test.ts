@@ -58,9 +58,8 @@ describe('general toolbox text and data', () => {
     expect(formatJson(input, 0)).toBe(input);
     expect(formatJson(input, 4)).toContain('    "n": 90071992547409931234');
     expect(() => formatJson('{bad}', 2)).toThrow();
-    expect(() =>
-      formatJson('['.repeat(129) + '0' + ']'.repeat(129), 0),
-    ).toThrow();
+    const deep = '['.repeat(129) + '0' + ']'.repeat(129);
+    expect(formatJson(deep, 0)).toBe(deep);
   });
   it('round trips Unicode encodings and rejects malformed UTF-8 or Base64', () => {
     for (const value of ['你好 🦊', 'a+b /?=']) {

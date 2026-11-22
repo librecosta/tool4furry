@@ -37,16 +37,18 @@ Batch File Renamer 当前使用内嵌文件名组合器，快速/高级共享名
 
 ## 文本编辑工作区
 
-大段普通文本、结构化文本和代码工具默认复用 [TextEditor](../src/ui/text-editor/TextEditor.tsx)、[TextEditorPane](../src/ui/text-editor/TextEditorPane.tsx) 与 [TextWorkbench](../src/ui/text-editor/TextWorkbench.tsx)。短设置、单行字段和简单备注不必改用编辑器；本轮只有 Text Cleaner 迁移，旧 TextWorkspace 的其他消费者不变。
+大段普通文本、结构化文本和代码工具默认复用 [TextEditor](../src/ui/text-editor/TextEditor.tsx)、[TextEditorPane](../src/ui/text-editor/TextEditorPane.tsx) 与 [TextWorkbench](../src/ui/text-editor/TextWorkbench.tsx)。短设置、单行字段和简单备注可继续使用轻量表单控件。
 
 - TextWorkbench 上方放模式及必要规则，下方输入/结果等宽双栏；≤900px 按输入在前的同一 DOM 堆叠，不复制有状态编辑器。文本工作区不适用文件工具的 350px 设置栏。
 - TextEditorPane 的中性灰外表面包含轻量标题、调用方操作插槽、编辑主体和次级统计；没有大工具栏或两层明显边框。主体可视高度由静态 SCSS 确定为 320–460px，窄屏 320px，长文内部滚动，初始化不依赖内容撑高页面。
-- TextEditor 负责受控文档、行号、换行、键盘历史、选区、IME、只读和 View 生命周期；外部更新走事务，配置/未来语言扩展走 Compartment，普通文本默认站点 sans 字体。语言、格式化、业务校验、处理任务、复制下载归工具，未来语法包由工具按需引入。
+- TextEditor 负责受控文档、行号、换行、键盘历史、选区、IME、只读和 View 生命周期。外部更新走事务，配置和语言扩展走 Compartment。工具可以用可选 `focusAt` 在用户明确触发时定位诊断，业务校验与标记仍归工具。
 - 只读结果仍可聚焦、选择、Ctrl+A/C 和滚动，禁止输入修改。标题图标使用现有 IconButton/Tooltip；输入对应清空，结果对应复制/下载，失效结果禁用交付，不把业务写入编辑器内核。
 - 外围尺寸、圆角、表面和 Purple Focus 属于 SCSS Modules。CodeMirror 自身无 Layer 的内部样式优先于分层 CSS，因此内部覆盖使用 scoped EditorView.theme 引用现有变量；不是全站 CSS-in-JS 或另一套主题。Dark/Light 切换不重建文档，Reduced Motion 遵循既有规则。
 - Text Cleaner 快速模式保留行首缩进、清理行尾空白、合并连续空行并输出 LF；高级独立保留自定义空白/空行及 LF/CRLF 规则。编辑层统一文档为 LF，实际导出换行由纯函数明确生成，不提供虚假的“保留混合原始行尾”选项。
 
-编辑器由 Published Text Cleaner 懒加载；JSON Formatter、Subtitle Tools、Markdown Editor 等 Draft 继续隔离，完整 CodeMirror/必要传递依赖 MIT NOTICE 随实际入口交付。验证见 [编辑器生命周期测试](../tests/text-editor.test.tsx)、[交付边界测试](../tests/text-editor-delivery.test.ts)、[Cleaner 核心](../tests/text-cleaner-core.test.ts) 和 [实际编辑器 UI 测试](../tests/text-cleaner-ui.test.tsx)。真实浏览器证据与性能边界见 [通用工具说明](general-toolbox-v0.8.md#text-cleaner--v08-b7-d1-共享编辑器与实时清理2026-11-05)。
+- JSON Formatter 上方使用紧凑导入条和快速/高级切换。下面复用等高输入和结果面板，校验状态及定位入口在左侧底部，格式化、压缩和高级视图设置在右侧底部。只读树放在同一结果面板主体，分支按页挂载，完整原值在节点详情查看，交付文本与代码视图一致。
+
+正式构建中 Text Cleaner、Text Diff 和 Subtitle Tools 按需复用同一份 CodeMirror 和完整 MIT NOTICE。JSON Formatter 与 Markdown Editor 的 Draft 私有资源继续隔离，JSON 语言及语法依赖的 MIT 通知跟随 JSON 工具入口。见 [编辑器生命周期测试](../tests/text-editor.test.tsx)、[交付边界测试](../tests/text-editor-delivery.test.ts) 和 [通用工具说明](general-toolbox-v0.8.md#json-formatter--v08-b10-d1-json-工作区与结构浏览)。
 
 ## 静态说明与 FAQ
 
