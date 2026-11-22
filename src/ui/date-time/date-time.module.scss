@@ -1,0 +1,209 @@
+@layer t4f-ui {
+  .anchor {
+    position: relative;
+    min-width: 0;
+  }
+
+  .input.input {
+    padding-inline-end: 48px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .trigger.trigger {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: var(--t4f-space-4);
+    translate: 0 -50%;
+    min-width: 36px;
+    min-height: 36px;
+    padding: 0;
+    border: 0;
+  }
+
+  .positioner {
+    z-index: var(--t4f-layer-floating);
+  }
+
+  .popup {
+    box-sizing: border-box;
+    inline-size: 328px;
+    max-inline-size: min(calc(100dvw - 24px), var(--available-width, 100dvw));
+    max-block-size: var(--available-height);
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: var(--t4f-space-12);
+    border-radius: var(--t4f-radius-lg);
+    color: var(--t4f-text-primary);
+    background: var(--t4f-surface-floating);
+    box-shadow: var(--t4f-shadow-floating);
+    font-size: 14px;
+  }
+
+  .calendarHeader {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    text-align: center;
+    gap: var(--t4f-space-4);
+    padding-block-end: var(--t4f-space-4);
+  }
+
+  .navigate.navigate {
+    border: 0;
+    min-inline-size: 36px;
+    min-block-size: 36px;
+    padding: 0;
+  }
+
+  .monthHeading.monthHeading {
+    border: 0;
+    min-block-size: 36px;
+    padding-inline: var(--t4f-space-8);
+  }
+
+  .grid {
+    inline-size: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 2px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+
+    th {
+      padding: var(--t4f-space-4) 0;
+      color: var(--t4f-text-secondary);
+      font-size: 12px;
+      font-weight: 500;
+    }
+  }
+
+  .day {
+    display: block;
+    position: relative;
+    inline-size: 100%;
+    min-block-size: 34px;
+    border: 0;
+    border-radius: var(--t4f-radius-sm);
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+
+    &:where([data-adjacent]) { color: var(--t4f-text-secondary); }
+    &:where(:hover:not(:disabled)) { background: var(--t4f-surface-hover); }
+    &:where([aria-current="date"])::after {
+      content: "";
+      position: absolute;
+      inset-block-end: 3px;
+      inset-inline-start: calc(50% - 2px);
+      inline-size: 4px;
+      block-size: 4px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    &:where(:disabled) { opacity: .38; cursor: not-allowed; }
+  }
+
+  [aria-selected="true"] > .day {
+    background: var(--t4f-action);
+    color: var(--t4f-on-action);
+  }
+
+  .calendarFooter {
+    display: flex;
+    justify-content: flex-end;
+    margin-block-start: var(--t4f-space-4);
+
+    button { border: 0; min-block-size: 36px; }
+  }
+
+  .jump, .timePanel {
+    display: grid;
+    gap: var(--t4f-space-8);
+  }
+
+  .year {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--t4f-space-8);
+
+    input {
+      inline-size: 7em;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  .months {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--t4f-space-4);
+  }
+
+  .monthChoice.monthChoice {
+    min-inline-size: 0;
+    min-block-size: 36px;
+    padding-inline: var(--t4f-space-4);
+    border: 0;
+
+    &[aria-pressed="true"] {
+      background: var(--t4f-action);
+      color: var(--t4f-on-action);
+      text-decoration: none;
+    }
+  }
+
+  .timeTitle { margin: 0; font-size: 14px; font-weight: 600; }
+
+  .timeParts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--t4f-space-4);
+  }
+
+  .timePart {
+    display: grid;
+    gap: var(--t4f-space-4);
+    text-align: center;
+  }
+
+  .timeAdjust {
+    display: grid;
+    background: color-mix(in srgb, var(--t4f-input-surface) 65%, var(--t4f-surface-muted));
+    border-radius: var(--t4f-radius-md);
+    overflow: visible;
+  }
+
+  .adjust.adjust {
+    min-inline-size: 0;
+    min-block-size: 34px;
+    padding: 0;
+    border: 0;
+    color: var(--t4f-text-secondary);
+  }
+
+  .partInput {
+    box-sizing: border-box;
+    inline-size: 100%;
+    block-size: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--t4f-radius-sm);
+    text-align: center;
+    color: var(--t4f-text-primary);
+    background: transparent;
+    font: inherit;
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+
+    &:where([aria-invalid="true"]) { color: var(--t4f-danger); }
+    &:focus-visible {
+      outline: 2px solid var(--t4f-focus);
+      outline-offset: -2px;
+    }
+  }
+
+  .partLabel { font-size: 12px; overflow-wrap: anywhere; }
+  .partRange { font-size: 11px; color: var(--t4f-text-secondary); font-variant-numeric: tabular-nums; }
+  .error { margin: 0; color: var(--t4f-danger); font-size: 12px; }
+}

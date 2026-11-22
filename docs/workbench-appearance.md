@@ -35,7 +35,13 @@ Image Converter 已有的 `container/columns/split/leading/aside/main` 配方继
 
 Batch File Renamer 当前使用内嵌文件名组合器，快速/高级共享名称及序号规则；高级仅展开起始值、位数与连接符，数字字段双列，宽面板通过 CSS Container Query 并排组织高级控件。切换显示模式不重置规则或使有效结果失效。文件区间距为 12px，列表使用克制的行填充或透明表面；不以厚重灰色整块替代清楚的文件层次。共享层只提供布局与视觉配方，不建立 Schema、FormEngine、Context 或文件框架。
 
-Timestamp Workspace 在 Wide Form 中复用 `settingsPanel` 及分段控件，以均分双栏容纳短字段输入和可逐项复制的结果。≤900px 以同一 DOM 把输入放在结果前，保留各方向和高级模式的草稿。日期、毫秒级时间使用 TextField 的原生控件，主题沿用站点变量。当前仍为 Draft。[时间戳格式和时区边界](general-toolbox-v0.8.md#timestamp-converter--v08-b12-d1-双向时间转换工作区)
+Timestamp Workspace 在 Wide Form 中复用 `settingsPanel` 及分段控件，以均分双栏容纳短字段输入和可逐项复制的结果。≤900px 以同一 DOM 把输入放在结果前，保留各方向和高级模式的草稿。日期与时间使用共享选择组件。当前仍为 Draft。[时间戳格式和时区边界](general-toolbox-v0.8.md#timestamp-converter--v08-b12-d1-双向时间转换工作区)
+
+### 日期与时间输入
+
+- 工具默认选用 [DatePickerField](../src/ui/date-time/DatePickerField.tsx) 和 [TimePickerField](../src/ui/date-time/TimePickerField.tsx)。它们可独立使用，沿用输入框与图标按钮，通过 Base UI Popover 交付站点自有日历和 24 小时分段面板。浮层随主题变化，按可用空间翻转或滚动。
+- 日期值为 `YYYY-MM-DD`，支持 0001–9999 年和可选 min/max。日历按周一开始，支持方向键、PageUp/PageDown 和年份跳转。时间值为 `HH:mm:ss.SSS`，各段微调在其范围内停止。格式合法后提交，无效的直接输入草稿独立保留。调用方可通过 `draft` 与 `onDraftChange` 控制草稿并在编辑无效时暂停业务结果。
+- 时区解释、DST、业务合法性由工具核心负责。共享选择器由实际使用者按需引用。TextField 的原生 date/time 类型保留给特殊或历史场景。[Base UI Popover](https://base-ui.com/react/components/popover) · [WAI-ARIA 日期网格](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/datepicker-dialog/)
 
 ## 文本编辑工作区
 

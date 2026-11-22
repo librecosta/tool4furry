@@ -1,5 +1,6 @@
 import { Tooltip } from '@base-ui/react/tooltip';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { StrictMode } from 'react';
 import { beforeEach, expect, it, vi } from 'vitest';
 import TimestampConverter from '../src/tools/timestamp-converter/TimestampConverter';
@@ -85,8 +86,8 @@ it('transfers the instant, uses structured date and time input, and remembers an
   setup();
   edit('Unix timestamp', '1704067200.123');
   press('Date to Timestamp');
-  expect(field('Date')).toMatchObject({ type: 'date', value: '2024-01-01' });
-  expect(field('Time (millisecond precision)')).toMatchObject({ type: 'time', value: '00:00:00.123' });
+  expect(field('Date')).toMatchObject({ type: 'text', value: '2024-01-01' });
+  expect(field('Time (millisecond precision)')).toMatchObject({ type: 'text', value: '00:00:00.123' });
   selected('UTC');
   press('Local');
   selected('Local');
@@ -107,6 +108,31 @@ it('transfers the instant, uses structured date and time input, and remembers an
   disabledResults();
   press('Load sample');
   selected('UTC');
+  expect(result()).toBe(sample);
+});
+
+it('uses both custom panels for the same live conversion and gates invalid raw drafts', async () => {
+  setup();
+  const user = userEvent.setup();
+  press('Date to Timestamp');
+  expect(document.querySelector('input[type=date], input[type=time]')).toBeNull();
+  await user.click(button('Choose date'));
+  await user.click(screen.getByRole('button', { name: /January 2, 2024/ }));
+  expect(field('Date').value).toBe('2024-01-02');
+  expect(result()).toBe('2024-01-02T00:00:00.000Z');
+  await user.click(button('Choose time'));
+  fireEvent.change(screen.getByRole('spinbutton', { name: 'Milliseconds' }), { target: { value: '789' } });
+  expect(field('Time (millisecond precision)').value).toBe('00:00:00.789');
+  expect(result()).toBe('2024-01-02T00:00:00.789Z');
+  await user.keyboard('{Escape}');
+  edit('Time (millisecond precision)', '00:00');
+  disabledResults();
+  press('Timestamp to Date');
+  press('Date to Timestamp');
+  expect(field('Time (millisecond precision)').value).toBe('00:00');
+  disabledResults();
+  press('Load sample');
+  expect(field('Time (millisecond precision)').value).toBe('00:00:00.000');
   expect(result()).toBe(sample);
 });
 

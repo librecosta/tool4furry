@@ -55,6 +55,7 @@
 - **可用性**：Registry 的 `status` + `regions` 是唯一发布来源；DEV 为本地区 Draft + Published，生产仅 Published。Loader/Vite 只投影该状态，不新增发布开关、路径或 Store，不泄漏 Draft/Lab/Fixture 及其专用资源。
 - **地区/语言**：CN/Global 独立产物，各有中英文；语言切换同源，地区外链才跨来源。Canonical/hreflang/发现文件与实际页面一致，规则由配置与测试控制。
 - **默认演示数据**：内置默认示例、首次载入样例及 Load Sample 演示内容默认使用英文，跨地区和界面语言保持一致。标签、帮助、错误和 SEO 继续按 locale 本地化。用独立测试覆盖多语言与特殊字符，保留用户输入的 Unicode 支持。只有工具明确以某种语言的文本为处理对象且有充分理由时才可例外。
+- **日期与时间输入**：正式工具默认使用 `src/ui/date-time/` 的共享 DatePickerField / TimePickerField，通过站点自有面板提供选择体验。组件负责文字输入、格式检查和选择，时区、夏令时与业务合法性由工具核心判断。仅实际使用的工具按需引入，避免接入全站入口。TextField 的原生 date/time 类型保留给特殊或历史场景。
 - **静态与交互**：页面正文、唯一 H1、指南/FAQ 保留 Astro 静态输出；固定 ToolRuntime/LabRuntime 才挂必要 React，工具实现懒加载。无全站 React Provider/业务 Store；静态页面受精确脚本审计，不随意加 JS 或 preload。
 - **所有权**：WorkbenchShell 只管布局/插槽/面板，UI 原语受控；文件、设置、任务和释放归工具。不得因断点切换或开关面板重建业务状态。具体 Canvas/预览合同见 [工作区说明](docs/workbench-appearance.md)。
 - **文件表单布局**：具备文件导入、文件列表以及参数或操作面板的 Form/Batch 工具，默认采用左侧文件与预览、右侧设置与操作的布局。优先复用 `src/workbench/form-tool-layout.module.scss` 和既有 WorkbenchShell，不自行创建重复的双栏样式。复用同时包括完整设置面板、标题、间距、空状态、嵌入式模式切换和操作区，以 Image Converter 为视觉基准；仅复用左右列不算完成。没有真实参数时不得为了填充设置栏添加无意义控件。Canvas、单一输入工具及其他不适用场景可以例外，例外应有明确理由。

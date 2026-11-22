@@ -1,6 +1,8 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { CalendarBlankIcon, ClockIcon, CopyIcon } from '@phosphor-icons/react';
 import { Button, IconButton } from '../../ui/Button';
+import { DatePickerField } from '../../ui/date-time/DatePickerField';
+import { TimePickerField } from '../../ui/date-time/TimePickerField';
 import { TextField } from '../../ui/TextField';
 import { Tooltip } from '../../ui/Tooltip';
 import form from '../../workbench/form-tool-layout.module.scss';
@@ -18,7 +20,7 @@ type Direction = 'timestamp' | 'date';
 type Source = 'sample' | 'now' | 'input' | undefined;
 type Drafts = {
   timestamp: { text: string; source: Source };
-  calendar: { date: string; time: string; zone: InputZone; source: Source };
+  calendar: { date: string; time: string; zone: InputZone; source: Source; dateDraft?: string; timeDraft?: string };
   iso: { text: string; source: Source };
 };
 
@@ -29,13 +31,14 @@ const initialDrafts: Drafts = {
 };
 const exampleZones = ['UTC', 'Asia/Shanghai', 'America/New_York', 'Europe/London', 'Asia/Tokyo'];
 
-function readInput(drafts: Drafts, kind: InputKind, unit: TimestampUnit): { instant?: number; error?: unknown } {
+function readInput(drafts: Drafts, kind: InputKind, unit: TimestampUnit): { instant?: number; error?: unknown; invalidDraft?: boolean } {
   try {
     switch (kind) {
       case 'timestamp': return { instant: fromTimestamp(drafts.timestamp.text, unit) };
       case 'iso': return { instant: fromIso(drafts.iso.text) };
       case 'calendar': {
-        const { date, time, zone } = drafts.calendar;
+        const { date, time, zone, dateDraft, timeDraft } = drafts.calendar;
+        if (dateDraft !== undefined || timeDraft !== undefined) return { invalidDraft: true };
         return { instant: fromCalendar(date, time, zone) };
       }
     }
@@ -139,7 +142,7 @@ export default function TimestampConverter({ locale }: ToolProps) {
     if (instant === undefined) return;
     const target = readInput(drafts, kind, unit);
     // Preserve unfinished input and equivalent representations such as a typed ISO offset.
-    if (target.instant === instant || (drafts[kind].source === 'input' && target.error)) return;
+    if (target.instant === instant || (drafts[kind].source === 'input' && (target.error || target.invalidDraft))) return;
     fill(kind, instant, source);
   }
 
@@ -153,7 +156,7 @@ export default function TimestampConverter({ locale }: ToolProps) {
 
   function editCalendar(fields: Partial<Omit<Drafts['calendar'], 'source'>>) {
     resetMessages();
-    setDrafts({ ...drafts, calendar: { ...drafts.calendar, ...fields, source: 'input' } });
+    setDrafts(previous => ({ ...previous, calendar: { ...previous.calendar, ...fields, source: 'input' } }));
   }
 
   const values = instant === undefined ? undefined : timestampValues(instant, locale, localZone);
@@ -229,11 +232,17 @@ export default function TimestampConverter({ locale }: ToolProps) {
             </div>
             <div className={s.fields} hidden={active !== 'calendar'}>
               <div className={s.calendar}>
-                <TextField label={t('日期', 'Date')} type="date" min="0001-01-01" max="9999-12-31"
-                  value={drafts.calendar.date} onChange={date => editCalendar({ date })}
+                <DatePickerField locale={locale} label={t('日期', 'Date')}
+                  value={drafts.calendar.date} draft={drafts.calendar.dateDraft ?? null}
+                  onDraftChange={draft => editCalendar({ dateDraft: draft ?? undefined })}
+                  onChange={date => editCalendar({ date })}
+                  aria-invalid={active === 'calendar' && !!fieldError || undefined}
                   aria-describedby={active === 'calendar' && fieldError ? calendarErrorId : undefined} />
-                <TextField label={t('时间（毫秒精度）', 'Time (millisecond precision)')} type="time" step="0.001"
-                  value={drafts.calendar.time} onChange={time => editCalendar({ time })}
+                <TimePickerField locale={locale} label={t('时间（毫秒精度）', 'Time (millisecond precision)')}
+                  value={drafts.calendar.time} draft={drafts.calendar.timeDraft ?? null}
+                  onDraftChange={draft => editCalendar({ timeDraft: draft ?? undefined })}
+                  onChange={time => editCalendar({ time })}
+                  aria-invalid={active === 'calendar' && !!fieldError || undefined}
                   aria-describedby={active === 'calendar' && fieldError ? calendarErrorId : undefined} />
               </div>
               <div className={s.inlineControl}>
