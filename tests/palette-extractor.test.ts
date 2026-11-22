@@ -257,6 +257,7 @@ it('registers the third bilingual Published tool in both regions', () => {
       'batch-file-renamer',
       'file-hash',
       'text-cleaner',
+      'text-diff',
     ]);
     expect(getAvailableTools(region, true)).toContain(tool);
     for (const locale of ['zh', 'en'] as const) {

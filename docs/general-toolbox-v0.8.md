@@ -1,10 +1,20 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner 已获得 CN/Global Published 源码资格，其余 15 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（14 Published / 15 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff 已获得 CN/Global Published 源码资格，其余 14 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（15 Published / 14 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+
+## Text Diff — V0.8-B8-D2 SEO 与 Beta 资格（2026-11-22）
+
+- 依据维护者对 D1 的验收和本轮授权，Text Diff 取得 CN/Global Published 源码资格。两地区各有中英文静态 Title、Meta Description、唯一 H1、专属像素图标、四项步骤、六项限制和四组 FAQ。Registry 的双语短文案用于目录，Canonical、hreflang、OG/Twitter、Sitemap、llms.txt 和同组推荐沿用既有机制。全站 29 款（15 Published / 14 Draft），每地区 30 个工具详情页、40 条公开发现 URL。
+- D1 的插入回归保持正确。原文 `123\n134` 与新文 `123\n2\n134` 比较只新增第 2 行，`134` 对应原文第 2 行、新文第 3 行。双 CodeMirror、Diff Viewer、双行号、仅变化视图的两行上下文、忽略行尾空白与独立 EOF 提示沿用 D1。行尾空白只参与匹配判定，编辑器内规范化换行。TXT 报告为 UTF-8 可读文本，标准 Git 补丁应用超出本工具范围。
+- `diff@9.0.0` 的逐行比较仍在工具专属同源 Worker 执行，保留 750ms 搜索预算、5 秒整体截止、任务取消和过期结果隔离。完整 diff BSD-3-Clause NOTICE 随 Text Diff 入口交付。Text Cleaner 与 Text Diff 共用一份 CodeMirror JS、SCSS 和完整 MIT NOTICE，编辑器 JS 由两个工具的懒加载入口引用。Astro 现有 ToolRuntime 会在工具详情页的 head 统一链接工具样式。其余 Draft、Lab 和 Fixture 的私有资源继续隔离。
+- 使用 Chrome 157 对正式静态产物进行操作验收，覆盖 CN 中文 Dark 桌面 1280px 和 Global 英文 Light 390px 视口。复核首次挂载、增删替换与连续空行、双侧行号、三个行类型颜色、EOF、空白忽略、上下文筛选、撤销重做、主题切换、清空单侧及长行滚动。临时拦截 Worker 请求，确认旧结果立即失效，失败期间复制/下载不可用，下一次编辑可恢复。用 1,200 行实测独立滚动、虚拟渲染和完整交付，另复用 D1 的 12,000 行局部变更和超时证据。
+- 两个视口共实际下载 10 份 TXT 并重新读取字节，与独立预期逐字节匹配。核对 MIME、中文、Tab、原文/新文行号、EOF/换行信息、当前模式、连续下载时间戳和完整的虚拟列表外数据。真实剪贴板内容与报告一致，复制/下载没有启动新比较。
+- `pnpm check`、相关定向测试、CN/Global 正式构建及产物守卫通过。D1 基线 `a14429a` 与本轮开发基线 `a5c6d5e` 的既有 CI 均通过。D2 以其提交对应的工作流结果为准。[D1 CI](https://github.com/librecosta/tool4furry/actions/runs/42052448668) · [开发基线 CI](https://github.com/librecosta/tool4furry/actions/runs/45001542571) · [develop CI](https://github.com/librecosta/tool4furry/actions/workflows/ci.yml?query=branch%3Adevelop)
+- L3 尚未复测 Firefox、Safari/WebKit、真实 iOS/Android、系统 IME 候选窗及极端资源压力。390px 是 Chromium 模拟视口。两地区均未部署。
 
 ## Text Diff — V0.8-B8-D1 正确性与工作区（2026-11-05）
 
-- Text Diff 保持 CN/Global Draft；全站仍为 29 款、14 Published / 15 Draft。本轮不改 SEO、Registry 资格、Text Cleaner 或共享编辑器实现。
+- D1 结束时 Text Diff 为 CN/Global Draft。其后的双语 SEO 与源码资格见上方 D2 记录。D1 未改 Text Cleaner 和共享编辑器实现。
 - 两个可编辑 CodeMirror 直接复用 TextEditor / TextEditorPane / TextWorkbench，桌面等宽，≤900px 同 DOM 纵向排列，各自清空。输入自动比较；结果区统一双行号、增删标识、全部/仅变化（两行上下文）、忽略行尾空白及复制/下载图标，不再使用 textarea 或手动比较按钮。
 - 保留 `diff@9.0.0`，以 `diffArrays()` 对齐逻辑行内容。结构化 DiffLine 同时保存真实原文/新文内容、各自行号与原始分隔符；统计、可视行和 TXT 报告均派生于这一结果。空文件为零行；`"\n"` 为一条空内容行；终止分隔符不会凭空生成下一条内容行。LF/CRLF/CR 作为行边界匹配，末尾换行差异独立记录，不把最后一行误判为替换。
 - `123\n134` → `123\n2\n134` 严格为 +1 / −0，`134` 为 equal 且对应原文第 2 / 新文第 3 行；新文额外带末尾换行也不会改变行匹配。忽略行尾空白只改变匹配键，输入不变；匹配后仍有尾空白差异的两份实际文本分别显示为中性行，不计入增删。

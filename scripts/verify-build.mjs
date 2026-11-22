@@ -79,7 +79,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -948,6 +948,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/batch-file-renamer/index.html') assertToolContent(dom, locale, generalToolboxContent['batch-file-renamer'], 4, 4, 6);
     if (page === 'tools/file-hash/index.html') assertToolContent(dom, locale, generalToolboxContent['file-hash'], 4, 4, 6);
     if (page === 'tools/text-cleaner/index.html') assertToolContent(dom, locale, generalToolboxContent['text-cleaner'], 4, 4, 6);
+    if (page === 'tools/text-diff/index.html') assertToolContent(dom, locale, generalToolboxContent['text-diff'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1498,46 +1499,112 @@ if (!published.some(tool => tool.id === 'file-hash')) {
   assert(entry.includes(notice.toString('base64')) || (await Promise.all(notices.map(file => readFile(resolve(root, file))))).some(bytes => bytes.equals(notice)),
     'Published File Hash delivers its complete MIT and upstream notices');
 }
-if (!published.some(tool => tool.id === 'text-cleaner')) {
-  assert(!files.some(file => /TextCleaner|TextEditor|codemirror\.NOTICE/.test(file)), 'Draft editor entries and notices stay private');
-  const editorNotice = (await readFile('src/ui/text-editor/codemirror.NOTICE.txt')).toString('base64');
-  for (const file of files.filter(file => /\.(js|css)$/.test(file))) {
-    const text = await readFile(resolve(root, file), 'utf8');
-    assert(!/data-text-editor|data-text-workbench|cm-editor|cm-content|cm-gutters|--t4f-editor-font/.test(text) && !text.includes(editorNotice), `Draft CodeMirror runtime/styles leaked: ${file}`);
-  }
-} else {
-  const entries = files.filter(file => /(?:^|\/)TextCleaner[.-][\w-]+\.js$/.test(file));
-  assert.equal(entries.length, 1, 'Published Text Cleaner retains one separate lazy entry');
-  const entry = await readFile(resolve(root, entries[0]), 'utf8');
-  for (const marker of ['data-text-cleaner', 'data-text-editor', 'data-text-workbench', 'data-editor-license', 'cm-content'])
-    assert(entry.includes(marker), `Published Text Cleaner delivers its real editor: ${marker}`);
-  const entryName = entries[0].split('/').at(-1);
-  const otherScripts = await Promise.all(files.filter(file => file.endsWith('.js') && file !== entries[0])
-    .map(async file => ({ file, text: await readFile(resolve(root, file), 'utf8') })));
-  const owners = otherScripts.filter(({ text }) => {
-    const ast = ts.createSourceFile('chunk.js', text, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
-    let found = false;
-    function visit(node) {
-      if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword &&
-        ts.isStringLiteralLike(node.arguments[0]) && node.arguments[0].text.endsWith(`/${entryName}`)) found = true;
-      ts.forEachChild(node, visit);
-    }
-    visit(ast);
-    return found;
+{
+  const editorTools = [
+    ['text-cleaner', 'TextCleaner'],
+    ['text-diff', 'TextDiff'],
+  ].filter(([id]) => published.some(tool => tool.id === id));
+  const scripts = new Map(await Promise.all(files.filter(file => file.endsWith('.js'))
+    .map(async file => [file, await readFile(resolve(root, file), 'utf8')])));
+  const findAsset = (stem, extension) => files.filter(file => {
+    const name = file.split('/').at(-1);
+    return name.startsWith(stem + '.') && name.endsWith(extension);
   });
-  assert.equal(owners.length, 1, 'One explicit dynamic import reaches the editor tool');
-  assert(owners[0].file.includes('ToolRuntime'), 'The editor is reached through the existing tool runtime loader');
-  for (const { file, text } of otherScripts)
-    assert(!/data-text-editor|cm-content|cm-gutters|--t4f-editor-font/.test(text), `CodeMirror does not enter an eager/shared script: ${file}`);
-  const styles = files.filter(file => /(?:^|\/)TextCleaner[.-][\w-]+\.css$/.test(file));
-  assert.equal(styles.length, 1, 'Text Cleaner delivers its own lazy stylesheet');
-  const css = await readFile(resolve(root, styles[0]), 'utf8');
-  assert(css.includes('@layer t4f-ui') && css.includes('@layer t4f-tools') && css.includes('--t4f-input-surface'), 'Editor and tool SCSS retain their layered theme ownership');
+  const basenameOf = file => file.split('/').at(-1);
+  function importsOf(file, dynamic) {
+    const name = basenameOf(file);
+    return [...scripts].filter(([owner, text]) => {
+      if (owner === file || !text.includes(name)) return false;
+      const ast = ts.createSourceFile(owner, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+      let found = false;
+      const matches = node => node && ts.isStringLiteralLike(node) && node.text.endsWith('/' + name);
+      function visit(node) {
+        if (dynamic && ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword &&
+          matches(node.arguments[0])) found = true;
+        if (!dynamic && (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&
+          matches(node.moduleSpecifier)) found = true;
+        if (!found) ts.forEachChild(node, visit);
+      }
+      visit(ast);
+      return found;
+    }).map(([owner]) => owner);
+  }
+
+  const runtimeMarkers = /data-text-editor|data-text-workbench|cm-editor|cm-content|cm-gutters|--t4f-editor-font/;
   const notice = await readFile('src/ui/text-editor/codemirror.NOTICE.txt');
-  const notices = files.filter(file => file.includes('codemirror.NOTICE'));
-  assert.equal(notices.length, 1, 'One complete CodeMirror runtime license resource');
-  assert((await readFile(resolve(root, notices[0]))).equals(notice), 'Published editor distributes the complete installed MIT notices');
-  assert(entry.includes(notices[0].split('/').at(-1)), 'The editor lazy entry owns its notice URL');
+  const notices = findAsset('codemirror.NOTICE', '.txt');
+  const runtimeOwners = [...scripts].filter(([, text]) => runtimeMarkers.test(text)).map(([file]) => file);
+  const entries = new Map();
+  for (const [id, stem] of editorTools) {
+    const [entry, ...extraEntries] = findAsset(stem, '.js');
+    assert(entry && !extraEntries.length, 'One lazy tool entry: ' + id);
+    entries.set(id, entry);
+    assert(scripts.get(entry).includes('data-' + id), 'Real editor tool implementation: ' + id);
+    const [loader, ...extraLoaders] = importsOf(entry, true);
+    assert(loader && loader.includes('ToolRuntime') && !extraLoaders.length, 'Only ToolRuntime dynamically imports ' + id);
+    assert.deepEqual(importsOf(entry, false), [], 'No static import of ' + id);
+    const [style, ...extraStyles] = findAsset(stem, '.css');
+    assert(style && !extraStyles.length, 'One stylesheet owned by ' + id);
+    assert(scripts.get(loader).includes(style), 'ToolRuntime references the tool stylesheet: ' + id);
+    assert((await readFile(resolve(root, style), 'utf8')).includes('@layer t4f-tools'), 'Tool SCSS keeps its layer: ' + id);
+  }
+  if (editorTools.length === 0) {
+    assert(!files.some(file => /TextCleaner|TextDiff|TextEditor|TextWorkbench|codemirror\.NOTICE/.test(file)), 'Unavailable editor entries and notices stay private');
+    assert(!runtimeOwners.length && !runtimeMarkers.test(combinedCSS), 'Unavailable CodeMirror runtime/styles stay private');
+    assert(![...scripts.values()].some(text => text.includes(notice.toString('base64'))), 'Unavailable CodeMirror notice stays private');
+  } else {
+    assert.equal(runtimeOwners.length, 1, 'One CodeMirror runtime for the available editor tools');
+    const [editor] = runtimeOwners;
+    const editorSource = scripts.get(editor);
+    for (const marker of ['data-text-editor', 'data-text-workbench', 'data-editor-license', 'cm-content'])
+      assert(editorSource.includes(marker), 'Complete editor runtime: ' + marker);
+    const shared = editorTools.length > 1;
+    if (shared) {
+      assert.deepEqual(importsOf(editor, false).sort(), [...entries.values()].sort(), 'Only the lazy editor tools import the shared runtime');
+      assert.deepEqual(importsOf(editor, true), [], 'No separate runtime entry into the shared editor');
+    } else assert.equal(editor, [...entries.values()][0], 'Single editor consumer owns its runtime');
+    const styles = findAsset(shared ? 'TextWorkbench' : editorTools[0][1], '.css');
+    assert.equal(styles.length, 1, 'One stylesheet for the editor components');
+    const css = await readFile(resolve(root, styles[0]), 'utf8');
+    assert(css.includes('@layer t4f-ui') && css.includes('--t4f-input-surface'), 'Editor SCSS retains its layer and theme tokens');
+    const [loader] = importsOf([...entries.values()][0], true);
+    assert(scripts.get(loader).includes(styles[0]), 'ToolRuntime references the editor stylesheet');
+    assert.equal(notices.length, 1, 'One complete CodeMirror runtime license resource');
+    assert((await readFile(resolve(root, notices[0]))).equals(notice), 'The emitted editor license matches the complete MIT notices');
+    assert.deepEqual([...scripts].filter(([, text]) => text.includes(basenameOf(notices[0]))).map(([file]) => file),
+      [editor], 'Only the editor runtime owns the MIT notice URL');
+  }
+
+  const diffEntry = entries.get('text-diff');
+  const workers = files.filter(file => /(?:^|\/)diff\.worker[.-][\w-]+\.js$/.test(file));
+  const diffMarkers = /data-diff-viewer|data-diff-type|data-diff-license|t4f-text-diff|Text difference report/;
+  const diffNotice = await readFile('src/tools/text-diff/diff.NOTICE.txt');
+  const noticesOnDisk = findAsset('diff.NOTICE', '.txt');
+  const inlineOwners = [...scripts].filter(([, text]) => text.includes(diffNotice.toString('base64'))).map(([file]) => file);
+  assert.deepEqual([...scripts].filter(([, text]) => diffMarkers.test(text)).map(([file]) => file),
+    diffEntry ? [diffEntry] : [], 'Viewer, report and Worker constructor stay in the lazy Text Diff entry');
+  assert.equal(workers.length, diffEntry ? 1 : 0, 'Local diff Worker follows Text Diff publication');
+  assert.equal(combinedCSS.includes('--diff-row-surface'), Boolean(diffEntry), 'Private Text Diff SCSS follows publication');
+  if (diffEntry) {
+    const [worker] = workers;
+    assert.deepEqual([...scripts].filter(([, text]) => text.includes(basenameOf(worker))).map(([file]) => file),
+      [diffEntry], 'Only Text Diff owns the local Worker URL');
+    assert.match(scripts.get(diffEntry), /new Worker\(new URL\(/, 'Text Diff constructs the bundled Worker');
+    assert.deepEqual([...scripts].filter(([, text]) => text.includes('oneChangePerToken')).map(([file]) => file),
+      [worker], 'Installed diff implementation stays within the Worker');
+    assert(scripts.get(worker).includes('self.onmessage') && scripts.get(worker).includes('self.postMessage'),
+      'Local Worker contains the comparison message protocol');
+    if (noticesOnDisk.length) {
+      assert.equal(noticesOnDisk.length, 1);
+      assert.deepEqual(inlineOwners, []);
+      assert((await readFile(resolve(root, noticesOnDisk[0]))).equals(diffNotice));
+      assert.deepEqual([...scripts].filter(([, text]) => text.includes(basenameOf(noticesOnDisk[0]))).map(([file]) => file),
+        [diffEntry], 'Only Text Diff owns the BSD notice URL');
+    } else assert.deepEqual(inlineOwners, [diffEntry], 'Text Diff distributes the complete BSD notice inline');
+  } else {
+    assert.deepEqual(inlineOwners, []);
+    assert.deepEqual(noticesOnDisk, []);
+  }
 }
 for (const marker of ['t4f-markdown-preview'])
   assert(!combinedCSS.includes(marker), `Draft-only content CSS leaked: ${marker}`);

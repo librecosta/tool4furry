@@ -5,20 +5,28 @@ import { dirname, join } from 'node:path';
 import { expect, it } from 'vitest';
 import { tools } from '../src/tools/registry';
 import { toolBuildDefines } from '../src/tools/build-availability';
+import { draftIds } from './fixtures/general-toolbox';
 
 const read = (name: string) => readFileSync(name, 'utf8');
-it('keeps the real diff worker and viewer behind the existing Draft loader, sharing only editor infrastructure', () => {
+it('publishes Text Diff in both regions while keeping its Worker and viewer behind the lazy loader', () => {
   expect(tools).toHaveLength(29);
-  expect(tools.filter(tool => tool.status === 'published')).toHaveLength(14);
-  expect(tools.find(tool => tool.id === 'text-diff')?.status).toBe('draft');
-  for (const region of ['cn', 'global'] as const) expect(toolBuildDefines(tools, region)['import.meta.env.T4F_TOOL_TEXT_DIFF_AVAILABLE']).toBe('false');
+  expect(tools.filter(tool => tool.status === 'published')).toHaveLength(15);
+  expect(tools.filter(tool => tool.status === 'draft').map(tool => tool.id)).toEqual(draftIds);
+  expect(tools.find(tool => tool.id === 'text-diff')).toMatchObject({ status: 'published', regions: ['cn', 'global'] });
+  for (const region of ['cn', 'global'] as const) {
+    const defines = toolBuildDefines(tools, region);
+    expect(defines['import.meta.env.T4F_TOOL_TEXT_DIFF_AVAILABLE']).toBe('true');
+    expect(Object.values(defines).filter(value => value === 'false')).toHaveLength(14);
+  }
   expect(read('src/tools/loaders.ts')).toMatch(/T4F_TOOL_TEXT_DIFF_AVAILABLE[\s\S]*?import\('\.\/text-diff\/TextDiff'\)/);
   expect(read('src/tools/text-diff/comparison.ts')).toContain("new URL('./diff.worker.ts', import.meta.url)");
   expect(read('astro.config.mjs')).toMatch(/include:\s*\[[^\]]*'diff'/); // Avoid a first-task DEV optimizer reload.
   expect(read('src/tools/text-diff/diff.worker.ts')).toContain("from './core'");
   expect(read('src/tools/text-diff/TextDiff.tsx')).toContain("from '../../ui/text-editor/TextEditor'");
   expect(read('src/tools/text-diff/TextDiff.tsx')).toContain('./diff.NOTICE.txt?url');
-  for (const path of ['src/tools/registry.ts', 'src/tools/ToolRuntime.tsx', 'src/tools/general/ui.tsx', 'src/layouts/SiteLayout.astro']) expect(read(path)).not.toMatch(/diff\.worker|from ['"]diff['"]|text-diff\/core/);
+  for (const path of ['src/tools/registry.ts', 'src/tools/ToolRuntime.tsx', 'src/tools/general/ui.tsx', 'src/layouts/SiteLayout.astro']) {
+    expect(read(path), path).not.toMatch(/diff\.worker|from ['"]diff['"]|text-diff\/(?:TextDiff|DiffViewer|core|report|comparison)/);
+  }
 });
 it('retains the installed diff 9.0.0 complete BSD notice', () => {
   const require = createRequire(import.meta.url);

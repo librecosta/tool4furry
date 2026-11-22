@@ -6,18 +6,18 @@ export const definition = {
   group: 'text-processing',
   roles: ['developer', 'operations'],
   mode: 'form',
-  status: 'draft',
+  status: 'published',
   regions: ['cn', 'global'],
   copy: {
     zh: {
       title: '文本对比',
-      description: '逐行比较文本，查看新增与删除内容。',
-      summary: '逐行比较文本，查看新增与删除内容。',
+      description: '实时逐行对比文本，查看新增、删除和对应行号。',
+      summary: '双栏编辑并查看文本差异，支持筛选变化与导出报告。',
     },
     en: {
       title: 'Text Diff',
-      description: 'Compare texts line by line to see additions and removals.',
-      summary: 'Compare texts line by line to see additions and removals.',
+      description: 'Compare text line by line with live additions, deletions and line numbers.',
+      summary: 'Edit both versions, review changes and export a readable diff report.',
     },
   },
 } satisfies ToolDefinition;
