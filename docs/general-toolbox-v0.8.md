@@ -1,13 +1,21 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools 已获得 CN/Global Published 源码资格，其余 13 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（16 Published / 13 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter 已获得 CN/Global Published 源码资格，其余 12 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（17 Published / 12 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+
+## JSON Formatter — V0.8-B10-D2 SEO 与 Beta 资格
+
+- JSON Formatter 依据维护者授权取得 CN/Global Published 源码资格。通过既有 Astro 内容表静态输出双语 Title、Description、H1、四项步骤、六项限制与四组 FAQ。Registry 保留开发工具分类和开发者角色。工具目录、Sitemap 与 llms.txt 自动收录，每地区 34 个工具详情页。
+- 冻结快速与高级工作区。双 CodeMirror 支持语法高亮、行列诊断和定位，默认 2 空格，高级可选四空格及只读分页树。严格格式化和压缩保留数字、字符串转义、字段顺序及重复键。原处理边界为 32 MiB 文件、16,777,216 个输入与 33,554,432 个输出 UTF-16 代码单元、500,000 个索引值、每页 40 个直属子节点与 12 秒 Worker 截止。
+- JSON Formatter、Text Cleaner、Text Diff 与 Subtitle Tools 按需共享 CodeMirror 和完整 MIT 通知。JSON 的语法扩展、树形视图样式、Worker 与完整独立 MIT 通知仅由本工具交付。首屏样式链接仅出现在实际使用页面，Markdown Editor 等 12 款 Draft 的路由与私有资源继续排除。
+- Chromium 157 使用两地区正式产物，复验 CN 中文深色 1280px 和 Global 英文浅色 390px 模拟视口。通过文件选择、拖放、错误定位与恢复、树形键盘操作、剪贴板、主题与刷新复检。重新读取 10 份真实 JSON 下载，对照预期原文字面量、重复字段、顺序、MIME 和安全去重文件名。`pnpm check`、271 项定向测试与两地区正式构建和产物守卫通过。
+- D1 已验证 28,000 项大型数组的完整输出，核心与资源边界未改动。D1 基线 CI 已通过，D2 以对应提交的既有工作流为准。Firefox、Safari/WebKit、真实 iOS/Android、系统输入法与极端压力尚未复测。[D1 基线 CI](https://github.com/librecosta/tool4furry/actions/runs/45013751888) · [develop CI](https://github.com/librecosta/tool4furry/actions/workflows/ci.yml?query=branch%3Adevelop)
 
 ## JSON Formatter — V0.8-B10-D1 JSON 工作区与结构浏览
 
 - JSON Workspace 默认载入合法示例。快速模式支持 UTF-8 `.json` 文件选择、拖放和编辑器粘贴，自动校验并以 2 空格格式化或压缩。高级模式保留独立的 2/4 空格选项及代码/树形视图。复制和下载始终交付当前完整结果，文件名使用安全来源名称和毫秒时间戳。
 - 严格解析器以原文范围记录 JSON 值和字段，用迭代方式重放 Token，保留数字字面量、字符串转义、字段顺序及重复字段。支持顶层标量和空集合。诊断显示真实 UTF-16 行列并可跳到标记，输入变更后旧结果立即失效。文件支持 UTF-8 BOM，读入失败保留当前输入。
 - 工具专属同源 Worker 保存解析索引并重用同一文档的格式化与树形查询。较大输入防抖，旧请求可以终止，后台处理有 12 秒截止。每个展开分支每页挂载最多 40 个直属子节点，完整值可在详情中分页查看。文件读取上限 32 MiB，输入与输出上限分别为 16,777,216 和 33,554,432 个 UTF-16 代码单元，索引上限 500,000 个 JSON 值。没有固定嵌套深度，缩进扩张达到输出预算时可以尝试压缩。实际容量取决于浏览器和设备。
-- 共享 CodeMirror 负责编辑生命周期，工具入口按需加载 `@codemirror/lang-json@6.0.2` 高亮扩展和 `@lezer/json@1.0.3` 语法包，完整 MIT 通知随 JSON 工具交付。JSON Formatter 保持 CN/Global Draft。两地区正式产物守卫覆盖其路由、私有 JS/CSS、Worker、语法包及通知。全站 29 款（16 Published / 13 Draft）。
+- 共享 CodeMirror 负责编辑生命周期，工具入口按需加载 `@codemirror/lang-json@6.0.2` 高亮扩展和 `@lezer/json@1.0.3` 语法包，完整 MIT 通知随 JSON 工具交付。D1 结束时，JSON Formatter 仍为 CN/Global Draft，全站 29 款（16 Published / 13 Draft）。该阶段两地区守卫验证了其路由、私有 JS/CSS、Worker、语法包及通知均排除于正式产物。
 - Chromium 157 在 CN 中文深色 1280px 和 Global 英文浅色 390px 模拟视口核对截图，实测语法高亮、错误定位、分页树、文件导入、剪贴板、主题及刷新。共复读 10 份实际下载的 UTF-8 JSON，并核对完整内容、MIME 与安全去重文件名。每个视口均导出 28,000 项数组的格式化与压缩结果，输入约 157 万 UTF-16 代码单元，本机样本最长主线程任务约 205ms。Firefox、Safari/WebKit、真实移动设备、系统 IME 和极限资源压力尚未复测。
 - `pnpm check`、142 项定向及共享编辑器、布局回归测试与 CN/Global 正式构建通过。另用 20,000 次固定种子语法扰动比对原生严格校验，并复核可接受结果的格式化稳定性。DEV 指南同步移除旧配额，SEO 元数据和发布资格保持原样。
 

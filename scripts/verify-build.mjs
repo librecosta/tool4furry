@@ -79,7 +79,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -843,13 +843,14 @@ for (const page of htmlFiles) {
   );
   const dom = new JSDOM(content).window.document;
   const editorStyles = [...dom.head.querySelectorAll('link[rel="stylesheet"]')]
-    .flatMap(link => link.getAttribute('href')?.match(/\/(SubtitleTools|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
+    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
   const toolId = dom.querySelector('main[data-tool-id]')?.dataset.toolId;
   const expectedEditorStyles = [];
   if (toolId === 'subtitle-tools') expectedEditorStyles.push('SubtitleTools');
-  if (['subtitle-tools', 'text-cleaner', 'text-diff'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
+  if (toolId === 'json-formatter') expectedEditorStyles.push('JsonFormatter');
+  if (['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
     expectedEditorStyles.push('TextEditor');
-  if (['text-cleaner', 'text-diff'].includes(toolId) && files.some(file => /\/TextWorkbench\.[\w-]+\.css$/.test(file)))
+  if (['json-formatter', 'text-cleaner', 'text-diff'].includes(toolId) && files.some(file => /\/TextWorkbench\.[\w-]+\.css$/.test(file)))
     expectedEditorStyles.push('TextWorkbench');
   assert.deepEqual(editorStyles.sort(), expectedEditorStyles.sort(), 'Only owner routes link editor styles on first paint: ' + page);
   const dataScripts = [...dom.querySelectorAll('script[type="application/ld+json"]')];
@@ -960,6 +961,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/text-cleaner/index.html') assertToolContent(dom, locale, generalToolboxContent['text-cleaner'], 4, 4, 6);
     if (page === 'tools/text-diff/index.html') assertToolContent(dom, locale, generalToolboxContent['text-diff'], 4, 4, 6);
     if (page === 'tools/subtitle-tools/index.html') assertToolContent(dom, locale, generalToolboxContent['subtitle-tools'], 4, 4, 6);
+    if (page === 'tools/json-formatter/index.html') assertToolContent(dom, locale, generalToolboxContent['json-formatter'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1517,6 +1519,7 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     ['text-cleaner', 'TextCleaner'],
     ['text-diff', 'TextDiff'],
     ['subtitle-tools', 'SubtitleTools'],
+    ['json-formatter', 'JsonFormatter'],
   ].filter(([id]) => published.some(tool => tool.id === id));
   const scripts = new Map(await Promise.all(files.filter(file => file.endsWith('.js'))
     .map(async file => [file, await readFile(resolve(root, file), 'utf8')])));
@@ -1544,7 +1547,7 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     }).map(([owner]) => owner);
   }
 
-  const runtimeMarkers = /data-text-editor|cm-editor|cm-content|cm-gutters|--t4f-editor-font/;
+  const runtimeMarkers = /data-text-editor|data-editor-license|cm-content|cm-lineNumbers/;
   const notice = await readFile('src/ui/text-editor/codemirror.NOTICE.txt');
   const notices = findAsset('codemirror.NOTICE', '.txt');
   const runtimeOwners = [...scripts].filter(([, text]) => runtimeMarkers.test(text)).map(([file]) => file);
@@ -1554,7 +1557,8 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     const [entry, ...extraEntries] = findAsset(stem, '.js');
     assert(entry && !extraEntries.length, 'One lazy tool entry: ' + id);
     entries.set(id, entry);
-    assert(scripts.get(entry).includes('data-' + id), 'Real editor tool implementation: ' + id);
+    const marker = id === 'json-formatter' ? 'data-json-language-license' : 'data-' + id;
+    assert(scripts.get(entry).includes(marker), 'Real editor tool implementation: ' + id);
     const [loader, ...extraLoaders] = importsOf(entry, true);
     assert(loader && loader.includes('ToolRuntime') && !extraLoaders.length, 'Only ToolRuntime dynamically imports ' + id);
     assert.deepEqual(importsOf(entry, false), [], 'No static import of ' + id);
@@ -1573,24 +1577,50 @@ if (!published.some(tool => tool.id === 'file-hash')) {
   for (const [id, stem] of [['json-formatter', 'JsonFormatter'], ['markdown-editor', 'MarkdownEditor']])
     if (!published.some(tool => tool.id === id))
       assert(!findAsset(stem, '.js').length && !findAsset(stem, '.css').length, 'Draft editor has no private entry: ' + id);
-  if (!published.some(tool => tool.id === 'json-formatter')) {
-    const jsonNotice = await readFile('src/tools/json-formatter/json-language.NOTICE.txt');
-    const jsonMarkers = /data-json-language-license|t4f-json-workspace|trailingComma.{0,30}expectedKey|JsonText True False Null Number String/;
-    assert(!files.some(file => /(?:^|\/)(?:json\.worker|json-language\.NOTICE)[.-]/.test(file)),
-      'Draft JSON Worker and language notice stay out of the build');
-    assert(![...scripts.values()].some(text => jsonMarkers.test(text) || text.includes(jsonNotice.toString('base64'))),
-      'Draft JSON workspace, parser, Lezer grammar and inline notice stay out of shared chunks');
-    assert(!/\._?(?:nodeLabel|endMarker)[_-]/.test(combinedCSS), 'Draft JSON tree and diagnostics styles stay private');
+  const jsonEntry = entries.get('json-formatter');
+  const jsonWorkers = files.filter(file => /(?:^|\/)json\.worker[.-][\w-]+\.js$/.test(file));
+  const jsOwners = matches => [...scripts].filter(([, source]) => matches(source)).map(([file]) => file);
+  const editorSelectors = /cm-editor|cm-gutters|--t4f-editor-font/;
+  const jsonMarkers = /data-json-language-license|t4f-json-workspace|JsonText True False Null Number String/;
+  assert.deepEqual(jsOwners(source => jsonMarkers.test(source)), jsonEntry ? [jsonEntry] : [],
+    'JSON workspace, Worker constructor and Lezer grammar belong to the lazy JSON entry');
+  const jsonStyles = cssFiles.filter((_, index) => /\._?(?:nodeLabel|endMarker)[_-]/.test(outputCSS[index]));
+  assert.deepEqual(jsonStyles, jsonEntry ? findAsset('JsonFormatter', '.css') : [], 'JSON tree and diagnostics styles stay private');
+  assert.equal(jsonWorkers.length, jsonEntry ? 1 : 0, 'Local JSON Worker follows publication');
+  assert.deepEqual(jsOwners(source => source.includes('trailingComma') && source.includes('[0-9a-fA-F]')),
+    jsonWorkers, 'Strict JSON parser stays inside the local Worker');
+  const jsonNotice = await readFile('src/tools/json-formatter/json-language.NOTICE.txt');
+  const jsonNoticeFiles = files.filter(file => /(?:^|\/)json-language\.NOTICE[.-]/.test(file));
+  const inlineJsonNotice = jsOwners(source => source.includes(jsonNotice.toString('base64')));
+  if (jsonEntry) {
+    const [worker] = jsonWorkers;
+    assert.deepEqual(jsOwners(source => source.includes(basenameOf(worker))), [jsonEntry], 'Only JSON Formatter owns the Worker URL');
+    assert(scripts.get(worker).includes('self.onmessage') && scripts.get(worker).includes('self.postMessage'),
+      'JSON Worker contains its message protocol');
+    for (const marker of ['data-json-language-license', 't4f-json-workspace', 'JsonText True False Null Number String'])
+      assert(scripts.get(jsonEntry).includes(marker), 'Complete lazy JSON entry: ' + marker);
+  }
+  if (jsonEntry && jsonNoticeFiles.length) {
+    assert.equal(jsonNoticeFiles.length, 1);
+    assert.deepEqual(inlineJsonNotice, []);
+    assert((await readFile(resolve(root, jsonNoticeFiles[0]))).equals(jsonNotice), 'JSON MIT notice matches the complete source');
+    assert.deepEqual(jsOwners(source => source.includes(basenameOf(jsonNoticeFiles[0]))), [jsonEntry]);
+  } else {
+    assert.deepEqual(jsonNoticeFiles, []);
+    assert.deepEqual(inlineJsonNotice, jsonEntry ? [jsonEntry] : [], 'Only the JSON tool distributes the complete inline MIT notice');
   }
 
   if (editorTools.length === 0) {
     assert(!files.some(file => /SubtitleTools|TextCleaner|TextDiff|TextEditor|TextWorkbench|codemirror\.NOTICE/.test(file)), 'Unavailable editor entries and notices stay private');
-    assert(!runtimeOwners.length && !workbenchOwners.length && !runtimeMarkers.test(combinedCSS), 'Unavailable CodeMirror runtime/styles stay private');
+    assert(!runtimeOwners.length && !workbenchOwners.length && !jsOwners(source => editorSelectors.test(source)).length &&
+      !editorSelectors.test(combinedCSS), 'Unavailable CodeMirror runtime/styles stay private');
     assert(![...scripts.values()].some(text => text.includes(notice.toString('base64'))), 'Unavailable CodeMirror notice stays private');
   } else {
     assert.equal(runtimeOwners.length, 1, 'One CodeMirror runtime for the available editor tools');
     const [editor] = runtimeOwners;
     const editorSource = scripts.get(editor);
+    assert.deepEqual(jsOwners(source => editorSelectors.test(source)).sort(),
+      [...new Set([editor, ...(jsonEntry ? [jsonEntry] : [])])].sort(), 'Only CodeMirror and the private JSON editor theme contain editor selectors');
     for (const marker of ['data-text-editor', 'data-editor-license', 'cm-content'])
       assert(editorSource.includes(marker), 'Complete editor runtime: ' + marker);
     const shared = editorTools.length > 1;
@@ -1611,7 +1641,7 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     if (subtitleEntry && workbenchEntries.length > 1) {
       const [workbench] = workbenchOwners;
       assert.equal(workbenchOwners.length, 1, 'One separate dual-editor workbench');
-      assert.deepEqual(importsOf(workbench, false).sort(), workbenchEntries.sort(), 'Only the two dual-editor tools import TextWorkbench');
+      assert.deepEqual(importsOf(workbench, false).sort(), workbenchEntries.sort(), 'Only the dual-editor tools import TextWorkbench');
       assert.deepEqual(importsOf(workbench, true), [], 'No separate entry into TextWorkbench');
       await assertEditorStyle('TextWorkbench');
     } else {

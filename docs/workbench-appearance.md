@@ -48,7 +48,7 @@ Batch File Renamer 当前使用内嵌文件名组合器，快速/高级共享名
 
 - JSON Formatter 上方使用紧凑导入条和快速/高级切换。下面复用等高输入和结果面板，校验状态及定位入口在左侧底部，格式化、压缩和高级视图设置在右侧底部。只读树放在同一结果面板主体，分支按页挂载，完整原值在节点详情查看，交付文本与代码视图一致。
 
-正式构建中 Text Cleaner、Text Diff 和 Subtitle Tools 按需复用同一份 CodeMirror 和完整 MIT NOTICE。JSON Formatter 与 Markdown Editor 的 Draft 私有资源继续隔离，JSON 语言及语法依赖的 MIT 通知跟随 JSON 工具入口。见 [编辑器生命周期测试](../tests/text-editor.test.tsx)、[交付边界测试](../tests/text-editor-delivery.test.ts) 和 [通用工具说明](general-toolbox-v0.8.md#json-formatter--v08-b10-d1-json-工作区与结构浏览)。
+正式构建中 Text Cleaner、Text Diff、Subtitle Tools 和 JSON Formatter 按需复用同一份 CodeMirror 和完整 MIT NOTICE。JSON 语言及语法依赖的 MIT 通知跟随 JSON 工具入口，Markdown Editor 等 Draft 的私有资源继续隔离。见 [编辑器生命周期测试](../tests/text-editor.test.tsx)、[交付边界测试](../tests/text-editor-delivery.test.ts) 和 [通用工具说明](general-toolbox-v0.8.md#json-formatter--v08-b10-d2-seo-与-beta-资格)。
 
 ## 静态说明与 FAQ
 

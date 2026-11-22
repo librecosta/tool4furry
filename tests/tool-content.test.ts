@@ -11,6 +11,7 @@ import { imageConverterContent } from '../src/site/image-converter-content';
 import { imageConverterDefinition } from '../src/tools/image-converter/definition';
 import { definition as textDiff } from '../src/tools/text-diff/definition';
 import { definition as subtitles } from '../src/tools/subtitle-tools/definition';
+import { definition as json } from '../src/tools/json-formatter/definition';
 
 const content = {
   title: 'Test — Tool4Furry',
@@ -22,6 +23,48 @@ const map: ToolContentMap = {
   one: { zh: content, en: { ...content, h1: 'English heading' } },
 };
 describe('Astro-only content boundary', () => {
+  it('publishes the JSON Formatter bilingual guide and short copy for its frozen workspace', () => {
+    const expected = {
+      zh: {
+        title: '在线 JSON 格式化工具 - 校验、压缩与树形查看 | Tool4Furry',
+        description: '在线格式化、压缩和校验 JSON。支持语法高亮、错误行列定位、可折叠树形结构浏览与复制下载，保留大整数及原始数字字面量，全部在浏览器本地完成。',
+        h1: 'JSON 格式化',
+        intro: '粘贴或导入 JSON，实时检查语法并查看格式化结果。还可以压缩内容，或通过树形视图浏览数据结构。',
+      },
+      en: {
+        title: 'JSON Formatter & Validator - Beautify, Minify & Explore | Tool4Furry',
+        description: 'Format, minify and validate JSON in your browser. Find syntax errors by line and column, explore a collapsible tree, and preserve numeric literals, key order and duplicate keys.',
+        h1: 'JSON Formatter',
+        intro: 'Paste or import JSON to validate its syntax, format or minify the content, and explore its structure in a readable tree.',
+      },
+    };
+    expect(json).toMatchObject({
+      id: 'json-formatter', slug: 'json-formatter', category: 'development', group: 'developer-utilities',
+      roles: ['developer'], mode: 'form', status: 'published', regions: ['cn', 'global'],
+      copy: {
+        zh: { title: 'JSON 格式化', description: '实时校验、格式化和压缩 JSON，支持语法诊断与树形结构查看。', summary: '编辑并校验 JSON，查看格式化结果或浏览可折叠的数据树。' },
+        en: { title: 'JSON Formatter', description: 'Validate, format and minify JSON with syntax diagnostics and tree browsing.', summary: 'Edit JSON, inspect errors and explore its structure in a collapsible tree.' },
+      },
+    });
+    for (const region of json.regions) for (const locale of ['zh', 'en'] as const) {
+      const page = getToolPageContent(json, region, toolPageContents, false, locale);
+      expect(page).toMatchObject(expected[locale]);
+      expect(page.title.match(/Tool4Furry/g)).toHaveLength(1);
+      expect(page.steps).toHaveLength(4);
+      expect(page.limitations).toHaveLength(6);
+      expect(page.faq).toHaveLength(4);
+      expect(page.limitations![0]).toMatch(/JSON5.*不支持|不支持.*JSON5|JSON5 syntax are not supported/);
+      expect(page.limitations![1]).toMatch(/重复字段|duplicate keys/);
+      expect(page.limitations![2]).toMatch(/只读树形|read-only structural tree/);
+      expect(page.limitations![3]).toMatch(/32 MiB.*16,777,216.*33,554,432.*500,000/);
+      expect(page.limitations![4]).toMatch(/40.*直属子节点|40 direct child nodes/);
+      expect(page.limitations![5]).toMatch(/不执行 JSON Schema.*不会自动修复|not JSON Schema.*does not automatically repair/);
+      expect(JSON.stringify(page)).not.toMatch(/50 万字符|500,000 characters|128 层|128 nesting|JSONPath|JSONC|YAML/);
+      expect(getRelatedTools(json, region)).toEqual([]);
+      if (locale === 'en') expect(JSON.stringify(page)).not.toMatch(/\p{Script=Han}/u);
+    }
+  });
+
   it('publishes bilingual Subtitle Tools content and preserves the Registry classification', () => {
     const expected = {
       zh: {

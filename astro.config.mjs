@@ -11,9 +11,10 @@ const toolDefines = toolBuildDefines(tools, region);
 assertToolLoaderContract(tools, readFileSync(new URL('./src/tools/loaders.ts', import.meta.url), 'utf8'));
 
 const editorStyleOwners = {
+  JsonFormatter: ['json-formatter'],
   SubtitleTools: ['subtitle-tools'],
-  TextEditor: ['subtitle-tools', 'text-cleaner', 'text-diff'],
-  TextWorkbench: ['text-cleaner', 'text-diff'],
+  TextEditor: ['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff'],
+  TextWorkbench: ['json-formatter', 'text-cleaner', 'text-diff'],
 };
 const scopeEditorStyles = {
   name: 'scope-tool-editor-styles',
@@ -30,7 +31,7 @@ const scopeEditorStyles = {
         const headEnd = html.indexOf('</head>');
         const head = html.slice(0, headEnd);
         const scoped = head.replace(
-          /<link rel="stylesheet" href="\/_astro\/(SubtitleTools|TextEditor|TextWorkbench)\.[\w-]+\.css">/g,
+          /<link rel="stylesheet" href="\/_astro\/(JsonFormatter|SubtitleTools|TextEditor|TextWorkbench)\.[\w-]+\.css">/g,
           (link, stem) => editorStyleOwners[stem].includes(tool.id) ? link : '',
         );
         if (scoped !== head) await writeFile(destination, scoped + html.slice(headEnd));
