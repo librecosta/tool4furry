@@ -55,6 +55,8 @@ URL & Base64（`url-base64`）依据 V0.8-B11-D2 维护者授权取得 CN/Global
 - [loaders.ts](../src/tools/loaders.ts) 在每个字面量动态 import 前直接使用对应常量（DEV 保留开发入口），让 Vite 在依赖发现前消除不可用分支；不得改成运行时 flags 索引、动态路径或全量 glob 扫描。配置读取 Loader AST 检查每个显式分支对应自身 ID，防止复制错资格常量；不生成或改写 Loader。当前地区 Published 缺 Loader、双语短文案或静态内容必须失败；未登记的 Loader 也必须失败。不得增加发布 Store、开关、staging 或第二套路径。
 - 正式工具自然进入当前地区路由、完整目录、适用的精选/手工角色/相关推荐与公开发现文件；精选排序或身份配置不能绕过发布门，也不强制所有工具出现在每个精选槽。
 
+Timestamp Converter（`timestamp-converter`）依据 V0.8-B12-D2 维护者授权获得 CN/Global Published 源码资格。两地区正式构建共用 Registry 和双语 Astro 内容，每地区有 38 个工具详情页。全站 29 款（19 Published / 10 Draft）。共享日期与时间选择器随该工具按需加载，构建守卫验证 JS/CSS 归属和 Base UI、Phosphor 的完整 MIT 许可。实际输出验收使用各格式的真实剪贴板值。[功能、验收和 CI](../docs/general-toolbox-v0.8.md#timestamp-converter--v08-b12-d2-seo-与-beta-资格)
+
 ## 构建与部署隔离
 
 - CN/Global 独立域名、缓存与 `dist/cn` / `dist/global`；同地区包含中英文，不把英文页面自动投向另一地区。

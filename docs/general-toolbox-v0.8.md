@@ -1,6 +1,16 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 已获得 CN/Global Published 源码资格，其余 11 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（18 Published / 11 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter 已获得 CN/Global Published 源码资格，其余 10 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（19 Published / 10 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+
+## Timestamp Converter — V0.8-B12-D2 SEO 与 Beta 资格
+
+- Timestamp Converter 取得 CN/Global Published 源码资格。既有 Astro 模板静态输出双语 Title、Description、H1、四项步骤、六项限制及四组 FAQ。保留像素图标、开发者与运营关联及目录卡片。每地区有 38 个工具详情页，由 Sitemap 与 llms.txt 收录。
+- 快速模式以固定英文示例 `1704067200`（`2024-01-01T00:00:00.000Z`）起步，支持双向转换、Unix 秒/毫秒及 UTC/浏览器本地输入。高级模式接受带 `Z` 或明确偏移的 ISO 8601，附加 IANA 时区只用于结果展示。整数毫秒保留精度，闰秒、非法日期、越界时间及不存在或重复的本地时刻会拒绝转换。
+- DatePickerField 与 TimePickerField 首次随正式工具交付。选择器使用既有 Base UI Popover，其 JS/CSS 由工具入口按需交付。Base UI 与 Phosphor 的完整 MIT 许可随两地区产物分发，其余 10 款 Draft 的页面及专用资源继续由产物守卫排除。
+- Windows Chromium 157 在正式产物上验证 CN 中文深色 1280px 与 Global 英文浅色 390px 模拟视口。两地区各读回 Unix 秒、Unix 毫秒、ISO、UTC、浏览器本地时间及附加 IANA 时间的完整剪贴板值。带 `+08:00` 的输入保留 `.123` 毫秒，纽约重复时间的两种显式偏移产生相差一小时的结果。自定义 Picker 的键盘操作、窄屏和低高度定位、主题切换及刷新均通过。
+- `pnpm check`、215 项定向测试与 CN/Global 正式构建和产物守卫通过。定向测试包含纽约的夏令时跳时与重复、半小时换时、跳过一整天以及 UTC 和上海时区用例。
+- [D1-P1 基线 CI](https://github.com/librecosta/tool4furry/actions/runs/45030204174) 已通过。D2 远程 CI 按本阶段提交在 [develop 工作流](https://github.com/librecosta/tool4furry/actions/workflows/ci.yml?query=branch%3Adevelop) 的实际结果单独核对。
+- L3 尚未验证 Firefox、Safari/WebKit、真实 iOS/Android、系统输入法候选窗、屏幕阅读器及完整历史和未来时区数据矩阵。
 
 ## Timestamp Converter — V0.8-B12-D1 双向时间转换工作区
 
@@ -8,7 +18,7 @@
 - 高级模式额外接受带 `Z` 或明确偏移的 ISO 8601 输入，并在结果中展示指定 IANA 时区。Unix 秒、Unix 毫秒、ISO、UTC、本地时间和可选时区各自复制完整值。编辑为非法值后即时清除结果，附加时区错误只影响该展示。
 - 十进制秒以最多三位小数无损转换为整数毫秒，毫秒输入仅接受整数，支持负值及 Date 的 ±8,640,000,000,000,000 ms 边界。结构化日期允许 0001–9999 年，ISO 输入接受四位年份与最多三位小数秒。扩展年份仍可作为时间戳的 ISO 输出；闰秒、无效日期和超限值会报错。[ECMAScript Date](https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-date-objects)
 - 本地日期输入以浏览器的时区数据为准。时钟跳过的时间拒绝转换，重复时间需在高级模式用带偏移的 ISO 输入。已知时刻落在重复区间时，填入 UTC 并提示，以保留准确时刻。历史与未来的本地时区规则取决于浏览器自带数据。[IANA 时区数据边界](https://data.iana.org/time-zones/tzdb/theory.html)
-- 所有转换在浏览器本地完成，继续保持 CN/Global Draft。Registry 为 29 款（18 Published / 11 Draft），日常验证使用定向测试、开发路由和现有 CI 产物守卫。
+- 所有转换在浏览器本地完成。D1 阶段保持 CN/Global Draft，当时 Registry 为 29 款（18 Published / 11 Draft），日常验证使用定向测试、开发路由和现有 CI 产物守卫。
 - `pnpm check` 和 93 项定向测试通过。Chromium 157 验证 CN 中文深色 1280px 和 Global 英文浅色 390px 模拟视口的双向转换、时区切换、刷新及键盘焦点，两地区各读回六种剪贴板结果。纽约的夏令时缺失和重复时间也在固定浏览器时区下验证。尚未测试 Firefox、Safari/WebKit、真实 iOS/Android 和系统级日期控件差异。
 - B12-D1-P1 在 Chromium 的同两种布局复测了共享日历、年月跳转、毫秒分段编辑、键盘操作和外部关闭。两种视口均在 470px 高度复核浮层翻转，保留既有时区、DST 与剪贴板行为。尚未验证真实移动设备、屏幕阅读器及系统输入法候选窗。
 

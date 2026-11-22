@@ -79,7 +79,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64'], generalToolboxContent['timestamp-converter']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -842,18 +842,19 @@ for (const page of htmlFiles) {
     `Dev StyleX refresh shim in ${page}`,
   );
   const dom = new JSDOM(content).window.document;
-  const editorStyles = [...dom.head.querySelectorAll('link[rel="stylesheet"]')]
-    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
+  const scopedToolStyles = [...dom.head.querySelectorAll('link[rel="stylesheet"]')]
+    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
   const toolId = dom.querySelector('main[data-tool-id]')?.dataset.toolId;
-  const expectedEditorStyles = [];
-  if (toolId === 'subtitle-tools') expectedEditorStyles.push('SubtitleTools');
-  if (toolId === 'json-formatter') expectedEditorStyles.push('JsonFormatter');
-  if (toolId === 'url-base64') expectedEditorStyles.push('UrlBase64');
+  const expectedToolStyles = [];
+  if (toolId === 'subtitle-tools') expectedToolStyles.push('SubtitleTools');
+  if (toolId === 'json-formatter') expectedToolStyles.push('JsonFormatter');
+  if (toolId === 'url-base64') expectedToolStyles.push('UrlBase64');
+  if (toolId === 'timestamp-converter') expectedToolStyles.push('TimestampConverter');
   if (['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
-    expectedEditorStyles.push('TextEditor');
+    expectedToolStyles.push('TextEditor');
   if (['json-formatter', 'text-cleaner', 'text-diff', 'url-base64'].includes(toolId) && files.some(file => /\/TextWorkbench\.[\w-]+\.css$/.test(file)))
-    expectedEditorStyles.push('TextWorkbench');
-  assert.deepEqual(editorStyles.sort(), expectedEditorStyles.sort(), 'Only owner routes link editor styles on first paint: ' + page);
+    expectedToolStyles.push('TextWorkbench');
+  assert.deepEqual(scopedToolStyles.sort(), expectedToolStyles.sort(), 'Only owner routes link scoped tool styles on first paint: ' + page);
   const dataScripts = [...dom.querySelectorAll('script[type="application/ld+json"]')];
   assert.equal(dataScripts.length, page === 'index.html' && !prefix ? 1 : 0, 'WebSite data belongs only to the default-locale root homepage');
   for (const data of dataScripts) {
@@ -964,6 +965,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/subtitle-tools/index.html') assertToolContent(dom, locale, generalToolboxContent['subtitle-tools'], 4, 4, 6);
     if (page === 'tools/json-formatter/index.html') assertToolContent(dom, locale, generalToolboxContent['json-formatter'], 4, 4, 6);
     if (page === 'tools/url-base64/index.html') assertToolContent(dom, locale, generalToolboxContent['url-base64'], 4, 4, 6);
+    if (page === 'tools/timestamp-converter/index.html') assertToolContent(dom, locale, generalToolboxContent['timestamp-converter'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1352,6 +1354,15 @@ for (const font of ['dm-sans', 'noto-sans-sc']) {
     `Font license must accompany the static assets: ${font}`,
   );
 }
+for (const [filename, dependency] of [
+  ['base-ui-MIT.txt', '@base-ui/react'],
+  ['phosphor-icons-MIT.txt', '@phosphor-icons/react'],
+]) {
+  const delivered = await readFile(resolve(root, 'licenses', filename), 'utf8');
+  const installed = await readFile(resolve('node_modules', dependency, 'LICENSE'), 'utf8');
+  assert.equal(delivered.replaceAll('\r\n', '\n'), installed.replaceAll('\r\n', '\n'),
+    'Complete MIT license must accompany the static build: ' + dependency);
+}
 for (const file of files.filter((file) => file.endsWith('.js'))) {
   const js = await readFile(resolve(root, file), 'utf8');
   assert(!/@stylexjs|virtual:stylex|stylex-dev-css/.test(js), `Retired styling runtime leaked: ${file}`);
@@ -1583,6 +1594,24 @@ if (!published.some(tool => tool.id === 'file-hash')) {
   const jsonEntry = entries.get('json-formatter');
   const jsonWorkers = files.filter(file => /(?:^|\/)json\.worker[.-][\w-]+\.js$/.test(file));
   const jsOwners = matches => [...scripts].filter(([, source]) => matches(source)).map(([file]) => file);
+  const timestampPublished = published.some(tool => tool.id === 'timestamp-converter');
+  const timestampEntries = findAsset('TimestampConverter', '.js');
+  const timestampStyles = findAsset('TimestampConverter', '.css');
+  assert.equal(timestampEntries.length, Number(timestampPublished), 'Timestamp lazy entry follows publication');
+  assert.equal(timestampStyles.length, Number(timestampPublished), 'Timestamp stylesheet follows publication');
+  for (const marker of ['data-timestamp-workspace', 'data-timestamp-result', 'data-date-time-picker']) {
+    assert.deepEqual(jsOwners(source => source.includes(marker)), timestampEntries,
+      'Timestamp and its date/time pickers stay in the lazy tool: ' + marker);
+  }
+  assert.deepEqual(cssFiles.filter((_, index) => /\._?(?:calendarHeader|zoneField)[_-]/.test(outputCSS[index])),
+    timestampStyles, 'Picker and Timestamp styles stay private to the tool');
+  if (timestampPublished) {
+    const [entry] = timestampEntries;
+    const [loader, ...otherLoaders] = importsOf(entry, true);
+    assert(loader && loader.includes('ToolRuntime') && !otherLoaders.length, 'Only ToolRuntime dynamically imports Timestamp');
+    assert.deepEqual(importsOf(entry, false), [], 'No static import of Timestamp');
+    assert(scripts.get(loader).includes(timestampStyles[0]), 'Timestamp lazy loader references the tool and picker stylesheet');
+  }
   const codecEntry = entries.get('url-base64');
   const codecWorkers = files.filter(file => /(?:^|\/)codec\.worker[.-][\w-]+\.js$/.test(file));
   const codecStyles = cssFiles.filter((_, index) => /\._?(?:codecWorkspace|codecToolbar|codecResultStatus)[_-]/.test(outputCSS[index]));

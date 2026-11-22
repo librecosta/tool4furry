@@ -41,7 +41,7 @@ describe('static tool discovery', () => {
   });
 
   it.each(['cn', 'global'] as const)(
-    'discovers eighteen Published and eleven Draft tools in DEV %s',
+    'discovers nineteen Published and ten Draft tools in DEV %s',
     (region) => {
       const entries = getCatalogEntries(region, undefined, true);
       expect(entries.map((entry) => [entry.id, entry.href, entry.title])).toEqual([
@@ -70,12 +70,12 @@ describe('static tool discovery', () => {
       // Text precedes Documents/Files in the existing category order. Retain
       // the full entry comparison, including copy, URLs and qualification.
       expect(getCatalogSections(region).flatMap(section => section.groups.flatMap(group => group.entries))).toEqual([
-        ...published.slice(0, 7), ...published.slice(13, 16), ...published.slice(7, 10), ...published.slice(16, 18), ...published.slice(10, 13),
+        ...published.slice(0, 7), ...published.slice(13, 16), ...published.slice(7, 10), ...published.slice(16, 19), ...published.slice(10, 13),
       ]);
       expect(imageConverterDefinition.status).toBe('published');
       expect(imageResizeCropDefinition.status).toBe('published');
       expect(paletteExtractorDefinition.status).toBe('published');
-      expect(published.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash', 'text-cleaner', 'text-diff', 'subtitle-tools', 'json-formatter', 'url-base64']);
+      expect(published.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash', 'text-cleaner', 'text-diff', 'subtitle-tools', 'json-formatter', 'url-base64', 'timestamp-converter']);
     },
   );
 

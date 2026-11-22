@@ -13,6 +13,7 @@ import { definition as textDiff } from '../src/tools/text-diff/definition';
 import { definition as subtitles } from '../src/tools/subtitle-tools/definition';
 import { definition as json } from '../src/tools/json-formatter/definition';
 import { definition as codec } from '../src/tools/url-base64/definition';
+import { definition as timestamp } from '../src/tools/timestamp-converter/definition';
 
 const content = {
   title: 'Test — Tool4Furry',
@@ -24,6 +25,49 @@ const map: ToolContentMap = {
   one: { zh: content, en: { ...content, h1: 'English heading' } },
 };
 describe('Astro-only content boundary', () => {
+  it('publishes bilingual Timestamp SEO and short copy matching the date and timezone workflow', () => {
+    const expected = {
+      zh: {
+        title: '在线时间戳转换工具 - Unix 秒毫秒与日期转换 | Tool4Furry',
+        description: '在线转换 Unix 时间戳与日期，支持秒、毫秒、ISO 8601、UTC 和本地时间。提供日期时间选择器、时区显示、夏令时校验及一键复制，全部在浏览器本地完成。',
+        h1: '时间戳转换',
+        intro: '在 Unix 时间戳和日期之间自由转换。精确到毫秒，清楚查看 UTC、本地时间及不同时间格式。',
+      },
+      en: {
+        title: 'Unix Timestamp Converter - Seconds, Milliseconds & Dates | Tool4Furry',
+        description: 'Convert Unix timestamps to dates and back. Supports seconds, milliseconds, ISO 8601, UTC and local time, with date and time pickers, time zones and one-click copying.',
+        h1: 'Timestamp Converter',
+        intro: 'Convert between Unix timestamps and calendar dates with millisecond precision. View UTC, local time and other useful representations instantly.',
+      },
+    };
+    expect(timestamp).toMatchObject({
+      id: 'timestamp-converter', slug: 'timestamp-converter', category: 'development', group: 'developer-utilities',
+      roles: ['developer', 'operations'], mode: 'form', status: 'published', regions: ['cn', 'global'],
+      copy: {
+        zh: { title: '时间戳转换', description: '双向转换 Unix 时间戳与日期，支持秒、毫秒、ISO 8601 和时区显示。', summary: '输入时间戳或选择日期，实时查看 UTC、本地时间及其他格式。' },
+        en: { title: 'Timestamp Converter', description: 'Convert Unix timestamps and dates with millisecond precision and time zone support.', summary: 'Enter a timestamp or date to view Unix, ISO, UTC and local time results.' },
+      },
+    });
+    for (const region of timestamp.regions) for (const locale of ['zh', 'en'] as const) {
+      const page = getToolPageContent(timestamp, region, toolPageContents, false, locale);
+      expect(page).toMatchObject(expected[locale]);
+      expect(page.title.match(/Tool4Furry/g)).toHaveLength(1);
+      expect(page.steps).toHaveLength(4);
+      expect(page.steps![0]).toMatch(/固定的英文日期示例|built-in English example/);
+      expect(page.limitations).toHaveLength(6);
+      expect(page.limitations![0]).toMatch(/最多三位小数|up to three decimal places/);
+      expect(page.limitations![1]).toMatch(/0001–9999.*Z.*±HH:MM/);
+      expect(page.limitations![2]).toMatch(/不提供任意 IANA 时区的日期反向输入|does not accept arbitrary IANA-zone local dates as input/);
+      expect(page.limitations![3]).toContain('8,640,000,000,000,000');
+      expect(page.limitations![4]).toMatch(/不存在本地时间.*重复的本地时间|Nonexistent local times.*ambiguous repeated times/);
+      expect(page.faq).toHaveLength(4);
+      expect(page.faq![1].answer).toMatch(/1704067200\.123.*1704067200123/);
+      expect(JSON.stringify(page)).not.toMatch(/微秒|纳秒|批量转换|倒计时|microseconds|nanoseconds|batch conversion|countdown/i);
+      expect(getRelatedTools(timestamp, region).map(tool => tool.id)).toEqual(['json-formatter', 'url-base64']);
+      if (locale === 'en') expect(JSON.stringify(page)).not.toMatch(/\p{Script=Han}/u);
+    }
+  });
+
   it('publishes the URL & Base64 bilingual guide and short copy for the frozen codec workspace', () => {
     const expected = {
       zh: {
@@ -62,7 +106,7 @@ describe('Astro-only content boundary', () => {
       expect(page.limitations![5]).toMatch(/不是加密|provide no encryption/);
       expect(page.faq).toHaveLength(4);
       expect(JSON.stringify(page)).not.toMatch(/JWT|加密保护|file to Base64|unlimited/i);
-      expect(getRelatedTools(codec, region).map(tool => tool.id)).toEqual(['json-formatter']);
+      expect(getRelatedTools(codec, region).map(tool => tool.id)).toEqual(['json-formatter', 'timestamp-converter']);
       if (locale === 'en') expect(JSON.stringify(page)).not.toMatch(/\p{Script=Han}/u);
     }
   });
@@ -104,7 +148,7 @@ describe('Astro-only content boundary', () => {
       expect(page.limitations![4]).toMatch(/40.*直属子节点|40 direct child nodes/);
       expect(page.limitations![5]).toMatch(/不执行 JSON Schema.*不会自动修复|not JSON Schema.*does not automatically repair/);
       expect(JSON.stringify(page)).not.toMatch(/50 万字符|500,000 characters|128 层|128 nesting|JSONPath|JSONC|YAML/);
-      expect(getRelatedTools(json, region).map(tool => tool.id)).toEqual(['url-base64']);
+      expect(getRelatedTools(json, region).map(tool => tool.id)).toEqual(['url-base64', 'timestamp-converter']);
       if (locale === 'en') expect(JSON.stringify(page)).not.toMatch(/\p{Script=Han}/u);
     }
   });
