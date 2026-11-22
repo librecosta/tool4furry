@@ -43,7 +43,7 @@ Timestamp Workspace 在 Wide Form 中复用 `settingsPanel` 及分段控件，�
 - 日期值为 `YYYY-MM-DD`，支持 0001–9999 年和可选 min/max。日历按周一开始，支持方向键、PageUp/PageDown 和年份跳转。时间值为 `HH:mm:ss.SSS`，各段微调在其范围内停止。触控打开时间面板时焦点停在面板，选中某段后再进入文字输入。格式合法后提交，无效的直接输入草稿独立保留。调用方可通过 `draft` 与 `onDraftChange` 控制草稿并在编辑无效时暂停业务结果。
 - 时区解释、DST、业务合法性由工具核心负责。共享选择器由实际使用者按需引用。TextField 的原生 date/time 类型保留给特殊或历史场景。[Base UI Popover](https://base-ui.com/react/components/popover) · [WAI-ARIA 日期网格](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/datepicker-dialog/)
 
-QR Code Generator 的 A0 地形验证沿用现有 Form 工作区。用户主动展开时才加载局部 3D 面板，支持拖动观察，视口外暂停绘制，折叠后释放资源。2D 生成与下载继续使用独立流程。[图形基础和版本约定](general-toolbox-v0.8.md#qr-code-generator--v08-b13-a0-图形基础与作品配方)
+QR Code Generator 在 Wide Form 中用两块 `settingsPanel` 分别呈现输入和已通过扫码校验的预览，窄屏按相同 DOM 顺序堆叠。艺术风格缩略图和实际作品共用规范 SVG 渲染器，下载按钮只对当前验证结果可用。A0 地形探针仍由主动展开触发，支持拖动观察，视口外暂停绘制，折叠后释放资源。[艺术二维码说明](general-toolbox-v0.8.md#qr-code-generator--v08-b13-a1-艺术二维码)
 
 ## 文本编辑工作区
 

@@ -291,6 +291,9 @@ importers:
       pdfjs-dist:
         specifier: 6.5.438
         version: 6.5.438
+      jsqr:
+        specifier: 1.4.0
+        version: 1.4.0
       qrcode:
         specifier: 1.5.4
         version: 1.5.4
@@ -346,9 +349,6 @@ importers:
       jsdom:
         specifier: 30.1.2
         version: 30.1.2
-      jsqr:
-        specifier: 1.4.0
-        version: 1.4.0
       sass-embedded:
         specifier: 1.107.1
         version: 1.107.1

@@ -1367,7 +1367,7 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
   const js = await readFile(resolve(root, file), 'utf8');
   assert(!/data-qr-terrain-probe|WebGL2 context creation failed/.test(js), 'DEV QR 3D code leaked: ' + file);
   if (!published.some(tool => tool.id === 'qr-code-generator'))
-    assert(!js.includes('data-qr-license'), 'Draft QR tool code leaked: ' + file);
+    assert(!/data-qr-artwork|data-qr-license|Could not rasterize QR SVG/.test(js), 'Draft QR tool code leaked: ' + file);
   assert(!/@stylexjs|virtual:stylex|stylex-dev-css/.test(js), `Retired styling runtime leaked: ${file}`);
   for (const id of ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'])
     if (!files.includes(`tools/${id}/index.html`)) assert(!js.includes(`data-${id}`), `Draft ${id} implementation leaked: ${file}`);
@@ -1416,7 +1416,7 @@ for (const css of outputCSS)
 const combinedCSS = outputCSS.join('\n');
 assert(!files.some(file => /(?:TerrainProbe|graphics\.NOTICE|terrain-probe)[.-]/.test(file)), 'DEV QR 3D assets stay private');
 if (!published.some(tool => tool.id === 'qr-code-generator'))
-  assert(!files.some(file => /(?:QrCodeGenerator|qrcode\.NOTICE)[.-]/.test(file)), 'Draft QR entry and notice stay private');
+  assert(!files.some(file => /(?:QrCodeGenerator|qrcode\.NOTICE|jsqr(?:\.NOTICE)?|qr-workspace)[.-]/i.test(file)), 'Draft QR entry, styles and decoder stay private');
 {
   const available = published.some(tool => tool.id === 'images-to-pdf');
   assert.equal(/\._?imagesPdfGallery[_-]/.test(combinedCSS), available,

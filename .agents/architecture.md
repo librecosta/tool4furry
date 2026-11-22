@@ -37,7 +37,8 @@ Astro 工具路由 + 静态 Intro / Guide
 
 ## 创意二维码图形
 
-- `src/tools/qr-code-generator/recipe/` 负责版本化作品数据、校验、种子与分享编码。`matrix/` 只消费原始内容和纠错等级，提供标准 QR 模块及四模块静区。2D 绘制可直接消费矩阵。
+- `src/tools/qr-code-generator/recipe/` 负责版本化作品数据、校验、种子与分享编码。`matrix/` 只消费原始内容和纠错等级，提供标准 QR 模块、四模块静区与同次编码的 `functionalMask`。升级 qrcode 时须重新核对 `reservedBit` 契约和独立 QR 版本向量。
+- `art/render.ts` 消费已构建的矩阵和作品风格，生成像素对齐、自包含的规范 SVG。`art/export.ts` 在本地把 SVG 光栅化为 PNG，按需加载 jsQR，比较文本与 UTF-8 字节，失败时用同一矩阵验证标准输出。使用 `renderQrSvg()` 可在 B0 取得已经独立于地貌的 2D 构图。[A1 实现及验证](../docs/general-toolbox-v0.8.md#qr-code-generator--v08-b13-a1-艺术二维码)
 - `graphics/` 负责高度场、WebGL2 与渲染生命周期。A0 探针从 Draft 工具入口的 DEV 分支动态导入，React Three Fiber / Three.js 留在该边界内。生产构建检查实际 client chunk 的模块来源及产物 JS/CSS。[图形基础和版本约定](../docs/general-toolbox-v0.8.md#qr-code-generator--v08-b13-a0-图形基础与作品配方)
 
 ## 文本编辑基础

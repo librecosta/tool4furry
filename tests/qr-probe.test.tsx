@@ -34,7 +34,7 @@ it('loads the private probe only on request, can close during loading, and relea
   expect(screen.queryByText('Mounted 3D probe')).toBeNull();
 
   fireEvent.click(screen.getByRole('button', { name: 'Open 3D probe' }));
-  expect(screen.getByRole('status').textContent).toBe('Loading 3D…');
+  expect(screen.getByText('Loading 3D…').getAttribute('role')).toBe('status');
   await waitFor(() => expect(probe.import).toHaveBeenCalledOnce());
   fireEvent.click(screen.getByRole('button', { name: 'Close 3D probe' }));
   probe.complete();

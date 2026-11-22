@@ -1,0 +1,106 @@
+@layer t4f-tools {
+  .workspace {
+    display: grid;
+    gap: var(--t4f-space-16);
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+    align-items: start;
+
+    @media (max-width: 880px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .fieldset {
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+
+    legend {
+      padding: 0;
+      margin-block-end: var(--t4f-space-8);
+      color: var(--t4f-text-primary);
+      font-size: 14px;
+      font-weight: 550;
+    }
+  }
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--t4f-space-8);
+  }
+
+  .swatch {
+    display: grid;
+    min-width: 0;
+    padding: var(--t4f-space-4);
+    gap: var(--t4f-space-4);
+    align-content: start;
+    background: var(--t4f-input-surface);
+    border: 1px solid transparent;
+    border-radius: var(--t4f-radius-md);
+    color: var(--t4f-text-primary);
+    text-align: center;
+    font: inherit;
+    font-size: 13px;
+
+    &:hover { background: var(--t4f-surface-hover); }
+    &[aria-pressed="true"] { border-color: var(--t4f-support-lavender); }
+
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: var(--t4f-radius-sm);
+    }
+
+    span { padding: 2px; }
+  }
+
+  .standard.standard {
+    margin-block-start: var(--t4f-space-8);
+    &[aria-pressed="true"] { color: var(--t4f-support-lavender); }
+  }
+
+  .fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--t4f-space-12);
+    align-items: end;
+
+    @media (max-width: 440px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--t4f-space-8);
+  }
+
+  .preview { align-content: start; }
+
+  .stage {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    min-width: 0;
+    overflow: hidden;
+    background: var(--t4f-input-surface);
+    border-radius: var(--t4f-radius-md);
+
+    img { display: block; width: 100%; height: auto; }
+    p { padding: var(--t4f-space-16); text-align: center; }
+  }
+
+  .hint { margin: 0; color: var(--t4f-text-secondary); font-size: 13px; }
+  .licenses {
+    display: flex;
+    gap: var(--t4f-space-12);
+    font-size: 12px;
+    color: var(--t4f-text-secondary);
+  }
+}

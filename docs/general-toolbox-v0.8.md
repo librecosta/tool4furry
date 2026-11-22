@@ -2,6 +2,17 @@
 
 两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter 已获得 CN/Global Published 源码资格，其余 10 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（19 Published / 10 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
+## QR Code Generator — V0.8-B13-A1 艺术二维码
+
+- 工作区默认加载英文示例与 M 级纠错。Recipe V1 保存原始输入和艺术风格，修改内容和纠错等级时更新矩阵。仅切换艺术风格、标准模式或输出尺寸时复用编码，地貌配置不参与二维渲染。保留标准样式的前景色和背景色配置、文本复制、PNG 与 SVG 下载。
+- Aeolian 使用方向性风纹、连续沙丘色带与种子微粒，Contour 从连续高度场求交生成地形等高线和高程色带，Strata 通过倾斜沉积岩层与错位断层形成峡谷剖面。三个风格用各自场函数给完整的深色数据模块分配低亮度色带，艺术相位只依赖原文、艺术 ID 和修订号。
+- `createQrMatrix()` 只在矩阵层读取同次 `qrcode@1.5.4` 编码的 `reservedBit`。保留位保护定位、分隔、时序、校正、格式、版本及固定深色模块。专属测试检查多版本的完整掩码。升级编码器须复核适配层，未知保留位结构会停止生成。四模块实色静区外多留一个模块的实色缓冲，外框不影响模块覆盖。[编码器保留位实现](https://github.com/soldair/node-qrcode/blob/v1.5.4/lib/core/bit-matrix.js) · [GS1 静区指南，第 4.6.4 节](https://ref.gs1.org/guidelines/2d-in-retail/)
+- `renderQrSvg()` 提供自包含 SVG，规范输出尺寸内按整数像素布置模块。`generateVerifiedQr()` 以同一 SVG 本地光栅化，按需调用 `jsqr@1.4.0` 比较文本和原始 UTF-8 字节。验证后才生成可下载 PNG。如艺术模块低于 4 px 或无法扫码，则用相同矩阵生成黑白标准样式并再验证。标准样式用 2 px 下限，仍无法精确读回时禁用下载。原有 2,000 个 UTF-16 代码单元的输入保护、128–2048 px 及独立的分享片段预算继续保留。[jsQR Apache-2.0 通知](../src/tools/qr-code-generator/art/jsqr.NOTICE.txt) · [SVG 图像约束](https://developer.mozilla.org/en-US/docs/Web/SVG/Guides/SVG_as_an_image)
+- B0 可直接复用 `QrRecipeV1`、`createQrMatrix()`、`functionalMask` 与 `renderQrSvg()`。`graphics/` 继续拥有独立的 A0 高度场和 DEV WebGL2 探针，二维工作区无需开启图形上下文。两地区正式构建继续检查实际客户端模块和静态产物，排除 Draft 工作区、艺术模块、解码器与 3D 图形。
+- Windows Chromium 157 在 CN 中文深色 1440px 桌面与 Global 英文浅色 390px 手机模拟视口各验证 8 组实际下载。读回 PNG、在目标尺寸加载下载的 SVG 并再次扫码，比较原文和 UTF-8 字节，确认预览与 PNG 下载字节相同。覆盖 L/M/Q/H、QR v2–v40、129–2048 px、中文和 Emoji、URL 查询与片段、前后空格、CR/LF/CRLF。H 级 1,273 字节样本通过，增加 1 字节时明确容量错误。另在真实页面强制一次或两次扫码失败及验证器异常，确认只提供重新验证成功的标准输出。
+- `pnpm check`、113 项定向测试和 CN/Global 正式构建守卫通过。远程 CI 按 A1 提交在 [develop 工作流](https://github.com/librecosta/tool4furry/actions/workflows/ci.yml?query=branch%3Adevelop) 核对。
+- 维护者视觉确认、实体手机摄像头、印刷材料与尺寸、光照变化和 Firefox/Safari 兼容性尚待验证。
+
 ## QR Code Generator — V0.8-B13-A0 图形基础与作品配方
 
 - 产品方向包括可扫码的 2D 创意二维码、3D 地貌沙盘和静态作品分享。当前能力规划均免费，3D 地貌长期免费。未来可以单独立项评估部分 2D 精品风格的 Pro 资格。扫码直接读取原始内容，A0 配方只保存创作和编码数据。
@@ -229,7 +240,7 @@
 | `json-formatter` | CodeMirror 双区、严格校验和定位、格式化与压缩、只读结构树、复制和 JSON 下载 | 保留原字面量、字段与重复项的顺序；解析、输出和树索引在专属 Worker，资源边界见 B10-D1 |
 | `url-base64` | URL 组件与 UTF-8 Base64 编解码、复制/下载 | 50 万字符；严格检查 Base64/UTF-8；不是加密 |
 | `timestamp-converter` | 时间戳/日期双向转换、精确秒/毫秒、UTC/本地输入、ISO 和 IANA 时区、单项复制 | 浏览器 Date 范围；拒绝缺少时区的 ISO、非法日期、闰秒及缺失或重复的本地时刻 |
-| `qr-code-generator` | 标准二维码、尺寸/前背景色、PNG/SVG 下载、内容复制 | 2000 字符、128–2048px；深色前景、浅色背景、对比度与模块尺寸检查 |
+| `qr-code-generator` | 三种艺术风格、标准样式、纠错等级、同源 PNG/SVG 下载、内容复制 | 2,000 个 UTF-16 代码单元、128–2048 px；检查真实编码容量、模块密度、对比度和逐字节扫码结果 |
 | `color-contrast` | HEX/RGB/HSL、可视化选色、WCAG 比值、AA/AAA、复制 | 不透明 sRGB；大文字阈值不替代实际字号检查 |
 | `audio-trimmer` | 波形、起止时间、选区试听、真实 PCM16 WAV 导出与复检 | 输入 20 MiB/180 秒/双声道，解码缓冲 64 MiB；原生解码可能额外瞬时占用内存，无 MP3/AAC 输出 |
 | `markdown-editor` | 实时 GFM、双栏/编辑/预览、复制及 .md 下载、示例/清空 | 10 万字符；Marked + DOMPurify，移除脚本、图片及嵌入内容；不自动保存 |
