@@ -90,7 +90,7 @@ export function CalendarPanel({ value, locale, range, focusRef, select }: {
   }
 
   return (
-    <div className={s.calendar} data-date-time-picker="calendar">
+    <div data-date-time-picker="calendar">
       <header className={s.calendarHeader}>
         <IconButton label={zh ? '上个月' : 'Previous month'} variant="ghost" size="sm" className={s.navigate}
           disabled={!monthOverlaps(year, month - 1, range)} onClick={() => moveMonth(-1)}>
