@@ -1,0 +1,143 @@
+@layer t4f-tools {
+  .workspace {
+    display: grid;
+    gap: var(--t4f-space-16);
+    width: 100%;
+    max-width: 960px;
+    margin-inline: auto;
+    min-width: 0;
+  }
+
+  .direction {
+    display: flex;
+
+    > div {
+      max-width: 100%;
+    }
+
+    button {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  .columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--t4f-space-16);
+    align-items: start;
+
+    @media (max-width: 900px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .panel {
+    align-content: start;
+  }
+
+  .fields {
+    display: grid;
+    gap: var(--t4f-space-12);
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--t4f-space-12);
+
+    > div, input {
+      min-width: 0;
+    }
+
+    @media (max-width: 540px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .inlineControl, .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--t4f-space-8) var(--t4f-space-12);
+    font-size: 14px;
+  }
+
+  .actions button {
+    border-width: 0;
+  }
+
+  .note, .zone, .copyFeedback, .error {
+    margin: 0;
+    font-size: 13px;
+    color: var(--t4f-text-secondary);
+    overflow-wrap: anywhere;
+  }
+
+  .error {
+    color: var(--t4f-danger);
+  }
+
+  .results {
+    margin: 0;
+  }
+
+  .result {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px;
+    gap: var(--t4f-space-4) var(--t4f-space-8);
+    min-width: 0;
+    padding-block: var(--t4f-space-8);
+    border-block-end: 1px solid color-mix(in srgb, var(--t4f-text-secondary) 24%, transparent);
+
+    &:first-child { padding-block-start: 0; }
+    &:last-child { border-block-end: 0; padding-block-end: 0; }
+
+    dt {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--t4f-text-secondary);
+    }
+
+    dd {
+      margin: 0;
+    }
+  }
+
+  .zone {
+    display: inline-block;
+    font-weight: 400;
+    margin-inline-start: var(--t4f-space-8);
+  }
+
+  .value {
+    grid-column: 1;
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+
+  .copy {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+
+  .icon {
+    width: 44px;
+    padding: 0;
+    border-width: 0;
+  }
+
+  .zoneField {
+    min-width: 0;
+  }
+
+  .copyFeedback {
+    min-height: 1.4em;
+  }
+}

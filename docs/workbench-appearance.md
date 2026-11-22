@@ -35,6 +35,8 @@ Image Converter 已有的 `container/columns/split/leading/aside/main` 配方继
 
 Batch File Renamer 当前使用内嵌文件名组合器，快速/高级共享名称及序号规则；高级仅展开起始值、位数与连接符，数字字段双列，宽面板通过 CSS Container Query 并排组织高级控件。切换显示模式不重置规则或使有效结果失效。文件区间距为 12px，列表使用克制的行填充或透明表面；不以厚重灰色整块替代清楚的文件层次。共享层只提供布局与视觉配方，不建立 Schema、FormEngine、Context 或文件框架。
 
+Timestamp Workspace 在 Wide Form 中复用 `settingsPanel` 及分段控件，以均分双栏容纳短字段输入和可逐项复制的结果。≤900px 以同一 DOM 把输入放在结果前，保留各方向和高级模式的草稿。日期、毫秒级时间使用 TextField 的原生控件，主题沿用站点变量。当前仍为 Draft。[时间戳格式和时区边界](general-toolbox-v0.8.md#timestamp-converter--v08-b12-d1-双向时间转换工作区)
+
 ## 文本编辑工作区
 
 大段普通文本、结构化文本和代码工具默认复用 [TextEditor](../src/ui/text-editor/TextEditor.tsx)、[TextEditorPane](../src/ui/text-editor/TextEditorPane.tsx) 与 [TextWorkbench](../src/ui/text-editor/TextWorkbench.tsx)。短设置、单行字段和简单备注可继续使用轻量表单控件。

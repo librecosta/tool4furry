@@ -11,7 +11,7 @@ export type TextFieldProps = Controlled &
   Omit<
     ComponentProps<'input'>,
     keyof Controlled | 'onChange' | 'defaultValue' | 'type'
-  > & { type?: 'text' | 'email' | 'url' | 'password' | 'search' | 'tel' };
+  > & { type?: 'text' | 'email' | 'url' | 'password' | 'search' | 'tel' | 'date' | 'time' };
 export type TextAreaFieldProps = Controlled &
   Omit<
     ComponentProps<'textarea'>,
