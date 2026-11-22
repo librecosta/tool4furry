@@ -1,7 +1,7 @@
 ---
 import styles from './SiteFooter.module.scss';
 import { localizedPath, type Locale } from '../../i18n/locale';
-import { GithubLogoIcon } from '@phosphor-icons/react/ssr';
+import { GithubLogoIcon, XLogoIcon } from '@phosphor-icons/react/ssr';
 import type { Region } from '../../config/region';
 import { getComplianceEntries, showCompliancePreview } from '../../config/compliance';
 import { regionLink } from '../../site/language';
@@ -12,6 +12,7 @@ interface Props { region: Region; locale: Locale }
 const { region, locale } = Astro.props;
 const t = messages[locale];
 const github = 'https://github.com/librecosta/tool4furry';
+const companyName = locale === 'zh' ? '成都远岸开物科技有限公司' : 'Chengdu Yuanan Kaiwu Technology Co., Ltd.';
 const compliance = getComplianceEntries(region);
 const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, compliance);
 ---
@@ -19,9 +20,14 @@ const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, com
   <div class={styles.homeWidth}>
     <div data-footer-brand class={styles.footerTop}>
       <Brand locale={locale} />
-      <a data-footer-social href={github} target="_blank" rel="noopener noreferrer" aria-label={t.github} class={styles.footerSocial}>
-        <GithubLogoIcon size={24} aria-hidden className={styles.footerSocialIcon} />
-      </a>
+      <div class={styles.footerSocials}>
+        <a data-footer-social href={github} target="_blank" rel="noopener noreferrer" aria-label={t.github} class={styles.footerSocial}>
+          <GithubLogoIcon size={24} aria-hidden className={styles.footerSocialIcon} />
+        </a>
+        <a data-footer-social href="https://x.com/LibreCostaHQ" target="_blank" rel="noopener noreferrer" aria-label={locale === 'zh' ? 'LibreCosta 的 X 账号（新标签页）' : 'LibreCosta on X (new tab)'} class={styles.footerSocial}>
+          <XLogoIcon size={24} aria-hidden className={styles.footerSocialIcon} />
+        </a>
+      </div>
     </div>
     <nav aria-label={t.footerNav} class={styles.footerLinks}>
       <div class={styles.footerGroup}>
@@ -63,7 +69,10 @@ const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, com
           <a class:list={[styles.footerLink, styles.footerLegalLink]} href={`${github}/blob/master/LICENSE`}><span class={styles.footerLinkText}>BSD-3-Clause License</span></a>
         </nav>
       </div>
-      <span class={styles.footerCopyright}>© {new Date().getFullYear()} Tool4Furry ·&nbsp;<a data-footer-attribution href="https://librecosta.com" target="_blank" rel="noopener noreferrer" class={styles.complianceLink}><span class={styles.footerLinkText}>LibreCosta</span></a></span>
+      <span class={styles.footerCopyright}>© {new Date().getFullYear()} {region === 'cn'
+        ? <><a data-footer-attribution href="https://librecosta.cn" target="_blank" rel="noopener noreferrer" class={styles.complianceLink}><span class={styles.footerLinkText}>{companyName}</span></a> ·&nbsp;LibreCosta</>
+        : <>Tool4Furry ·&nbsp;<a data-footer-attribution href="https://librecosta.com" target="_blank" rel="noopener noreferrer" class={styles.complianceLink}><span class={styles.footerLinkText}>LibreCosta</span></a></>
+      }</span>
     </div>
 
   </div>

@@ -139,6 +139,7 @@ function assertDocumentScroll(dom, enabled = !dom.querySelector('[data-workbench
   assert.equal(orb.querySelectorAll('[data-scroll-segment]').length, 24, 'Discrete pixel progress segments');
   assert.equal(orb.querySelectorAll('defs > g').length, 10, 'Ten locally drawn pixel numeral glyphs');
   assert.equal(orb.querySelectorAll('[data-scroll-digit]').length, 3, 'Pixel slots accommodate 00–100');
+  assert.equal(orb.querySelectorAll('[data-scroll-particle]').length, 7, 'TuneShape hover pixels');
   assert(!orb.querySelector('text, image, circle, [rx], [stroke-dasharray]'), 'No font, image, smooth ring or rounded-card fallback');
 }
 function assertNavigationScript(dom) {
@@ -446,32 +447,31 @@ assert(!stories[1].querySelector('a').hasAttribute('target'));
 const community = document.querySelector('[data-home-community]');
 assert.equal(community?.nextElementSibling, pillars, 'Community cards immediately precede the existing pillars');
 const communityCards = [...community.querySelectorAll('[data-community-card]')];
-assert.deepEqual(communityCards.map(card => card.dataset.communityCard), region === 'cn' ? ['qq', 'telegram', 'support'] : ['discord', 'telegram', 'support']);
+assert.deepEqual(communityCards.map(card => card.dataset.communityCard), region === 'cn' ? ['qq', 'telegram', 'gofurry'] : ['discord', 'telegram', 'gofurry']);
+const gofurryTitle = locale === 'zh' ? '发现精彩的兽圈网站' : 'Discover the furry web';
+const gofurryUrl = locale === 'zh' ? 'https://go-furry.com/zh' : 'https://go-furry.com/';
 assert.deepEqual([...community.querySelectorAll('h3')].map(h => h.textContent), region === 'cn'
-  ? (locale === 'zh' ? ['QQ 交流群', 'Telegram 群组', '赞助与支持'] : ['QQ Group', 'Telegram Group', 'Support the Project'])
-  : (locale === 'zh' ? ['Discord 社群', 'Telegram 群组', '赞助与支持'] : ['Discord Community', 'Telegram Group', 'Support the Project']));
+  ? (locale === 'zh' ? ['QQ 交流群', 'Telegram 群组', gofurryTitle] : ['QQ Group', 'Telegram Group', gofurryTitle])
+  : (locale === 'zh' ? ['Discord 社群', 'Telegram 群组', gofurryTitle] : ['Discord Community', 'Telegram Group', gofurryTitle]));
 const communityLinks = [...community.querySelectorAll('a')];
 assert.deepEqual(communityLinks.map(a => a.getAttribute('href')), region === 'cn'
-  ? ['https://t.me/+-Fn3F3hprS8wY2M9', 'https://afdian.com/a/gofurry']
-  : ['https://discord.gg/gEEgV8pkS', 'https://t.me/+-Fn3F3hprS8wY2M9', 'https://ko-fi.com/gofurry']);
+  ? ['https://t.me/+-Fn3F3hprS8wY2M9', gofurryUrl]
+  : ['https://discord.gg/gEEgV8pkS', 'https://t.me/+-Fn3F3hprS8wY2M9', gofurryUrl]);
 assert(communityLinks.every(a => a.target === '_blank' && a.rel === 'noopener noreferrer'), 'Community destinations are native external links');
-const communitySources = region === 'cn' ? ['telegram.png', 'afdian.png'] : ['discord.png', 'telegram.png', 'ko-fi.png'];
+const communitySources = region === 'cn' ? ['telegram.png', 'gofurry-favicon.png'] : ['discord.png', 'telegram.png', 'gofurry-favicon.png'];
 const communityLogos = communityLinks.map(a => a.querySelector('img')?.getAttribute('src'));
 for (const [index, url] of communityLogos.entries()) await assertImportedAsset(url, `src/assets/community/${communitySources[index]}`);
 assert(communityLinks.every(a => a.querySelector('img')?.getAttribute('alt') === '' && a.querySelector('img')?.getAttribute('aria-hidden') === 'true'), 'Link text owns the accessible name');
 assert.equal(community.querySelectorAll('button, script, astro-island').length, 0, 'Community cards add no scripts or fake actions');
+assert.equal(communityCards[2].querySelector('a').textContent.trim(), locale === 'zh' ? '探索 GoFurry' : 'Explore GoFurry');
 if (region === 'cn') {
   const qr = community.querySelector('img');
   assert.equal(qr.width, 128); assert.equal(qr.height, 128);
   assert.equal(communityCards[0].querySelectorAll('a').length, 0, 'QQ has no invented direct link');
   const qrBytes = await assertImportedAsset(qr?.getAttribute('src'), 'src/assets/community/QQ-Group.avif');
   assert.equal(createHash('sha256').update(qrBytes).digest('hex'), '3cd0e1d70b2a0153024d13212cce2844bc0ff5ed00b6b634e4b57ad9748fc3b4', 'Approved QR bytes remain unchanged');
-  assert(communityCards[2].textContent.includes('GoFurry'), 'Support identifies the actual Afdian account');
 } else {
   assert.equal(community.querySelectorAll('[data-community-card="qq"]').length, 0, 'Global pages never request the CN QR image');
-  assert.equal(communityCards[2].querySelectorAll('a').length, 1, 'One real Ko-fi sponsorship entry');
-  assert.equal(communityCards[2].querySelector('a').textContent.trim(), locale === 'zh' ? '在 Ko-fi 支持我们' : 'Support on Ko-fi');
-  assert(communityCards[2].textContent.includes('GoFurry'), 'Support identifies the actual Ko-fi account');
 }
 assert.equal(pillars.nextElementSibling?.id, 't4f-home-pillars');
 assert.equal(pillars.querySelectorAll('h2').length, 1);
@@ -879,12 +879,14 @@ for (const page of htmlFiles) {
   assert.equal(footer.tagName, 'FOOTER');
   assert.equal(footer.closest('main, astro-island'), null, 'Footer must be static and outside the tool');
   assert.deepEqual([...footer.firstElementChild.children].map(el => el.tagName), ['DIV', 'NAV', 'DIV', 'DIV'], 'Footer retains brand/navigation bands and the compliance slot above final legal content');
-  const social = footer.querySelectorAll('[data-footer-social]');
-  assert.equal(social.length, 1, 'Only the real GitHub social entry');
-  assert.equal(social[0].getAttribute('href'), github);
-  assert.equal(social[0].getAttribute('rel'), 'noopener noreferrer');
-  assert.equal(social[0].getAttribute('target'), '_blank');
-  assert(social[0].getAttribute('aria-label'));
+  const social = [...footer.querySelectorAll('[data-footer-brand] [data-footer-social]')];
+  assert.deepEqual(social.map(link => link.getAttribute('href')), [github, 'https://x.com/LibreCostaHQ']);
+  for (const link of social) {
+    assert.equal(link.rel, 'noopener noreferrer');
+    assert.equal(link.target, '_blank');
+    assert(link.getAttribute('aria-label'));
+    assert.equal(link.querySelector('svg')?.getAttribute('aria-hidden'), 'true');
+  }
   const groups = footer.querySelector(':scope > div > nav').children;
   assert.deepEqual([...groups].map(el => el.querySelector('p').textContent.trim()), locale === 'zh' ? ['工具', '项目', '支持'] : ['Tools', 'Project', 'Support']);
   assert.deepEqual([...groups].map(el => [...el.querySelectorAll('a')].map(a => a.getAttribute('href'))), [
@@ -921,10 +923,11 @@ for (const page of htmlFiles) {
     assert.equal(icp.querySelectorAll('a').length, 1, 'No duplicate ICP query line');
   }
   assert.deepEqual([...legal.querySelectorAll('nav a')].map(a => a.getAttribute('href')), [localPath('/privacy/'), localPath('/terms/'), `${github}/blob/master/LICENSE`]);
-  assert(legal.textContent.replace(/\s+/g, ' ').includes(`© ${new Date().getFullYear()} Tool4Furry · LibreCosta`));
+  const copyrightOwner = region === 'global' ? 'Tool4Furry' : locale === 'zh' ? '成都远岸开物科技有限公司' : 'Chengdu Yuanan Kaiwu Technology Co., Ltd.';
+  assert(legal.textContent.replace(/\s+/g, ' ').includes(`© ${new Date().getFullYear()} ${copyrightOwner} · LibreCosta`));
   const attribution = legal.querySelector('[data-footer-attribution]');
-  assert.equal(attribution?.textContent, 'LibreCosta');
-  assert.equal(attribution?.getAttribute('href'), 'https://librecosta.com');
+  assert.equal(attribution?.textContent, region === 'cn' ? copyrightOwner : 'LibreCosta');
+  assert.equal(attribution?.getAttribute('href'), region === 'cn' ? 'https://librecosta.cn' : 'https://librecosta.com');
   assert.equal(attribution?.getAttribute('target'), '_blank');
   assert.equal(attribution?.getAttribute('rel'), 'noopener noreferrer');
   assert(footer.querySelector(`a[href="${github}/blob/master/LICENSE"]`));

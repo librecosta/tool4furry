@@ -28,6 +28,11 @@
   gap: var(--t4f-space-24);
 }
 
+.footerSocials {
+  display: flex;
+  gap: var(--t4f-space-4);
+}
+
 .footerSocial {
   display: inline-flex;
   align-items: center;
@@ -268,11 +273,6 @@
 }
 
 .footerCopyright {
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-
-  @media (max-width: 600px) {
-    min-height: 40px;
-  }
+  min-width: 0;
+  overflow-wrap: anywhere;
 }

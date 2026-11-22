@@ -10,7 +10,7 @@
 | [components/home](../src/components/home/) | Hero、精选、角色、社群/理念/图文故事及技术终章 |
 | [catalog.ts](../src/site/catalog.ts) / [homepage-showcase.ts](../src/site/homepage-showcase.ts) | 精选顺序与展示投影 / 手工角色 toolIds、可替换本地素材与有效媒体检查 |
 | [i18n/messages.ts](../src/i18n/messages.ts) | 已审核双语首页正文；不借重构自行改写 |
-| [home-community.ts](../src/site/home-community.ts) | Region 决定真实社群/支持平台，Locale 决定文案 |
+| [home-community.ts](../src/site/home-community.ts) | Region 决定 QQ 或 Discord，Locale 决定文案与 GoFurry 目录语言 |
 | `components/home/*.module.scss` | Astro 首页几何、局部样式与既有动效时间轴；主题和 React 过渡边界见 [V0.9 样式基础](styling-foundation-v0.9.md) |
 
 首页保留 `section#tools` 兼容锚点，Hero CTA 始终进入本地区/语言 `/tools/`。首页最多四项真实精选，现有顺序不变；导航总精选由 `catalog.ts` 的独立 `navigationToolIds` 维护。六角色手工 toolIds 经地区/状态过滤、去重并限量，不自动按分类分配或补足虚构项。导航通过 `getRoleShowcases()` 复用身份关联，每组最多九款，发布过滤后没有工具时显示真实空状态；身份名称来自 `roles.ts`。Astro、React 与 Canvas 紧凑导航共用数据投影和原生增强脚本，筛选只切换已渲染分组，不跳转或关闭抽屉，并保留 Hydration 前的选中状态。资格仍由 Registry 决定，人工关联不绕过 Draft/地区过滤。角色插画有真实素材才显示，3:4、底对齐、手机隐藏；工具列表独立从左上按行排列，身份 Icon 与简介左缘一致。精选可选左侧插画是正常 Grid 列，不用绝对定位/负偏移制造空白列。
@@ -38,7 +38,7 @@ Footer 唯一例外是 [目录工作台](site-tools.md)：固定视口，无 Foo
 
 1. **Hero**：审核文案/五层 CSS Reveal、固定 Tag Wavefield v1.0.0 移植与真实 AVIF poster。GPU 首帧成功才淡入；不支持、初始化失败/丢设备、Reduced Motion/Save-Data 等按既有策略静态降级。静态/动态裁切共锚点，手机最小尺度后裁切；每次完整进入一个安全随机 Seed，resize/主题/恢复不重抽，提交有上限。`src/visuals/wavefield/` 与旧 HSN-1 Lab 无依赖。
 2. **精选与角色**：真实 Registry 条目；29 款工具的 58 张透明像素 PNG 位于 `src/assets/tool-icons/`，原字节静态导入，由 `tool-icons.ts` / `getToolIcon()` 统一映射。首页、角色工具入口、目录和导航复用，未知 ID 保留 Phosphor 四宫格回退。身份图标仍为原设计，不对工具 PNG 做主题着色或加底板。素材规范与既有原始 Prompt 见 [Pixel Icon V1](visual/tool-icon-prompts.md)。无封面带、假工具或无意义几何占位。
-3. **社群与理念**：CN 的 QQ/Telegram/GoFurry 爱发电，Global 的 Discord/Telegram/GoFurry Ko-fi；使用批准的 QR/Logo 原文件和真实链接。三栏标题嵌入封顶线，01/02/03、环绕图标正文、桌面斜线/单列隐藏，不新增账户/支付功能。
+3. **社群与理念**：CN 显示 QQ，Global 显示 Discord，两地区均显示 Telegram 和 GoFurry 目录卡片。GoFurry 使用[指定的原版图标](https://github.com/librecosta/gofurry/blob/develop/apps/web/public/brand/gofurry-favicon.png)，按语言直达中文或英文目录。三栏标题嵌入封顶线，01/02/03、环绕图标正文、桌面斜线/单列隐藏，不新增账户/支付功能。
 4. **图文故事**：两张 Luminous 5:4 原始 AVIF，柔边矩形且不可原生拖动；大屏并排共享标题/正文/链接基线，中屏交错，手机文字优先。双语文案与链接由维护者冻结。
 5. **技术与工程**：现有顶部对齐 35:65 双栏、英文标题局部字号、中文英文副标题、两段正文及唯一 GitHub 链接；桌面链接在左，手机「标题→正文→链接」。局部实/虚线角标及现有 Reveal 保持，不恢复旧占位图或三个链接。
 
@@ -50,7 +50,7 @@ Footer 唯一例外是 [目录工作台](site-tools.md)：固定视口，无 Foo
 
 `application/ld+json` 为静态数据：仅各地区默认语言根首页一个最小 WebSite，URL 从 Region 生成；不放进执行脚本计数，也不扩大到软件/评分/FAQ 等类型。可索引页用同地区 self-canonical、双语绝对 hreflang、真实页面 Title/Description 的 OG 及品牌 PNG；noindex 不推广。robots、Sitemap、security、llms 由 [discovery.ts](../src/site/discovery.ts) 等现有静态端点生成，仅列公开页面。
 
-DocumentScrollDock 只控制根文档，复用 `scroll-metrics.js`；Footer 可见/模态打开时让位，Canvas/Lab/目录排除。内部滚动条与原生滚轮/键盘/触控不改成画布控制。
+DocumentScrollDock 只控制根文档，复用 `scroll-metrics.js`；Footer 可见/模态打开时让位，Canvas/Lab/目录排除。动效沿用 [TuneShape Pixel Scroll Orb](https://github.com/gofurry/TuneShape/tree/06c1fd3bddf8ff0eddd1b443dc295d0fc9ec71ca/effects/examples/pixel-scroll-orb) 的显隐、随机像素粒子和 400 ms 回顶，保留[上游 MIT 许可](../public/licenses/tuneshape.txt)。滚轮、触控和滚动键可以打断回顶。开启减少动态效果时，显隐和回顶即时完成，粒子保持隐藏。
 
 验证入口：[homepage-showcase](../tests/homepage-showcase.test.ts)、[home-community](../tests/home-community.test.ts)、[appearance-controller](../tests/appearance-controller.test.mjs)、[navigation-disclosure](../tests/navigation-disclosure.test.mjs)、三个 Reveal 测试、主题/对比度/品牌/合规/发现测试，以及实际产物守卫。该入口不代表本轮重新执行所有验收。
 

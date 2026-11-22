@@ -7,7 +7,7 @@ interface Props { region: Region; locale: Locale }
 const { region, locale } = Astro.props;
 ---
 <section data-home-community aria-labelledby="community-heading" class={styles.section}>
-  <h2 id="community-heading" class={styles.accessibleHeading}>{locale === 'zh' ? '社群与支持' : 'Community & Support'}</h2>
+  <h2 id="community-heading" class={styles.accessibleHeading}>{locale === 'zh' ? '社群与发现' : 'Community and Discovery'}</h2>
   <div class={styles.grid}>
     {getCommunityCards(region, locale).map(card => <article data-community-card={card.id} aria-labelledby={`community-${card.id}`} class={styles.card}>
       <h3 id={`community-${card.id}`} class={styles.title}>{card.title}</h3>
@@ -17,7 +17,6 @@ const { region, locale } = Astro.props;
       </div> : <>
         <p class:list={[styles.description, styles.centeredCopy]}>{card.description}</p>
         <div class={styles.footer}>
-          {card.note && <p class={styles.note}>{card.note}</p>}
           <a href={card.href} target="_blank" rel="noopener noreferrer" class={styles.action}>
             <img src={card.logo} width="20" height="20" alt="" aria-hidden="true" loading="lazy" class={styles.logo} />{card.action}
           </a>
