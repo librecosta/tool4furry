@@ -9,7 +9,7 @@
 | 正式构建 | 生成可独立托管的静态页面与所需资源，不执行上传或上线 |
 | 实际部署 | 将产物发布到托管环境的独立操作，需要明确授权 |
 
-当前 Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF、ZIP Manager、Batch File Renamer、File Hash、Text Cleaner、Text Diff、Subtitle Tools 与 JSON Formatter 十七款工具均为 Published，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
+当前 Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF、ZIP Manager、Batch File Renamer、File Hash、Text Cleaner、Text Diff、Subtitle Tools、JSON Formatter 与 URL & Base64 十八款工具均为 Published，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
 
 Image Resize & Crop (`image-resize-crop`) 已通过 A1-D2 L2 审计，并依据维护者本任务授权提升源码资格。两地区正式构建包含其双语页面、按需实现、局部裁剪 CSS 和完整 ISC 许可声明；其他 Draft、Lab 和 Fixture 继续隔离。审计证据与 L3 边界见 [模块说明](../docs/image-resize-crop-implementation.md#a1-d2-beta-资格审计2026-10-31)。
 
@@ -42,6 +42,8 @@ Text Diff (`text-diff`) 依据 V0.8-B8-D2 维护者授权取得 CN/Global Publis
 Subtitle Tools (`subtitle-tools`) 依据 V0.8-B9-D2 维护者授权取得 CN/Global Published 源码资格。保留快速与高级模式、SRT/WebVTT 双向转换、Cue 编辑及 CodeMirror 校验草稿；双语静态 SEO 如实说明资源限制、WebVTT 兼容性与元数据损失。Subtitle Tools 专属 JS/CSS 动态交付，与 Text Cleaner、Text Diff 共享 CodeMirror 和完整 MIT 通知。该阶段全站共 29 款（16 Published / 13 Draft），每地区 32 个工具详情页。真实下载、CI 与 L3 证据见 [通用工具说明](../docs/general-toolbox-v0.8.md#subtitle-tools--v08-b9-d2-seo-与-beta-资格2026-11-22)。
 
 JSON Formatter (`json-formatter`) 依据 V0.8-B10-D2 维护者授权取得 CN/Global Published 源码资格。双语静态 SEO 如实说明严格格式化、压缩、行列诊断、只读树与资源上限。数字字面量、转义、字段顺序与重复键保持保真。JSON 语言扩展、专属 Worker、样式及独立 MIT 通知按需交付，并复用共享 CodeMirror 与完整 MIT 通知。全站共 29 款（17 Published / 12 Draft），每地区 34 个工具详情页。浏览器下载、构建隔离、CI 与 L3 证据见 [通用工具说明](../docs/general-toolbox-v0.8.md#json-formatter--v08-b10-d2-seo-与-beta-资格)。
+
+URL & Base64（`url-base64`）依据 V0.8-B11-D2 维护者授权取得 CN/Global Published 源码资格。双语静态 SEO 和英文默认示例对应冻结的 URL/Base64 工作区。专属 Worker 和局部样式按需交付，复用共享 CodeMirror 与完整 MIT 通知。全站 29 款（18 Published / 11 Draft），每地区 36 个工具详情页。TXT、构建、CI 和 L3 证据见 [通用工具说明](../docs/general-toolbox-v0.8.md#url--base64--v08-b11-d2-seo-与-beta-资格)。
 
 工具详情页的 `ToolIntro` 静态复用既有像素图标，`ToolGuide` 直接复用目录 `ToolCards`；相关推荐仍由 `getRelatedTools()` 按同组、当前地区、资格和原顺序筛选，最多三项。目录 Fixture 不参与真实推荐，不增加业务 Island 或客户端数据请求。
 

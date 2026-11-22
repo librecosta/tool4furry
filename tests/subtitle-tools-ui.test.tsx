@@ -24,8 +24,8 @@ beforeEach(() => {
   Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: clipboard } });
 });
 
-function setup(locale: 'zh' | 'en' = 'en') {
-  return render(<Tooltip.Provider><SubtitleTools locale={locale} region="cn" /></Tooltip.Provider>);
+function setup(locale: 'zh' | 'en' = 'en', region: 'cn' | 'global' = 'cn') {
+  return render(<Tooltip.Provider><SubtitleTools locale={locale} region={region} /></Tooltip.Provider>);
 }
 
 const button = (name: string) => screen.getByRole('button', { name });
@@ -67,18 +67,32 @@ async function savedText(blob: Blob) {
   });
 }
 
-it('opens Chinese Quick with three valid, timed examples and no raw input', async () => {
-  setup('zh');
-  expect(button('快速').getAttribute('aria-pressed')).toBe('true');
+it.each([
+  ['cn', 'zh', '快速', '示例字幕', '下载'],
+  ['cn', 'en', 'Quick', 'Sample subtitles', 'Download'],
+  ['global', 'zh', '快速', '示例字幕', '下载'],
+  ['global', 'en', 'Quick', 'Sample subtitles', 'Download'],
+] as const)('opens %s/%s with the same three English cues and localized controls', async (region, locale, quick, label, download) => {
+  setup(locale, region);
+  expect(button(quick).getAttribute('aria-pressed')).toBe('true');
   expect(button('WebVTT').getAttribute('aria-pressed')).toBe('true');
-  expect(screen.getByText('示例字幕')).toBeTruthy();
-  expect(preview()).toEqual(['欢迎使用 Tool4Furry。', '现在可以预览每一条字幕。', '转换后直接下载文件。']);
+  expect(screen.getByText(label)).toBeTruthy();
+  const cues = [
+    [1000, 3000, 'Welcome to Tool4Furry.'],
+    [3500, 5500, 'Preview each subtitle cue here.'],
+    [6000, 8000, 'Choose a format and download your subtitles.'],
+  ];
+  expect(preview()).toEqual(cues.map(([, , line]) => line));
   expect(document.querySelector('textarea, .cm-editor')).toBeNull();
-  click('下载 WebVTT');
-  const [blob] = vi.mocked(saveBlob).mock.calls[0];
-  expect(parseSubtitles(await savedText(blob)).cues.map(cue => [cue.start, cue.end])).toEqual([
-    [1000, 3000], [3500, 5500], [6000, 8000],
-  ]);
+  click(download + ' WebVTT');
+  click('SRT');
+  click(download + ' SRT');
+  const [first, second] = vi.mocked(saveBlob).mock.calls;
+  for (const [[blob], format] of [[first, 'vtt'], [second, 'srt']] as const) {
+    const parsed = parseSubtitles(await savedText(blob));
+    expect(parsed.format).toBe(format);
+    expect(parsed.cues.map(cue => [cue.start, cue.end, cue.text])).toEqual(cues);
+  }
 });
 
 it('replaces a CRLF/BOM SRT file with a dropped WebVTT and exports actual blobs and clipboard text', async () => {

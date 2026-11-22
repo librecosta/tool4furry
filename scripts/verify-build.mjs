@@ -79,7 +79,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -843,14 +843,15 @@ for (const page of htmlFiles) {
   );
   const dom = new JSDOM(content).window.document;
   const editorStyles = [...dom.head.querySelectorAll('link[rel="stylesheet"]')]
-    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
+    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
   const toolId = dom.querySelector('main[data-tool-id]')?.dataset.toolId;
   const expectedEditorStyles = [];
   if (toolId === 'subtitle-tools') expectedEditorStyles.push('SubtitleTools');
   if (toolId === 'json-formatter') expectedEditorStyles.push('JsonFormatter');
-  if (['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
+  if (toolId === 'url-base64') expectedEditorStyles.push('UrlBase64');
+  if (['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
     expectedEditorStyles.push('TextEditor');
-  if (['json-formatter', 'text-cleaner', 'text-diff'].includes(toolId) && files.some(file => /\/TextWorkbench\.[\w-]+\.css$/.test(file)))
+  if (['json-formatter', 'text-cleaner', 'text-diff', 'url-base64'].includes(toolId) && files.some(file => /\/TextWorkbench\.[\w-]+\.css$/.test(file)))
     expectedEditorStyles.push('TextWorkbench');
   assert.deepEqual(editorStyles.sort(), expectedEditorStyles.sort(), 'Only owner routes link editor styles on first paint: ' + page);
   const dataScripts = [...dom.querySelectorAll('script[type="application/ld+json"]')];
@@ -962,6 +963,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/text-diff/index.html') assertToolContent(dom, locale, generalToolboxContent['text-diff'], 4, 4, 6);
     if (page === 'tools/subtitle-tools/index.html') assertToolContent(dom, locale, generalToolboxContent['subtitle-tools'], 4, 4, 6);
     if (page === 'tools/json-formatter/index.html') assertToolContent(dom, locale, generalToolboxContent['json-formatter'], 4, 4, 6);
+    if (page === 'tools/url-base64/index.html') assertToolContent(dom, locale, generalToolboxContent['url-base64'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1520,14 +1522,10 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     ['text-diff', 'TextDiff'],
     ['subtitle-tools', 'SubtitleTools'],
     ['json-formatter', 'JsonFormatter'],
+    ['url-base64', 'UrlBase64'],
   ].filter(([id]) => published.some(tool => tool.id === id));
   const scripts = new Map(await Promise.all(files.filter(file => file.endsWith('.js'))
     .map(async file => [file, await readFile(resolve(root, file), 'utf8')])));
-  if (!published.some(tool => tool.id === 'url-base64')) {
-    for (const [file, source] of scripts)
-      assert(!/data-url-base64|t4f-url-base64|base64Bits/.test(source), 'Draft codec JS stays private: ' + file);
-    assert(!/\._?(?:codecWorkspace|codecToolbar|codecResultStatus)[_-]/.test(combinedCSS), 'Draft codec CSS stays private');
-  }
   const findAsset = (stem, extension) => files.filter(file => {
     const name = file.split('/').at(-1);
     return name.startsWith(stem + '.') && name.endsWith(extension);
@@ -1585,6 +1583,21 @@ if (!published.some(tool => tool.id === 'file-hash')) {
   const jsonEntry = entries.get('json-formatter');
   const jsonWorkers = files.filter(file => /(?:^|\/)json\.worker[.-][\w-]+\.js$/.test(file));
   const jsOwners = matches => [...scripts].filter(([, source]) => matches(source)).map(([file]) => file);
+  const codecEntry = entries.get('url-base64');
+  const codecWorkers = files.filter(file => /(?:^|\/)codec\.worker[.-][\w-]+\.js$/.test(file));
+  const codecStyles = cssFiles.filter((_, index) => /\._?(?:codecWorkspace|codecToolbar|codecResultStatus)[_-]/.test(outputCSS[index]));
+  assert.deepEqual(codecStyles, codecEntry ? findAsset('UrlBase64', '.css') : [], 'Codec styles follow publication and remain private to the tool');
+  assert.equal(codecWorkers.length, codecEntry ? 1 : 0, 'Local codec Worker follows publication');
+  assert.deepEqual(jsOwners(source => /data-url-base64|t4f-url-base64/.test(source)), codecEntry ? [codecEntry] : [],
+    'Codec workspace and Worker constructor stay in the lazy tool entry');
+  assert.deepEqual(jsOwners(source => source.includes('base64Bits')).sort(), (codecEntry ? [codecEntry, ...codecWorkers] : []).sort(),
+    'Codec validation stays in the lazy tool and its Worker');
+  if (codecEntry) {
+    const [worker] = codecWorkers;
+    assert.deepEqual(jsOwners(source => source.includes(basenameOf(worker))), [codecEntry], 'Only URL & Base64 owns the local Worker URL');
+    assert(scripts.get(worker).includes('self.onmessage') && scripts.get(worker).includes('self.postMessage'),
+      'Codec Worker contains its processing protocol');
+  }
   const editorSelectors = /cm-editor|cm-gutters|--t4f-editor-font/;
   const jsonMarkers = /data-json-language-license|t4f-json-workspace|JsonText True False Null Number String/;
   assert.deepEqual(jsOwners(source => jsonMarkers.test(source)), jsonEntry ? [jsonEntry] : [],

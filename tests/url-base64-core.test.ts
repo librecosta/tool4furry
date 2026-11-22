@@ -150,10 +150,28 @@ it('converts beyond the old cutoff without truncation, even when output expands'
   expect(base64(expectedBase64, 'decode', 'url')).toBe(input);
 });
 
-it('builds decode samples using the matching rules and counts text code points', () => {
-  expect(codecSample({family: 'url', direction: 'decode', variant: 'component'})).toBe('%E4%BD%A0%E5%A5%BD%20%26%20Tool4Furry');
-  expect(codecSample({family: 'url', direction: 'decode', variant: 'form'})).toBe('%E4%BD%A0%E5%A5%BD+%26+Tool4Furry');
-  expect(codecSample({family: 'base64', direction: 'decode', variant: 'url', padding: false})).toBe('5L2g5aW9');
+it.each([
+  ['component', 'Hello & Tool4Furry', 'Hello%20%26%20Tool4Furry'],
+  ['full', 'https://example.com/search?q=Hello Tool4Furry&lang=en', 'https://example.com/search?q=Hello%20Tool4Furry&lang=en'],
+  ['form', 'Hello & Tool4Furry', 'Hello+%26+Tool4Furry'],
+] as const)('loads the English URL %s sample in both directions', (variant, plain, encoded) => {
+  expect(codecSample({ family: 'url', direction: 'encode', variant })).toBe(plain);
+  expect(codecSample({ family: 'url', direction: 'decode', variant })).toBe(encoded);
+  expect(url(encoded, 'decode', variant)).toBe(plain);
+});
+
+it.each(['standard', 'url'] as const)('loads Base64 %s samples in both directions and respects padding', variant => {
+  for (const padding of [true, false]) {
+    const options = { family: 'base64', variant, padding } as const;
+    const plain = 'Hello Tool4Furry';
+    const encoded = padding ? 'SGVsbG8gVG9vbDRGdXJyeQ==' : 'SGVsbG8gVG9vbDRGdXJyeQ';
+    expect(codecSample({ ...options, direction: 'encode' })).toBe(plain);
+    expect(codecSample({ ...options, direction: 'decode' })).toBe(encoded);
+    expect(base64(encoded, 'decode', variant)).toBe(plain);
+  }
+});
+
+it('counts Unicode code points', () => {
   expect(convertText({ input: '🦊好', options: { family: 'url', direction: 'encode', variant: 'component' } })).toEqual({
     output: '%F0%9F%A6%8A%E5%A5%BD', characters: 2,
   });

@@ -6,13 +6,14 @@ import { definition as cleaner } from '../src/tools/text-cleaner/definition';
 import { definition as diff } from '../src/tools/text-diff/definition';
 import { definition as subtitles } from '../src/tools/subtitle-tools/definition';
 import { definition as json } from '../src/tools/json-formatter/definition';
+import { definition as codec } from '../src/tools/url-base64/definition';
 import { tools } from '../src/tools/registry';
 import { toolAvailabilityConstant, toolBuildDefines } from '../src/tools/build-availability';
 import { draftIds } from './fixtures/general-toolbox';
 
 const read = (path: string) => readFileSync(path, 'utf8');
-it('shares the editor across four Published tools while excluding all twelve Draft tools', () => {
-  for (const tool of [cleaner, diff, subtitles, json]) {
+it('shares the editor across five Published tools while excluding all eleven Draft tools', () => {
+  for (const tool of [cleaner, diff, subtitles, json, codec]) {
     expect(tool.status).toBe('published');
     expect(tool.regions).toEqual(['cn', 'global']);
   }
@@ -22,9 +23,10 @@ it('shares the editor across four Published tools while excluding all twelve Dra
     expect(availability['import.meta.env.T4F_TOOL_TEXT_DIFF_AVAILABLE']).toBe('true');
     expect(availability['import.meta.env.T4F_TOOL_SUBTITLE_TOOLS_AVAILABLE']).toBe('true');
     expect(availability['import.meta.env.T4F_TOOL_JSON_FORMATTER_AVAILABLE']).toBe('true');
-    expect(draftIds).toHaveLength(12);
+    expect(availability['import.meta.env.T4F_TOOL_URL_BASE64_AVAILABLE']).toBe('true');
+    expect(draftIds).toHaveLength(11);
     expect(draftIds).toContain('markdown-editor');
-    expect(draftIds).toContain('url-base64');
+    expect(draftIds).not.toContain('url-base64');
     for (const id of draftIds) {
       expect(tools.find(tool => tool.id === id)?.status).toBe('draft');
       expect(availability[toolAvailabilityConstant(id)]).toBe('false');

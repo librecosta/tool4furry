@@ -12,6 +12,7 @@ import { imageConverterDefinition } from '../src/tools/image-converter/definitio
 import { definition as textDiff } from '../src/tools/text-diff/definition';
 import { definition as subtitles } from '../src/tools/subtitle-tools/definition';
 import { definition as json } from '../src/tools/json-formatter/definition';
+import { definition as codec } from '../src/tools/url-base64/definition';
 
 const content = {
   title: 'Test — Tool4Furry',
@@ -23,6 +24,49 @@ const map: ToolContentMap = {
   one: { zh: content, en: { ...content, h1: 'English heading' } },
 };
 describe('Astro-only content boundary', () => {
+  it('publishes the URL & Base64 bilingual guide and short copy for the frozen codec workspace', () => {
+    const expected = {
+      zh: {
+        title: 'URL 与 Base64 编解码工具 - UTF-8 在线转换 | Tool4Furry',
+        description: '在线进行 URL 编码、解码和 Base64 文本转换。支持 UTF-8、完整 URL、表单参数、Base64URL、Padding 设置及实时预览，可复制或下载 TXT，全部在浏览器本地完成。',
+        h1: 'URL 与 Base64',
+        intro: '选择 URL 或 Base64，再选择编码或解码。输入文本即可实时查看结果，也可以一键反向交换。',
+      },
+      en: {
+        title: 'URL Encoder & Base64 Converter - Encode or Decode | Tool4Furry',
+        description: 'Encode or decode URL text and UTF-8 Base64 locally in your browser. Supports URL components, form values, Base64URL, padding options, live results and TXT downloads.',
+        h1: 'URL & Base64',
+        intro: 'Choose URL or Base64, select Encode or Decode, and see the result as you type. Swap the result back into the input whenever you need.',
+      },
+    };
+    expect(codec).toMatchObject({
+      id: 'url-base64', slug: 'url-base64', category: 'development', group: 'developer-utilities',
+      roles: ['developer'], mode: 'form', status: 'published', regions: ['cn', 'global'],
+      copy: {
+        zh: { title: 'URL 与 Base64', description: '实时进行 URL 和 Base64 文本编解码，支持 UTF-8、Base64URL 与高级编码规则。', summary: '选择编码方式和方向，实时转换文本并复制或下载。' },
+        en: { title: 'URL & Base64', description: 'Encode and decode URL and Base64 text with UTF-8 and advanced codec options.', summary: 'Switch codecs and directions, convert text live, and copy or download results.' },
+      },
+    });
+    for (const region of codec.regions) for (const locale of ['zh', 'en'] as const) {
+      const page = getToolPageContent(codec, region, toolPageContents, false, locale);
+      expect(page).toMatchObject(expected[locale]);
+      expect(page.title.match(/Tool4Furry/g)).toHaveLength(1);
+      expect(page.steps).toHaveLength(4);
+      expect(page.steps![1]).toMatch(/内置英文示例|built-in English sample/);
+      expect(page.limitations).toHaveLength(6);
+      expect(page.limitations![0]).toMatch(/单个字段值|individual form values/);
+      expect(page.limitations![1]).toMatch(/合法的补齐或省略补齐|correctly padded or valid unpadded/);
+      expect(page.limitations![2]).toMatch(/尾部补位比特|trailing bits/);
+      expect(page.limitations![3]).toContain('%2B');
+      expect(page.limitations![4]).toMatch(/已移除旧的 50 万字符硬限制.*Worker|500,000-character limit has been removed.*Worker/);
+      expect(page.limitations![5]).toMatch(/不是加密|provide no encryption/);
+      expect(page.faq).toHaveLength(4);
+      expect(JSON.stringify(page)).not.toMatch(/JWT|加密保护|file to Base64|unlimited/i);
+      expect(getRelatedTools(codec, region).map(tool => tool.id)).toEqual(['json-formatter']);
+      if (locale === 'en') expect(JSON.stringify(page)).not.toMatch(/\p{Script=Han}/u);
+    }
+  });
+
   it('publishes the JSON Formatter bilingual guide and short copy for its frozen workspace', () => {
     const expected = {
       zh: {
@@ -60,7 +104,7 @@ describe('Astro-only content boundary', () => {
       expect(page.limitations![4]).toMatch(/40.*直属子节点|40 direct child nodes/);
       expect(page.limitations![5]).toMatch(/不执行 JSON Schema.*不会自动修复|not JSON Schema.*does not automatically repair/);
       expect(JSON.stringify(page)).not.toMatch(/50 万字符|500,000 characters|128 层|128 nesting|JSONPath|JSONC|YAML/);
-      expect(getRelatedTools(json, region)).toEqual([]);
+      expect(getRelatedTools(json, region).map(tool => tool.id)).toEqual(['url-base64']);
       if (locale === 'en') expect(JSON.stringify(page)).not.toMatch(/\p{Script=Han}/u);
     }
   });

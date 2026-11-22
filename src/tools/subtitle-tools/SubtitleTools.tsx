@@ -1,6 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { ClipboardTextIcon, CodeIcon, CopyIcon, DownloadSimpleIcon } from '@phosphor-icons/react';
-import type { Locale } from '../../i18n/locale';
 import { Button, IconButton } from '../../ui/Button';
 import { Tooltip } from '../../ui/Tooltip';
 import { FileDropzone } from '../../ui/FileDropzone';
@@ -24,10 +23,8 @@ type Workspace = { document: SubtitleDocument; origin: Origin; raw?: string; rev
 
 const formatName = { srt: 'SRT', vtt: 'WebVTT' };
 const sampleTimes = [[1000, 3000], [3500, 5500], [6000, 8000]];
-function sampleSource(locale: Locale) {
-  const lines = locale === 'zh'
-    ? ['欢迎使用 Tool4Furry。', '现在可以预览每一条字幕。', '转换后直接下载文件。']
-    : ['Welcome to Tool4Furry.', 'Preview each subtitle cue here.', 'Choose a format and download your subtitles.'];
+function sampleSource() {
+  const lines = ['Welcome to Tool4Furry.', 'Preview each subtitle cue here.', 'Choose a format and download your subtitles.'];
   return sampleTimes.map(([start, end], i) =>
     [String(i + 1), formatTime(start, false) + ' --> ' + formatTime(end, false), lines[i]].join('\n'),
   ).join('\n\n') + '\n';
@@ -56,7 +53,7 @@ export default function SubtitleTools({ locale }: ToolProps) {
   const t = (zh: string, en: string) => tr(locale, zh, en);
   const [ready, setReady] = useState(false);
   const [work, setWork] = useState<Workspace>(() => {
-    const raw = sampleSource(locale);
+    const raw = sampleSource();
     return { document: parseSubtitles(raw), origin: { kind: 'sample' }, raw, revision: 0 };
   });
   const [mode, setMode] = useState<Mode>('quick');
@@ -119,7 +116,7 @@ export default function SubtitleTools({ locale }: ToolProps) {
   const loadSample = () => {
     request.current++;
     setReading(false);
-    const raw = sampleSource(locale);
+    const raw = sampleSource();
     replace(parseSubtitles(raw), { kind: 'sample' }, raw, true);
   };
   const loadFile = async (files: File[]) => {

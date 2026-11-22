@@ -116,7 +116,9 @@ export function transformEncoding(input: string, options: CodecOptions): string 
 }
 
 export function codecSample(options: CodecOptions) {
-  const text = options.family === 'url' ? '你好 & Tool4Furry' : '你好';
+  const text = options.family === 'base64' ? 'Hello Tool4Furry'
+    : options.variant === 'full' ? 'https://example.com/search?q=Hello Tool4Furry&lang=en'
+    : 'Hello & Tool4Furry';
   return options.direction === 'encode' ? text : transformEncoding(text, { ...options, direction: 'encode' });
 }
 

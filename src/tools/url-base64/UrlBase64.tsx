@@ -125,6 +125,15 @@ export default function UrlBase64({ locale }: ToolProps) {
     setDirection(direction === 'encode' ? 'decode' : 'encode');
   };
 
+  const loadSample = () => {
+    const options = request.options;
+    // Decoding accepts either padding style. The sample follows the saved encoder preference.
+    const sampleOptions = options.family === 'base64'
+      ? { ...options, padding: !advanced || padding[options.variant] }
+      : options;
+    setInput({ text: codecSample(sampleOptions), sample: true });
+  };
+
   const inputLabel = t('输入', 'Input');
   const resultLabel = t('结果', 'Result');
   const clearLabel = t('清空输入', 'Clear input');
@@ -152,8 +161,7 @@ export default function UrlBase64({ locale }: ToolProps) {
             <div className={s.operations}>
               <Segments<CodecFamily> label={t('编解码类型', 'Codec family')} value={family} onChange={setFamily}
                 options={[[ 'url', 'URL' ], [ 'base64', 'Base64' ]]} />
-              <Button variant="ghost" className={s.sample}
-                onClick={() => setInput({ text: codecSample(request.options), sample: true })}>
+              <Button variant="ghost" className={s.sample} onClick={loadSample}>
                 {t('载入示例', 'Load sample')}
               </Button>
               <div className={s.direction}>

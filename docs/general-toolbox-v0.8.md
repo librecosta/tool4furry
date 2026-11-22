@@ -1,6 +1,17 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter 已获得 CN/Global Published 源码资格，其余 12 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（17 Published / 12 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 已获得 CN/Global Published 源码资格，其余 11 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（18 Published / 11 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+
+## URL & Base64 — V0.8-B11-D2 SEO 与 Beta 资格
+
+- URL & Base64 依据维护者授权取得 CN/Global Published 源码资格。既有 Astro 模板静态输出双语 Title、Description、H1、四项步骤、六项限制及四组 FAQ。开发者分类、像素图标与目录卡片继续由既有投影生成。每地区 36 个工具详情页，由 Sitemap 和 llms.txt 自动收录。
+- 保留快速/高级双 CodeMirror 工作区、URL 组件/完整 URI/表单值、标准 Base64/Base64URL 和可选编码补齐。严格校验转义、字母表、补齐、尾部比特与 UTF-8，反向查看使用完整有效结果。128,000 个 UTF-16 代码单元起由本地专属 Worker 处理，保留取消、12 秒截止和旧结果失效策略。
+- 统一 URL & Base64 和 Subtitle Tools 两处内置默认演示为英文。解码示例由当前编码规则生成，跟随高级补齐偏好。字幕保留原先三条时间码、顺序及已存在的英文正文。审查确认 JSON Formatter、Markdown Editor、Regex Tester 等已使用英文示例。中文界面文案及 Unicode 用例保留。
+- 编解码 Worker、工具 JS/CSS 及首屏样式归本工具。CodeMirror 及完整 MIT NOTICE 由五款正式工具共享，其他 11 款 Draft 路由与私有资源继续隔离。
+- Chromium 157 在 CN 中文深色 1280px 桌面及 Global 英文浅色 390px 手机模拟视口操作正式产物，并在两个备用语言路由核对了相同英文示例。四种操作的剪贴板结果、12 份实际 UTF-8 TXT 的内容、MIME 和去重文件名均复核。下载覆盖了 BOM、CR、LF 和 NUL。两地区各复读一份 SRT 和 WebVTT，核对了英文正文、顺序、时间码及 MIME。
+- 正式资源上的 Worker 转换、取消与初始化失败后恢复均已验证，也用 Chromium 模拟缺少字节数组 Base64 API 并验证兼容实现。每地区实际转换 130,500 个代码单元，完整复制与下载 652,500 字节并核对哈希。复用 D1 超过旧上限的测试证据。
+- `pnpm check`、318 项定向测试及两地区正式构建和产物守卫通过。[D1 基线 CI](https://github.com/librecosta/tool4furry/actions/runs/45021475125) 已通过。D2 的远程结果按提交对应的工作流单独核对。[develop CI](https://github.com/librecosta/tool4furry/actions/workflows/ci.yml?query=branch%3Adevelop)
+- L3 尚未验证 Firefox、Safari/WebKit、真实 iOS/Android、系统输入法候选窗和极限资源压力。
 
 ## URL & Base64 — V0.8-B11-D1 文本编解码工作区
 
@@ -8,7 +19,7 @@
 - 高级 URL 提供组件、完整 URL 和单个表单参数值。完整 URL 沿用原生 URI 规则，保留结构分隔符和已有的保留字符转义；表单值以 `+` 表示空格，字面 `+` 编码为 `%2B`，严格拒绝损坏转义。Base64 使用 UTF-8，支持标准及 URL 安全字母表，两套编码补齐偏好独立保存。解码接受规范补齐或合法省略，仅忽略 ASCII 空格、Tab、CR/LF，并检查尾部比特和 UTF-8。[ECMAScript URI 函数](https://tc39.es/ecma262/#sec-uri-handling-functions) · [WHATWG 表单编码](https://url.spec.whatwg.org/#application/x-www-form-urlencoded)
 - 编码拒绝未配对的代理项，解码保留 BOM、CRLF、CR、NUL 等有效文本内容。优先使用浏览器字节数组 Base64 API，不支持时按小块兼容。复制与本地时间戳 TXT 下载共用当前完整结果，导出 MIME 为 `text/plain;charset=utf-8`。重复点击以毫秒递增保证同一工作区内的文件名唯一。[ECMAScript 字节数组 Base64](https://tc39.es/ecma262/#sec-uint8array.frombase64)
 - 移除旧 50 万代码单元硬限制。小文本在渲染之外即时处理，达到 128,000 代码单元时防抖后交给同源专属 Worker。新请求终止旧任务，后台任务有 12 秒截止；失效、失败或空结果禁用交付。设备内存和浏览器字符串上限仍会影响可处理规模。
-- 工具继续保持 CN/Global Draft，全站为 29 款（17 Published / 12 Draft）。工作区 JS、CSS 和 Worker 从工具懒加载入口到达，正式产物守卫继续排除其专用资源。所有处理在浏览器本地完成。
+- D1 时工具保持 CN/Global Draft，全站为 29 款（17 Published / 12 Draft）。工作区 JS、CSS 和 Worker 从工具懒加载入口到达，当时的正式产物守卫排除其专用资源。所有处理在浏览器本地完成。
 - Chromium 157 在 CN 中文深色 1280px 桌面和 Global 英文浅色 390px 触控模拟视口复验了两种模式、错误恢复、反向查看、撤销重做、焦点、滚动、主题切换和刷新。逐字节复读 12 份实际 TXT，核对四类文件名、去重、MIME、Unicode、BOM 和换行。两地区各验证 540,009 个输入代码单元生成完整的 2,700,045 字节 URL 编码结果，剪贴板与下载均匹配预期，也验证了处理中编辑可立即取消旧任务。Windows Chromium 的系统剪贴板会把单独的 LF 和 CR 转成 CRLF，直接生成的 TXT 保留实际结果字节。
 - `pnpm check`、编解码核心/UI/Worker 与共享编辑器等 137 项定向测试、CN/Global 正式构建及产物守卫通过。
 - Chromium 组合输入事件复验了中文提交和自动编码。同页切换到 390px 时原有输入、结果和两个编辑器实例均保留。

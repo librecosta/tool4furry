@@ -21,8 +21,10 @@ beforeEach(() => {
   Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: clipboard } });
 });
 
-const sample = '你好 & Tool4Furry';
-const sampleOutput = '%E4%BD%A0%E5%A5%BD%20%26%20Tool4Furry';
+const sample = 'Hello & Tool4Furry';
+const sampleOutput = 'Hello%20%26%20Tool4Furry';
+const base64Sample = 'Hello Tool4Furry';
+const base64SampleOutput = 'SGVsbG8gVG9vbDRGdXJyeQ==';
 function setup(locale: 'en' | 'zh' = 'en') {
   return render(
     <StrictMode>
@@ -67,7 +69,7 @@ it('starts Quick / URL / Encode with the actual sample and two stable CodeMirror
   expect(screen.queryByRole('group', { name: 'URL type' })).toBeNull();
   await output(sampleOutput);
   expect(screen.getByText('Converted')).toBeTruthy();
-  expect(screen.getByText('15 characters')).toBeTruthy();
+  expect(screen.getByText('18 characters')).toBeTruthy();
   const inputEditor = editor();
   const resultEditor = editor('Result');
 
@@ -84,13 +86,13 @@ it('starts Quick / URL / Encode with the actual sample and two stable CodeMirror
   unavailable();
   await screen.findByText('The input contains characters outside the selected Base64 alphabet.');
   press('Load sample');
-  expect(value()).toBe('5L2g5aW9');
-  await output('你好');
+  expect(value()).toBe(base64SampleOutput);
+  await output(base64Sample);
   press('Encode');
-  expect(value()).toBe('5L2g5aW9');
+  expect(value()).toBe(base64SampleOutput);
   press('Load sample');
-  expect(value()).toBe('你好');
-  await output('5L2g5aW9');
+  expect(value()).toBe(base64Sample);
+  await output(base64SampleOutput);
   expect(editor()).toBe(inputEditor);
   expect(editor('Result')).toBe(resultEditor);
 });
@@ -121,6 +123,39 @@ it('uses advanced URL variants and re-applies saved rules when returning from Qu
   press('Swap & reverse');
   expect(value()).toBe('a+b%2Bc%26d%3De');
   await output('a b+c&d=e');
+});
+
+it('loads the active English Full URL, form value and Base64URL decode samples on request', async () => {
+  setup();
+  press('Advanced');
+  press('Full URL');
+  expect(value()).toBe(sample);
+  press('Load sample');
+  const fullUrl = 'https://example.com/search?q=Hello Tool4Furry&lang=en';
+  const encodedUrl = 'https://example.com/search?q=Hello%20Tool4Furry&lang=en';
+  expect(value()).toBe(fullUrl);
+  await output(encodedUrl);
+  press('Decode');
+  expect(value()).toBe(fullUrl);
+  press('Load sample');
+  expect(value()).toBe(encodedUrl);
+  await output(fullUrl);
+  press('Form value');
+  press('Load sample');
+  expect(value()).toBe('Hello+%26+Tool4Furry');
+  await output(sample);
+
+  press('Base64');
+  press('Base64URL');
+  press('Load sample');
+  expect(value()).toBe('SGVsbG8gVG9vbDRGdXJyeQ');
+  await output(base64Sample);
+  press('Encode');
+  press('Pad with =');
+  press('Decode');
+  press('Load sample');
+  expect(value()).toBe(base64SampleOutput);
+  await output(base64Sample);
 });
 
 it('remembers each Base64 alphabet and padding preference and accepts valid padded or unpadded decoding', async () => {

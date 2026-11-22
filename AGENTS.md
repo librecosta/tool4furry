@@ -6,18 +6,18 @@
 
 ## Current State
 
-- Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF、ZIP Manager、Batch File Renamer、File Hash、Text Cleaner、Text Diff、Subtitle Tools 与 JSON Formatter 十七款工具均为 Published；CN/Global 双语正式构建与产物守卫通过，**两个地区均未部署**。源码 Published 不代表部署授权。
+- Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF、ZIP Manager、Batch File Renamer、File Hash、Text Cleaner、Text Diff、Subtitle Tools、JSON Formatter 与 URL & Base64 十八款工具均为 Published；CN/Global 双语正式构建与产物守卫通过，**两个地区均未部署**。源码 Published 不代表部署授权。
 - 当前没有后端、数据库、SSR 服务或用户系统。Lab 仅供 DEV，不能进入生产路由/资源图。
 - Image Compressor 已完成 B1-D1 SEO 与 Beta 资格收尾，保留 C1-R1 最长边步进器；EXIF Metadata 已完成 B4-D1 双语 SEO 与 Beta 收尾；Image Watermark 已完成 B3-D1 双语 SEO 与 Beta 收尾；Comic Page Organizer 已完成 B2-D1 双语 SEO，并按维护者明确要求提升为 CN/Global Published；转换归档真实落盘验收仍缺证据，不能声明 L2 已全部通过。当前能力、审计证据和 L3 边界见 [基础图片工具说明](docs/image-basics.md)。
 - Image Resize & Crop 已完成 A1-D2 Beta 资格审计；单张裁剪、批量缩放、双语静态页面与所需资源进入两地区正式构建。实现、资格证据及 L3 未测范围见 [Resize/Crop 说明](docs/image-resize-crop-implementation.md)。A1 已收尾，不继续扩展裁剪工作区。
 - Palette Extractor 已完成 A2-D2 Beta 资格审计；有界提色、色卡编辑/图片取色和 PNG 分享卡进入两地区正式构建，首页复用既有画家/动画师精选。证据与 L3 边界见 [Palette 说明](docs/palette-extractor.md#a2-d2-beta-资格审计2026-11-01)。A2 已收尾，不继续新增功能阶段。
 - 当前能力与 D2 证据见 [Converter 说明](docs/image-converter-implementation.md)；旧阶段的 Draft、零工具、三格式和 CN-only 结论属于历史。
 
-- V0.8 两批已增加 22 款通用工具初版（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter 已完成各自双语静态 SEO 与核心输出复核并具备 CN/Global Published 源码资格，其余 12 款保持 Draft；最新远程 CI 状态单独记录，不能把本地验收等同于 L2 七项全部通过。PDF Split 的预览使用按需本地 PDF.js，真实输出仍由 pdf-lib 负责；三款 PDF 工具在点击下载时生成安全文件名和本地毫秒时间戳。Images to PDF 保留画廊排序、预览和宽松非阻断资源策略。Batch File Renamer 保留 Quick/Advanced 文件名组合器和 ZIP 原字节输出。File Hash 默认 MD5，五算法多文件自动计算、比对、复制与 TXT 导出；单 Worker / 2 MiB 分块和内嵌 WASM 按需加载，无旧 32 MiB 配额，完整 hash-wasm / 上游许可随工具交付。Text Cleaner 使用按需 CodeMirror 双编辑器，快速模式保留缩进，高级规则独立保存并明确生成 LF/CRLF；无旧 50 万字符配额，完整编辑器 MIT 通知与 Text Diff、Subtitle Tools 共享。Text Diff 使用专属 Worker 进行实时逐行比较，支持双行号、两行上下文、EOF 差异、忽略行尾空白与可读 TXT 报告，完整 diff BSD 通知随工具交付。Subtitle Tools 保留 SRT/WebVTT 双向转换、默认示例、分页 Cue 列表、整体偏移、单条编辑与通过校验后才应用的 CodeMirror 源码草稿；不支持 NOTE/STYLE/REGION，转换到 SRT 提示元数据损失。详情页统一静态标题像素图标，相关推荐直接复用目录 ToolCards，资格过滤不变。共 29 款工具（17 Published / 12 Draft）。实际能力、限制和验证见 [通用工具说明](docs/general-toolbox-v0.8.md)。
+- V0.8 两批已增加 22 款通用工具初版（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 已完成各自双语静态 SEO 与核心输出复核并具备 CN/Global Published 源码资格，其余 11 款保持 Draft；最新远程 CI 状态单独记录，不能把本地验收等同于 L2 七项全部通过。PDF Split 的预览使用按需本地 PDF.js，真实输出仍由 pdf-lib 负责；三款 PDF 工具在点击下载时生成安全文件名和本地毫秒时间戳。Images to PDF 保留画廊排序、预览和宽松非阻断资源策略。Batch File Renamer 保留 Quick/Advanced 文件名组合器和 ZIP 原字节输出。File Hash 默认 MD5，五算法多文件自动计算、比对、复制与 TXT 导出；单 Worker / 2 MiB 分块和内嵌 WASM 按需加载，无旧 32 MiB 配额，完整 hash-wasm / 上游许可随工具交付。Text Cleaner 使用按需 CodeMirror 双编辑器，快速模式保留缩进，高级规则独立保存并明确生成 LF/CRLF；无旧 50 万字符配额，完整编辑器 MIT 通知与 Text Diff、Subtitle Tools 共享。Text Diff 使用专属 Worker 进行实时逐行比较，支持双行号、两行上下文、EOF 差异、忽略行尾空白与可读 TXT 报告，完整 diff BSD 通知随工具交付。Subtitle Tools 保留 SRT/WebVTT 双向转换、默认示例、分页 Cue 列表、整体偏移、单条编辑与通过校验后才应用的 CodeMirror 源码草稿；不支持 NOTE/STYLE/REGION，转换到 SRT 提示元数据损失。详情页统一静态标题像素图标，相关推荐直接复用目录 ToolCards，资格过滤不变。共 29 款工具（18 Published / 11 Draft）。实际能力、限制和验证见 [通用工具说明](docs/general-toolbox-v0.8.md)。
 
 - JSON Formatter 完成 B10-D2 双语 SEO 与输出复核，具备 CN/Global Published 源码资格。复用 CodeMirror 双编辑器，支持严格保真的格式化与压缩、行列定位、分页只读树和完整 JSON 下载。专属同源 Worker、按需 JSON 语言包及 MIT 通知受正式产物守卫约束。验证和实际资源边界见 [通用工具说明](docs/general-toolbox-v0.8.md#json-formatter--v08-b10-d2-seo-与-beta-资格)。
 
-- URL & Base64 在 B11-D1 迁移至 CodeMirror 双编辑器，提供快速/高级、三种 URL 规则、标准 Base64 与 Base64URL、严格 UTF-8、反向查看和 TXT 交付。大文本由专属 Worker 处理，工具仍为 CN/Global Draft。功能与验证见 [通用工具说明](docs/general-toolbox-v0.8.md#url--base64--v08-b11-d1-文本编解码工作区)。
+- URL & Base64 完成 B11-D2 双语 SEO 与 TXT 复核，具备 CN/Global Published 源码资格。复用 CodeMirror 双编辑器，支持快速/高级、三种 URL 规则、标准 Base64 与 Base64URL、严格 UTF-8、反向查看及专属 Worker。URL & Base64 与 Subtitle Tools 的默认演示统一为英文。功能与验证见 [通用工具说明](docs/general-toolbox-v0.8.md#url--base64--v08-b11-d2-seo-与-beta-资格)。
 
 ## Start Here
 
@@ -54,6 +54,7 @@
 
 - **可用性**：Registry 的 `status` + `regions` 是唯一发布来源；DEV 为本地区 Draft + Published，生产仅 Published。Loader/Vite 只投影该状态，不新增发布开关、路径或 Store，不泄漏 Draft/Lab/Fixture 及其专用资源。
 - **地区/语言**：CN/Global 独立产物，各有中英文；语言切换同源，地区外链才跨来源。Canonical/hreflang/发现文件与实际页面一致，规则由配置与测试控制。
+- **默认演示数据**：内置默认示例、首次载入样例及 Load Sample 演示内容默认使用英文，跨地区和界面语言保持一致。标签、帮助、错误和 SEO 继续按 locale 本地化。用独立测试覆盖多语言与特殊字符，保留用户输入的 Unicode 支持。只有工具明确以某种语言的文本为处理对象且有充分理由时才可例外。
 - **静态与交互**：页面正文、唯一 H1、指南/FAQ 保留 Astro 静态输出；固定 ToolRuntime/LabRuntime 才挂必要 React，工具实现懒加载。无全站 React Provider/业务 Store；静态页面受精确脚本审计，不随意加 JS 或 preload。
 - **所有权**：WorkbenchShell 只管布局/插槽/面板，UI 原语受控；文件、设置、任务和释放归工具。不得因断点切换或开关面板重建业务状态。具体 Canvas/预览合同见 [工作区说明](docs/workbench-appearance.md)。
 - **文件表单布局**：具备文件导入、文件列表以及参数或操作面板的 Form/Batch 工具，默认采用左侧文件与预览、右侧设置与操作的布局。优先复用 `src/workbench/form-tool-layout.module.scss` 和既有 WorkbenchShell，不自行创建重复的双栏样式。复用同时包括完整设置面板、标题、间距、空状态、嵌入式模式切换和操作区，以 Image Converter 为视觉基准；仅复用左右列不算完成。没有真实参数时不得为了填充设置栏添加无意义控件。Canvas、单一输入工具及其他不适用场景可以例外，例外应有明确理由。

@@ -39,6 +39,8 @@ Batch File Renamer 当前使用内嵌文件名组合器，快速/高级共享名
 
 大段普通文本、结构化文本和代码工具默认复用 [TextEditor](../src/ui/text-editor/TextEditor.tsx)、[TextEditorPane](../src/ui/text-editor/TextEditorPane.tsx) 与 [TextWorkbench](../src/ui/text-editor/TextWorkbench.tsx)。短设置、单行字段和简单备注可继续使用轻量表单控件。
 
+内置默认示例、首次载入样例及 Load Sample 演示内容默认统一使用英文，CN/Global 的中英文界面均载入同一数据。示例标签、操作、帮助、错误与 SEO 仍按 locale 本地化。多语言、Emoji 和特殊字符用独立测试样本覆盖，用户输入继续支持 Unicode。明确以特定语言文本为处理对象的工具可在有充分理由时例外。
+
 - TextWorkbench 上方放模式及必要规则，下方输入/结果等宽双栏；≤900px 按输入在前的同一 DOM 堆叠，不复制有状态编辑器。文本工作区不适用文件工具的 350px 设置栏。
 - TextEditorPane 的中性灰外表面包含轻量标题、调用方操作插槽、编辑主体和次级统计；没有大工具栏或两层明显边框。主体可视高度由静态 SCSS 确定为 320–460px，窄屏 320px，长文内部滚动，初始化不依赖内容撑高页面。
 - TextEditor 负责受控文档、行号、换行、键盘历史、选区、IME、只读和 View 生命周期。外部更新走事务，配置和语言扩展走 Compartment。工具可以用可选 `focusAt` 在用户明确触发时定位诊断，业务校验与标记仍归工具。
@@ -49,7 +51,7 @@ Batch File Renamer 当前使用内嵌文件名组合器，快速/高级共享名
 - JSON Formatter 上方使用紧凑导入条和快速/高级切换。下面复用等高输入和结果面板，校验状态及定位入口在左侧底部，格式化、压缩和高级视图设置在右侧底部。只读树放在同一结果面板主体，分支按页挂载，完整原值在节点详情查看，交付文本与代码视图一致。
 - URL & Base64 上方依次放工作区模式、功能与方向、高级规则。输入左侧底部显示字符数，结果右侧底部显示状态及「反向查看」。选择器、图标和等高编辑区沿用既有配方，窄屏按输入到结果的顺序堆叠。工具启用 TextEditor 的 CR 保留选项，使已解码文本写回输入时保持原有换行字节；默认 LF 行为继续供其他工具使用。
 
-正式构建中 Text Cleaner、Text Diff、Subtitle Tools 和 JSON Formatter 按需复用同一份 CodeMirror 和完整 MIT NOTICE。JSON 语言及语法依赖的 MIT 通知跟随 JSON 工具入口，Markdown Editor 等 Draft 的私有资源继续隔离。见 [编辑器生命周期测试](../tests/text-editor.test.tsx)、[交付边界测试](../tests/text-editor-delivery.test.ts) 和 [通用工具说明](general-toolbox-v0.8.md#json-formatter--v08-b10-d2-seo-与-beta-资格)。
+正式构建中 Text Cleaner、Text Diff、Subtitle Tools、JSON Formatter 和 URL & Base64 按需复用同一份 CodeMirror 和完整 MIT NOTICE。JSON 语言及语法依赖的 MIT 通知跟随 JSON 工具入口。JSON Formatter 与 URL & Base64 各自按需交付专属 Worker，Markdown Editor 等 Draft 的私有资源继续隔离。见 [编辑器生命周期测试](../tests/text-editor.test.tsx)、[交付边界测试](../tests/text-editor-delivery.test.ts) 和 [通用工具说明](general-toolbox-v0.8.md#url--base64--v08-b11-d2-seo-与-beta-资格)。
 
 ## 静态说明与 FAQ
 
