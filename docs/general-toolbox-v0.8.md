@@ -2,9 +2,20 @@
 
 两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter 已获得 CN/Global Published 源码资格，其余 10 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（19 Published / 10 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
+## QR Code Generator — V0.8-B13-B0 地貌沙盘与双状态工作区
+
+- 工作区以实时地貌为主，默认显示 Dunes。上方画布内可切换世界和二维码，底部依次为内容、地貌与导出；二维预览及设置可以独立打开。英文示例、M 级纠错和 2D 艺术风格沿用 A1。宽屏与窄屏复用同一 Canvas 和控制项。
+- Dunes 由有方向性的弯曲沙脊和偏斜迎风坡构成，Highlands 使用不对称的丘体、山脊与鞍部，Valley 由连续曲流、陡崖与可见沉积带构成。三者均按地貌 ID、修订号及种子生成带边缘、截面与底部的封闭模型。
+- 二维和三维共用原文及纠错等级产生的 QR Matrix；3D 二维码由完整方形暗模块实例与有实体厚度的浅色基板构成，使用同一矩阵的保留位及四模块静区。切换地貌不会改变二维风格，切换二维风格也不改变三维地貌。Recipe 仍为 V1。
+- 世界视角可拖动、触控、缩放和复位。二维码默认停在适合识读的正视角，也可倾斜以观察模块厚度；返回世界会恢复先前视角。切换可中途反转，并遵循减少动态效果设置。场景在可见且确有更新时绘制。
+- 3D PNG 来自当前 WebGL 帧，不含编辑控件。正视帧经 jsQR 对比原文及 UTF-8 字节；无法识读时可使用独立验证的 A1 2D SVG/PNG。WebGL2 启动失败或运行时丢失时，二维输入、预览及下载仍可用。
+- Three.js 和 React Three Fiber 版本及许可证沿用 A0。图形入口仅在 Draft 工具进入可视范围后加载。正式构建从客户端模块图与实际产物核查 QR、独立解码器和三维库的 Draft 隔离。二维码工具仍为 Draft。
+- 定向测试覆盖闭合边界、网格法线、扫码模块与静区、配方共享、缩放和视角切换。Chromium 使用 WebGL2 软件渲染，覆盖 CN 中文深色桌面、Global 英文浅色桌面及 390px 触控模拟。三种地貌均截图。三个视口中的二维码正视截图均能读回英文示例，以及包含中文、Emoji、查询参数、Fragment 和前后空格的 Q 级样本。实际下载的 A1 PNG 和浏览器栅格化的 SVG 像素一致。关闭 WebGL2 或模拟上下文丢失后仍可使用二维成品。
+- 当前沙盘使用顶点色和简化接触阴影。丘陵表面过渡较平滑，沙脊和谷壁的细节、截面材质和光照仍需打磨。世界下沉与二维码升起是基础过渡。维护者视觉验收、实体相机、印刷尺寸与材料、极端照明、非 Chromium 浏览器和真实移动 GPU 尚待验证。
+
 ## QR Code Generator — V0.8-B13-A1 艺术二维码
 
-- 工作区默认加载英文示例与 M 级纠错。Recipe V1 保存原始输入和艺术风格，修改内容和纠错等级时更新矩阵。仅切换艺术风格、标准模式或输出尺寸时复用编码，地貌配置不参与二维渲染。保留标准样式的前景色和背景色配置、文本复制、PNG 与 SVG 下载。
+- A1 工作区默认加载英文示例与 M 级纠错。Recipe V1 保存原始输入和艺术风格，修改内容和纠错等级时更新矩阵。仅切换艺术风格、标准模式或输出尺寸时复用编码，地貌配置不参与二维渲染。保留标准样式的前景色和背景色配置、文本复制、PNG 与 SVG 下载。
 - Aeolian 使用方向性风纹、连续沙丘色带与种子微粒，Contour 从连续高度场求交生成地形等高线和高程色带，Strata 通过倾斜沉积岩层与错位断层形成峡谷剖面。三个风格用各自场函数给完整的深色数据模块分配低亮度色带，艺术相位只依赖原文、艺术 ID 和修订号。
 - `createQrMatrix()` 只在矩阵层读取同次 `qrcode@1.5.4` 编码的 `reservedBit`。保留位保护定位、分隔、时序、校正、格式、版本及固定深色模块。专属测试检查多版本的完整掩码。升级编码器须复核适配层，未知保留位结构会停止生成。四模块实色静区外多留一个模块的实色缓冲，外框不影响模块覆盖。[编码器保留位实现](https://github.com/soldair/node-qrcode/blob/v1.5.4/lib/core/bit-matrix.js) · [GS1 静区指南，第 4.6.4 节](https://ref.gs1.org/guidelines/2d-in-retail/)
 - `renderQrSvg()` 提供自包含 SVG，规范输出尺寸内按整数像素布置模块。`generateVerifiedQr()` 以同一 SVG 本地光栅化，按需调用 `jsqr@1.4.0` 比较文本和原始 UTF-8 字节。验证后才生成可下载 PNG。如艺术模块低于 4 px 或无法扫码，则用相同矩阵生成黑白标准样式并再验证。标准样式用 2 px 下限，仍无法精确读回时禁用下载。原有 2,000 个 UTF-16 代码单元的输入保护、128–2048 px 及独立的分享片段预算继续保留。[jsQR Apache-2.0 通知](../src/tools/qr-code-generator/art/jsqr.NOTICE.txt) · [SVG 图像约束](https://developer.mozilla.org/en-US/docs/Web/SVG/Guides/SVG_as_an_image)

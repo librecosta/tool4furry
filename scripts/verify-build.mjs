@@ -1365,7 +1365,7 @@ for (const [filename, dependency] of [
 }
 for (const file of files.filter((file) => file.endsWith('.js'))) {
   const js = await readFile(resolve(root, file), 'utf8');
-  assert(!/data-qr-terrain-probe|WebGL2 context creation failed/.test(js), 'DEV QR 3D code leaked: ' + file);
+  assert(!/data-qr-diorama-scene|WebGL2 context creation failed|dark matrix relief/.test(js), 'QR Draft scene code leaked: ' + file);
   if (!published.some(tool => tool.id === 'qr-code-generator'))
     assert(!/data-qr-artwork|data-qr-license|Could not rasterize QR SVG/.test(js), 'Draft QR tool code leaked: ' + file);
   assert(!/@stylexjs|virtual:stylex|stylex-dev-css/.test(js), `Retired styling runtime leaked: ${file}`);
@@ -1414,7 +1414,7 @@ const outputCSS = await Promise.all(cssFiles.map(file => readFile(resolve(root, 
 for (const css of outputCSS)
   assert(!/@layer priority|virtual:stylex|stylex-dev-css|@stylexjs/.test(css), 'All CSS uses the native styling pipeline');
 const combinedCSS = outputCSS.join('\n');
-assert(!files.some(file => /(?:TerrainProbe|graphics\.NOTICE|terrain-probe)[.-]/.test(file)), 'DEV QR 3D assets stay private');
+assert(!files.some(file => /(?:DioramaScene|DioramaObjects|graphics\.NOTICE|scene-capture)[.-]/.test(file)), 'QR Draft 3D assets stay private');
 if (!published.some(tool => tool.id === 'qr-code-generator'))
   assert(!files.some(file => /(?:QrCodeGenerator|qrcode\.NOTICE|jsqr(?:\.NOTICE)?|qr-workspace)[.-]/i.test(file)), 'Draft QR entry, styles and decoder stay private');
 {

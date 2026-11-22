@@ -27,6 +27,8 @@
 
 ### Changed
 
+- QR Code Generator（Draft）改为场景主导工作区。三个程序化地貌可切换到同一 WebGL2 Canvas 内由矩阵构建的三维二维码，正视帧单独验证；二维 PNG/SVG 与三维截图独立导出。
+
 - ZIP Manager（Draft）改为创建/打开双模式和响应式目录树，分离任务与结果、支持文件夹选择和单文件图标下载；统一无边框三按钮及自定义毫秒时间戳命名，保留路径/CRC/解压预算与原字节打包行为。
 
 - Images to PDF 完成双语静态 SEO、真实图片 PDF 下载复核及 CN/Global 源码 Published 资格收尾；保留既有画廊与宽松资源策略，当前 29 款工具为 10 Published / 19 Draft，未部署。

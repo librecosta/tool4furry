@@ -80,7 +80,7 @@ export default defineConfig({
       },
       {
         // Check actual emitted client modules, including dependencies merged into shared chunks.
-        name: 'exclude-dev-qr-graphics',
+        name: 'exclude-draft-qr-graphics',
         apply: 'build',
         applyToEnvironment: environment => environment.name === 'client',
         generateBundle: {
@@ -94,7 +94,7 @@ export default defineConfig({
                 const source = id.replaceAll('\\', '/');
                 if (/\/(?:node_modules\/(?:three|@react-three\/fiber)|src\/tools\/qr-code-generator\/graphics)\//.test(source) ||
                     (!qrAvailable && qrPrivate.test(source))) {
-                  this.error('QR Draft or DEV-only graphics in ' + chunk.fileName + ': ' + source);
+                  this.error('QR Draft implementation or graphics in ' + chunk.fileName + ': ' + source);
                 }
               }
             }

@@ -1,5 +1,129 @@
 @layer t4f-tools {
   .workspace {
+    min-width: 0;
+    border-radius: var(--t4f-radius-lg);
+    background: var(--t4f-surface-panel);
+  }
+
+  .scene {
+    position: relative;
+    isolation: isolate;
+    height: clamp(410px, 60svh, 666px);
+    overflow: hidden;
+    border-radius: var(--t4f-radius-lg) var(--t4f-radius-lg) 0 0;
+    background: var(--t4f-input-surface);
+
+    canvas:focus-visible { outline: 2px solid var(--t4f-support-lavender); outline-offset: -3px; }
+
+    @media (max-width: 590px) { height: clamp(344px, 52svh, 480px); }
+  }
+
+  .sceneHeader {
+    position: absolute;
+    inset: var(--t4f-space-16) var(--t4f-space-16) auto;
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: var(--t4f-space-8);
+    pointer-events: none;
+  }
+
+  .landmark {
+    padding: 7px 11px;
+    h2 { margin: 0; font-size: clamp(16px, 2vw, 22px); line-height: 1.22; font-weight: 650; }
+  }
+
+  .kicker {
+    display: block;
+    margin-block-end: 3px;
+    color: var(--t4f-text-secondary);
+    font-size: 11px;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+  }
+
+  .sceneControls.sceneControls {
+    flex: none;
+    pointer-events: auto;
+    background: var(--t4f-surface-panel);
+  }
+
+  .sceneFooter {
+    position: absolute;
+    inset: auto var(--t4f-space-16) var(--t4f-space-12);
+    display: flex;
+    justify-content: flex-end;
+    pointer-events: none;
+  }
+
+  .cameraButton,
+  .terrainChips button {
+    border: 0;
+    border-radius: var(--t4f-radius-md);
+    color: var(--t4f-text-primary);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 550;
+    min-height: 40px;
+    padding-inline: var(--t4f-space-12);
+  }
+
+  .cameraButton {
+    pointer-events: auto;
+    background: var(--t4f-surface-panel);
+    &:hover { background: var(--t4f-input-surface); }
+  }
+
+  .sceneMessage {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    transform: translate(-50%, -50%);
+    width: min(310px, calc(100% - 44px));
+    text-align: center;
+    color: var(--t4f-text-secondary);
+    p { margin-block: 0 var(--t4f-space-12); }
+  }
+
+  .notice {
+    margin: 0;
+    padding: var(--t4f-space-8) var(--t4f-space-16) 0;
+    font-size: 13px;
+    color: var(--t4f-text-secondary);
+  }
+
+  .toolbar {
+    display: grid;
+    padding: var(--t4f-space-12) var(--t4f-space-16);
+    gap: var(--t4f-space-8);
+  }
+
+  .compose {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: var(--t4f-space-8);
+    textarea { min-height: 44px; max-height: 144px; }
+    > button { min-height: 44px; }
+  }
+
+  .tools,
+  .terrainChips,
+  .exports {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .tools { justify-content: space-between; }
+
+  .terrainChips button {
+    background: transparent;
+    &:hover { background: var(--t4f-surface-hover); }
+    &[aria-pressed='true'] { background: var(--t4f-input-surface); color: var(--t4f-support-lavender); }
+  }
+
+  .settings {
     display: grid;
     gap: var(--t4f-space-16);
     grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
@@ -88,6 +212,8 @@
     place-items: center;
     aspect-ratio: 1;
     min-width: 0;
+    width: min(100%, 420px);
+    margin-inline: auto;
     overflow: hidden;
     background: var(--t4f-input-surface);
     border-radius: var(--t4f-radius-md);
