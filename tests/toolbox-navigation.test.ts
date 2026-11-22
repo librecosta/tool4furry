@@ -7,11 +7,15 @@ import { tools } from '../src/tools/registry';
 import { fixtureTools } from './fixtures/tools';
 
 describe('native toolbox selections', () => {
+  const publishedPicks = [
+    'image-converter', 'image-resize-crop', 'image-compressor', 'comic-page-organizer',
+    'pdf-merge', 'zip-manager', 'json-formatter',
+  ];
   it.each(['cn', 'global'] as const)('projects independent editorial picks for %s in both languages and environments', region => {
     for (const locale of ['zh', 'en'] as const) for (const dev of [false, true]) {
       const selections = getToolboxGroups(region, locale, dev);
       expect(selections.map(group => group.id)).toEqual(['featured', 'painter', 'composer', 'developer', 'animator', 'operations', 'studio']);
-      expect(selections[0].entries.map(entry => entry.id)).toEqual(dev ? navigationToolIds : navigationToolIds.slice(0, 6));
+      expect(selections[0].entries.map(entry => entry.id)).toEqual(dev ? navigationToolIds : publishedPicks);
       const home = getRoleShowcases(region, locale, dev);
       for (const group of selections.slice(1)) {
         expect(group.label).toBe(roles[group.id as RoleId][locale]);

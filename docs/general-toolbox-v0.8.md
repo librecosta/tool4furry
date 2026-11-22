@@ -9,6 +9,7 @@
 - JSON Formatter、Text Cleaner、Text Diff 与 Subtitle Tools 按需共享 CodeMirror 和完整 MIT 通知。JSON 的语法扩展、树形视图样式、Worker 与完整独立 MIT 通知仅由本工具交付。首屏样式链接仅出现在实际使用页面，Markdown Editor 等 12 款 Draft 的路由与私有资源继续排除。
 - Chromium 157 使用两地区正式产物，复验 CN 中文深色 1280px 和 Global 英文浅色 390px 模拟视口。通过文件选择、拖放、错误定位与恢复、树形键盘操作、剪贴板、主题与刷新复检。重新读取 10 份真实 JSON 下载，对照预期原文字面量、重复字段、顺序、MIME 和安全去重文件名。`pnpm check`、271 项定向测试与两地区正式构建和产物守卫通过。
 - D1 已验证 28,000 项大型数组的完整输出，核心与资源边界未改动。D1 基线 CI 已通过，D2 以对应提交的既有工作流为准。Firefox、Safari/WebKit、真实 iOS/Android、系统输入法与极端压力尚未复测。[D1 基线 CI](https://github.com/librecosta/tool4furry/actions/runs/45013751888) · [develop CI](https://github.com/librecosta/tool4furry/actions/workflows/ci.yml?query=branch%3Adevelop)
+- 首轮 D2 CI 的两项失败来自旧的精选导航数量预期。JSON Formatter 原已列入精选，提升资格后两地区正式导航会按既定顺序显示它。测试同步明确第七项，沿用现有导航配置。[首轮 D2 CI](https://github.com/librecosta/tool4furry/actions/runs/45015568473)
 
 ## JSON Formatter — V0.8-B10-D1 JSON 工作区与结构浏览
 
