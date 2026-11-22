@@ -1,0 +1,188 @@
+@layer t4f-tools {
+  .workspace {
+    display: grid;
+    gap: var(--t4f-space-16);
+    min-width: 0;
+  }
+
+  .workspaceHeader, .sectionHeading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--t4f-space-12);
+  }
+
+  .workspaceHeader { flex-wrap: wrap; }
+  .identity { min-width: 0; }
+  .identity h2, .sectionHeading h3, .timingSettings h4, .dialogTitle { margin: 0; font-weight: 600; }
+  .identity h2 { font-size: 21px; }
+  .sectionHeading h3, .timingSettings h4, .dialogTitle { font-size: 16px; }
+
+  .meta, .muted {
+    margin: 0;
+    color: var(--t4f-text-secondary);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+
+  .meta {
+    display: flex;
+    align-items: baseline;
+    column-gap: var(--t4f-space-12);
+    row-gap: var(--t4f-space-4);
+    flex-wrap: wrap;
+    padding-top: var(--t4f-space-4);
+
+    strong { font-weight: 600; color: var(--t4f-text-primary); }
+  }
+
+  .intake {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--t4f-space-8);
+    align-items: center;
+
+    @media (max-width: 600px) { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  .intakeActions, .feedback, .pagination {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--t4f-space-8);
+  }
+
+  .feedback {
+    padding: var(--t4f-space-8) var(--t4f-space-12);
+    background-color: var(--t4f-surface-panel);
+    border-radius: var(--t4f-radius-md);
+  }
+
+  .workspace .columns[data-form-file] {
+    @media (min-width: 1051px) {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    }
+  }
+
+  .cueSection {
+    display: grid;
+    min-width: 0;
+    gap: var(--t4f-space-8);
+    padding: var(--t4f-space-16);
+    background-color: var(--t4f-surface-panel);
+    border-radius: var(--t4f-radius-lg);
+  }
+
+  .cueScroll {
+    max-height: min(50dvh, 500px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    border-radius: var(--t4f-radius-sm);
+  }
+
+  .cueList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .cue {
+    padding: var(--t4f-space-8) var(--t4f-space-12);
+    border-radius: var(--t4f-radius-sm);
+
+    &:where(:hover, :focus-within) { background-color: var(--t4f-surface-hover); }
+  }
+
+  .cueHeader {
+    display: grid;
+    grid-template-columns: minmax(2ch, auto) minmax(0, 1fr) auto;
+    gap: var(--t4f-space-8);
+    min-height: 30px;
+    align-items: center;
+  }
+
+  .timing, .cueIndex {
+    font-family: var(--t4f-font-mono);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cueIndex { color: var(--t4f-text-secondary); }
+  .timing { overflow-wrap: anywhere; }
+
+  .cueText {
+    margin: 0;
+    color: var(--t4f-text-primary);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .pagination { justify-content: space-between; }
+
+  .stretch > button { flex: 1 1 0; }
+
+  .setting, .timingSettings {
+    display: grid;
+    gap: var(--t4f-space-8);
+    min-width: 0;
+  }
+
+  .label, .outputTarget { font-size: 13px; font-weight: 600; }
+
+  .outputTarget {
+    margin: 0;
+    color: var(--t4f-text-secondary);
+    overflow-wrap: anywhere;
+  }
+
+  .warning {
+    margin: 0;
+    padding: var(--t4f-space-8) var(--t4f-space-12);
+    background-color: var(--t4f-input-surface);
+    color: var(--t4f-text-primary);
+    border-radius: var(--t4f-radius-sm);
+    font-size: 13px;
+  }
+
+  .delivery {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--t4f-space-8);
+
+    @media (max-width: 600px) {
+      grid-template-columns: minmax(0, 1fr);
+
+      > button:last-child { justify-self: start; }
+    }
+  }
+
+  .sourceAction { justify-self: start; }
+
+  .dialog {
+    width: min(680px, calc(100vw - 32px));
+    display: grid;
+    gap: var(--t4f-space-12);
+    min-width: 0;
+
+    @media (max-width: 600px) { padding: var(--t4f-space-16); }
+  }
+
+  .sourceEditor { block-size: clamp(180px, 40dvh, 400px); }
+
+  .cueFields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--t4f-space-12);
+
+    @media (max-width: 420px) { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  .srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    clip-path: inset(50%);
+    overflow: hidden;
+    white-space: nowrap;
+  }
+}

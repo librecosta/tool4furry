@@ -2,6 +2,14 @@
 
 两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff 已获得 CN/Global Published 源码资格，其余 14 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（15 Published / 14 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
+## Subtitle Tools — V0.8-B9-D1 可视化字幕工作区（2026-11-22）
+
+- 快速模式默认载入三条本地示例。支持拖放、文件选择和粘贴，按实际文本识别 SRT/WebVTT。预览保留多行正文，滚动区每页最多呈现 40 条，复制和 UTF-8 下载包含全部字幕。文件名使用安全的来源主体或 `subtitles`，追加本地毫秒时间戳。
+- 高级模式共享同一份 Cue 集合，支持按秒数整体提前或延后，以及单条开始、结束时间和正文编辑。偏移按整数毫秒应用于预览和导出，保留持续时间、重叠和条目顺序。负时间、无效时长和 WebVTT 开始时间逆序会提示具体条目。共享 CodeMirror 中的源码草稿经验证后一次性应用，可继续编辑或明确舍弃。
+- 读取 UTF-8（含 BOM）及 CRLF/LF，输出规范时间码。WebVTT 同格式保留支持的 Cue ID、定位设置和文件头说明，转 SRT 时列明影响。NOTE/STYLE/REGION 块报出实际行号，含内嵌 WebVTT 时间戳时禁止整体偏移。[WebVTT 规范](https://www.w3.org/TR/webvtt1/)
+- 本地处理边界为单次读取 32 MiB、16M UTF-16 代码单元和 100,000 条。超过旧配额只显示较大输入提示。文件读取失败、无效草稿或不合法的当前输出配置会禁用复制和下载。Subtitle Tools 保持 CN/Global Draft，全站仍为 29 款（15 Published / 14 Draft）。
+- Chromium 157 在 CN 中文 Dark 1280px、Global 英文 Light 390px 模拟视口完成文件选择、拖放、真实剪贴板、双向转换、高级编辑、草稿恢复、主题切换和刷新。共读回 18 份实际下载的 UTF-8 SRT/VTT，核对条目数、起止时间、正文、MIME 与不重复的文件名。两个视口各通过 5,100 条完整导出。通过 `pnpm check`、88 项定向与编辑器回归测试，以及 CN/Global 正式构建和 Draft 路由、专用 JS/CSS 隔离守卫。
+
 ## Text Diff — V0.8-B8-D2 SEO 与 Beta 资格（2026-11-22）
 
 - 依据维护者对 D1 的验收和本轮授权，Text Diff 取得 CN/Global Published 源码资格。两地区各有中英文静态 Title、Meta Description、唯一 H1、专属像素图标、四项步骤、六项限制和四组 FAQ。Registry 的双语短文案用于目录，Canonical、hreflang、OG/Twitter、Sitemap、llms.txt 和同组推荐沿用既有机制。全站 29 款（15 Published / 14 Draft），每地区 30 个工具详情页、40 条公开发现 URL。
@@ -134,7 +142,7 @@
 | `file-hash` | 默认 MD5；MD5/SHA-1/SHA-256/SHA-512/CRC32 多文件自动队列、逐项进度与预期值、复制及 TXT 清单 | 单 Worker、2 MiB 分块，无旧 32 MiB 配额；依赖 Worker/WebAssembly 与真实设备资源；不是加密或来源认证 |
 | `text-cleaner` | CodeMirror 双编辑器、快速/高级实时清理、保留缩进、互斥空行规则、LF/CRLF、字符/行统计及复制/TXT | 无旧 50 万字符配额；大文本延迟处理与失效交付保护，实际规模依赖设备；编辑层 LF，导出明确选择换行格式 |
 | `text-diff` | CodeMirror 双编辑器、结构化双行号差异、空行/EOF 标记、全部/仅变化、忽略行尾空白、实时比较与 TXT 报告 | 无固定字符/行数配额；独立 Worker 搜索 750ms / 总任务 5 秒截止，超时明确失败；长结果按需渲染 |
-| `subtitle-tools` | SRT/WebVTT 互转、毫秒偏移、多行字幕、条目检查、下载 | 5000 条；不支持 NOTE/STYLE/REGION；转 SRT 提示定位设置丢失 |
+| `subtitle-tools` | SRT/WebVTT 导入、逐条预览、整体偏移、单条和源码编辑、复制及下载 | 单文件 32 MiB、字幕文本 16M UTF-16 代码单元、10 万条；不支持 NOTE/STYLE/REGION；转 SRT 提示元数据损失 |
 | `json-formatter` | 校验、2/4 空格、单行压缩、复制/下载 | 50 万字符、128 层、格式化结果 400 万字符；保留原数字字面量，避免大整数舍入 |
 | `url-base64` | URL 组件与 UTF-8 Base64 编解码、复制/下载 | 50 万字符；严格检查 Base64/UTF-8；不是加密 |
 | `timestamp-converter` | 明确秒/毫秒/带时区 ISO、UTC/本地展示、复制 | 不猜单位；拒绝无时区 ISO、非法日期和闰秒 |

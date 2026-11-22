@@ -437,9 +437,9 @@ export const generalToolboxContent = {
       description: '转换 SRT 与 WebVTT，整体平移字幕时间。',
       h1: '字幕工具',
       intro: '转换 SRT 与 WebVTT，整体平移字幕时间。',
-      steps: ['粘贴字幕', '选择输出格式与毫秒偏移', '检查条目并复制或下载。'],
+      steps: ['导入 SRT / VTT 文件或粘贴字幕文本。', '预览字幕，或在高级模式中调整时间与正文。', '选择 SRT 或 WebVTT，再复制或下载。'],
       limitations: [
-        '最多 5000 条、100 万字符。不支持 VTT NOTE/STYLE/REGION；转换 SRT 会提示定位设置丢失，多行文字保留。',
+        '支持 UTF-8 SRT 与 WebVTT。单文件读取上限为 32 MiB，每次最多处理 1600 万 UTF-16 代码单元和 10 万条字幕。WebVTT 的 NOTE、STYLE、REGION 块会明确报错，转为 SRT 时会提示不兼容的元数据。',
         '所有文件与文本均在当前浏览器本地处理，不上传、不持久保存。',
       ],
     },
@@ -449,12 +449,12 @@ export const generalToolboxContent = {
       h1: 'Subtitle Tools',
       intro: 'Convert SRT and WebVTT and shift cue timing.',
       steps: [
-        'Paste subtitles',
-        'select format and millisecond offset',
-        'review cues and copy or download.',
+        'Import an SRT or VTT file, or paste subtitle text.',
+        'Preview the cues, or adjust timing and text in Advanced mode.',
+        'Choose SRT or WebVTT, then copy or download.',
       ],
       limitations: [
-        'Up to 5,000 cues and one million characters. VTT NOTE/STYLE/REGION blocks are unsupported. SRT conversion warns about positioning loss; multiline text is preserved.',
+        'Supports UTF-8 SRT and WebVTT. One file can be up to 32 MiB, with up to 16 million UTF-16 code units and 100,000 cues per document. WebVTT NOTE, STYLE and REGION blocks are rejected explicitly. Conversion to SRT warns about incompatible metadata.',
         'Files and text stay in your browser, without uploads or persistent storage.',
       ],
     },

@@ -1341,6 +1341,8 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
   assert(!/@stylexjs|virtual:stylex|stylex-dev-css/.test(js), `Retired styling runtime leaked: ${file}`);
   for (const id of ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'])
     if (!files.includes(`tools/${id}/index.html`)) assert(!js.includes(`data-${id}`), `Draft ${id} implementation leaked: ${file}`);
+  if (!files.includes('tools/subtitle-tools/index.html'))
+    assert(!/data-subtitle-tools|The adjusted start time is negative/.test(js), `Draft Subtitle Tools implementation leaked: ${file}`);
   if (!files.includes('tools/palette-extractor/index.html'))
     assert(!/data-palette-extractor|data-palette-sampler/.test(js), `Draft palette implementation leaked: ${file}`);
   if (!files.includes('tools/image-resize-crop/index.html'))
@@ -1383,6 +1385,8 @@ const outputCSS = await Promise.all(files.filter(file => file.endsWith('.css')).
 for (const css of outputCSS)
   assert(!/@layer priority|virtual:stylex|stylex-dev-css|@stylexjs/.test(css), 'All CSS uses the native styling pipeline');
 const combinedCSS = outputCSS.join('\n');
+if (!published.some(tool => tool.id === 'subtitle-tools'))
+  assert(!/\._?cueSection[_-]/.test(combinedCSS), 'Draft Subtitle Tools workspace CSS stays private');
 {
   const available = published.some(tool => tool.id === 'images-to-pdf');
   assert.equal(/\._?imagesPdfGallery[_-]/.test(combinedCSS), available,
