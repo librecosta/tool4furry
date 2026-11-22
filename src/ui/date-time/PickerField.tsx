@@ -34,6 +34,7 @@ export function PickerField({
   const [draft, setDraft] = useState<string | null>(null);
   const [baseValue, setBaseValue] = useState(value);
   const anchor = useRef<HTMLDivElement>(null);
+  const popup = useRef<HTMLDivElement>(null);
   const actions = useRef<Popover.Root.Actions>(null);
   if (value !== baseValue) {
     setBaseValue(value);
@@ -79,8 +80,8 @@ export function PickerField({
         <Popover.Positioner anchor={anchor} side="bottom" align="start" sideOffset={8} collisionPadding={12}
           collisionAvoidance={{ side: 'flip', align: 'shift', fallbackAxisSide: 'none' }}
           className={s.positioner}>
-          <Popover.Popup aria-label={popupLabel} className={s.popup}
-            initialFocus={type => type === 'touch' && deferTouchFocus ? true : initialFocus.current}>
+          <Popover.Popup ref={popup} aria-label={popupLabel} className={s.popup}
+            initialFocus={type => type === 'touch' && deferTouchFocus ? popup.current : initialFocus.current}>
             {panel(commit, () => actions.current?.close())}
           </Popover.Popup>
         </Popover.Positioner>

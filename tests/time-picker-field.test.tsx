@@ -103,6 +103,13 @@ it('supports Tab, Shift+Tab, arrows and explicit Enter with zero-padding and ret
   await waitFor(() => expect(document.activeElement).toBe(trigger));
 });
 
+it('focuses the time panel on touch so the user can choose when to edit a segment', async () => {
+  const { user } = setup();
+  await user.pointer([{ keys: '[TouchA]', target: button('Choose time') }]);
+  const popover = screen.getByRole('dialog', { name: 'Choose time' });
+  await waitFor(() => expect(document.activeElement).toBe(popover));
+});
+
 it('associates each invalid segment with its own error and keeps the committed value', async () => {
   const { change, user } = setup();
   await user.click(button('Choose time'));

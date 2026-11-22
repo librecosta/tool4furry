@@ -40,7 +40,7 @@ Timestamp Workspace 在 Wide Form 中复用 `settingsPanel` 及分段控件，�
 ### 日期与时间输入
 
 - 工具默认选用 [DatePickerField](../src/ui/date-time/DatePickerField.tsx) 和 [TimePickerField](../src/ui/date-time/TimePickerField.tsx)。它们可独立使用，沿用输入框与图标按钮，通过 Base UI Popover 交付站点自有日历和 24 小时分段面板。浮层随主题变化，按可用空间翻转或滚动。
-- 日期值为 `YYYY-MM-DD`，支持 0001–9999 年和可选 min/max。日历按周一开始，支持方向键、PageUp/PageDown 和年份跳转。时间值为 `HH:mm:ss.SSS`，各段微调在其范围内停止。格式合法后提交，无效的直接输入草稿独立保留。调用方可通过 `draft` 与 `onDraftChange` 控制草稿并在编辑无效时暂停业务结果。
+- 日期值为 `YYYY-MM-DD`，支持 0001–9999 年和可选 min/max。日历按周一开始，支持方向键、PageUp/PageDown 和年份跳转。时间值为 `HH:mm:ss.SSS`，各段微调在其范围内停止。触控打开时间面板时焦点停在面板，选中某段后再进入文字输入。格式合法后提交，无效的直接输入草稿独立保留。调用方可通过 `draft` 与 `onDraftChange` 控制草稿并在编辑无效时暂停业务结果。
 - 时区解释、DST、业务合法性由工具核心负责。共享选择器由实际使用者按需引用。TextField 的原生 date/time 类型保留给特殊或历史场景。[Base UI Popover](https://base-ui.com/react/components/popover) · [WAI-ARIA 日期网格](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/datepicker-dialog/)
 
 ## 文本编辑工作区
