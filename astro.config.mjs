@@ -78,6 +78,29 @@ export default defineConfig({
           };
         },
       },
+      {
+        // Check actual emitted client modules, including dependencies merged into shared chunks.
+        name: 'exclude-dev-qr-graphics',
+        apply: 'build',
+        applyToEnvironment: environment => environment.name === 'client',
+        generateBundle: {
+          order: 'post',
+          handler(_, bundle) {
+            const qrAvailable = toolDefines['import.meta.env.T4F_TOOL_QR_CODE_GENERATOR_AVAILABLE'] === 'true';
+            for (const chunk of Object.values(bundle)) {
+              if (chunk.type !== 'chunk') continue;
+              for (const id of Object.keys(chunk.modules)) {
+                const source = id.replaceAll('\\', '/');
+                const qrPrivate = /\/(?:src\/tools\/qr-code-generator\/(?!definition\.ts$)|node_modules\/qrcode\/)/;
+                if (/\/(?:node_modules\/(?:three|@react-three\/fiber)|src\/tools\/qr-code-generator\/graphics)\//.test(source) ||
+                    (!qrAvailable && qrPrivate.test(source))) {
+                  this.error('QR Draft or DEV-only graphics in ' + chunk.fileName + ': ' + source);
+                }
+              }
+            }
+          },
+        },
+      },
     ],
   },
 });

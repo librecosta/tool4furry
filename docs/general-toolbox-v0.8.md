@@ -2,6 +2,19 @@
 
 两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter 已获得 CN/Global Published 源码资格，其余 10 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（19 Published / 10 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
+## QR Code Generator — V0.8-B13-A0 图形基础与作品配方
+
+- 产品方向包括可扫码的 2D 创意二维码、3D 地貌沙盘和静态作品分享。当前能力规划均免费，3D 地貌长期免费。未来可以单独立项评估部分 2D 精品风格的 Pro 资格。扫码直接读取原始内容，A0 配方只保存创作和编码数据。
+- `QrRecipeV1` 保存 `version: 1`、原始 `content`、`terrain: { id, revision: 1, seed }`、`artwork: { id, revision: 1 }` 与 `qr: { errorCorrectionLevel }`。地貌 ID 为 `dunes`、`highlands`、`valley`，2D 风格 ID 为 `aeolian`、`contour`、`strata`。两组选项可独立组合。默认 `https://example.com`、`dunes`、`aeolian`、`M`，种子为 `1428536480`。算法出现不兼容变更时提升对应渲染版本并保留旧版重建或明确迁移。
+- `deriveSeed` 对含有作品版本、地貌 ID 和修订号的 UTF-8 输入使用 32 位 FNV-1a。它用于确定性布局，分享载荷存储派生后的无符号种子。网格使用坐标整数混合与平滑双线性值噪声，在 CPU 上生成 33 × 33 个顶点。参考了 Website 的高度场组织与按需绘制，数学实现独立编写。[Website Expanse 源码](https://github.com/librecosta/website/tree/5005f84ce655ef3854e59c5bde1e4f01a329f074/src/components/expanse) · [Website BSD-3-Clause 许可](https://github.com/librecosta/website/blob/5005f84ce655ef3854e59c5bde1e4f01a329f074/LICENSE)
+- `createQrMatrix` 使用 `qrcode@1.5.4`，返回 `size`、按行排列的 0/1 `Uint8Array cells`、`quietZoneModules: 4` 和纠错等级。容量依赖实际编码，原有 UI 的输入限制沿用。A1 可使用该矩阵构建纯 2D 渲染，需要保护定位、时序、校正、格式和版本模块及静区。功能模块分类和艺术绘制由 A1 实现。
+- `validateRecipe` 严格验证 V1 的自有字段、版本、ID、有效 Unicode、种子和纠错等级。`encodeRecipe` / `decodeRecipe` 使用紧凑 JSON、UTF-8 与规范无补齐 Base64URL。载荷上限为 8,192 个 ASCII 字符，独立于 QR 矩阵容量。C0 可将载荷放在 `#r=` 片段。浏览器发送 HTTP 请求时省略片段，收件人仍可解码收到的完整链接。
+- Three.js `0.187.0`、R3F `9.8.2` 和开发类型 `@types/three@0.187.0` 已锁定。DEV 主动打开探针时才请求图形代码。场景采用 WebGL2 按需绘制，离开视口暂停，关闭时释放几何、控件、渲染器和上下文。图形失败时仍可生成与下载基础 QR。[图形依赖许可](../src/tools/qr-code-generator/graphics/graphics.NOTICE.txt) · [qrcode 许可](../src/tools/qr-code-generator/qrcode.NOTICE.txt)
+- QR Code Generator 保持 Draft。CN/Global 正式构建从 client chunk 模块来源和静态产物两处验证 QR 与图形资源隔离。Registry 共 29 款（19 Published / 10 Draft）。
+- Windows Chromium 157 使用软件 WebGL2 验证了 CN 中文深色 1280px 桌面与 Global 英文浅色 390px 手机模拟视口。下载的 512px PNG 由 `jsqr` 独立解码并逐字节核对原文。首次打开时实际绘制网格，鼠标及模拟触摸可旋转，静止及移出视口不继续绘制，缩放视口会更新绘图缓冲。关闭时观测到缓冲释放及上下文销毁。强制丢失上下文和禁用 WebGL2 时，基础 QR 仍可生成、下载与解码。
+- 两地区首次开启探针均新增 8 个脚本响应，DEV 未压缩内容约 7.73 MiB，含 Vite 的开发转换和内联源码映射。开启前没有图形请求。Firefox、Safari、真实手机、硬件 GPU 及完整设备资源矩阵留待后续阶段验证。
+- `pnpm check`、90 项定向测试、CN/Global 正式构建及产物守卫均通过。远程 CI 按 A0 的提交在 [develop 工作流](https://github.com/librecosta/tool4furry/actions/workflows/ci.yml?query=branch%3Adevelop) 核对。
+
 ## Timestamp Converter — V0.8-B12-D2 SEO 与 Beta 资格
 
 - Timestamp Converter 取得 CN/Global Published 源码资格。既有 Astro 模板静态输出双语 Title、Description、H1、四项步骤、六项限制及四组 FAQ。保留像素图标、开发者与运营关联及目录卡片。每地区有 38 个工具详情页，由 Sitemap 与 llms.txt 收录。

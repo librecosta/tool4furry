@@ -1,19 +1,35 @@
-import { useState } from 'react';
+import { Component, lazy, Suspense, useState, type ReactNode } from 'react';
 import type { ToolProps } from '../types';
 import { TextField, TextAreaField } from '../../ui/TextField';
 import { Button } from '../../ui/Button';
-import { Frame, ErrorText, tr, Copy, saveBlob, useBlobUrl,  } from '../general/ui';
+import { Frame, ErrorText, tr, Copy, saveBlob, useBlobUrl } from '../general/ui';
 import s from '../general/ui.module.scss';
 import { useJob } from '../general/use-job';
 import { integer, fail } from '../general/bounds';
 import { contrast, parseColor } from '../color-contrast/core';
 import { qrPng } from './core';
 import notice from './qrcode.NOTICE.txt?url';
+
+const TerrainProbe = import.meta.env.DEV ? lazy(() => import('./graphics/TerrainProbe')) : null;
+
+class ProbeBoundary extends Component<{ children: ReactNode; message: string }, { failed: boolean }> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  render() {
+    return this.state.failed ? <p role="alert">{this.props.message}</p> : this.props.children;
+  }
+}
+
 export default function QrCodeGenerator({ locale }: ToolProps) {
   const [text, setText] = useState(''),
     [size, setSize] = useState('512'),
     [fg, setFg] = useState('#202428'),
-    [bg, setBg] = useState('#FFFFFF');
+    [bg, setBg] = useState('#FFFFFF'),
+    [probeOpen, setProbeOpen] = useState(false);
   const job = useJob<{
       png: Blob;
       svg: Blob;
@@ -102,6 +118,20 @@ export default function QrCodeGenerator({ locale }: ToolProps) {
       >
         {tr(locale, '重置', 'Reset')}
       </Button>
+      {TerrainProbe && (
+        <div>
+          <Button variant="ghost" size="sm" aria-expanded={probeOpen} onClick={() => setProbeOpen(open => !open)}>
+            {probeOpen ? tr(locale, '关闭 3D 验证', 'Close 3D probe') : tr(locale, '打开 3D 验证', 'Open 3D probe')}
+          </Button>
+          {probeOpen && (
+            <ProbeBoundary message={tr(locale, '3D 图形不可用。可以继续生成二维码。', '3D graphics are unavailable. You can still generate QR codes.')}>
+              <Suspense fallback={<p role="status">{tr(locale, '正在加载 3D…', 'Loading 3D…')}</p>}>
+                <TerrainProbe locale={locale} />
+              </Suspense>
+            </ProbeBoundary>
+          )}
+        </div>
+      )}
     </Frame>
   );
 }

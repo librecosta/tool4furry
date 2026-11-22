@@ -1,12 +1,16 @@
-import QRCode from 'qrcode';
 import { boundedText, fail } from '../general/bounds';
+import { encodeQrModules, QrMatrixError, qrQuietZoneModules } from './matrix/qr-matrix';
 export function qrMatrix(text: string) {
   boundedText(text, 2000);
   if (!text.trim()) fail('请输入二维码内容。', 'Enter QR code content.');
   try {
-    return QRCode.create(text, { errorCorrectionLevel: 'M' }).modules;
-  } catch {
-    fail('内容超出二维码容量。', 'Content exceeds QR code capacity.');
+    return encodeQrModules(text, 'M');
+  } catch (error) {
+    if (error instanceof QrMatrixError) {
+      if (error.code === 'capacity') fail('内容超出二维码容量。', 'Content exceeds QR code capacity.');
+      if (error.code === 'content') fail('请输入有效的二维码文本。', 'Enter valid QR code text.');
+    }
+    throw error;
   }
 }
 export function qrSvg(
@@ -27,7 +31,7 @@ export function qrSvg(
       'Size must be 128–2048; colors must use six-digit HEX.',
     );
   const matrix = qrMatrix(text),
-    edge = matrix.size + 8;
+    edge = matrix.size + 2 * qrQuietZoneModules;
   if (Math.floor(size / edge) < 2)
     fail(
       '内容较多，请增加输出尺寸。',
@@ -36,7 +40,7 @@ export function qrSvg(
   let path = '';
   for (let y = 0; y < matrix.size; y++)
     for (let x = 0; x < matrix.size; x++)
-      if (matrix.get(y, x)) path += `M${x + 4} ${y + 4}h1v1h-1z`;
+      if (matrix.get(y, x)) path += `M${x + qrQuietZoneModules} ${y + qrQuietZoneModules}h1v1h-1z`;
   return {
     matrix,
     svg: `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${edge} ${edge}" shape-rendering="crispEdges"><path fill="${background}" d="M0 0h${edge}v${edge}H0z"/><path fill="${foreground}" d="${path}"/></svg>`,
@@ -57,7 +61,7 @@ export async function qrPng(
     ctx.fillStyle = background;
     ctx.fillRect(0, 0, size, size);
     ctx.fillStyle = foreground;
-    const step = Math.floor(size / (matrix.size + 8)),
+    const step = Math.floor(size / (matrix.size + 2 * qrQuietZoneModules)),
       pad = Math.floor((size - step * matrix.size) / 2);
     for (let y = 0; y < matrix.size; y++)
       for (let x = 0; x < matrix.size; x++)

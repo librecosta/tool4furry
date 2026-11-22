@@ -21,6 +21,8 @@
 
 - Timestamp Converter 完成 B12-D2 双语 SEO 与真实剪贴板复核，具备 CN/Global Published 源码资格。快速模式支持精确秒/毫秒和 UTC/浏览器本地日历输入，高级模式支持带偏移的 ISO 输入及 IANA 展示。DST 缺失和重复本地时间均拒绝转换。共享 DatePickerField / TimePickerField 首次随正式工具按需交付。[通用工具说明](docs/general-toolbox-v0.8.md#timestamp-converter--v08-b12-d2-seo-与-beta-资格)
 
+- QR Code Generator 的 B13-A0 基础已加入 Draft。Recipe V1、纯 QR Matrix 和确定性地形数学由工具独立维护，Three.js / R3F 只在 DEV 主动开启验证视图时加载。正式构建检查实际 chunk 的模块归属。A1 的矩阵接口和后续分享边界见 [通用工具说明](docs/general-toolbox-v0.8.md#qr-code-generator--v08-b13-a0-图形基础与作品配方)。
+
 ## Start Here
 
 1. 核对当前分支、工作区、任务范围和禁止事项。

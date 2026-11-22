@@ -1,6 +1,6 @@
 # 当前架构
 
-Tool4Furry 是单项目的浏览器工具站：Astro SSG + 必要的 React Islands + TypeScript；V0.9 已将 Astro、React、29 款工具和 DEV Lab 全部迁至 SCSS Modules / CSS Variables，并移除 StyleX 的依赖、编译与兼容链路。样式边界见 [V0.9 基础](../docs/styling-foundation-v0.9.md)。当前十五款 Published 工具包括七款图片工具、三款 PDF 工具、ZIP Manager、Batch File Renamer、File Hash、Text Cleaner 与 Text Diff，均登记 CN/Global，其余十四款 Draft；两个地区均未部署。漫画整理的实际验收缺口见 [当前模块说明](../docs/image-basics.md#b2-d1--seo-与-beta-审计进展)。来源优先级见 [AGENTS](../AGENTS.md#sources-of-truth)。
+Tool4Furry 是单项目的浏览器工具站，使用 Astro SSG、React Islands 和 TypeScript。V0.9 已将站点、29 款工具和 DEV Lab 迁至 SCSS Modules / CSS Variables。当前 19 款工具登记 CN/Global Published，10 款为 Draft。样式边界见 [V0.9 基础](../docs/styling-foundation-v0.9.md)。来源优先级见 [AGENTS](../AGENTS.md#sources-of-truth)。
 
 ## 静态站点层
 
@@ -34,6 +34,11 @@ Astro 工具路由 + 静态 Intro / Guide
 - 工具选择 canvas/form/batch/custom；Canvas 是独立全视口与覆盖层，Form/Batch 是自然流。具备文件导入、列表与参数/操作的 Form/Batch 默认采用左文件与预览、右设置与操作；Canvas、单一输入及不适用工具须有明确的例外理由。本次不批量改变其他工具的既有布局。
 - 标准文件表单的宽度、列宽、间距和响应式属于 Workbench，复用 [form-tool-layout.module.scss](../src/workbench/form-tool-layout.module.scss)：Wide 外框 1400px、空态紧凑、输入后主列 + 350px 设置列、≤1050px 按文件在前的 DOM 顺序堆叠。工具拥有文件、参数、任务、结果与资源释放；CSS 切换不重建这些状态。不复制双栏断点，不新增文件 Store/Context；没有参数时右侧只保留真实模式与操作。当前实例和类名见 [工作区说明](../docs/workbench-appearance.md)。
 - 文件表单的公共所有权也包括视觉配方：完整面板背景/圆角/内边距、标题、分段控件、导入间距、空态和面板内操作。Image Converter、Batch File Renamer、ZIP Manager 直接使用同一组 CSS Module 类；已有图片工具的对应 UI 样式绑定也直接引用同一配方，不重复维护主题值或增加组合兼容层。窄栏的长文本参数单列，宽面板按实际容器宽度组织字段；不通过 React 视口分支重建表单。不能仅以 Grid 列数正确作为视觉验收。
+
+## 创意二维码图形
+
+- `src/tools/qr-code-generator/recipe/` 负责版本化作品数据、校验、种子与分享编码。`matrix/` 只消费原始内容和纠错等级，提供标准 QR 模块及四模块静区。2D 绘制可直接消费矩阵。
+- `graphics/` 负责高度场、WebGL2 与渲染生命周期。A0 探针从 Draft 工具入口的 DEV 分支动态导入，React Three Fiber / Three.js 留在该边界内。生产构建检查实际 client chunk 的模块来源及产物 JS/CSS。[图形基础和版本约定](../docs/general-toolbox-v0.8.md#qr-code-generator--v08-b13-a0-图形基础与作品配方)
 
 ## 文本编辑基础
 
