@@ -30,7 +30,7 @@ const normalize = path => path.replaceAll('\\', '/');
 const fixtureIds = [...Array.from({ length: 20 }, (_, i) => `fixture-${i + 1}`),
   'image-resizer-fixture', 'character-editor-fixture', 'cn-only-fixture'];
 const resources = { 'image-resizer-fixture': 'resizer', 'character-editor-fixture': 'editor', 'cn-only-fixture': 'cn' };
-const expectedEntries = Object.fromEntries([
+const imageEntries = [
   ['image-converter', 'src/tools/image-converter/ImageConverter.tsx'],
   ['image-resize-crop', 'src/tools/image-resize-crop/ImageResizeCrop.tsx'],
   ['palette-extractor', 'src/tools/palette-extractor/PaletteExtractor.tsx'],
@@ -38,6 +38,10 @@ const expectedEntries = Object.fromEntries([
   ['comic-page-organizer', 'src/tools/comic-page-organizer/ComicPageOrganizer.tsx'],
   ['image-watermark', 'src/tools/image-watermark/ImageWatermark.tsx'],
   ['exif-metadata', 'src/tools/exif-metadata/ExifMetadata.tsx'],
+];
+const expectedEntries = Object.fromEntries([
+  ...imageEntries,
+  ['subtitle-tools', 'src/tools/subtitle-tools/SubtitleTools.tsx'],
   ...fixtureIds.map(id => [id, resources[id] ? `tests/fixtures/build-resources/${resources[id]}.tsx` : 'tests/fixtures/FixtureTool.tsx']),
 ]);
 const publicationPath = join(source, 'tests/fixtures/publication.ts');
@@ -60,7 +64,12 @@ async function configure(phase) {
     : 'publicationFixtures';
   const registry = originals[registryPath].replace(
     /export const tools: readonly ToolDefinition\[\] = [\s\S]*?;\r?\n/,
-    `export const tools: readonly ToolDefinition[] = ${expression};\n`,
+    original => original.replace('export const tools:', 'const realTools:') +
+      `export const tools: readonly ToolDefinition[] = [
+  ...${expression},
+  ...realTools.filter(tool => !publicationFixtures.some(fixture => fixture.id === tool.id))
+    .map(tool => ({ ...tool, status: 'draft' as const })),
+];\n`,
   );
   assert.notEqual(registry, originals[registryPath], 'Registry seam changed');
   await writeFile(join(source, registryPath), "import { publicationFixtures } from '../../tests/fixtures/publication';\n" + registry);
@@ -116,7 +125,7 @@ async function build(phase, failure, graphFailure) {
   const text = Object.fromEntries(await Promise.all(files.filter(file => /\.(js|css|html|xml|txt)$/.test(file))
     .map(async file => [file, await readFile(join(outDir, file), 'utf8')])));
   const allText = Object.values(text).join('\n');
-  const available = phase === 'empty' ? [] : ['image-converter', 'image-resize-crop', 'palette-extractor', ...fixtureIds.filter(id =>
+  const available = phase === 'empty' ? [] : [...imageEntries.map(([id]) => id), ...fixtureIds.filter(id =>
     id.startsWith('fixture-') || id === 'cn-only-fixture' && region === 'cn' ||
     id === 'character-editor-fixture' && region === 'global' || id === 'image-resizer-fixture' && ['promoted', 'swapped-loaders'].includes(phase))];
   for (const prefix of ['', region === 'cn' ? 'en/' : 'zh/']) {

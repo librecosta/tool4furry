@@ -4,12 +4,13 @@ import { dirname, join } from 'node:path';
 import { expect, it } from 'vitest';
 import { definition as cleaner } from '../src/tools/text-cleaner/definition';
 import { definition as diff } from '../src/tools/text-diff/definition';
+import { definition as subtitles } from '../src/tools/subtitle-tools/definition';
 import { tools } from '../src/tools/registry';
 import { toolBuildDefines } from '../src/tools/build-availability';
 
 const read = (path: string) => readFileSync(path, 'utf8');
-it('shares the editor between Published Text Cleaner and Text Diff while the other text editors remain Draft', () => {
-  for (const tool of [cleaner, diff]) {
+it('shares the editor across three Published tools while JSON Formatter and Markdown Editor remain Draft', () => {
+  for (const tool of [cleaner, diff, subtitles]) {
     expect(tool.status).toBe('published');
     expect(tool.regions).toEqual(['cn', 'global']);
   }
@@ -17,18 +18,24 @@ it('shares the editor between Published Text Cleaner and Text Diff while the oth
     const availability = toolBuildDefines(tools, region);
     expect(availability['import.meta.env.T4F_TOOL_TEXT_CLEANER_AVAILABLE']).toBe('true');
     expect(availability['import.meta.env.T4F_TOOL_TEXT_DIFF_AVAILABLE']).toBe('true');
-    for (const id of ['json-formatter', 'subtitle-tools', 'markdown-editor']) {
+    expect(availability['import.meta.env.T4F_TOOL_SUBTITLE_TOOLS_AVAILABLE']).toBe('true');
+    for (const id of ['json-formatter', 'markdown-editor']) {
       expect(tools.find(tool => tool.id === id)?.status).toBe('draft');
       expect(availability[`import.meta.env.T4F_TOOL_${id.replaceAll('-', '_').toUpperCase()}_AVAILABLE`]).toBe('false');
     }
   }
   expect(read('src/tools/loaders.ts')).toMatch(/T4F_TOOL_TEXT_CLEANER_AVAILABLE[\s\S]*?import\('\.\/text-cleaner\/TextCleaner'\)/);
+  expect(read('src/tools/loaders.ts')).toMatch(/T4F_TOOL_SUBTITLE_TOOLS_AVAILABLE\s*\?\s*\(\) => import\('\.\/subtitle-tools\/SubtitleTools'\)/);
   expect(read('src/tools/text-cleaner/TextCleaner.tsx')).toContain(
     "from '../../ui/text-editor/TextEditor'",
   );
   expect(read('src/tools/text-diff/TextDiff.tsx')).toContain(
     "from '../../ui/text-editor/TextEditor'",
   );
+  expect(read('src/tools/subtitle-tools/SubtitleEditor.tsx')).toContain(
+    "from '../../ui/text-editor/TextEditor'",
+  );
+  expect(read('src/tools/subtitle-tools/definition.ts')).not.toMatch(/@codemirror|TextEditor|SubtitleTools|['"]\.\/core['"]/);
   for (const path of [
     'src/tools/ToolRuntime.tsx',
     'src/tools/registry.ts',
@@ -38,6 +45,7 @@ it('shares the editor between Published Text Cleaner and Text Diff while the oth
     'src/layouts/SiteLayout.astro',
   ]) {
     expect(read(path), path).not.toMatch(/@codemirror|ui\/text-editor/);
+    expect(read(path), path).not.toMatch(/subtitle-tools\/(?:SubtitleTools|SubtitleEditor|core|delivery)/);
   }
   const editor = read('src/ui/text-editor/TextEditor.tsx');
   expect(editor).toContain('./codemirror.NOTICE.txt?url');

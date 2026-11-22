@@ -79,7 +79,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -842,6 +842,16 @@ for (const page of htmlFiles) {
     `Dev StyleX refresh shim in ${page}`,
   );
   const dom = new JSDOM(content).window.document;
+  const editorStyles = [...dom.head.querySelectorAll('link[rel="stylesheet"]')]
+    .flatMap(link => link.getAttribute('href')?.match(/\/(SubtitleTools|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
+  const toolId = dom.querySelector('main[data-tool-id]')?.dataset.toolId;
+  const expectedEditorStyles = [];
+  if (toolId === 'subtitle-tools') expectedEditorStyles.push('SubtitleTools');
+  if (['subtitle-tools', 'text-cleaner', 'text-diff'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
+    expectedEditorStyles.push('TextEditor');
+  if (['text-cleaner', 'text-diff'].includes(toolId) && files.some(file => /\/TextWorkbench\.[\w-]+\.css$/.test(file)))
+    expectedEditorStyles.push('TextWorkbench');
+  assert.deepEqual(editorStyles.sort(), expectedEditorStyles.sort(), 'Only owner routes link editor styles on first paint: ' + page);
   const dataScripts = [...dom.querySelectorAll('script[type="application/ld+json"]')];
   assert.equal(dataScripts.length, page === 'index.html' && !prefix ? 1 : 0, 'WebSite data belongs only to the default-locale root homepage');
   for (const data of dataScripts) {
@@ -949,6 +959,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/file-hash/index.html') assertToolContent(dom, locale, generalToolboxContent['file-hash'], 4, 4, 6);
     if (page === 'tools/text-cleaner/index.html') assertToolContent(dom, locale, generalToolboxContent['text-cleaner'], 4, 4, 6);
     if (page === 'tools/text-diff/index.html') assertToolContent(dom, locale, generalToolboxContent['text-diff'], 4, 4, 6);
+    if (page === 'tools/subtitle-tools/index.html') assertToolContent(dom, locale, generalToolboxContent['subtitle-tools'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -999,7 +1010,8 @@ for (const page of htmlFiles) {
     const titleRow = intro.querySelector('[data-tool-title]');
     assert.equal(titleRow?.querySelector('h1')?.id, 'tool-heading', 'Title and icon share one static row');
     await assertToolIcon(titleRow, tool.id, 40);
-    assert.equal(titleRow.querySelector('img')?.parentElement.getAttribute('aria-hidden'), 'true', 'Title icon is decorative');
+    const titleIcon = titleRow.querySelector('[data-tool-icon], [data-tool-icon-fallback]');
+    assert.equal(titleIcon?.parentElement.getAttribute('aria-hidden'), 'true', 'Title icon is decorative');
     assert.equal(intro.querySelectorAll('ul, ol').length, 0, 'Tool introduction stays concise; feature lists belong in the static guide');
     const runtime = dom.querySelector('[data-tool-runtime]');
     const guide = dom.querySelector('[data-tool-guide]');
@@ -1341,8 +1353,6 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
   assert(!/@stylexjs|virtual:stylex|stylex-dev-css/.test(js), `Retired styling runtime leaked: ${file}`);
   for (const id of ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'])
     if (!files.includes(`tools/${id}/index.html`)) assert(!js.includes(`data-${id}`), `Draft ${id} implementation leaked: ${file}`);
-  if (!files.includes('tools/subtitle-tools/index.html'))
-    assert(!/data-subtitle-tools|The adjusted start time is negative/.test(js), `Draft Subtitle Tools implementation leaked: ${file}`);
   if (!files.includes('tools/palette-extractor/index.html'))
     assert(!/data-palette-extractor|data-palette-sampler/.test(js), `Draft palette implementation leaked: ${file}`);
   if (!files.includes('tools/image-resize-crop/index.html'))
@@ -1381,12 +1391,11 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
 }
 // Styles remain static assets owned by the same lazy tool graph. In particular,
 // extracting native modules must not pull private Draft/Lab CSS into production.
-const outputCSS = await Promise.all(files.filter(file => file.endsWith('.css')).map(file => readFile(resolve(root, file), 'utf8')));
+const cssFiles = files.filter(file => file.endsWith('.css'));
+const outputCSS = await Promise.all(cssFiles.map(file => readFile(resolve(root, file), 'utf8')));
 for (const css of outputCSS)
   assert(!/@layer priority|virtual:stylex|stylex-dev-css|@stylexjs/.test(css), 'All CSS uses the native styling pipeline');
 const combinedCSS = outputCSS.join('\n');
-if (!published.some(tool => tool.id === 'subtitle-tools'))
-  assert(!/\._?cueSection[_-]/.test(combinedCSS), 'Draft Subtitle Tools workspace CSS stays private');
 {
   const available = published.some(tool => tool.id === 'images-to-pdf');
   assert.equal(/\._?imagesPdfGallery[_-]/.test(combinedCSS), available,
@@ -1507,6 +1516,7 @@ if (!published.some(tool => tool.id === 'file-hash')) {
   const editorTools = [
     ['text-cleaner', 'TextCleaner'],
     ['text-diff', 'TextDiff'],
+    ['subtitle-tools', 'SubtitleTools'],
   ].filter(([id]) => published.some(tool => tool.id === id));
   const scripts = new Map(await Promise.all(files.filter(file => file.endsWith('.js'))
     .map(async file => [file, await readFile(resolve(root, file), 'utf8')])));
@@ -1534,10 +1544,11 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     }).map(([owner]) => owner);
   }
 
-  const runtimeMarkers = /data-text-editor|data-text-workbench|cm-editor|cm-content|cm-gutters|--t4f-editor-font/;
+  const runtimeMarkers = /data-text-editor|cm-editor|cm-content|cm-gutters|--t4f-editor-font/;
   const notice = await readFile('src/ui/text-editor/codemirror.NOTICE.txt');
   const notices = findAsset('codemirror.NOTICE', '.txt');
   const runtimeOwners = [...scripts].filter(([, text]) => runtimeMarkers.test(text)).map(([file]) => file);
+  const workbenchOwners = [...scripts].filter(([, text]) => text.includes('data-text-workbench')).map(([file]) => file);
   const entries = new Map();
   for (const [id, stem] of editorTools) {
     const [entry, ...extraEntries] = findAsset(stem, '.js');
@@ -1552,27 +1563,52 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     assert(scripts.get(loader).includes(style), 'ToolRuntime references the tool stylesheet: ' + id);
     assert((await readFile(resolve(root, style), 'utf8')).includes('@layer t4f-tools'), 'Tool SCSS keeps its layer: ' + id);
   }
+  const subtitleEntry = entries.get('subtitle-tools');
+  const subtitleMarkers = /data-subtitle-tools|data-subtitle-cue|The adjusted start time is negative/;
+  assert.deepEqual([...scripts].filter(([, text]) => subtitleMarkers.test(text)).map(([file]) => file),
+    subtitleEntry ? [subtitleEntry] : [], 'Subtitle workspace and parser follow the Subtitle Tools lazy entry');
+  const subtitleStyles = cssFiles.filter((_, index) => /\._?cueSection[_-]/.test(outputCSS[index]));
+  assert.deepEqual(subtitleStyles, subtitleEntry ? findAsset('SubtitleTools', '.css') : [],
+    'Private Subtitle Tools cue list styling follows its entry');
+  for (const [id, stem] of [['json-formatter', 'JsonFormatter'], ['markdown-editor', 'MarkdownEditor']])
+    if (!published.some(tool => tool.id === id))
+      assert(!findAsset(stem, '.js').length && !findAsset(stem, '.css').length, 'Draft editor has no private entry: ' + id);
+
   if (editorTools.length === 0) {
-    assert(!files.some(file => /TextCleaner|TextDiff|TextEditor|TextWorkbench|codemirror\.NOTICE/.test(file)), 'Unavailable editor entries and notices stay private');
-    assert(!runtimeOwners.length && !runtimeMarkers.test(combinedCSS), 'Unavailable CodeMirror runtime/styles stay private');
+    assert(!files.some(file => /SubtitleTools|TextCleaner|TextDiff|TextEditor|TextWorkbench|codemirror\.NOTICE/.test(file)), 'Unavailable editor entries and notices stay private');
+    assert(!runtimeOwners.length && !workbenchOwners.length && !runtimeMarkers.test(combinedCSS), 'Unavailable CodeMirror runtime/styles stay private');
     assert(![...scripts.values()].some(text => text.includes(notice.toString('base64'))), 'Unavailable CodeMirror notice stays private');
   } else {
     assert.equal(runtimeOwners.length, 1, 'One CodeMirror runtime for the available editor tools');
     const [editor] = runtimeOwners;
     const editorSource = scripts.get(editor);
-    for (const marker of ['data-text-editor', 'data-text-workbench', 'data-editor-license', 'cm-content'])
+    for (const marker of ['data-text-editor', 'data-editor-license', 'cm-content'])
       assert(editorSource.includes(marker), 'Complete editor runtime: ' + marker);
     const shared = editorTools.length > 1;
     if (shared) {
       assert.deepEqual(importsOf(editor, false).sort(), [...entries.values()].sort(), 'Only the lazy editor tools import the shared runtime');
       assert.deepEqual(importsOf(editor, true), [], 'No separate runtime entry into the shared editor');
     } else assert.equal(editor, [...entries.values()][0], 'Single editor consumer owns its runtime');
-    const styles = findAsset(shared ? 'TextWorkbench' : editorTools[0][1], '.css');
-    assert.equal(styles.length, 1, 'One stylesheet for the editor components');
-    const css = await readFile(resolve(root, styles[0]), 'utf8');
-    assert(css.includes('@layer t4f-ui') && css.includes('--t4f-input-surface'), 'Editor SCSS retains its layer and theme tokens');
     const [loader] = importsOf([...entries.values()][0], true);
-    assert(scripts.get(loader).includes(styles[0]), 'ToolRuntime references the editor stylesheet');
+    async function assertEditorStyle(stem) {
+      const styles = findAsset(stem, '.css');
+      assert.equal(styles.length, 1, 'One stylesheet for ' + stem);
+      const css = await readFile(resolve(root, styles[0]), 'utf8');
+      assert(css.includes('@layer t4f-ui') && css.includes('--t4f-input-surface'), 'Editor SCSS retains its layer and theme tokens');
+      assert(scripts.get(loader).includes(styles[0]), 'ToolRuntime references ' + stem + ' CSS');
+    }
+    await assertEditorStyle(shared ? (subtitleEntry ? 'TextEditor' : 'TextWorkbench') : editorTools[0][1]);
+    const workbenchEntries = [...entries].filter(([id]) => id !== 'subtitle-tools').map(([, entry]) => entry);
+    if (subtitleEntry && workbenchEntries.length > 1) {
+      const [workbench] = workbenchOwners;
+      assert.equal(workbenchOwners.length, 1, 'One separate dual-editor workbench');
+      assert.deepEqual(importsOf(workbench, false).sort(), workbenchEntries.sort(), 'Only the two dual-editor tools import TextWorkbench');
+      assert.deepEqual(importsOf(workbench, true), [], 'No separate entry into TextWorkbench');
+      await assertEditorStyle('TextWorkbench');
+    } else {
+      assert.deepEqual(workbenchOwners, workbenchEntries.length ? [workbenchEntries.length > 1 ? editor : workbenchEntries[0]] : [],
+        'Dual-editor workbench stays with the tools that use it');
+    }
     assert.equal(notices.length, 1, 'One complete CodeMirror runtime license resource');
     assert((await readFile(resolve(root, notices[0]))).equals(notice), 'The emitted editor license matches the complete MIT notices');
     assert.deepEqual([...scripts].filter(([, text]) => text.includes(basenameOf(notices[0]))).map(([file]) => file),

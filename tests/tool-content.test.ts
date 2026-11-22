@@ -10,6 +10,7 @@ import { fixtureTool } from './fixtures/tools';
 import { imageConverterContent } from '../src/site/image-converter-content';
 import { imageConverterDefinition } from '../src/tools/image-converter/definition';
 import { definition as textDiff } from '../src/tools/text-diff/definition';
+import { definition as subtitles } from '../src/tools/subtitle-tools/definition';
 
 const content = {
   title: 'Test — Tool4Furry',
@@ -21,6 +22,44 @@ const map: ToolContentMap = {
   one: { zh: content, en: { ...content, h1: 'English heading' } },
 };
 describe('Astro-only content boundary', () => {
+  it('publishes bilingual Subtitle Tools content and preserves the Registry classification', () => {
+    const expected = {
+      zh: {
+        title: '在线字幕转换工具 - SRT/VTT 转换与时间调整 | Tool4Furry',
+        description: '在线转换 SRT 与 WebVTT 字幕，逐条预览时间和文字。支持整体提前或延后、单条字幕编辑、源码修改及文件下载，全部在浏览器本地完成，无需上传。',
+        h1: '字幕工具',
+        intro: '导入字幕，查看每一条内容，轻松转换 SRT 与 WebVTT。需要时还可以调整时间、修改文字。',
+      },
+      en: {
+        title: 'SRT to VTT & VTT to SRT Converter | Tool4Furry',
+        description: 'Convert SRT and WebVTT subtitles online. Preview individual cues, shift timing, edit subtitle text and timestamps, or download converted files locally in your browser.',
+        h1: 'Subtitle Tools',
+        intro: 'Import subtitles, preview every cue, and convert between SRT and WebVTT. Adjust timing and edit text whenever you need.',
+      },
+    };
+    expect(subtitles).toMatchObject({
+      id: 'subtitle-tools', slug: 'subtitle-tools', category: 'text', group: 'subtitles',
+      roles: ['animator', 'operations'], mode: 'form', status: 'published', regions: ['cn', 'global'],
+      copy: {
+        zh: { title: '字幕工具', description: '可视化转换 SRT 与 WebVTT，支持字幕预览、时间调整和编辑。', summary: '导入字幕并逐条查看，转换格式或调整时间后下载。' },
+        en: { title: 'Subtitle Tools', description: 'Convert SRT and WebVTT with visual cue previews and timing adjustments.', summary: 'Preview, edit and convert subtitles locally in your browser.' },
+      },
+    });
+    for (const region of subtitles.regions) for (const locale of ['zh', 'en'] as const) {
+      const page = getToolPageContent(subtitles, region, toolPageContents, false, locale);
+      expect(page).toMatchObject(expected[locale]);
+      expect(page.title.match(/Tool4Furry/g)).toHaveLength(1);
+      expect(page.steps).toHaveLength(4);
+      expect(page.limitations).toHaveLength(6);
+      expect(page.faq).toHaveLength(4);
+      expect(page.limitations![2]).toMatch(/32 MiB.*(?:1,600 万.*10 万|16 million.*100,000)/);
+      expect(page.limitations![4]).toMatch(/NOTE.*STYLE.*REGION/);
+      expect(page.limitations![5]).toMatch(/内嵌时间戳|inline timestamps/);
+      expect(getRelatedTools(subtitles, region)).toEqual([]);
+      if (locale === 'en') expect(JSON.stringify(page)).not.toMatch(/\p{Script=Han}/u);
+    }
+  });
+
   it('publishes bilingual Text Diff copy for the existing line comparison and report', () => {
     const expected = {
       zh: {

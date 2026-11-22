@@ -1,13 +1,22 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff 已获得 CN/Global Published 源码资格，其余 14 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（15 Published / 14 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools 已获得 CN/Global Published 源码资格，其余 13 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（16 Published / 13 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+
+## Subtitle Tools — V0.8-B9-D2 SEO 与 Beta 资格（2026-11-22）
+
+- 维护者验收 Subtitle Studio Lite 后授权提升 CN/Global Published 源码资格。双语 Title、Meta Description、H1、四项步骤、六项限制与四组 FAQ 随 Astro 静态输出。地区语言、Canonical、hreflang、OG/Twitter、普通工具卡片、Sitemap 与 llms.txt 继续沿用现有投影。每地区 32 个工具详情页，现有动画师与运营的 Registry 角色保持原样。
+- 快速模式保留三条有效示例、可视化 Cue 列表和 SRT/WebVTT 双向转换。高级模式保留毫秒精度整体偏移、单条时间及正文编辑，以及校验后应用的 CodeMirror 源码草稿。文件、文本、Cue 上限分别为 32 MiB、16,000,000 UTF-16 代码单元和 100,000 条，最大偏移 86,400 秒，最大时间码 `999:59:59.999`。带内嵌 WebVTT 时间戳的字幕无法整体偏移。NOTE、STYLE、REGION 明确报错，转 SRT 提示实际存在的定位、标识、文件头与内嵌时间戳语义损失。
+- Subtitle Tools 私有 JS/CSS 跟随自己的动态入口。三个正式工具共用一个 TextEditor JS/CSS 和完整 MIT NOTICE，Text Cleaner / Text Diff 的双栏 TextWorkbench 单独共享。Astro 构建时仅在使用对应样式的详情页保留首屏链接。公共入口与其余 13 款 Draft 的私有资源继续受源代码与产物测试约束。[Astro 构建钩子](https://docs.astro.build/en/reference/integrations-reference/#astrobuilddone)
+- Chromium 157 使用正式静态产物复验 CN 中文深色 1280px 和 Global 英文浅色 390px 模拟视口。完成双向转换、同格式导出、整体偏移、单条修改、源码草稿恢复、剪贴板、主题切换及刷新。真实下载的 18 份 SRT/VTT 均由 `parseSubtitles()` 读回并与独立预期对照起止时间、文字和数量。BOM/CRLF、多行 Unicode、MIME、安全时间戳文件名、重复下载与原文件字节也通过检查。`pnpm check`、257 项定向测试、CN/Global 正式构建及产物守卫通过。
+- 两地区隔离夹具通过。夹具保留未选用的真实工具为 Draft，以配合实际 Loader 契约。缺 Loader、缺内容、提前加载、共享入口泄漏和 Loader 互换均在预期环节被拒绝。D1 基线 `522611e` 的 CI 已通过，其 5,100 条完整导出证据继续有效。D2 的远程 CI 以对应提交的既有工作流为准。[D1 CI](https://github.com/librecosta/tool4furry/actions/runs/45005753947) · [develop CI](https://github.com/librecosta/tool4furry/actions/workflows/ci.yml?query=branch%3Adevelop)
+- Firefox、Safari/WebKit、真实 iOS/Android、真实手机输入法及极限资源压力留作 L3，390px 是桌面 Chromium 的模拟视口。两个地区均未部署。
 
 ## Subtitle Tools — V0.8-B9-D1 可视化字幕工作区（2026-11-22）
 
 - 快速模式默认载入三条本地示例。支持拖放、文件选择和粘贴，按实际文本识别 SRT/WebVTT。预览保留多行正文，滚动区每页最多呈现 40 条，复制和 UTF-8 下载包含全部字幕。文件名使用安全的来源主体或 `subtitles`，追加本地毫秒时间戳。
 - 高级模式共享同一份 Cue 集合，支持按秒数整体提前或延后，以及单条开始、结束时间和正文编辑。偏移按整数毫秒应用于预览和导出，保留持续时间、重叠和条目顺序。负时间、无效时长和 WebVTT 开始时间逆序会提示具体条目。共享 CodeMirror 中的源码草稿经验证后一次性应用，可继续编辑或明确舍弃。
 - 读取 UTF-8（含 BOM）及 CRLF/LF，输出规范时间码。WebVTT 同格式保留支持的 Cue ID、定位设置和文件头说明，转 SRT 时列明影响。NOTE/STYLE/REGION 块报出实际行号，含内嵌 WebVTT 时间戳时禁止整体偏移。[WebVTT 规范](https://www.w3.org/TR/webvtt1/)
-- 本地处理边界为单次读取 32 MiB、16M UTF-16 代码单元和 100,000 条。超过旧配额只显示较大输入提示。文件读取失败、无效草稿或不合法的当前输出配置会禁用复制和下载。Subtitle Tools 保持 CN/Global Draft，全站仍为 29 款（15 Published / 14 Draft）。
+- 本地处理边界为单次读取 32 MiB、16M UTF-16 代码单元和 100,000 条。超过旧配额只显示较大输入提示。文件读取失败、无效草稿或不合法的当前输出配置会禁用复制和下载。D1 阶段为 CN/Global Draft，当时全站 29 款（15 Published / 14 Draft）。
 - Chromium 157 在 CN 中文 Dark 1280px、Global 英文 Light 390px 模拟视口完成文件选择、拖放、真实剪贴板、双向转换、高级编辑、草稿恢复、主题切换和刷新。共读回 18 份实际下载的 UTF-8 SRT/VTT，核对条目数、起止时间、正文、MIME 与不重复的文件名。两个视口各通过 5,100 条完整导出。通过 `pnpm check`、88 项定向与编辑器回归测试，以及 CN/Global 正式构建和 Draft 路由、专用 JS/CSS 隔离守卫。
 
 ## Text Diff — V0.8-B8-D2 SEO 与 Beta 资格（2026-11-22）

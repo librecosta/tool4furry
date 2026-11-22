@@ -136,6 +136,16 @@ describe('editing and delivery limits', () => {
     expect(() => serializeSubtitles(source, 'vtt')).toThrow('16 million');
   });
 
+  it('rejects files over 32 MiB before reading and cue counts over 100,000 without returning partial data', async () => {
+    const file = new File([], 'oversized.srt');
+    Object.defineProperty(file, 'size', { value: subtitleLimits.bytes + 1 });
+    file.arrayBuffer = () => { throw new Error('Oversized file must not be read'); };
+    await expect(readSubtitleFile(file)).rejects.toThrow('32 MiB read limit');
+
+    const cue = '00:00:01,000 --> 00:00:02,000\nText\n\n';
+    expect(() => parseSubtitles(cue.repeat(subtitleLimits.cues + 1))).toThrow('100,000 cue processing limit');
+  });
+
   it('uses a safe Unicode source name, a local timestamp and unique names within a millisecond', () => {
     const name = createSubtitleNamer(), timestamp = new Date(2026, 10, 22, 16, 9, 0, 123);
     expect(name('..示例?:.srt', 'vtt', timestamp)).toBe('示例-20261122-160900-123.vtt');
