@@ -29,6 +29,8 @@ export interface TextEditorProps {
   ariaLabel: string;
   lineNumbers?: boolean;
   lineWrapping?: boolean;
+  /** Split on LF only, preserving CR characters in the controlled document. */
+  preserveCarriageReturns?: boolean;
   extensions?: Extension;
   className?: string;
   editorRef?: Ref<TextEditorHandle>;
@@ -75,7 +77,7 @@ const theme = EditorView.theme({
     },
 });
 
-/** Controlled text, with LF editor semantics. Languages/formatting belong to callers. */
+/** Controlled text. By default all line endings are normalized to LF. */
 export function TextEditor({
   value,
   onChange,
@@ -84,6 +86,7 @@ export function TextEditor({
   ariaLabel,
   lineNumbers = true,
   lineWrapping = true,
+  preserveCarriageReturns = false,
   extensions = noExtensions,
   className,
   editorRef,
@@ -111,6 +114,7 @@ export function TextEditor({
   const config = (): Extension => [
     EditorState.readOnly.of(readOnly),
     EditorView.editable.of(!readOnly),
+    preserveCarriageReturns ? EditorState.lineSeparator.of('\n') : [],
     EditorView.contentAttributes.of({
       'aria-label': ariaLabel,
       'aria-readonly': String(readOnly),
@@ -168,10 +172,13 @@ export function TextEditor({
     };
   }, []);
   useLayoutEffect(() => {
+    view.current?.dispatch({ effects: slots.config.reconfigure(config()) });
+  }, [readOnly, placeholder, ariaLabel, lineNumbers, lineWrapping, preserveCarriageReturns]);
+  useLayoutEffect(() => {
     const editor = view.current;
     if (!editor || value === lastValue.current) return; // Controlled echoes are not additional edits.
     lastValue.current = value;
-    const next = value.replace(/\r\n?/g, '\n'),
+    const next = preserveCarriageReturns ? value : value.replace(/\r\n?/g, '\n'),
       current = editor.state.doc.toString();
     if (next === current) return;
     // Map existing selections through the smallest externally changed range.
@@ -192,10 +199,7 @@ export function TextEditor({
       changes: { from, to: oldEnd, insert: next.slice(from, newEnd) },
       annotations: [external.of(true), Transaction.addToHistory.of(false)],
     });
-  }, [value]);
-  useLayoutEffect(() => {
-    view.current?.dispatch({ effects: slots.config.reconfigure(config()) });
-  }, [readOnly, placeholder, ariaLabel, lineNumbers, lineWrapping]);
+  }, [value, preserveCarriageReturns]);
   useLayoutEffect(() => {
     view.current?.dispatch({ effects: slots.extra.reconfigure(extensions) });
   }, [extensions]);

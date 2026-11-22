@@ -1523,6 +1523,11 @@ if (!published.some(tool => tool.id === 'file-hash')) {
   ].filter(([id]) => published.some(tool => tool.id === id));
   const scripts = new Map(await Promise.all(files.filter(file => file.endsWith('.js'))
     .map(async file => [file, await readFile(resolve(root, file), 'utf8')])));
+  if (!published.some(tool => tool.id === 'url-base64')) {
+    for (const [file, source] of scripts)
+      assert(!/data-url-base64|t4f-url-base64|base64Bits/.test(source), 'Draft codec JS stays private: ' + file);
+    assert(!/\._?(?:codecWorkspace|codecToolbar|codecResultStatus)[_-]/.test(combinedCSS), 'Draft codec CSS stays private');
+  }
   const findAsset = (stem, extension) => files.filter(file => {
     const name = file.split('/').at(-1);
     return name.startsWith(stem + '.') && name.endsWith(extension);

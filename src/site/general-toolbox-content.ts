@@ -547,8 +547,8 @@ export const generalToolboxContent = {
       intro: '进行 UTF-8 文本的 URL 编码与 Base64 转换。',
       steps: ['选择编解码操作', '输入文本', '复制或下载结果。'],
       limitations: [
-        '最多 50 万字符。Base64 需合法填充与 UTF-8；Base64 不是加密，URL 编码作用于文本组件。',
-        '所有文件与文本均在当前浏览器本地处理，不上传、不持久保存。',
+        'Base64 解码接受规范补齐或合法省略，结果须为有效 UTF-8 文本。URL 快速模式处理组件，高级模式也可处理完整 URL 或单个表单参数值。',
+        '文本在当前浏览器本地处理，不上传、不持久保存。大文本的处理能力取决于设备资源。',
       ],
     },
     en: {
@@ -562,8 +562,8 @@ export const generalToolboxContent = {
         'copy or download the result.',
       ],
       limitations: [
-        'Up to 500,000 characters. Base64 requires valid padding and UTF-8. Base64 is not encryption; URL encoding operates on a text component.',
-        'Files and text stay in your browser, without uploads or persistent storage.',
+        'Base64 decoding accepts valid padded or unpadded input and requires valid UTF-8 output. Quick mode processes URL components. Advanced mode also handles full URLs and individual form values.',
+        'Text stays in your browser without uploads or persistent storage. Large conversions depend on your device’s available resources.',
       ],
     },
   },

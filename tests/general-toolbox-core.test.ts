@@ -7,7 +7,6 @@ import { cleanText, defaults, textStats } from '../src/tools/text-cleaner/core';
 import { compareLines } from '../src/tools/text-diff/core';
 import { diffReport } from '../src/tools/text-diff/report';
 import { formatJson } from '../src/tools/json-formatter/core';
-import { transformEncoding } from '../src/tools/url-base64/core';
 import { fromIso, fromTimestamp } from '../src/tools/timestamp-converter/core';
 import {
   parseColor,
@@ -60,22 +59,6 @@ describe('general toolbox text and data', () => {
     expect(() => formatJson('{bad}', 2)).toThrow();
     const deep = '['.repeat(129) + '0' + ']'.repeat(129);
     expect(formatJson(deep, 0)).toBe(deep);
-  });
-  it('round trips Unicode encodings and rejects malformed UTF-8 or Base64', () => {
-    for (const value of ['你好 🦊', 'a+b /?=']) {
-      expect(
-        transformEncoding(
-          transformEncoding(value, 'base64-encode'),
-          'base64-decode',
-        ),
-      ).toBe(value);
-      expect(
-        transformEncoding(transformEncoding(value, 'url-encode'), 'url-decode'),
-      ).toBe(value);
-    }
-    for (const value of ['abc', '!!!!', '/w==', 'Zh=='])
-      expect(() => transformEncoding(value, 'base64-decode')).toThrow();
-    expect(() => transformEncoding('%ZZ', 'url-decode')).toThrow();
   });
   it('uses explicit timestamp units, timezone and valid calendar dates', () => {
     expect(fromTimestamp('1000', 'seconds')).toBe(1_000_000);

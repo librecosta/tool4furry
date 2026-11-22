@@ -24,6 +24,7 @@ it('shares the editor across four Published tools while excluding all twelve Dra
     expect(availability['import.meta.env.T4F_TOOL_JSON_FORMATTER_AVAILABLE']).toBe('true');
     expect(draftIds).toHaveLength(12);
     expect(draftIds).toContain('markdown-editor');
+    expect(draftIds).toContain('url-base64');
     for (const id of draftIds) {
       expect(tools.find(tool => tool.id === id)?.status).toBe('draft');
       expect(availability[toolAvailabilityConstant(id)]).toBe('false');
@@ -45,6 +46,9 @@ it('shares the editor across four Published tools while excluding all twelve Dra
   expect(read('src/tools/json-formatter/definition.ts')).not.toMatch(/@codemirror|TextEditor|JsonFormatter|['"]\.\/core['"]/);
   expect(read('src/tools/json-formatter/editor.ts')).toContain("from '@codemirror/lang-json'");
   expect(read('src/tools/loaders.ts')).toMatch(/T4F_TOOL_JSON_FORMATTER_AVAILABLE\s*\?\s*\(\) => import\('\.\/json-formatter\/JsonFormatter'\)/);
+  expect(read('src/tools/loaders.ts')).toMatch(/T4F_TOOL_URL_BASE64_AVAILABLE\s*\?\s*\(\) => import\('\.\/url-base64\/UrlBase64'\)/);
+  expect(read('src/tools/url-base64/UrlBase64.tsx')).toContain("from '../../ui/text-editor/TextEditor'");
+  expect(read('src/tools/url-base64/definition.ts')).not.toMatch(/@codemirror|TextEditor|UrlBase64|['"]\.\/(?:core|processing)['"]/);
   for (const path of [
     'src/tools/ToolRuntime.tsx',
     'src/tools/registry.ts',
@@ -56,10 +60,12 @@ it('shares the editor across four Published tools while excluding all twelve Dra
     expect(read(path), path).not.toMatch(/@codemirror|ui\/text-editor/);
     expect(read(path), path).not.toMatch(/subtitle-tools\/(?:SubtitleTools|SubtitleEditor|core|delivery)/);
     expect(read(path), path).not.toMatch(/json-formatter\/(?:JsonFormatter|JsonTree|core|editor|processing)/);
+    expect(read(path), path).not.toMatch(/url-base64\/(?:UrlBase64|core|processing|codec\.worker)/);
   }
   const editor = read('src/ui/text-editor/TextEditor.tsx');
   expect(editor).toContain('./codemirror.NOTICE.txt?url');
   expect(editor).not.toMatch(/@codemirror\/lang-|@uiw\/|monaco|ace-builds/);
+  expect(editor).not.toContain('url-base64');
   expect(editor).toContain('slots.extra.reconfigure(extensions)');
 });
 

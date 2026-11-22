@@ -2,6 +2,18 @@
 
 两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter 已获得 CN/Global Published 源码资格，其余 12 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（17 Published / 12 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
+## URL & Base64 — V0.8-B11-D1 文本编解码工作区
+
+- 默认快速模式使用 URL 组件编码，真实示例由同一套编解码函数处理。URL/Base64 与编码/解码独立切换，主动载入示例才替换输入。双 CodeMirror 复用工作区、外壳和 MIT 通知。反向查看将完整有效结果移入输入并反转方向，继续使用当前规则。
+- 高级 URL 提供组件、完整 URL 和单个表单参数值。完整 URL 沿用原生 URI 规则，保留结构分隔符和已有的保留字符转义；表单值以 `+` 表示空格，字面 `+` 编码为 `%2B`，严格拒绝损坏转义。Base64 使用 UTF-8，支持标准及 URL 安全字母表，两套编码补齐偏好独立保存。解码接受规范补齐或合法省略，仅忽略 ASCII 空格、Tab、CR/LF，并检查尾部比特和 UTF-8。[ECMAScript URI 函数](https://tc39.es/ecma262/#sec-uri-handling-functions) · [WHATWG 表单编码](https://url.spec.whatwg.org/#application/x-www-form-urlencoded)
+- 编码拒绝未配对的代理项，解码保留 BOM、CRLF、CR、NUL 等有效文本内容。优先使用浏览器字节数组 Base64 API，不支持时按小块兼容。复制与本地时间戳 TXT 下载共用当前完整结果，导出 MIME 为 `text/plain;charset=utf-8`。重复点击以毫秒递增保证同一工作区内的文件名唯一。[ECMAScript 字节数组 Base64](https://tc39.es/ecma262/#sec-uint8array.frombase64)
+- 移除旧 50 万代码单元硬限制。小文本在渲染之外即时处理，达到 128,000 代码单元时防抖后交给同源专属 Worker。新请求终止旧任务，后台任务有 12 秒截止；失效、失败或空结果禁用交付。设备内存和浏览器字符串上限仍会影响可处理规模。
+- 工具继续保持 CN/Global Draft，全站为 29 款（17 Published / 12 Draft）。工作区 JS、CSS 和 Worker 从工具懒加载入口到达，正式产物守卫继续排除其专用资源。所有处理在浏览器本地完成。
+- Chromium 157 在 CN 中文深色 1280px 桌面和 Global 英文浅色 390px 触控模拟视口复验了两种模式、错误恢复、反向查看、撤销重做、焦点、滚动、主题切换和刷新。逐字节复读 12 份实际 TXT，核对四类文件名、去重、MIME、Unicode、BOM 和换行。两地区各验证 540,009 个输入代码单元生成完整的 2,700,045 字节 URL 编码结果，剪贴板与下载均匹配预期，也验证了处理中编辑可立即取消旧任务。Windows Chromium 的系统剪贴板会把单独的 LF 和 CR 转成 CRLF，直接生成的 TXT 保留实际结果字节。
+- `pnpm check`、编解码核心/UI/Worker 与共享编辑器等 137 项定向测试、CN/Global 正式构建及产物守卫通过。
+- Chromium 组合输入事件复验了中文提交和自动编码。同页切换到 390px 时原有输入、结果和两个编辑器实例均保留。
+- Firefox、Safari/WebKit、真实 iOS/Android、系统输入法候选窗及极限资源压力尚未验证。
+
 ## JSON Formatter — V0.8-B10-D2 SEO 与 Beta 资格
 
 - JSON Formatter 依据维护者授权取得 CN/Global Published 源码资格。通过既有 Astro 内容表静态输出双语 Title、Description、H1、四项步骤、六项限制与四组 FAQ。Registry 保留开发工具分类和开发者角色。工具目录、Sitemap 与 llms.txt 自动收录，每地区 34 个工具详情页。

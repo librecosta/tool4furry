@@ -17,6 +17,8 @@
 
 - JSON Formatter 完成 B10-D2 双语 SEO 与输出复核，具备 CN/Global Published 源码资格。复用 CodeMirror 双编辑器，支持严格保真的格式化与压缩、行列定位、分页只读树和完整 JSON 下载。专属同源 Worker、按需 JSON 语言包及 MIT 通知受正式产物守卫约束。验证和实际资源边界见 [通用工具说明](docs/general-toolbox-v0.8.md#json-formatter--v08-b10-d2-seo-与-beta-资格)。
 
+- URL & Base64 在 B11-D1 迁移至 CodeMirror 双编辑器，提供快速/高级、三种 URL 规则、标准 Base64 与 Base64URL、严格 UTF-8、反向查看和 TXT 交付。大文本由专属 Worker 处理，工具仍为 CN/Global Draft。功能与验证见 [通用工具说明](docs/general-toolbox-v0.8.md#url--base64--v08-b11-d1-文本编解码工作区)。
+
 ## Start Here
 
 1. 核对当前分支、工作区、任务范围和禁止事项。

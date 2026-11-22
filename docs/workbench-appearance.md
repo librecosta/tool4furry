@@ -47,6 +47,7 @@ Batch File Renamer 当前使用内嵌文件名组合器，快速/高级共享名
 - Text Cleaner 快速模式保留行首缩进、清理行尾空白、合并连续空行并输出 LF；高级独立保留自定义空白/空行及 LF/CRLF 规则。编辑层统一文档为 LF，实际导出换行由纯函数明确生成，不提供虚假的“保留混合原始行尾”选项。
 
 - JSON Formatter 上方使用紧凑导入条和快速/高级切换。下面复用等高输入和结果面板，校验状态及定位入口在左侧底部，格式化、压缩和高级视图设置在右侧底部。只读树放在同一结果面板主体，分支按页挂载，完整原值在节点详情查看，交付文本与代码视图一致。
+- URL & Base64 上方依次放工作区模式、功能与方向、高级规则。输入左侧底部显示字符数，结果右侧底部显示状态及「反向查看」。选择器、图标和等高编辑区沿用既有配方，窄屏按输入到结果的顺序堆叠。工具启用 TextEditor 的 CR 保留选项，使已解码文本写回输入时保持原有换行字节；默认 LF 行为继续供其他工具使用。
 
 正式构建中 Text Cleaner、Text Diff、Subtitle Tools 和 JSON Formatter 按需复用同一份 CodeMirror 和完整 MIT NOTICE。JSON 语言及语法依赖的 MIT 通知跟随 JSON 工具入口，Markdown Editor 等 Draft 的私有资源继续隔离。见 [编辑器生命周期测试](../tests/text-editor.test.tsx)、[交付边界测试](../tests/text-editor-delivery.test.ts) 和 [通用工具说明](general-toolbox-v0.8.md#json-formatter--v08-b10-d2-seo-与-beta-资格)。
 
