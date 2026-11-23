@@ -89,6 +89,7 @@ describe('canonical QR artwork', () => {
 it('preserves pasted CRLF and CR through display normalization and subsequent edits', () => {
   const text = replaceQrText('a\r\nb\rc', 2, 3, '多\r\n行');
   expect(text).toBe('a\r\n多\r\n行\rc');
-  expect(displayQrText(text)).toBe('a\n多\n行\nc');
-  expect(editQrText(text, 'a\n多\n行\n🦊c')).toBe('a\r\n多\r\n行\r🦊c');
+  expect(displayQrText(text)).toBe('a 多 行 c');
+  expect(editQrText(text, 'a 多 行 🦊c')).toBe('a\r\n多\r\n行\r🦊c');
+  expect(editQrText('one\ntwo', 'one two!')).toBe('one\ntwo!');
 });

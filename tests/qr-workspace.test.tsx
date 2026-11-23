@@ -10,16 +10,23 @@ type Call = {
   content: string; size: number; mode: QrRenderMode; matrix: QrMatrixData; signal: AbortSignal;
   deliver: (result: VerifiedQr) => void;
 };
-const calls = vi.hoisted(() => [] as Call[]);
+const { calls, encode } = vi.hoisted(() => ({ calls: [] as Call[], encode: vi.fn() }));
 vi.mock('../src/tools/qr-code-generator/art/export', () => ({
   generateVerifiedQr: (matrix: QrMatrixData, content: string, size: number, mode: QrRenderMode, signal: AbortSignal) =>
     new Promise(resolve => { calls.push({ content, size, mode, matrix, signal, deliver: resolve }); }),
 }));
 vi.mock('../src/tools/qr-code-generator/graphics/DioramaScene', () => ({ default: () => null }));
+vi.mock('../src/tools/qr-code-generator/core', async importOriginal => {
+  const core = await importOriginal<typeof import('../src/tools/qr-code-generator/core')>();
+  return { ...core, createWorkspaceMatrix: (...args: Parameters<typeof core.createWorkspaceMatrix>) => {
+    encode(...args);
+    return core.createWorkspaceMatrix(...args);
+  } };
+});
 
 const button = (name: string) => screen.getByRole('button', { name }) as HTMLButtonElement;
 const field = (name: string) => screen.getByRole('textbox', { name });
-const advance = () => act(async () => { await vi.advanceTimersByTimeAsync(300); });
+const advance = (ms = 300) => act(async () => { await vi.advanceTimersByTimeAsync(ms); });
 const settle = (call: Call) => act(async () => {
   call.deliver({
     png: new Blob(['png'], { type: 'image/png' }),
@@ -30,6 +37,7 @@ const releaseUrl = vi.fn();
 beforeEach(() => {
   vi.useFakeTimers();
   calls.length = 0;
+  encode.mockClear();
   releaseUrl.mockClear();
   vi.stubGlobal('matchMedia', () => ({ matches: false, addEventListener() {}, removeEventListener() {} }));
   vi.stubGlobal('URL', class extends URL {
@@ -54,7 +62,8 @@ it('debounces edits, invalidates in-flight scans, and reuses only the current en
   expect(calls[0].signal.aborted).toBe(true);
   await settle(calls[0]);
   expect(button('Download 2D PNG').disabled).toBe(true);
-  await advance();
+  await advance(400);
+  await advance(0);
   expect(calls).toHaveLength(2);
   const second = calls[1];
   expect(second).toMatchObject({ content, mode: { recipe: { artwork: { id: 'strata' } } } });
@@ -77,6 +86,41 @@ it('debounces edits, invalidates in-flight scans, and reuses only the current en
   expect(calls[3].matrix.errorCorrectionLevel).toBe('H');
   view.unmount();
   expect(calls[3].signal.aborted).toBe(true);
+});
+
+it('waits for a typing pause before encoding and submits the single-line draft immediately on request', async () => {
+  render(<QrCodeGenerator region="global" locale="en" />);
+  fireEvent.click(screen.getByRole('tab', { name: '2D' }));
+  await advance();
+  await settle(calls[0]);
+  encode.mockClear();
+  const input = field('Text or URL') as HTMLInputElement;
+  expect(input.tagName).toBe('INPUT');
+  expect(button('Download 2D PNG').closest('[data-qr-artwork]')).not.toBeNull();
+  expect(screen.queryByRole('button', { name: 'Standard style' })).toBeNull();
+  fireEvent.change(input, { target: { value: 'https://example.net/' } });
+  await advance(399);
+  fireEvent.change(input, { target: { value: 'https://example.net/fox' } });
+  await advance(399);
+  expect(encode).not.toHaveBeenCalled();
+  expect(button('Download 2D SVG').disabled).toBe(true);
+  await advance(1);
+  await advance(0);
+  expect(encode).toHaveBeenCalledOnce();
+  expect(calls[1].content).toBe('https://example.net/fox');
+  await settle(calls[1]);
+  encode.mockClear();
+  input.select();
+  const pasted = 'hello\r\nfox\n🌿';
+  fireEvent.paste(input, { clipboardData: { getData: () => pasted } });
+  expect(input.value).toBe('hello fox 🌿');
+  fireEvent.click(button('Generate QR code'));
+  expect(encode).toHaveBeenCalledOnce();
+  await advance(0);
+  expect(calls[2].content).toBe(pasted);
+  await settle(calls[2]);
+  await advance(400);
+  expect(calls).toHaveLength(3);
 });
 
 it('keeps an explicitly canceled snapshot unavailable until the next action', async () => {

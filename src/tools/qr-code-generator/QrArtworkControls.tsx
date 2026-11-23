@@ -62,10 +62,9 @@ export function OutputSize({ locale, value, onChange }: { locale: Locale; value:
   </div>;
 }
 
-export function ArtworkCarousel({ locale, selected, standard, images, onSelect }: {
+export function ArtworkCarousel({ locale, selected, images, onSelect }: {
   locale: Locale;
   selected: ArtStyleId;
-  standard: boolean;
   images: string[];
   onSelect: (id: ArtStyleId) => void;
 }) {
@@ -94,7 +93,7 @@ export function ArtworkCarousel({ locale, selected, standard, images, onSelect }
         const side = sideOf(index, center);
         const label = tr(locale, artLabels[id][0], artLabels[id][1]);
         return <motion.button key={id} type="button" className={s.artThumb} data-side={side}
-          aria-label={label} title={label} aria-pressed={!standard && side === 0} initial={false}
+          aria-label={label} title={label} aria-pressed={side === 0} initial={false}
           animate={{ x: `${side * 110}%`, scale: side === 0 ? 1 : 0.84, opacity: side === 0 ? 1 : 0.55 }}
           transition={{ duration: reducedMotion ? 0 : 0.32, ease: [0.22, 1, 0.36, 1],
             x: { duration: reducedMotion || Math.abs(side - sideOf(index, previous)) === 2 ? 0 : 0.32 } }}

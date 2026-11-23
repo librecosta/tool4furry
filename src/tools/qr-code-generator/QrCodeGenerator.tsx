@@ -1,18 +1,16 @@
-import { Component, lazy, Suspense, useCallback, useDeferredValue, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Component, lazy, Suspense, useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Tabs } from '@base-ui/react/tabs';
-import { ArrowCounterClockwiseIcon, ArrowsInIcon, ArrowsOutIcon, CubeIcon, MinusIcon, PlusIcon, QrCodeIcon } from '@phosphor-icons/react';
+import { ArrowCounterClockwiseIcon, ArrowsInIcon, ArrowsOutIcon, CubeIcon, DownloadSimpleIcon, FileImageIcon, FileSvgIcon, MinusIcon, PlusIcon, QrCodeIcon } from '@phosphor-icons/react';
 import type { ToolProps } from '../types';
-import { TextField, TextAreaField } from '../../ui/TextField';
 import { Button, IconButton } from '../../ui/Button';
-import { Frame, ErrorText, errorText, tr, Copy, saveBlob, useBlobUrl } from '../general/ui';
+import { Frame, ErrorText, errorText, tr, saveBlob, useBlobUrl } from '../general/ui';
 import form from '../../workbench/form-tool-layout.module.scss';
 import s from './qr-workspace.module.scss';
 import { useJob } from '../general/use-job';
-import { integer, fail } from '../general/bounds';
-import { contrast, parseColor } from '../color-contrast/core';
+import { integer } from '../general/bounds';
 import { createWorkspaceMatrix } from './core';
 import { generateVerifiedQr, type VerifiedQr } from './art/export';
-import { qrMaxPixels, qrMinPixels, renderQrSvg, type QrRenderMode } from './art/render';
+import { qrMaxPixels, qrMinPixels, renderQrSvg } from './art/render';
 import { createDefaultRecipe } from './recipe/defaults';
 import { deriveSeed } from './recipe/seed';
 import { artStyleIds, errorCorrectionLevels, terrainIds, type ArtStyleId, type QrRecipeV1, type TerrainId } from './recipe/types';
@@ -43,7 +41,7 @@ function makeThumbnails() {
   });
 }
 
-const initialOutput = { size: '512', standard: false, fg: '#202428', bg: '#FFFFFF' };
+const contentDelay = 400;
 
 class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => void }, { failed: boolean }> {
   state = { failed: false };
@@ -59,7 +57,9 @@ class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => vo
 
 export default function QrCodeGenerator({ locale }: ToolProps) {
   const [recipe, setRecipe] = useState(createDefaultRecipe);
-  const [output, setOutput] = useState(initialOutput);
+  const [draft, setDraft] = useState(recipe.content);
+  const [composing, setComposing] = useState(false);
+  const [outputSize, setOutputSize] = useState('512');
   const [mode, setMode] = useState<'2d' | '3d'>('3d');
   const is3d = mode === '3d';
   const thumbnails = useMemo(() => is3d ? [] : makeThumbnails(), [is3d]);
@@ -118,25 +118,27 @@ export default function QrCodeGenerator({ locale }: ToolProps) {
 
   const job = useJob<VerifiedQr>(locale);
   const url = useBlobUrl(job.result?.png);
-  const deferredContent = useDeferredValue(recipe.content);
+  const pending = draft !== recipe.content;
+  const { content } = recipe;
   const { errorCorrectionLevel } = recipe.qr;
   const encoding = useMemo(() => {
     try {
-      return { matrix: createWorkspaceMatrix({ content: deferredContent, qr: { errorCorrectionLevel } }), error: undefined };
+      return { matrix: createWorkspaceMatrix({ content, qr: { errorCorrectionLevel } }), error: undefined };
     } catch (error) {
       return { matrix: null, error };
     }
-  }, [deferredContent, errorCorrectionLevel]);
-  const matrix = deferredContent === recipe.content ? encoding.matrix : null;
-  const attempted = useRef<{ matrix: typeof matrix; artwork: QrRecipeV1['artwork']; output: typeof initialOutput }>(null);
-  const input = useRef<HTMLTextAreaElement>(null);
+  }, [content, errorCorrectionLevel]);
+  const matrix = pending ? null : encoding.matrix;
+  const attempted = useRef<{ matrix: typeof matrix; artwork: QrRecipeV1['artwork']; size: string }>(null);
+  const renderAfterCommit = useRef(false);
+  const input = useRef<HTMLInputElement>(null);
   const pasteCaret = useRef<number>(null);
   const t = (zh: string, en: string) => tr(locale, zh, en);
   const view = command.pose === 'world' ? 'world' : 'qr';
   const cameraReady = status === 'world' || status === 'front' || status === 'tilted';
   const fullscreenLabel = fullscreen ? t('退出全屏', 'Exit fullscreen') : t('全屏', 'Fullscreen');
   const tiltLabel = status === 'front' ? t('倾斜观察', 'Tilt view') : t('返回正视', 'Front view');
-  const matrixError = deferredContent === recipe.content && recipe.content.trim() && encoding.error
+  const matrixError = !pending && content.trim() && encoding.error
     ? errorText(encoding.error, locale) : undefined;
 
   const moveTo = (pose: DioramaPose, reset = false) => {
@@ -184,59 +186,75 @@ export default function QrCodeGenerator({ locale }: ToolProps) {
     job.invalidate();
     setRecipe(change);
   };
-  const editContent = (content: string) => editRecipe(current => ({
-    ...current, content,
-    terrain: { ...current.terrain, seed: deriveSeed(content, current.terrain.id, current.terrain.revision, current.version) },
-  }));
+  const editContent = (value: string) => {
+    if (value === draft) return;
+    job.invalidate();
+    setCaptureError(false);
+    // Returning to the previous text must still regenerate the invalidated result.
+    attempted.current = null;
+    setDraft(value);
+  };
+  const commitContent = (value: string) => {
+    renderAfterCommit.current = true;
+    setRecipe(current => ({
+      ...current, content: value,
+      terrain: { ...current.terrain, seed: deriveSeed(value, current.terrain.id, current.terrain.revision, current.version) },
+    }));
+  };
+  const commitDraft = useEffectEvent(() => commitContent(draft));
+  useEffect(() => {
+    if (!pending || composing) return;
+    const timer = window.setTimeout(() => commitDraft(), contentDelay);
+    return () => window.clearTimeout(timer);
+  }, [pending, draft, composing]);
   useLayoutEffect(() => {
     if (pasteCaret.current === null) return;
     input.current?.setSelectionRange(pasteCaret.current, pasteCaret.current);
     pasteCaret.current = null;
-  }, [recipe]);
-  const editOutput = (change: Partial<typeof initialOutput>) => {
-    job.invalidate();
-    setOutput(current => ({ ...current, ...change }));
-  };
+  }, [draft]);
   const chooseStyle = (id: ArtStyleId) => {
+    if (recipe.artwork.id === id) return;
     editRecipe(current => ({ ...current, artwork: { ...current.artwork, id } }));
-    if (output.standard) editOutput({ standard: false });
   };
 
   const start = () => {
     if (!matrix) return;
-    attempted.current = { matrix, artwork: recipe.artwork, output };
+    renderAfterCommit.current = false;
+    attempted.current = { matrix, artwork: recipe.artwork, size: outputSize };
     void job.run(async signal => {
-      const size = integer(output.size, qrMinPixels, qrMaxPixels);
-      let custom: Extract<QrRenderMode, { kind: 'standard' }>['colors'];
-      if (output.standard) {
-        const { fg, bg } = output;
-        if (!/^#[a-f\d]{6}$/i.test(fg) || !/^#[a-f\d]{6}$/i.test(bg))
-          fail('请输入六位 HEX 颜色。', 'Enter six-digit HEX colors.');
-        const dark = parseColor(fg);
-        const light = parseColor(bg);
-        if (contrast(dark, light) < 3 || dark.reduce((a, b) => a + b) >= light.reduce((a, b) => a + b))
-          fail('请使用深色前景、浅色背景及至少 3:1 的对比度。',
-            'Use a dark foreground, light background and at least 3:1 contrast.');
-        custom = { dark: fg, light: bg };
-      }
+      const size = integer(outputSize, qrMinPixels, qrMaxPixels);
       const validated = validateRecipe(recipe);
-      return generateVerifiedQr(matrix, validated.content, size,
-        custom ? { kind: 'standard', colors: custom } : { kind: 'artistic', recipe: validated }, signal);
+      return generateVerifiedQr(matrix, validated.content, size, { kind: 'artistic', recipe: validated }, signal);
     });
   };
   const generatePreview = useEffectEvent(start);
   useEffect(() => {
     if (job.busy || !matrix ||
-        (attempted.current?.matrix === matrix && attempted.current.artwork === recipe.artwork && attempted.current.output === output)) return;
-    const timer = window.setTimeout(() => generatePreview(), 300);
+        (attempted.current?.matrix === matrix && attempted.current.artwork === recipe.artwork && attempted.current.size === outputSize)) return;
+    const timer = window.setTimeout(() => generatePreview(), renderAfterCommit.current ? 0 : 300);
     return () => window.clearTimeout(timer);
-  }, [job.busy, matrix, recipe.artwork, output]);
+  }, [job.busy, matrix, recipe.artwork, outputSize]);
 
   const result = job.result;
   const fallback = result?.fallback;
+  const canCancel = !is3d && !pending && job.busy && attempted.current?.matrix === matrix &&
+    attempted.current.artwork === recipe.artwork && attempted.current.size === outputSize;
+  const submit = () => {
+    if (composing) return;
+    if (canCancel) {
+      job.invalidate();
+      return;
+    }
+    if (pending) commitContent(draft);
+    if (is3d) moveTo('front');
+    else if (!pending && !job.busy) start();
+  };
+  const previewError = matrixError || (!is3d ? job.error : undefined);
+  const captureMessage = is3d && captureError ? t('无法保存当前三维画面。', 'Could not save the current 3D frame.') : undefined;
   let scanMessage: string | undefined;
-  if (is3d && view === 'qr' && status !== 'unavailable') {
-    if (!matrix) scanMessage = t('输入有效内容后会显示三维二维码。', 'Enter valid content to show the 3D QR.');
+  if (is3d && view === 'qr' && status !== 'unavailable' && !matrixError) {
+    if (pending) scanMessage = t('正在等待输入完成…', 'Waiting for input…');
+    else if (!matrix) scanMessage = t('输入有效内容后会显示三维二维码。', 'Enter valid content to show the 3D QR.');
     else if (status === 'tilted') scanMessage = t('返回正视图可重新验码。', 'Return to front view to check scanning.');
     else if (status === 'front') {
       const state = scan?.matrix === matrix ? scan.state : 'pending';
@@ -244,10 +262,17 @@ export default function QrCodeGenerator({ locale }: ToolProps) {
         : state === 'unreadable' ? t('未能读回三维二维码。可下载二维成品。', '3D view could not be read. The 2D export is available.')
           : t('正在验证三维正视图…', 'Checking the 3D front view…');
     }
+  } else if (!is3d && fallback) {
+    scanMessage = fallback.reason === 'density'
+      ? t(`艺术样式至少需要 ${fallback.minimum} px。已改用通过验证的标准样式。`,
+        `This artwork needs at least ${fallback.minimum} px. Showing a verified standard QR code.`)
+      : t('艺术样式未能读回原文。已改用通过验证的标准样式。',
+        'The artwork could not be read back. Showing a verified standard QR code.');
   }
   return (
     <Frame locale={locale}>
-      <div className={s.workspace} data-qr-artwork data-qr-diorama={status}>
+      <div className={s.workspace} data-qr-artwork data-qr-diorama={status}
+        data-qr-license={notice} data-qr-decoder-license={decoderNotice} data-qr-graphics-license={graphicsNotice}>
         <Tabs.Root className={s.scene} data-qr-expanded={expanded || undefined} ref={sceneElement} value={mode} onValueChange={value => {
           if (value === '2d' || value === '3d') setMode(value);
         }}>
@@ -258,7 +283,38 @@ export default function QrCodeGenerator({ locale }: ToolProps) {
               <Tabs.Tab value="2d" className={form.segment}>2D</Tabs.Tab>
               <Tabs.Tab value="3d" className={form.segment}>3D</Tabs.Tab>
             </Tabs.List>
-            {is3d && <div className={`${form.segmented} ${s.sceneControls}`} role="group" aria-label={t('场景模式', 'Scene view')}>
+            <div className={s.composer}>
+              <form className={s.compose} onSubmit={event => { event.preventDefault(); submit(); }}>
+                <input ref={input} type="text" aria-label={t('文本或网址', 'Text or URL')}
+                  placeholder={t('输入文本或网址', 'Enter text or a URL')} value={displayQrText(draft)}
+                  autoComplete="off" autoCapitalize="off" spellCheck={false} aria-invalid={!!matrixError}
+                  onCompositionStart={() => setComposing(true)} onCompositionEnd={() => setComposing(false)}
+                  onChange={event => editContent(editQrText(draft, event.currentTarget.value))}
+                  onPaste={event => {
+                    const pasted = event.clipboardData.getData('text/plain');
+                    if (!/[\r\n]/.test(pasted)) return;
+                    event.preventDefault();
+                    const { selectionStart, selectionEnd } = event.currentTarget;
+                    if (selectionStart === null || selectionEnd === null) return;
+                    pasteCaret.current = selectionStart + displayQrText(pasted).length;
+                    const next = replaceQrText(draft, selectionStart, selectionEnd, pasted);
+                    editContent(next);
+                    if (next === draft) {
+                      event.currentTarget.setSelectionRange(pasteCaret.current, pasteCaret.current);
+                      pasteCaret.current = null;
+                    }
+                  }} />
+                <Button type="submit" size="sm" variant="primary"
+                  aria-label={canCancel ? t('取消二维生成', 'Cancel 2D generation') : t('生成二维码', 'Generate QR code')}
+                  disabled={!draft.trim() || (!pending && !matrix) || composing || (is3d && status === 'unavailable')}>
+                  {canCancel ? t('取消', 'Cancel') : t('生成', 'Generate')}
+                </Button>
+              </form>
+              {(previewError || captureMessage) && <div className={s.composeError}>
+                <ErrorText error={previewError || captureMessage} />
+              </div>}
+            </div>
+            {is3d && <div className={`${form.segmented} ${s.sceneControls} ${s.viewList}`} role="group" aria-label={t('场景模式', 'Scene view')}>
               <button type="button" className={`${form.segment} ${view === 'world' ? form.segmentSelected : ''}`} aria-pressed={view === 'world'}
                 disabled={status === 'unavailable'} onClick={() => moveTo('world')}>{t('世界', 'World')}</button>
               <button type="button" className={`${form.segment} ${view === 'qr' ? form.segmentSelected : ''}`} aria-pressed={view === 'qr'}
@@ -283,7 +339,8 @@ export default function QrCodeGenerator({ locale }: ToolProps) {
           <Tabs.Panel value="2d" className={s.artPreview}>
             {result && url ? <img src={url} width={result.size} height={result.size}
               alt={t('生成的二维码', 'Generated QR code')} /> : <p className={s.hint} role="status">
-              {job.busy ? t('正在绘制并读回二维码…', 'Rendering and checking the QR code…')
+              {pending ? t('正在等待输入完成…', 'Waiting for input…')
+                : job.busy ? t('正在绘制并读回二维码…', 'Rendering and checking the QR code…')
                 : t('预览会在扫码验证通过后显示。', 'The preview appears after the scan check passes.')}
             </p>}
           </Tabs.Panel>
@@ -303,7 +360,18 @@ export default function QrCodeGenerator({ locale }: ToolProps) {
                 onClick={() => void toggleFullscreen()}>
                 {fullscreen ? <ArrowsInIcon size={20} aria-hidden /> : <ArrowsOutIcon size={20} aria-hidden />}
               </IconButton>
+              {is3d ? <IconButton variant="ghost" label={t('下载沙盘 PNG', 'Download diorama PNG')}
+                title={t('下载沙盘 PNG', 'Download diorama PNG')} disabled={pending || !canCapture || !cameraReady || (view === 'qr' && !matrix)}
+                onClick={() => void downloadScene()}><DownloadSimpleIcon size={20} aria-hidden /></IconButton> : <>
+                <IconButton variant="ghost" label={t('下载 2D PNG', 'Download 2D PNG')}
+                  title={t('下载 2D PNG', 'Download 2D PNG')} disabled={!result}
+                  onClick={() => result && saveBlob(result.png, 'qr-code.png')}><FileImageIcon size={20} aria-hidden /></IconButton>
+                <IconButton variant="ghost" label={t('下载 2D SVG', 'Download 2D SVG')}
+                  title={t('下载 2D SVG', 'Download 2D SVG')} disabled={!result}
+                  onClick={() => result && saveBlob(result.svg, 'qr-code.svg')}><FileSvgIcon size={20} aria-hidden /></IconButton>
+              </>}
             </div>
+            {scanMessage && <p className={s.notice} role="status">{scanMessage}</p>}
             {is3d && <>
               <div className={s.terrainChips} role="group" aria-label={t('选择地貌', 'Choose terrain')}>
                 {terrainIds.map(id => <button type="button" key={id} aria-pressed={recipe.terrain.id === id}
@@ -317,84 +385,30 @@ export default function QrCodeGenerator({ locale }: ToolProps) {
               </div>
             </>}
             {!is3d && <>
-              <ArtworkCarousel locale={locale} selected={recipe.artwork.id} standard={output.standard}
+              <ArtworkCarousel locale={locale} selected={recipe.artwork.id}
                 images={thumbnails} onSelect={chooseStyle} />
               <div className={s.artOptions}>
                 <div className={s.correction} role="group" aria-label={t('纠错等级', 'Error correction')}>
                   {errorCorrectionLevels.map(level => <button key={level} type="button" aria-label={level}
                     title={t(`纠错等级 ${level}`, `Error correction ${level}`)}
                     aria-pressed={errorCorrectionLevel === level}
-                    onClick={() => editRecipe(current => ({ ...current, qr: { errorCorrectionLevel: level } }))}>
+                    onClick={() => {
+                      if (level !== errorCorrectionLevel)
+                        editRecipe(current => ({ ...current, qr: { errorCorrectionLevel: level } }));
+                    }}>
                     {level}
                   </button>)}
                 </div>
-                <OutputSize locale={locale} value={output.size} onChange={size => editOutput({ size })} />
+                <OutputSize locale={locale} value={outputSize} onChange={size => {
+                  if (size === outputSize) return;
+                  job.invalidate();
+                  setOutputSize(size);
+                }} />
               </div>
             </>}
           </div>
         </Tabs.Root>
-        {scanMessage && <p className={s.notice} role="status">{scanMessage}</p>}
-        <div className={s.toolbar}>
-          <div className={s.compose}>
-            <TextAreaField ref={input} label={t('文本或网址', 'Text or URL')} rows={1} value={displayQrText(recipe.content)}
-            onChange={content => editContent(editQrText(recipe.content, content))}
-            onPaste={event => {
-              const pasted = event.clipboardData.getData('text/plain');
-              if (!pasted.includes('\r')) return;
-              event.preventDefault();
-              const { selectionStart, selectionEnd } = event.currentTarget;
-              pasteCaret.current = selectionStart + displayQrText(pasted).length;
-              editContent(replaceQrText(recipe.content, selectionStart, selectionEnd, pasted));
-            }}/>
-            {!is3d && job.busy ? <Button onClick={() => { attempted.current = { matrix, artwork: recipe.artwork, output }; job.invalidate(); }}>
-              {t('取消二维生成', 'Cancel 2D generation')}
-            </Button> : <Button variant="primary" aria-label={t('生成二维码', 'Generate QR code')}
-              onClick={() => is3d ? moveTo('front') : start()} disabled={!matrix}>
-              {t('生成', 'Generate')}
-            </Button>}
-          </div>
-          <div className={s.tools}>
-            {is3d ? <Button size="sm" variant="ghost" disabled={!canCapture || !cameraReady || (view === 'qr' && !matrix)}
-              onClick={() => void downloadScene()}>{t('下载沙盘 PNG', 'Download diorama PNG')}</Button> : <>
-              <Button size="sm" disabled={!result} onClick={() => result && saveBlob(result.png, 'qr-code.png')}>{t('下载 2D PNG', 'Download 2D PNG')}</Button>
-              <Button size="sm" disabled={!result} onClick={() => result && saveBlob(result.svg, 'qr-code.svg')}>{t('下载 2D SVG', 'Download 2D SVG')}</Button>
-            </>}
-          </div>
-          <ErrorText error={matrixError || (!is3d ? job.error : undefined)} />
-          {is3d && captureError && <p role="alert" className={s.hint}>{t('无法保存当前三维画面。', 'Could not save the current 3D frame.')}</p>}
-        </div>
       </div>
-      {!is3d && <section className={`${form.settingsPanel} ${s.settings}`} data-qr-2d aria-label={t('二维码设置', 'QR settings')}>
-        <Button variant="ghost" size="sm" className={s.standard} aria-pressed={output.standard}
-          onClick={() => editOutput({ standard: !output.standard })}>
-          {t('标准样式', 'Standard style')}
-        </Button>
-        {output.standard && <div className={s.fields}>
-          <TextField label={t('前景色 HEX', 'Foreground HEX')} value={output.fg} onChange={fg => editOutput({ fg })} />
-          <TextField label={t('背景色 HEX', 'Background HEX')} value={output.bg} onChange={bg => editOutput({ bg })} />
-        </div>}
-        <div className={s.actions}>
-          <Copy locale={locale} value={recipe.content} />
-          <Button onClick={() => {
-            job.invalidate();
-            setRecipe(createDefaultRecipe());
-            setOutput(initialOutput);
-          }}>{t('重置', 'Reset')}</Button>
-        </div>
-        {fallback && <p className={s.hint} role="status">{fallback.reason === 'density'
-          ? t(`艺术样式至少需要 ${fallback.minimum} px。已改用通过验证的标准样式。`,
-            `This artwork needs at least ${fallback.minimum} px. Showing a verified standard QR code.`)
-          : t('艺术样式未能读回原文。已改用通过验证的标准样式。',
-            'The artwork could not be read back. Showing a verified standard QR code.')}</p>}
-        {result && !fallback && <p className={s.hint} role="status">
-          {t('已通过软件扫码验证', 'Passed the software scan check')}
-        </p>}
-        <div className={s.licenses}>
-          <a href={notice} data-qr-license={notice}>qrcode</a>
-          <a href={decoderNotice}>jsQR</a>
-          <a href={graphicsNotice}>Three.js / R3F</a>
-        </div>
-      </section>}
     </Frame>
   );
 }

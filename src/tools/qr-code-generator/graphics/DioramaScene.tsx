@@ -62,7 +62,7 @@ function Room({ active, zoomRef, recipe, matrix, command, label, onStatus, onSca
   const position = useRef(place('world'));
   const current = useRef<DioramaStatus>('moving');
   const [status, setStatus] = useState<DioramaStatus>('moving');
-  const short = Math.max(1, Math.min(size.width, size.height));
+  const short = Math.max(1, Math.min(size.width * 0.9, size.height));
   const screenSize = useRef(short);
 
   const report = useCallback((next: DioramaStatus) => {

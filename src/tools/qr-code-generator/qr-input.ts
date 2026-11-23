@@ -1,5 +1,5 @@
-// Textarea normalizes line endings in its display value. Keep pasted bytes in the recipe.
-export const displayQrText = (text: string) => text.replace(/\r\n?/g, '\n');
+// Represent each line break with one space in the single-line field. Keep pasted bytes in the recipe.
+export const displayQrText = (text: string) => text.replace(/\r\n?|\n/g, ' ');
 
 function originalOffset(text: string, offset: number) {
   let i = 0;
@@ -14,7 +14,7 @@ export function replaceQrText(text: string, start: number, end: number, replacem
 }
 
 export function editQrText(text: string, edited: string) {
-  if (!text.includes('\r')) return edited;
+  if (!/[\r\n]/.test(text)) return edited;
   const previous = displayQrText(text);
   let start = 0;
   while (start < previous.length && previous[start] === edited[start]) start++;
