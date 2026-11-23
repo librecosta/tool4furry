@@ -44,7 +44,7 @@ afterEach(() => {
 
 it('debounces edits, invalidates in-flight scans, and reuses only the current encoding', async () => {
   const view = render(<QrCodeGenerator region="global" locale="en" />);
-  fireEvent.click(button('2D artwork & settings'));
+  fireEvent.click(screen.getByRole('tab', { name: '2D' }));
   await advance();
   expect(calls[0]).toMatchObject({ content: 'https://example.com', size: 512, matrix: { errorCorrectionLevel: 'M' } });
   const content = ' https://example.com/雪?q=1#🦊 ';
@@ -81,7 +81,7 @@ it('debounces edits, invalidates in-flight scans, and reuses only the current en
 
 it('keeps an explicitly canceled snapshot unavailable until the next action', async () => {
   render(<QrCodeGenerator region="cn" locale="zh" />);
-  fireEvent.click(button('二维成品与设置'));
+  fireEvent.click(screen.getByRole('tab', { name: '2D' }));
   await advance();
   fireEvent.click(button('取消二维生成'));
   expect(calls[0].signal.aborted).toBe(true);

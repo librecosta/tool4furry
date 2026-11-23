@@ -1,5 +1,5 @@
 import { Canvas, useFrame, useThree, type CanvasProps } from '@react-three/fiber';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react';
 import { Spherical, Vector3, WebGLRenderer, type Group, type OrthographicCamera } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import type { QrMatrixData } from '../matrix/qr-matrix';
@@ -9,7 +9,10 @@ import { captureDiorama, scanDiorama, type DioramaCapture } from './scene-captur
 import { advanceDiorama, type DioramaCommand, type DioramaPose, type DioramaStatus } from './scene-transition';
 
 export type SceneScan = { matrix: QrMatrixData; state: 'pending' | 'verified' | 'unreadable' };
+export type DioramaZoom = (direction: 'in' | 'out') => void;
 export type DioramaSceneProps = {
+  active: boolean;
+  zoomRef: RefObject<DioramaZoom | null>;
   recipe: QrRecipeV1;
   matrix: QrMatrixData | null;
   command: DioramaCommand;
@@ -44,7 +47,7 @@ function place(pose: DioramaPose): Pose {
   return { position: new Vector3(...worldPosition), target: new Vector3(0, 0.45, 0), zoom: 1 / 12.9, reveal: 0 };
 }
 
-function Room({ recipe, matrix, command, label, onStatus, onScan, onCapture, onLost, dark }: DioramaSceneProps & {
+function Room({ active, zoomRef, recipe, matrix, command, label, onStatus, onScan, onCapture, onLost, dark }: DioramaSceneProps & {
   onLost: () => void;
   dark: boolean;
 }) {
@@ -139,20 +142,25 @@ function Room({ recipe, matrix, command, label, onStatus, onScan, onCapture, onL
       if (current.current === 'front') report('tilted');
       invalidate();
     };
+    const zoom: DioramaZoom = (direction) => {
+      if (!orbit.enabled) return;
+      if (direction === 'in') orbit.dollyIn(0.87);
+      else orbit.dollyOut(0.87);
+    };
+    zoomRef.current = zoom;
     const key = (event: KeyboardEvent) => {
       if (!orbit.enabled || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', '+', '=', '-'].includes(event.key)) return;
       event.preventDefault();
-      if (event.key.startsWith('Arrow')) {
-        const offset = new Spherical().setFromVector3(ortho.position.clone().sub(orbit.target));
-        if (event.key === 'ArrowLeft') offset.theta -= 0.13;
-        if (event.key === 'ArrowRight') offset.theta += 0.13;
-        if (event.key === 'ArrowUp') offset.phi = Math.max(0.001, offset.phi - 0.13);
-        if (event.key === 'ArrowDown') offset.phi = Math.min(orbit.maxPolarAngle, offset.phi + 0.13);
-        ortho.position.setFromSpherical(offset).add(orbit.target);
-      } else {
-        ortho.zoom = Math.max(orbit.minZoom, Math.min(orbit.maxZoom, ortho.zoom * (event.key === '-' ? 0.9 : 1.1)));
-        ortho.updateProjectionMatrix();
+      if (!event.key.startsWith('Arrow')) {
+        zoom(event.key === '-' ? 'out' : 'in');
+        return;
       }
+      const offset = new Spherical().setFromVector3(ortho.position.clone().sub(orbit.target));
+      if (event.key === 'ArrowLeft') offset.theta -= 0.13;
+      if (event.key === 'ArrowRight') offset.theta += 0.13;
+      if (event.key === 'ArrowUp') offset.phi = Math.max(0.001, offset.phi - 0.13);
+      if (event.key === 'ArrowDown') offset.phi = Math.min(orbit.maxPolarAngle, offset.phi + 0.13);
+      ortho.position.setFromSpherical(offset).add(orbit.target);
       orbit.update();
       changed();
     };
@@ -162,11 +170,12 @@ function Room({ recipe, matrix, command, label, onStatus, onScan, onCapture, onL
     return () => {
       orbit.removeEventListener('change', changed);
       orbit.dispose();
+      zoomRef.current = null;
       controls.current = null;
       gl.domElement.removeEventListener('keydown', key);
       gl.domElement.removeEventListener('webglcontextlost', onLost);
     };
-  }, [ortho, gl, invalidate, label, onLost, report]);
+  }, [ortho, gl, invalidate, label, onLost, report, zoomRef]);
 
   useEffect(() => {
     const destination = command.pose === 'world' && !command.reset ? world.current : place(command.pose);
@@ -204,12 +213,12 @@ function Room({ recipe, matrix, command, label, onStatus, onScan, onCapture, onL
 
   useEffect(() => {
     const ready = status === 'world' || ((status === 'front' || status === 'tilted') && matrix);
-    onCapture(ready ? () => captureDiorama(gl, scene, ortho) : null);
+    onCapture(active && ready ? () => captureDiorama(gl, scene, ortho) : null);
     return () => onCapture(null);
-  }, [status, matrix, gl, scene, ortho, onCapture]);
+  }, [active, status, matrix, gl, scene, ortho, onCapture]);
 
   useEffect(() => {
-    if (status !== 'front' || !matrix) {
+    if (!active || status !== 'front' || !matrix) {
       onScan(null);
       return;
     }
@@ -225,7 +234,7 @@ function Room({ recipe, matrix, command, label, onStatus, onScan, onCapture, onL
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [status, matrix, recipe.content, recipe.terrain.id, size.width, size.height, gl, scene, ortho, onScan]);
+  }, [active, status, matrix, recipe.content, recipe.terrain.id, size.width, size.height, gl, scene, ortho, onScan]);
 
   return <>
     <color attach="background" args={[dark ? '#252933' : '#e8e4da']} />
@@ -261,7 +270,7 @@ export default function DioramaScene(props: DioramaSceneProps) {
 
   return <div ref={root} data-qr-diorama-scene style={{ height: '100%', contain: 'inline-size' }}>
     {!lost && <Canvas aria-label={props.label} flat orthographic camera={cameraConfig} gl={webGl2}
-      dpr={[1, 1.5]} frameloop={visible ? 'demand' : 'never'}>
+      dpr={[1, 1.5]} frameloop={props.active && visible ? 'demand' : 'never'}>
       <Room {...props} onLost={onLost} dark={dark} />
     </Canvas>}
   </div>;
