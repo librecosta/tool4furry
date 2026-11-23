@@ -43,7 +43,7 @@ Timestamp Workspace 在 Wide Form 中复用 `settingsPanel` 及分段控件，�
 - 日期值为 `YYYY-MM-DD`，支持 0001–9999 年和可选 min/max。日历按周一开始，支持方向键、PageUp/PageDown 和年份跳转。时间值为 `HH:mm:ss.SSS`，各段微调在其范围内停止。触控打开时间面板时焦点停在面板，选中某段后再进入文字输入。格式合法后提交，无效的直接输入草稿独立保留。调用方可通过 `draft` 与 `onDraftChange` 控制草稿并在编辑无效时暂停业务结果。
 - 时区解释、DST、业务合法性由工具核心负责。共享选择器由实际使用者按需引用。TextField 的原生 date/time 类型保留给特殊或历史场景。[Base UI Popover](https://base-ui.com/react/components/popover) · [WAI-ARIA 日期网格](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/datepicker-dialog/)
 
-QR Code Generator 在 Wide Form 中用同一预览区呈现二维成品与三维画布，左上切换 2D／3D，三维右上保留世界／二维码。地貌选择居中放在画布底部，左侧为复位与全屏，右侧为缩放。输入与当前模式的导出入口位于预览下方，二维参数随二维模式显示。窄屏沿用同一 DOM，加载失败或禁用 WebGL2 时可切换到二维模式。[地貌世界和三维二维码](general-toolbox-v0.8.md#qr-code-generator--v08-b13-b0-地貌沙盘与双状态工作区)
+QR Code Generator 在 Wide Form 中用同一预览区呈现二维成品与三维画布，左上切换 2D／3D，三维右上保留世界／二维码。地貌选择居中放在画布底部，左侧为复位与全屏，右侧为缩放。输入与当前模式的导出入口位于预览下方，二维画布底部中央是三张图的可滑动风格选择，右侧是无标题的尺寸与纠错控件。窄屏沿用同一 DOM，加载失败或禁用 WebGL2 时可切换到二维模式。[地貌世界和三维二维码](general-toolbox-v0.8.md#qr-code-generator--v08-b13-b0-地貌沙盘与双状态工作区)
 
 ## 文本编辑工作区
 

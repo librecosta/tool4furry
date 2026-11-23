@@ -94,3 +94,18 @@ it('keeps an explicitly canceled snapshot unavailable until the next action', as
   await settle(calls[1]);
   expect(button('下载 2D SVG').disabled).toBe(false);
 });
+
+it('selects an output preset and moves the active artwork with arrow keys', async () => {
+  render(<QrCodeGenerator region="global" locale="en" />);
+  fireEvent.click(screen.getByRole('tab', { name: '2D' }));
+  const open = button('Show size presets');
+  fireEvent.click(open);
+  expect(open.getAttribute('aria-expanded')).toBe('true');
+  fireEvent.click(button('1024'));
+  expect((field('Output size (pixels)') as HTMLInputElement).value).toBe('1024');
+  expect(open.getAttribute('aria-expanded')).toBe('false');
+  fireEvent.keyDown(button('Aeolian'), { key: 'ArrowRight' });
+  expect(button('Contour').getAttribute('aria-pressed')).toBe('true');
+  await advance();
+  expect(calls[0]).toMatchObject({ size: 1024, mode: { recipe: { artwork: { id: 'contour' } } } });
+});

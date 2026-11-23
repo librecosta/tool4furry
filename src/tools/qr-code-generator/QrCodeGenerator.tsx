@@ -18,6 +18,7 @@ import { deriveSeed } from './recipe/seed';
 import { artStyleIds, errorCorrectionLevels, terrainIds, type ArtStyleId, type QrRecipeV1, type TerrainId } from './recipe/types';
 import { validateRecipe } from './recipe/validate';
 import { displayQrText, editQrText, replaceQrText } from './qr-input';
+import { ArtworkCarousel, OutputSize } from './QrArtworkControls';
 import notice from './qrcode.NOTICE.txt?url';
 import decoderNotice from './art/jsqr.NOTICE.txt?url&no-inline';
 import graphicsNotice from './graphics/graphics.NOTICE.txt?url&no-inline';
@@ -31,12 +32,6 @@ const terrainLabels = {
   highlands: ['丘陵', 'Highlands'],
   valley: ['山谷', 'Valley'],
 } as const;
-const artLabels = {
-  aeolian: ['风蚀沙丘', 'Aeolian'],
-  contour: ['地形等高线', 'Contour'],
-  strata: ['峡谷岩层', 'Strata'],
-} as const;
-
 function makeThumbnails() {
   const recipe = createDefaultRecipe();
   const matrix = createWorkspaceMatrix(recipe);
@@ -321,6 +316,21 @@ export default function QrCodeGenerator({ locale }: ToolProps) {
                   disabled={!cameraReady} onClick={() => zoomRef.current?.('out')}><MinusIcon size={20} aria-hidden /></IconButton>
               </div>
             </>}
+            {!is3d && <>
+              <ArtworkCarousel locale={locale} selected={recipe.artwork.id} standard={output.standard}
+                images={thumbnails} onSelect={chooseStyle} />
+              <div className={s.artOptions}>
+                <div className={s.correction} role="group" aria-label={t('纠错等级', 'Error correction')}>
+                  {errorCorrectionLevels.map(level => <button key={level} type="button" aria-label={level}
+                    title={t(`纠错等级 ${level}`, `Error correction ${level}`)}
+                    aria-pressed={errorCorrectionLevel === level}
+                    onClick={() => editRecipe(current => ({ ...current, qr: { errorCorrectionLevel: level } }))}>
+                    {level}
+                  </button>)}
+                </div>
+                <OutputSize locale={locale} value={output.size} onChange={size => editOutput({ size })} />
+              </div>
+            </>}
           </div>
         </Tabs.Root>
         {scanMessage && <p className={s.notice} role="status">{scanMessage}</p>}
@@ -355,45 +365,14 @@ export default function QrCodeGenerator({ locale }: ToolProps) {
         </div>
       </div>
       {!is3d && <section className={`${form.settingsPanel} ${s.settings}`} data-qr-2d aria-label={t('二维码设置', 'QR settings')}>
-        <fieldset className={s.fieldset}>
-          <legend>{t('艺术风格', 'Art style')}</legend>
-          <div className={s.swatches}>
-            {artStyleIds.map((id, i) => {
-              const selected = !output.standard && recipe.artwork.id === id;
-              return (
-                <button key={id} type="button" className={s.swatch} aria-pressed={selected}
-                  onClick={() => chooseStyle(id)}>
-                  <img src={thumbnails[i]} alt="" width={288} height={288} />
-                  <span>{t(artLabels[id][0], artLabels[id][1])}</span>
-                </button>
-              );
-            })}
-          </div>
-          <Button variant="ghost" size="sm" className={s.standard} aria-pressed={output.standard}
-            onClick={() => editOutput({ standard: !output.standard })}>
-            {t('标准样式', 'Standard style')}
-          </Button>
-        </fieldset>
+        <Button variant="ghost" size="sm" className={s.standard} aria-pressed={output.standard}
+          onClick={() => editOutput({ standard: !output.standard })}>
+          {t('标准样式', 'Standard style')}
+        </Button>
         {output.standard && <div className={s.fields}>
           <TextField label={t('前景色 HEX', 'Foreground HEX')} value={output.fg} onChange={fg => editOutput({ fg })} />
           <TextField label={t('背景色 HEX', 'Background HEX')} value={output.bg} onChange={bg => editOutput({ bg })} />
         </div>}
-        <div className={s.fields}>
-          <TextField label={t('输出尺寸（像素）', 'Output size (pixels)')} value={output.size}
-            inputMode="numeric" onChange={size => editOutput({ size })} />
-          <fieldset className={s.fieldset}>
-            <legend>{t('纠错等级', 'Error correction')}</legend>
-            <div className={form.segmented}>
-              {errorCorrectionLevels.map(level => (
-                <button key={level} type="button" className={`${form.segment} ${recipe.qr.errorCorrectionLevel === level ? form.segmentSelected : ''}`}
-                  aria-pressed={recipe.qr.errorCorrectionLevel === level}
-                  onClick={() => editRecipe(current => ({ ...current, qr: { errorCorrectionLevel: level } }))}>
-                  {level}
-                </button>
-              ))}
-            </div>
-          </fieldset>
-        </div>
         <div className={s.actions}>
           <Copy locale={locale} value={recipe.content} />
           <Button onClick={() => {
