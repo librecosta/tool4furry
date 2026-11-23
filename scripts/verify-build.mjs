@@ -314,7 +314,7 @@ assert(
 );
 assert(
   !files.some((file) =>
-    /LabRuntime|WorkbenchLab|LabMenu|CanvasDemo|FormDemo|BatchDemo|UILab|FilesLab|HeroEffectsLab|FlowFieldWaves|waves-renderer|scene-runtime/.test(
+    /LabRuntime|WorkbenchLab|LabMenu|CanvasDemo|FormDemo|BatchDemo|UILab|FilesLab|HeroEffectsLab|FlowFieldWaves|waves-renderer|scene-runtime|ImageFusionLab|image-fusion|fusion\.worker|source_(chromatic|graphic)/i.test(
       file,
     ),
   ),

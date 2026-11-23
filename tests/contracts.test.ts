@@ -73,6 +73,7 @@ describe('published route boundary', () => {
       'ui',
       'files',
       'hero-effects',
+      'image-fusion',
     ]);
     expect(getLabPaths(false)).toEqual([]);
   });

@@ -10,7 +10,11 @@ import BatchDemo from './BatchDemo';
 import UILab from './UILab';
 import FilesLab from './FilesLab';
 import HeroEffectsLab from './hero-effects/HeroEffectsLab';
+import { lazy, Suspense } from 'react';
+import { messages as uiMessages } from '../i18n/messages';
 import type { LanguageLink } from '../site/language';
+
+const ImageFusionLab = lazy(() => import('./image-fusion/ImageFusionLab'));
 
 export default function WorkbenchLab({
   mode,
@@ -26,8 +30,8 @@ export default function WorkbenchLab({
   return (
     <ToolPageFrame
       region={region} locale={locale}
-      mode={mode === 'ui' || mode === 'files' || mode === 'hero-effects' ? 'custom' : mode}
-      title={`DEMO · ${t[mode]}`}
+      mode={mode === 'canvas' || mode === 'form' || mode === 'batch' ? mode : 'custom'}
+      title={mode === 'image-fusion' ? t[mode] : `DEMO · ${t[mode]}`}
       debug={<LabMenu mode={mode} t={t} />}
       navigation={navigation}
     >
@@ -41,6 +45,10 @@ export default function WorkbenchLab({
         <UILab t={t} header={null} />
       ) : mode === 'files' ? (
         <FilesLab t={t} header={null} />
+      ) : mode === 'image-fusion' ? (
+        <Suspense fallback={<p role="status">{uiMessages[locale].loading}</p>}>
+          <ImageFusionLab locale={locale} />
+        </Suspense>
       ) : (
         <HeroEffectsLab locale={locale} />
       )}

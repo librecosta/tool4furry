@@ -1,0 +1,1734 @@
+{
+  "browser": "157.0.8103.79",
+  "system": "win32",
+  "samples": [
+    {
+      "id": "chromatic-50",
+      "formatVersion": 1,
+      "source": {
+        "name": "source_chromatic.png",
+        "width": 592,
+        "height": 592
+      },
+      "parameters": {
+        "content": "https://example.com",
+        "anchor": 50,
+        "strength": 100,
+        "contrast": 100,
+        "dither": "floyd",
+        "adaptive": false,
+        "ecc": "H",
+        "size": 592
+      },
+      "decoder": "jsQR 1.4.0",
+      "matrix": {
+        "size": 29,
+        "version": 3,
+        "modulePx": 16,
+        "quietZone": 4
+      },
+      "detail": {
+        "start": 240,
+        "size": 112
+      },
+      "processingMs": 716.8,
+      "results": [
+        {
+          "method": "blend",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 61.9
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 16.1
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 5.6
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 53.2
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 37.3
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 38.6
+            }
+          ],
+          "renderMs": 25.4,
+          "mae": 100.7
+        },
+        {
+          "method": "halftone",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 43.3
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 19.3
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 9.4
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 35.6
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 43.6
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 42.5
+            }
+          ],
+          "renderMs": 21.3,
+          "mae": 84.25
+        },
+        {
+          "method": "hybrid",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 32.7
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 20.1
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 7.7
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 32.9
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 31.7
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 36.8
+            }
+          ],
+          "renderMs": 31.7,
+          "mae": 66.56
+        }
+      ]
+    },
+    {
+      "id": "chromatic-60",
+      "formatVersion": 1,
+      "source": {
+        "name": "source_chromatic.png",
+        "width": 592,
+        "height": 592
+      },
+      "parameters": {
+        "content": "https://example.com",
+        "anchor": 60,
+        "strength": 100,
+        "contrast": 100,
+        "dither": "floyd",
+        "adaptive": false,
+        "ecc": "H",
+        "size": 592
+      },
+      "decoder": "jsQR 1.4.0",
+      "matrix": {
+        "size": 29,
+        "version": 3,
+        "modulePx": 16,
+        "quietZone": 4
+      },
+      "detail": {
+        "start": 240,
+        "size": 112
+      },
+      "processingMs": 722.4,
+      "results": [
+        {
+          "method": "blend",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 67.5
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 17.9
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 8.9
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 44
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 47.8
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 38.4
+            }
+          ],
+          "renderMs": 27.1,
+          "mae": 100.7
+        },
+        {
+          "method": "halftone",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 49.9
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 24
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 13.6
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 40.6
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 37.3
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 40.2
+            }
+          ],
+          "renderMs": 38.8,
+          "mae": 90.24
+        },
+        {
+          "method": "hybrid",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 23.1
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 11.1
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 5.4
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 31
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 27.2
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 28.8
+            }
+          ],
+          "renderMs": 28.2,
+          "mae": 74.96
+        }
+      ]
+    },
+    {
+      "id": "chromatic-72",
+      "formatVersion": 1,
+      "source": {
+        "name": "source_chromatic.png",
+        "width": 592,
+        "height": 592
+      },
+      "parameters": {
+        "content": "https://example.com",
+        "anchor": 72,
+        "strength": 100,
+        "contrast": 100,
+        "dither": "floyd",
+        "adaptive": false,
+        "ecc": "H",
+        "size": 592
+      },
+      "decoder": "jsQR 1.4.0",
+      "matrix": {
+        "size": 29,
+        "version": 3,
+        "modulePx": 16,
+        "quietZone": 4
+      },
+      "detail": {
+        "start": 240,
+        "size": 112
+      },
+      "processingMs": 653.1,
+      "results": [
+        {
+          "method": "blend",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 57.1
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 15.5
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 6.2
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 33.2
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 34.7
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 26.9
+            }
+          ],
+          "renderMs": 22.6,
+          "mae": 100.7
+        },
+        {
+          "method": "halftone",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 43.7
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 35
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 12.3
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 48.7
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 46.4
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 36.5
+            }
+          ],
+          "renderMs": 27.6,
+          "mae": 97.55
+        },
+        {
+          "method": "hybrid",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 24.1
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 11.5
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 5.8
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 34.1
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 28.6
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 25.2
+            }
+          ],
+          "renderMs": 17.8,
+          "mae": 87.14
+        }
+      ]
+    },
+    {
+      "id": "chromatic-85",
+      "formatVersion": 1,
+      "source": {
+        "name": "source_chromatic.png",
+        "width": 592,
+        "height": 592
+      },
+      "parameters": {
+        "content": "https://example.com",
+        "anchor": 85,
+        "strength": 100,
+        "contrast": 100,
+        "dither": "floyd",
+        "adaptive": false,
+        "ecc": "H",
+        "size": 592
+      },
+      "decoder": "jsQR 1.4.0",
+      "matrix": {
+        "size": 29,
+        "version": 3,
+        "modulePx": 16,
+        "quietZone": 4
+      },
+      "detail": {
+        "start": 240,
+        "size": 112
+      },
+      "processingMs": 491.3,
+      "results": [
+        {
+          "method": "blend",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 38.3
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 10.2
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 4.1
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 20.6
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 30.4
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 29
+            }
+          ],
+          "renderMs": 12.9,
+          "mae": 100.7
+        },
+        {
+          "method": "halftone",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 36.3
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 18.5
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 4.4
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 36
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 29.8
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 34.3
+            }
+          ],
+          "renderMs": 26,
+          "mae": 106.18
+        },
+        {
+          "method": "hybrid",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 19.4
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 8.1
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 2.4
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 18.4
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 21.1
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 26.4
+            }
+          ],
+          "renderMs": 16.6,
+          "mae": 102.72
+        }
+      ]
+    },
+    {
+      "id": "graphic-50",
+      "formatVersion": 1,
+      "source": {
+        "name": "source_graphic.png",
+        "width": 592,
+        "height": 592
+      },
+      "parameters": {
+        "content": "https://example.com",
+        "anchor": 50,
+        "strength": 100,
+        "contrast": 100,
+        "dither": "floyd",
+        "adaptive": false,
+        "ecc": "H",
+        "size": 592
+      },
+      "decoder": "jsQR 1.4.0",
+      "matrix": {
+        "size": 29,
+        "version": 3,
+        "modulePx": 16,
+        "quietZone": 4
+      },
+      "detail": {
+        "start": 240,
+        "size": 112
+      },
+      "processingMs": 375.8,
+      "results": [
+        {
+          "method": "blend",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 27.9
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 8.6
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 3.4
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 20.2
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 18.3
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 16.4
+            }
+          ],
+          "renderMs": 11.4,
+          "mae": 98.76
+        },
+        {
+          "method": "halftone",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 20.9
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 12.3
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 6.5
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 21
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 25.9
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 23.2
+            }
+          ],
+          "renderMs": 14.6,
+          "mae": 91.81
+        },
+        {
+          "method": "hybrid",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 16.5
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 8.1
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 3.7
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 18.9
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 18.8
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 25.4
+            }
+          ],
+          "renderMs": 16.5,
+          "mae": 67.95
+        }
+      ]
+    },
+    {
+      "id": "graphic-60",
+      "formatVersion": 1,
+      "source": {
+        "name": "source_graphic.png",
+        "width": 592,
+        "height": 592
+      },
+      "parameters": {
+        "content": "https://example.com",
+        "anchor": 60,
+        "strength": 100,
+        "contrast": 100,
+        "dither": "floyd",
+        "adaptive": false,
+        "ecc": "H",
+        "size": 592
+      },
+      "decoder": "jsQR 1.4.0",
+      "matrix": {
+        "size": 29,
+        "version": 3,
+        "modulePx": 16,
+        "quietZone": 4
+      },
+      "detail": {
+        "start": 240,
+        "size": 112
+      },
+      "processingMs": 402.7,
+      "results": [
+        {
+          "method": "blend",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 29.3
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 7.7
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 3
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 16.4
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 18
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 17.5
+            }
+          ],
+          "renderMs": 11.6,
+          "mae": 98.76
+        },
+        {
+          "method": "halftone",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 21.3
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 12.7
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 6.6
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 22.7
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 24.7
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 23.5
+            }
+          ],
+          "renderMs": 14.4,
+          "mae": 96.19
+        },
+        {
+          "method": "hybrid",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 22.9
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 12.6
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 3.7
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 28.2
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 29.1
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 24.3
+            }
+          ],
+          "renderMs": 12.2,
+          "mae": 75.93
+        }
+      ]
+    },
+    {
+      "id": "graphic-72",
+      "formatVersion": 1,
+      "source": {
+        "name": "source_graphic.png",
+        "width": 592,
+        "height": 592
+      },
+      "parameters": {
+        "content": "https://example.com",
+        "anchor": 72,
+        "strength": 100,
+        "contrast": 100,
+        "dither": "floyd",
+        "adaptive": false,
+        "ecc": "H",
+        "size": 592
+      },
+      "decoder": "jsQR 1.4.0",
+      "matrix": {
+        "size": 29,
+        "version": 3,
+        "modulePx": 16,
+        "quietZone": 4
+      },
+      "detail": {
+        "start": 240,
+        "size": 112
+      },
+      "processingMs": 378.7,
+      "results": [
+        {
+          "method": "blend",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 27.8
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 8.2
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 3.2
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 16.4
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 18.4
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 16.8
+            }
+          ],
+          "renderMs": 11,
+          "mae": 98.76
+        },
+        {
+          "method": "halftone",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 18.9
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 12.3
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 4.8
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 21.8
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 24.2
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 23.2
+            }
+          ],
+          "renderMs": 13.9,
+          "mae": 101.62
+        },
+        {
+          "method": "hybrid",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 16.9
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 12.1
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 5.6
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 26.8
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 20.5
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 22.6
+            }
+          ],
+          "renderMs": 14.8,
+          "mae": 87.5
+        }
+      ]
+    },
+    {
+      "id": "graphic-85",
+      "formatVersion": 1,
+      "source": {
+        "name": "source_graphic.png",
+        "width": 592,
+        "height": 592
+      },
+      "parameters": {
+        "content": "https://example.com",
+        "anchor": 85,
+        "strength": 100,
+        "contrast": 100,
+        "dither": "floyd",
+        "adaptive": false,
+        "ecc": "H",
+        "size": 592
+      },
+      "decoder": "jsQR 1.4.0",
+      "matrix": {
+        "size": 29,
+        "version": 3,
+        "modulePx": 16,
+        "quietZone": 4
+      },
+      "detail": {
+        "start": 240,
+        "size": 112
+      },
+      "processingMs": 422.9,
+      "results": [
+        {
+          "method": "blend",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 42.7
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 14.4
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 4.3
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 25.8
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 40.5
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 23.1
+            }
+          ],
+          "renderMs": 18.7,
+          "mae": 98.76
+        },
+        {
+          "method": "halftone",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 19.9
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 9.3
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 2.8
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 20.5
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 20.8
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 21.5
+            }
+          ],
+          "renderMs": 18.1,
+          "mae": 108.08
+        },
+        {
+          "method": "hybrid",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 13.8
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 7.2
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 2.2
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 15.8
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 17.1
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 19.9
+            }
+          ],
+          "renderMs": 13.2,
+          "mae": 102.4
+        }
+      ]
+    },
+    {
+      "id": "graphic-adaptive",
+      "formatVersion": 1,
+      "source": {
+        "name": "source_graphic.png",
+        "width": 592,
+        "height": 592
+      },
+      "parameters": {
+        "content": "https://example.com",
+        "anchor": 72,
+        "strength": 100,
+        "contrast": 100,
+        "dither": "floyd",
+        "adaptive": true,
+        "ecc": "H",
+        "size": 592
+      },
+      "decoder": "jsQR 1.4.0",
+      "matrix": {
+        "size": 29,
+        "version": 3,
+        "modulePx": 16,
+        "quietZone": 4
+      },
+      "detail": {
+        "start": 240,
+        "size": 112
+      },
+      "processingMs": 389.9,
+      "results": [
+        {
+          "method": "blend",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 29.4
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 8.8
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 3.7
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 17.4
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 18.4
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 17.3
+            }
+          ],
+          "renderMs": 13.3,
+          "mae": 100.52
+        },
+        {
+          "method": "halftone",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 19
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 12.2
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 4.9
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 21.2
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 24.4
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 27.3
+            }
+          ],
+          "renderMs": 14,
+          "mae": 100.63
+        },
+        {
+          "method": "hybrid",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 25.1
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 9.9
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 4.2
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 19.1
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 18.9
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 23.5
+            }
+          ],
+          "renderMs": 18.4,
+          "mae": 86.62
+        }
+      ]
+    },
+    {
+      "id": "graphic-2048-ordered",
+      "formatVersion": 1,
+      "source": {
+        "name": "source_graphic.png",
+        "width": 592,
+        "height": 592
+      },
+      "parameters": {
+        "content": "https://example.com",
+        "anchor": 72,
+        "strength": 100,
+        "contrast": 100,
+        "dither": "ordered",
+        "adaptive": true,
+        "ecc": "Q",
+        "size": 2048
+      },
+      "decoder": "jsQR 1.4.0",
+      "matrix": {
+        "size": 25,
+        "version": 2,
+        "modulePx": 62,
+        "quietZone": 4
+      },
+      "detail": {
+        "start": 807,
+        "size": 434
+      },
+      "processingMs": 2453.9,
+      "results": [
+        {
+          "method": "blend",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "fail",
+              "milliseconds": 147
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 61.1
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 17.9
+            },
+            {
+              "condition": "blur07",
+              "status": "fail",
+              "milliseconds": 172.3
+            },
+            {
+              "condition": "blur12",
+              "status": "fail",
+              "milliseconds": 194.5
+            },
+            {
+              "condition": "jpeg70",
+              "status": "fail",
+              "milliseconds": 154.1
+            }
+          ],
+          "renderMs": 78.7,
+          "mae": 105.71
+        },
+        {
+          "method": "halftone",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 116.5
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 61.5
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 21.9
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 131.5
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 171.7
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 160.8
+            }
+          ],
+          "renderMs": 97.7,
+          "mae": 103.23
+        },
+        {
+          "method": "hybrid",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 115.3
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 57.8
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 16
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 131.7
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 167.1
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 156.2
+            }
+          ],
+          "renderMs": 92.9,
+          "mae": 93.35
+        }
+      ]
+    },
+    {
+      "id": "graphic-no-constraint",
+      "formatVersion": 1,
+      "source": {
+        "name": "source_graphic.png",
+        "width": 592,
+        "height": 592
+      },
+      "parameters": {
+        "content": "https://example.com",
+        "anchor": 25,
+        "strength": 0,
+        "contrast": 100,
+        "dither": "ordered",
+        "adaptive": true,
+        "ecc": "Q",
+        "size": 592
+      },
+      "decoder": "jsQR 1.4.0",
+      "matrix": {
+        "size": 25,
+        "version": 2,
+        "modulePx": 17,
+        "quietZone": 4
+      },
+      "detail": {
+        "start": 236,
+        "size": 119
+      },
+      "processingMs": 395.8,
+      "results": [
+        {
+          "method": "blend",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "fail",
+              "milliseconds": 31.8
+            },
+            {
+              "condition": "half",
+              "status": "fail",
+              "milliseconds": 8.1
+            },
+            {
+              "condition": "quarter",
+              "status": "fail",
+              "milliseconds": 4.5
+            },
+            {
+              "condition": "blur07",
+              "status": "fail",
+              "milliseconds": 18
+            },
+            {
+              "condition": "blur12",
+              "status": "fail",
+              "milliseconds": 15.4
+            },
+            {
+              "condition": "jpeg70",
+              "status": "fail",
+              "milliseconds": 16.6
+            }
+          ],
+          "renderMs": 9,
+          "mae": 53.06
+        },
+        {
+          "method": "halftone",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "fail",
+              "milliseconds": 21.8
+            },
+            {
+              "condition": "half",
+              "status": "fail",
+              "milliseconds": 13.7
+            },
+            {
+              "condition": "quarter",
+              "status": "fail",
+              "milliseconds": 5.9
+            },
+            {
+              "condition": "blur07",
+              "status": "fail",
+              "milliseconds": 24.9
+            },
+            {
+              "condition": "blur12",
+              "status": "fail",
+              "milliseconds": 27.6
+            },
+            {
+              "condition": "jpeg70",
+              "status": "fail",
+              "milliseconds": 27.1
+            }
+          ],
+          "renderMs": 11.2,
+          "mae": 90.93
+        },
+        {
+          "method": "hybrid",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "fail",
+              "milliseconds": 25.9
+            },
+            {
+              "condition": "half",
+              "status": "fail",
+              "milliseconds": 11.4
+            },
+            {
+              "condition": "quarter",
+              "status": "fail",
+              "milliseconds": 3.5
+            },
+            {
+              "condition": "blur07",
+              "status": "fail",
+              "milliseconds": 26.4
+            },
+            {
+              "condition": "blur12",
+              "status": "fail",
+              "milliseconds": 17.3
+            },
+            {
+              "condition": "jpeg70",
+              "status": "fail",
+              "milliseconds": 20.7
+            }
+          ],
+          "renderMs": 18.6,
+          "mae": 58.76
+        }
+      ]
+    },
+    {
+      "id": "mobile-upload",
+      "formatVersion": 1,
+      "source": {
+        "name": "transparent-rectangular.png",
+        "width": 300,
+        "height": 180
+      },
+      "parameters": {
+        "content": " https://example.net/雪?q=狐#🦊 ",
+        "anchor": 72,
+        "strength": 100,
+        "contrast": 100,
+        "dither": "none",
+        "adaptive": false,
+        "ecc": "M",
+        "size": 384
+      },
+      "decoder": "jsQR 1.4.0",
+      "matrix": {
+        "size": 29,
+        "version": 3,
+        "modulePx": 10,
+        "quietZone": 4
+      },
+      "detail": {
+        "start": 157,
+        "size": 70
+      },
+      "processingMs": 204.3,
+      "results": [
+        {
+          "method": "blend",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 26
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 8.2
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 2.8
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 8
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 9.1
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 9.4
+            }
+          ],
+          "renderMs": 6.7,
+          "mae": 100.52
+        },
+        {
+          "method": "halftone",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 10.1
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 5.9
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 2.9
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 8.1
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 9.8
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 9.7
+            }
+          ],
+          "renderMs": 11.7,
+          "mae": 101.82
+        },
+        {
+          "method": "hybrid",
+          "scans": [
+            {
+              "condition": "native",
+              "status": "pass",
+              "milliseconds": 7.9
+            },
+            {
+              "condition": "half",
+              "status": "pass",
+              "milliseconds": 5
+            },
+            {
+              "condition": "quarter",
+              "status": "pass",
+              "milliseconds": 2.3
+            },
+            {
+              "condition": "blur07",
+              "status": "pass",
+              "milliseconds": 8.3
+            },
+            {
+              "condition": "blur12",
+              "status": "pass",
+              "milliseconds": 9.4
+            },
+            {
+              "condition": "jpeg70",
+              "status": "pass",
+              "milliseconds": 11.8
+            }
+          ],
+          "renderMs": 6.1,
+          "mae": 89.63
+        }
+      ]
+    }
+  ]
+}

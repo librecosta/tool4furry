@@ -1,6 +1,7 @@
 import type { Locale } from '../i18n/locale';
 
 const zh = {
+  'image-fusion': '二维码图像融合实验',
   'hero-effects': 'Hero 视觉实验',
   files: '文件与滚动',
   filesIntro:
@@ -84,7 +85,7 @@ const zh = {
   errorToast: '错误消息',
   toastDetail: '仅为消息示例。悬停或聚焦可暂停计时，也可以手动关闭。',
   lab: '开发预览',
-  labNote: '以下仅为交互与布局演示，不会处理真实文件，也不是已发布工具。',
+  labNote: '开发演示与实验入口，文件在浏览器本地处理。',
   canvas: '画布',
   form: '表单',
   batch: '批量',
@@ -135,6 +136,7 @@ const zh = {
 };
 export type LabMessages = { [K in keyof typeof zh]: string };
 const en: LabMessages = {
+  'image-fusion': 'QR Image Fusion Lab',
   'hero-effects': 'Hero effects',
   files: 'Files and scroll',
   filesIntro:
@@ -222,7 +224,7 @@ const en: LabMessages = {
     'Demo message only. Hover or focus to pause its timer, or dismiss it manually.',
   lab: 'Development preview',
   labNote:
-    'Layout and interaction demos only. No real files are processed. These are not published tools.',
+    'Development demos and experiments. Files are processed locally in your browser.',
   canvas: 'Canvas',
   form: 'Form',
   batch: 'Batch',

@@ -2,6 +2,12 @@
 
 两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter 已获得 CN/Global Published 源码资格，其余 10 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（19 Published / 10 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
+## QR Image Fusion Lab — B13-2D-R0
+
+- 通过 DEV 的 Lab 菜单进入 `/lab/image-fusion`。同一图像、二维码内容及实验参数下对照 Blend、Colored Halftone、Hybrid，查看原图、结果及中央 7 × 7 模块。可导出每种 PNG、参数 JSON 和解码结果 JSON。
+- 独立 Worker 使用 Canvas 2D 处理内置或本地图像，复用 QR Matrix 及编码器功能掩码，静区保持四个实色浅色模块。三维状态与镜头交互继续由 QR 工具本身负责。
+- [实验方法、截图和解码证据](evidence/b13-image-fusion/README.md) 记录实际参数扫描、跨解码器分歧及下一轮研究方向。
+
 ## QR Code Generator — V0.8-B13-B0 地貌沙盘与双状态工作区
 
 - 工作区以实时地貌为主，默认显示 Dunes。左上切换 2D／3D，三维模式在右上切换世界和二维码。上方中央的单行输入停顿后自动编码，也可点击生成立即提交。各模式的下载图标都在左下，三维复位和全屏在同一区，右下是缩放，地貌选择在底部中央。二维在同一预览区显示风格、尺寸和纠错设置，标准样式用于自动扫码降级。英文示例和 M 级纠错沿用 A1。宽屏与窄屏复用同一 Canvas 和控制项。

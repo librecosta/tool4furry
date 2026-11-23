@@ -1,0 +1,1110 @@
+{
+  "opencv": "5.1.0",
+  "zxing": "3.1.1",
+  "samples": [
+    {
+      "id": "chromatic-50",
+      "results": [
+        {
+          "method": "blend",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "fail"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "halftone",
+          "scans": {
+            "native": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "fail",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "hybrid",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "chromatic-60",
+      "results": [
+        {
+          "method": "blend",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "fail"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "halftone",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "hybrid",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "chromatic-72",
+      "results": [
+        {
+          "method": "blend",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "fail"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "halftone",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "hybrid",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "chromatic-85",
+      "results": [
+        {
+          "method": "blend",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "fail"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "halftone",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "hybrid",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "graphic-50",
+      "results": [
+        {
+          "method": "blend",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "fail"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "halftone",
+          "scans": {
+            "native": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "fail",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "hybrid",
+          "scans": {
+            "native": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "fail",
+              "zxing": "pass"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "graphic-60",
+      "results": [
+        {
+          "method": "blend",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "fail"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "halftone",
+          "scans": {
+            "native": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "fail",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "hybrid",
+          "scans": {
+            "native": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "fail",
+              "zxing": "pass"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "graphic-72",
+      "results": [
+        {
+          "method": "blend",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "fail"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "halftone",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "hybrid",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "graphic-85",
+      "results": [
+        {
+          "method": "blend",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "fail"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "halftone",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "hybrid",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "graphic-adaptive",
+      "results": [
+        {
+          "method": "blend",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "halftone",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "hybrid",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "graphic-2048-ordered",
+      "results": [
+        {
+          "method": "blend",
+          "scans": {
+            "native": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "fail",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "halftone",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "hybrid",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "graphic-no-constraint",
+      "results": [
+        {
+          "method": "blend",
+          "scans": {
+            "native": {
+              "opencv": "fail",
+              "zxing": "fail"
+            },
+            "half": {
+              "opencv": "fail",
+              "zxing": "fail"
+            },
+            "quarter": {
+              "opencv": "fail",
+              "zxing": "fail"
+            },
+            "blur07": {
+              "opencv": "fail",
+              "zxing": "fail"
+            },
+            "blur12": {
+              "opencv": "fail",
+              "zxing": "fail"
+            },
+            "jpeg70": {
+              "opencv": "fail",
+              "zxing": "fail"
+            }
+          }
+        },
+        {
+          "method": "halftone",
+          "scans": {
+            "native": {
+              "opencv": "fail",
+              "zxing": "fail"
+            },
+            "half": {
+              "opencv": "fail",
+              "zxing": "fail"
+            },
+            "quarter": {
+              "opencv": "fail",
+              "zxing": "fail"
+            },
+            "blur07": {
+              "opencv": "fail",
+              "zxing": "fail"
+            },
+            "blur12": {
+              "opencv": "fail",
+              "zxing": "fail"
+            },
+            "jpeg70": {
+              "opencv": "fail",
+              "zxing": "fail"
+            }
+          }
+        },
+        {
+          "method": "hybrid",
+          "scans": {
+            "native": {
+              "opencv": "fail",
+              "zxing": "fail"
+            },
+            "half": {
+              "opencv": "fail",
+              "zxing": "fail"
+            },
+            "quarter": {
+              "opencv": "fail",
+              "zxing": "fail"
+            },
+            "blur07": {
+              "opencv": "fail",
+              "zxing": "fail"
+            },
+            "blur12": {
+              "opencv": "fail",
+              "zxing": "fail"
+            },
+            "jpeg70": {
+              "opencv": "fail",
+              "zxing": "fail"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "mobile-upload",
+      "results": [
+        {
+          "method": "blend",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "halftone",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        },
+        {
+          "method": "hybrid",
+          "scans": {
+            "native": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "half": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "quarter": {
+              "opencv": "fail",
+              "zxing": "pass"
+            },
+            "blur07": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "blur12": {
+              "opencv": "pass",
+              "zxing": "pass"
+            },
+            "jpeg70": {
+              "opencv": "pass",
+              "zxing": "pass"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

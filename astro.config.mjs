@@ -61,6 +61,20 @@ export default defineConfig({
     server: { strictPort: true },
     plugins: [
       {
+        // Assert module ownership even when the bundler merges an experiment into a shared chunk.
+        name: 'guard-image-fusion-lab',
+        apply: 'build',
+        generateBundle(_, bundle) {
+          for (const chunk of Object.values(bundle)) {
+            if (chunk.type !== 'chunk') continue;
+            for (const id of Object.keys(chunk.modules)) {
+              if (id.replaceAll('\\', '/').includes('/src/lab/image-fusion/'))
+                this.error('Image Fusion Lab leaked into ' + chunk.fileName + ': ' + id);
+            }
+          }
+        },
+      },
+      {
         // Astro scans islands even when getStaticPaths() is empty. Do not emit
         // the unused Lab hydration entry into either production artifact.
         name: 'exclude-lab-client-entry',
