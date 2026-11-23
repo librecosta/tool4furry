@@ -208,6 +208,10 @@
     border-radius: var(--t4f-radius-md);
     background: var(--t4f-surface-panel);
 
+    &:has(> input:focus) {
+      background: color-mix(in srgb, var(--t4f-surface-panel), var(--t4f-focus) 16%);
+    }
+
     > input {
       border: 0;
       border-radius: var(--t4f-radius-sm);
@@ -218,6 +222,12 @@
       padding: 0 var(--t4f-space-12);
       font: inherit;
       font-size: 16px;
+
+      &:focus { outline: none; }
+
+      @media (forced-colors: active) {
+        &:focus-visible { outline: 1px solid Highlight; outline-offset: -2px; }
+      }
     }
 
     > button {
@@ -269,7 +279,6 @@
 
     &[data-side='-1'] { mask-image: linear-gradient(90deg, transparent, #000 52%); }
     &[data-side='1'] { mask-image: linear-gradient(270deg, transparent, #000 52%); }
-    &[aria-pressed='true'] { box-shadow: 0 0 0 1px var(--t4f-support-lavender); }
     &:focus-visible { opacity: 1 !important; mask-image: none; }
     &:active { cursor: grabbing; }
 
