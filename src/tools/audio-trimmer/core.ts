@@ -1,114 +1,101 @@
-import { fail, MiB } from '../general/bounds';
-export function audioRange(start: string, end: string, duration: number) {
-  const a = Number(start),
-    b = Number(end);
-  if (
-    !start.trim() ||
-    !end.trim() ||
-    !Number.isFinite(a) ||
-    !Number.isFinite(b) ||
-    a < 0 ||
-    b <= a ||
-    b > duration
-  )
-    fail(
-      '范围须满足 0 ≤ 起点 < 终点 ≤ 总时长。',
-      'Range must satisfy 0 ≤ start < end ≤ duration.',
-    );
-  return [a, b] as const;
+import { MiB } from '../general/bounds';
+
+export const inputBudget = 512 * MiB;
+export const blobBudget = 256 * MiB;
+export const audioAccept = 'audio/*,.mp3,.wav,.wave,.flac,.m4a,.aac,.ogg,.opus,.oga,.webm,.mka';
+
+export type AudioInfo = {
+  frames: number;
+  sampleRate: number;
+  channels: number;
+  origin: number;
+};
+
+export type Mode = 'keep' | 'remove';
+export type Span = { from: number; to: number; output: number };
+export type CutPlan = {
+  spans: Span[];
+  frames: number;
+  fadeIn: number;
+  fadeOut: number;
+};
+
+export const formats = {
+  mp3: { codec: 'mp3', mime: 'audio/mpeg', bitrates: [128, 192, 256, 320], defaultRate: 192 },
+  wav: { codec: 'pcm-s16', mime: 'audio/wav', bitrates: [], defaultRate: 0 },
+  flac: { codec: 'flac', mime: 'audio/flac', bitrates: [], defaultRate: 0 },
+  m4a: { codec: 'aac', mime: 'audio/mp4', bitrates: [128, 192, 256], defaultRate: 192 },
+  ogg: { codec: 'opus', mime: 'audio/ogg', bitrates: [96, 128, 192], defaultRate: 128 },
+} as const;
+export type Format = keyof typeof formats;
+export type Encoding = { format: Format; bitrate: number; sampleRate: number };
+
+export function parseTime(text: string) {
+  const parts = text.trim().split(':');
+  const seconds = parts.pop() ?? '';
+  if (!/^\d+(?:\.\d{1,3})?$/.test(seconds) || parts.length > 2) return NaN;
+  const tail = Number(seconds);
+  if (parts.length === 0) return tail;
+  if (tail >= 60 || !parts.every(part => /^\d+$/.test(part))) return NaN;
+  const minutes = Number(parts.pop());
+  if (parts.length && minutes >= 60) return NaN;
+  return (Number(parts[0] ?? 0) * 60 + minutes) * 60 + tail;
 }
-export function encodeWav(
-  channels: readonly Float32Array[],
-  sampleRate: number,
-  start = 0,
-  end = channels[0]?.length ?? 0,
-) {
-  if (
-    !channels.length ||
-    channels.length > 2 ||
-    !Number.isInteger(sampleRate) ||
-    sampleRate < 8000 ||
-    sampleRate > 192000 ||
-    !Number.isInteger(start) ||
-    !Number.isInteger(end) ||
-    end <= start ||
-    start < 0 ||
-    channels.some((c) => c.length < end)
-  )
-    fail('音频范围或格式无效。', 'Invalid audio range or format.');
-  const length = end - start,
-    bytes = length * channels.length * 2;
-  if (bytes > 64 * MiB)
-    fail('WAV 输出超过 64 MiB。', 'WAV output exceeds 64 MiB.');
-  const buffer = new ArrayBuffer(44 + bytes),
-    d = new DataView(buffer);
-  const ascii = (at: number, text: string) => {
-    for (let i = 0; i < text.length; i++)
-      d.setUint8(at + i, text.charCodeAt(i));
-  };
-  ascii(0, 'RIFF');
-  d.setUint32(4, 36 + bytes, true);
-  ascii(8, 'WAVE');
-  ascii(12, 'fmt ');
-  d.setUint32(16, 16, true);
-  d.setUint16(20, 1, true);
-  d.setUint16(22, channels.length, true);
-  d.setUint32(24, sampleRate, true);
-  d.setUint32(28, sampleRate * channels.length * 2, true);
-  d.setUint16(32, channels.length * 2, true);
-  d.setUint16(34, 16, true);
-  ascii(36, 'data');
-  d.setUint32(40, bytes, true);
-  let at = 44;
-  for (let n = start; n < end; n++)
-    for (const c of channels) {
-      const value = Math.max(-1, Math.min(1, c[n]));
-      d.setInt16(at, Math.round(value * (value < 0 ? 32768 : 32767)), true);
-      at += 2;
-    }
-  return buffer;
+
+export function displayTime(seconds: number) {
+  const ms = Math.max(0, Math.round(seconds * 1000));
+  const hours = Math.floor(ms / 3_600_000);
+  const minutes = Math.floor(ms / 60_000) % 60;
+  const pad = (value: number, places = 2) => String(value).padStart(places, '0');
+  return (hours ? pad(hours) + ':' : '') + pad(minutes) + ':' +
+    pad(Math.floor(ms / 1000) % 60) + '.' + pad(ms % 1000, 3);
 }
-export async function inspectDuration(file: File, signal: AbortSignal) {
-  if (!file.size || file.size > 20 * MiB)
-    fail('音频输入上限 20 MiB。', 'Audio input limit: 20 MiB.');
-  const audio = document.createElement('audio'),
-    url = URL.createObjectURL(file);
-  try {
-    return await new Promise<number>((resolve, reject) => {
-      const finish = (value?: number) => {
-        clearTimeout(timer);
-        signal.removeEventListener('abort', cancel);
-        audio.onloadedmetadata = null;
-        audio.onerror = null;
-        value === undefined ? reject(new Error()) : resolve(value);
-      };
-      const cancel = () => finish();
-      const timer = setTimeout(cancel, 15000);
-      signal.addEventListener('abort', cancel, { once: true });
-      audio.preload = 'metadata';
-      audio.onloadedmetadata = () => {
-        if (
-          !Number.isFinite(audio.duration) ||
-          audio.duration <= 0 ||
-          audio.duration > 180
-        ) {
-          finish();
-          return;
-        }
-        finish(audio.duration);
-      };
-      audio.onerror = cancel;
-      audio.src = url;
-      if (signal.aborted) cancel();
-    });
-  } catch {
-    fail(
-      '音频不受支持、损坏或超过 180 秒。',
-      'Audio is unsupported, damaged or longer than 180 seconds.',
-    );
-  } finally {
-    audio.removeAttribute('src');
-    audio.load();
-    URL.revokeObjectURL(url);
+
+export function makePlan(info: AudioInfo, mode: Mode, start: number, end: number, fadeIn: number, fadeOut: number) {
+  const { frames, sampleRate } = info;
+  const from = Math.round(start * sampleRate), to = Math.round(end * sampleRate);
+  if (![from, to].every(Number.isSafeInteger) || from < 0 || to > frames || from >= to)
+    return { error: 'range' } as const;
+  const spans: Span[] = mode === 'keep' ? [{ from, to, output: 0 }] : [
+    { from: 0, to: from, output: 0 }, { from: to, to: frames, output: from },
+  ].filter(span => span.from < span.to);
+  const length = spans.reduce((total, span) => total + span.to - span.from, 0);
+  if (!length) return { error: 'empty' } as const;
+  const input = Math.round(fadeIn * sampleRate), output = Math.round(fadeOut * sampleRate);
+  if (!Number.isSafeInteger(input) || !Number.isSafeInteger(output) ||
+      fadeIn < 0 || fadeOut < 0 || input + output > length) return { error: 'fade' } as const;
+  return { plan: { spans, frames: length, fadeIn: input, fadeOut: output } satisfies CutPlan };
+}
+
+export function gainAt(plan: CutPlan, position: number) {
+  if (position < plan.fadeIn) return plan.fadeIn > 1 ? position / (plan.fadeIn - 1) : 0;
+  const remaining = plan.frames - position - 1;
+  if (remaining < plan.fadeOut) return plan.fadeOut > 1 ? remaining / (plan.fadeOut - 1) : 0;
+  return 1;
+}
+
+// Seeking into a removed interval goes to the next surviving sample, if one exists.
+export function outputAt(plan: CutPlan, source: number) {
+  for (const span of plan.spans) {
+    if (source < span.to) return span.output + Math.max(0, source - span.from);
   }
+  return plan.frames;
+}
+
+export function sourceAt(plan: CutPlan, output: number) {
+  for (const span of plan.spans) {
+    if (output < span.output + span.to - span.from) return span.from + Math.max(0, output - span.output);
+  }
+  return plan.spans[plan.spans.length - 1].to;
+}
+
+export function estimatedBytes(plan: CutPlan, info: AudioInfo, encoding: Encoding) {
+  const { format, bitrate, sampleRate } = encoding;
+  if (format === 'wav' || format === 'flac')
+    return Math.ceil(plan.frames * sampleRate / info.sampleRate) * info.channels * (format === 'flac' ? 3 : 2) + 128;
+  return Math.ceil(plan.frames / info.sampleRate * bitrate * 125 + 4096);
+}
+
+export function filenameFor(name: string, format: Format) {
+  return (name.replace(/\.[^.]+$/, '') || 'audio') + '-trimmed.' + format;
 }

@@ -11,14 +11,14 @@ export const definition = {
   copy: {
     zh: {
       title: '音频裁切',
-      description: '试听音频范围，导出真实 PCM WAV 文件。',
-      summary: '试听音频范围，导出真实 PCM WAV 文件。',
+      description: '在波形上裁切并试听音频，按浏览器能力导出。',
+      summary: '在波形上裁切并试听音频，按浏览器能力导出。',
     },
     en: {
       title: 'Audio Trimmer',
       description:
-        'Audition an audio selection and export a real PCM WAV file.',
-      summary: 'Audition an audio selection and export a real PCM WAV file.',
+        'Trim and preview audio on a waveform, then export in an available format.',
+      summary: 'Trim and preview audio on a waveform, then export in an available format.',
     },
   },
 } satisfies ToolDefinition;

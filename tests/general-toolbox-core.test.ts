@@ -33,7 +33,6 @@ import { renamePlan, defaultRules } from '../src/tools/batch-file-renamer/core';
 import { compareHash } from '../src/tools/file-hash/core';
 import { createHashEngine } from '../src/tools/file-hash/engine';
 import { qrMatrix, qrSvg } from '../src/tools/qr-code-generator/core';
-import { audioRange, encodeWav } from '../src/tools/audio-trimmer/core';
 describe('general toolbox text and data', () => {
   it('cleans lines without destroying indentation and counts basic editor text', () => {
     expect(cleanText(' 你好 \r\n\r\n\r\n world \r\n', defaults)).toBe(
@@ -244,25 +243,5 @@ describe('actual document and archive contents', () => {
       'shape-rendering="crispEdges"',
     );
     expect(() => qrSvg(text, 10, '#000000', '#ffffff')).toThrow();
-  });
-  it('writes actual stereo PCM WAV frames with correct headers and range', () => {
-    const bytes = encodeWav(
-        [new Float32Array([-1, 0, 0.5, 1]), new Float32Array([1, 0.5, 0, -1])],
-        8000,
-        1,
-        4,
-      ),
-      d = new DataView(bytes);
-    expect(new TextDecoder().decode(bytes.slice(0, 4))).toBe('RIFF');
-    expect(new TextDecoder().decode(bytes.slice(8, 12))).toBe('WAVE');
-    expect(d.getUint32(4, true) + 8).toBe(bytes.byteLength);
-    expect(d.getUint16(20, true)).toBe(1);
-    expect(d.getUint16(22, true)).toBe(2);
-    expect(d.getUint32(40, true)).toBe(12);
-    expect(d.getInt16(44, true)).toBe(0);
-    expect(d.getInt16(46, true)).toBe(16384);
-    expect(audioRange('0', '1.5', 2)).toEqual([0, 1.5]);
-    expect(() => audioRange('1', '0', 2)).toThrow();
-    expect(() => encodeWav([new Float32Array(1)], 8000, 0, 0)).toThrow();
   });
 });

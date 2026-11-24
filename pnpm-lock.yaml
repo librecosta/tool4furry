@@ -246,6 +246,12 @@ importers:
       '@lezer/highlight':
         specifier: 1.2.5
         version: 1.2.5
+      '@mediabunny/flac-encoder':
+        specifier: 1.66.3
+        version: 1.66.3(mediabunny@1.66.3)
+      '@mediabunny/mp3-encoder':
+        specifier: 1.66.3
+        version: 1.66.3(mediabunny@1.66.3)
       '@phosphor-icons/react':
         specifier: 2.1.10
         version: 2.1.10(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -279,6 +285,9 @@ importers:
       marked:
         specifier: 18.0.5
         version: 18.0.5
+      mediabunny:
+        specifier: 1.66.3
+        version: 1.66.3
       motion:
         specifier: 14.6.0
         version: 14.6.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -312,6 +321,9 @@ importers:
       three:
         specifier: 0.187.0
         version: 0.187.0
+      wavesurfer.js:
+        specifier: 8.1.0
+        version: 8.1.0
     devDependencies:
       '@astrojs/check':
         specifier: 0.9.10
@@ -4697,6 +4709,28 @@ packages:
         integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==,
       }
 
+  '@mediabunny/flac-encoder@1.66.3':
+    resolution: {integrity: sha512-Yq8HmJt/m7E474RPgpqq3mcx/CfUVFYf9FznDfOlZdvQ1Ej2CMPlImwxOQOIPUSz7HCtgnKUlPox9zwdTKoBjg==}
+    peerDependencies:
+      mediabunny: ^1.0.0
+
+  '@mediabunny/mp3-encoder@1.66.3':
+    resolution: {integrity: sha512-u4TSA99i2+xajHljofOr8GgEeXSZB2x2fQgJkH4Q5VQSaH2zTBFIsg9tqxglIhQFNRPyJl55fELFOBGghITp0Q==}
+    peerDependencies:
+      mediabunny: ^1.0.0
+
+  '@types/dom-mediacapture-transform@0.1.12':
+    resolution: {integrity: sha512-d7/QsLRwF864A5mgIM/YrfiglHoYn7zgCcAoJgW404r+2DwnNr7EBbLnCWpmOMgH8y0te73L1AV6H1bmauaWFw==}
+
+  '@types/dom-webcodecs@0.1.13':
+    resolution: {integrity: sha512-O5hkiFIcjjszPIYyUSyvScyvrBoV3NOEEZx/pMlsu44TKzWNkLVBBxnxJz42in5n3QIolYOcBYFCPZZ0h8SkwQ==}
+
+  mediabunny@1.66.3:
+    resolution: {integrity: sha512-ugNU19umLxfjMaJLWKYUaFTWtmg+k0rwF6bmL5YfSX+BbCHGAOTxsecRzuHKX/OA+tO81pkI/2pNIo8nZdJZmA==}
+
+  wavesurfer.js@8.1.0:
+    resolution: {integrity: sha512-7/FFjqZxrtZ5pYyjTbb5HPmMAwq5vx4qZRKFsMz1E1wLDVVkueKatR9RW3FjpKQTHFgCpc7VUYUpwTjyIZKLwQ==}
+
 snapshots:
 
   '@dimforge/rapier3d-compat@0.12.0': {}
@@ -7175,3 +7209,24 @@ snapshots:
   zod@4.6.5: {}
 
   zwitch@2.0.4: {}
+
+  '@mediabunny/flac-encoder@1.66.3(mediabunny@1.66.3)':
+    dependencies:
+      mediabunny: 1.66.3
+
+  '@mediabunny/mp3-encoder@1.66.3(mediabunny@1.66.3)':
+    dependencies:
+      mediabunny: 1.66.3
+
+  '@types/dom-mediacapture-transform@0.1.12':
+    dependencies:
+      '@types/dom-webcodecs': 0.1.13
+
+  '@types/dom-webcodecs@0.1.13': {}
+
+  mediabunny@1.66.3:
+    dependencies:
+      '@types/dom-mediacapture-transform': 0.1.12
+      '@types/dom-webcodecs': 0.1.13
+
+  wavesurfer.js@8.1.0: {}

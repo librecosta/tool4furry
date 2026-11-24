@@ -52,10 +52,17 @@ export default defineConfig({
   build: { inlineStylesheets: 'never' },
   integrations: [react(), scopeToolStyles],
   vite: {
+    // Audio export loads the selected encoder from a module Worker.
+    worker: { format: 'es' },
     // Discover lazy worker/editor dependencies before users begin work in DEV;
     // late optimizer discovery can reload a workspace or invalidate module URLs.
     // Prebundling does not preload it in the browser or change the production graph.
-    optimizeDeps: { include: ['hash-wasm', '@codemirror/state', '@codemirror/view', '@codemirror/commands', 'diff'], exclude: ['@jsquash/avif/codec/enc/avif_enc.js', '@jsquash/avif/meta.js'] },
+    optimizeDeps: {
+      include: ['hash-wasm', '@codemirror/state', '@codemirror/view', '@codemirror/commands', 'diff',
+        'mediabunny', 'wavesurfer.js', 'wavesurfer.js/dist/plugins/regions.js', 'wavesurfer.js/dist/plugins/timeline.js',
+        '@mediabunny/mp3-encoder', '@mediabunny/flac-encoder'],
+      exclude: ['@jsquash/avif/codec/enc/avif_enc.js', '@jsquash/avif/meta.js'],
+    },
     // Vite discovers dynamic imports before cross-module status checks fold away.
     // This is a projection of Registry metadata, never a second release setting.
     define: toolDefines,
@@ -96,18 +103,23 @@ export default defineConfig({
       },
       {
         // Check actual emitted client modules, including dependencies merged into shared chunks.
-        name: 'exclude-draft-qr-graphics',
+        name: 'exclude-draft-media-resources',
         apply: 'build',
         applyToEnvironment: environment => environment.name === 'client',
         generateBundle: {
           order: 'post',
           handler(_, bundle) {
             const qrAvailable = toolDefines['import.meta.env.T4F_TOOL_QR_CODE_GENERATOR_AVAILABLE'] === 'true';
+            const audioAvailable = toolDefines['import.meta.env.T4F_TOOL_AUDIO_TRIMMER_AVAILABLE'] === 'true';
+            const audioPrivate = /\/(?:src\/tools\/audio-trimmer\/(?!definition\.ts$)|node_modules\/(?:mediabunny|wavesurfer\.js|@mediabunny)\/)/;
             const qrPrivate = /\/(?:src\/tools\/qr-code-generator\/(?!definition\.ts$)|node_modules\/(?:qrcode|jsqr)\/)/;
             for (const chunk of Object.values(bundle)) {
               if (chunk.type !== 'chunk') continue;
               for (const id of Object.keys(chunk.modules)) {
                 const source = id.replaceAll('\\', '/');
+                if (!audioAvailable && audioPrivate.test(source)) {
+                  this.error('Audio Trimmer Draft implementation in ' + chunk.fileName + ': ' + source);
+                }
                 if (/\/(?:node_modules\/(?:three|@react-three\/fiber)|src\/tools\/qr-code-generator\/graphics)\//.test(source) ||
                     (!qrAvailable && qrPrivate.test(source))) {
                   this.error('QR Draft implementation or graphics in ' + chunk.fileName + ': ' + source);

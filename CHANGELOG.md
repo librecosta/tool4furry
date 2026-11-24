@@ -27,6 +27,8 @@
 
 ### Changed
 
+- Audio Trimmer（Draft）改为全宽波形工作区，支持 512 MiB 内的长音频、保留或删除选区、循环试听、样本级裁切、淡化及多格式本地导出。MP3 仅用于 DEV 分发核查。
+
 - Color & Contrast 获得 CN/Global Published 源码资格，新增双语静态 SEO，并对从下方舍入到 WCAG 阈值的比值标注 `<`。正式构建复核选色样式归属及真实剪贴板值。
 - Color & Contrast（Draft）改为双颜色工作区，支持不透明 HEX/RGB/HSL 实时转换、独立复制、选色浮层、屏幕取色、配色交换和英文预览。按未舍入比值检查 WCAG 2.2 阈值，并提供可应用的单侧对比度修正。
 

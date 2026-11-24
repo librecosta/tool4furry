@@ -2,3 +2,6 @@ allowBuilds:
   '@parcel/watcher': false
 minimumReleaseAgeExclude:
   - astro@7.3.8
+  - '@mediabunny/flac-encoder@1.66.3'
+  - '@mediabunny/mp3-encoder@1.66.3'
+  - mediabunny@1.66.3

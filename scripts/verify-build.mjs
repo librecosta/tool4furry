@@ -1629,6 +1629,12 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     assert.deepEqual(importsOf(entry, false), [], 'No static import of Timestamp');
     assert(scripts.get(loader).includes(timestampStyles[0]), 'Timestamp lazy loader references the tool and picker stylesheet');
   }
+  if (!published.some(tool => tool.id === 'audio-trimmer')) {
+    assert.deepEqual(files.filter(file => /(?:AudioTrimmer|audio[.-]worker|audio-trimmer\.NOTICE|mediabunny|wavesurfer)/i.test(file)),
+      [], 'Audio Draft modules, codec Workers and notices are absent');
+    assert.deepEqual(jsOwners(source => /t4f-audio-trimmer|data-audio-trimmer|@mediabunny\//.test(source)),
+      [], 'No Audio Draft implementation in a shared chunk');
+  }
   const colorContrastPublished = published.some(tool => tool.id === 'color-contrast');
   const colorContrastEntries = findAsset('ColorContrast', '.js');
   const colorContrastStyles = findAsset('ColorContrast', '.css');

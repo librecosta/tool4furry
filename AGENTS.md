@@ -22,6 +22,8 @@
 - Timestamp Converter 完成 B12-D2 双语 SEO 与真实剪贴板复核，具备 CN/Global Published 源码资格。快速模式支持精确秒/毫秒和 UTC/浏览器本地日历输入，高级模式支持带偏移的 ISO 输入及 IANA 展示。DST 缺失和重复本地时间均拒绝转换。共享 DatePickerField / TimePickerField 首次随正式工具按需交付。[通用工具说明](docs/general-toolbox-v0.8.md#timestamp-converter--v08-b12-d2-seo-与-beta-资格)
 - Color & Contrast 完成 B14-D2 双语静态 SEO，获得 CN/Global Published 源码资格。正式产物已复核前景与背景的颜色格式转换、WCAG 2.2 未舍入阈值、单侧修正、选色浮层和真实剪贴板。工具实现和共享选色样式按消费方交付，现有 react-colorful MIT 许可随工具提供。[验收记录](docs/evidence/b14-color-contrast/README.md#b14-d2-正式产物)
 
+- Audio Trimmer 的 B15-D1 保持 Draft。WaveSurfer 显示 Worker 预计算波形及视口细节，试听和导出共用样本裁切计划，按需加载本地编码器。MP3 扩展仅在 DEV 验证，LAME WASM 的对应源码及可重新链接性属于 D2 分发阻断项。[音频实现和验收](docs/general-toolbox-v0.8.md#audio-trimmer--v08-b15-d1-波形与本地音频处理)
+
 - QR Code Generator 的 B13-B0 工作区保持 Draft。Recipe V1 和同一次编码的 QR Matrix 驱动独立二维下载及 3D 沙盘。世界与二维码共用一个按需加载的 WebGL2 Canvas，3D 正视帧直接通过 jsQR 比较文本与字节。CN/Global 正式构建继续检查真实的 chunk 和产物，排除 QR、Three.js / R3F 与 jsQR 的私有资源。[B0 实现及验证](docs/general-toolbox-v0.8.md#qr-code-generator--v08-b13-b0-地貌沙盘与双状态工作区)
 
 ## Start Here

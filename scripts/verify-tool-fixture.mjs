@@ -53,7 +53,7 @@ const evidence = [];
 async function configure(phase) {
   const graphDirectory = JSON.stringify(join(run, `${phase}-graph`));
   const config = originals['astro.config.mjs']
-    .replace('  vite: {', `  vite: {\n    worker: { plugins: () => [buildGraphProbe(${graphDirectory}, 'worker')] },`)
+    .replace("worker: { format: 'es' }", `worker: { format: 'es', plugins: () => [buildGraphProbe(${graphDirectory}, 'worker')] }`)
     .replace('    plugins: [', `    plugins: [\n      buildGraphProbe(${graphDirectory}, 'client'),`);
   assert.notEqual(config, originals['astro.config.mjs'], 'Graph probe seam changed');
   await writeFile(join(source, 'astro.config.mjs'), "import { buildGraphProbe } from './tests/fixtures/build-graph.mjs';\n" + config);

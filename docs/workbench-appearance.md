@@ -37,6 +37,8 @@ Batch File Renamer 当前使用内嵌文件名组合器，快速/高级共享名
 
 Timestamp Workspace 在 Wide Form 中复用 `settingsPanel` 及分段控件，以均分双栏容纳短字段输入和可逐项复制的结果。≤900px 以同一 DOM 把输入放在结果前，保留各方向和高级模式的草稿。日期与时间使用共享选择组件，随 Timestamp Converter 的 CN/Global 正式源码按需交付。[时间戳格式和时区边界](general-toolbox-v0.8.md#timestamp-converter--v08-b12-d2-seo-与-beta-资格)
 
+Audio Trimmer 使用全宽时间轴的 Wide Form 例外布局。文件信息在上方，波形、选区和播放控件居中，裁切及导出设置位于下方。窄屏只堆叠设置区，时间轴保留内部滚动和同一播放状态。波形使用工具私有 WaveSurfer 并复用站点主题、分段控件及 Base UI Select。[音频工作区与资源边界](general-toolbox-v0.8.md#audio-trimmer--v08-b15-d1-波形与本地音频处理)
+
 ### 日期与时间输入
 
 - 工具默认选用 [DatePickerField](../src/ui/date-time/DatePickerField.tsx) 和 [TimePickerField](../src/ui/date-time/TimePickerField.tsx)。它们可独立使用，沿用输入框与图标按钮，通过 Base UI Popover 交付站点自有日历和 24 小时分段面板。浮层随主题变化，按可用空间翻转或滚动。

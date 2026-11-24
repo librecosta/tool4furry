@@ -757,28 +757,28 @@ export const generalToolboxContent = {
   'audio-trimmer': {
     zh: {
       title: '音频裁切 | Tool4Furry',
-      description: '试听音频范围，导出真实 PCM WAV 文件。',
+      description: '在波形上裁切并试听音频，按浏览器能力导出。',
       h1: '音频裁切',
-      intro: '试听音频范围，导出真实 PCM WAV 文件。',
-      steps: ['导入音频', '设置起点终点并试听', '导出并下载 WAV。'],
+      intro: '在波形上裁切并试听音频，按浏览器能力导出。',
+      steps: ['导入音频', '设置起点终点并试听', '选择格式并导出音频。'],
       limitations: [
-        '输入上限 20 MiB、180 秒、双声道，解码缓冲上限 64 MiB。原生解码可能有额外瞬时内存；不支持 MP3/AAC 输出。',
+        '支持 512 MiB 以内的单声道和立体声音频。实际导出格式取决于浏览器能力，较大的输出可能需要直接保存到文件。',
         '所有文件与文本均在当前浏览器本地处理，不上传、不持久保存。',
       ],
     },
     en: {
       title: 'Audio Trimmer | Tool4Furry',
       description:
-        'Audition an audio selection and export a real PCM WAV file.',
+        'Trim and preview audio on a waveform, then export in an available format.',
       h1: 'Audio Trimmer',
-      intro: 'Audition an audio selection and export a real PCM WAV file.',
+      intro: 'Trim and preview audio on a waveform, then export in an available format.',
       steps: [
         'Import audio',
         'set start and end and audition',
-        'export and download WAV.',
+        'Choose a format and export audio.',
       ],
       limitations: [
-        'Input limits: 20 MiB, 180 seconds, two channels; decoded buffer limit 64 MiB. Native decoding can use additional transient memory. No MP3/AAC output.',
+        'Accepts mono and stereo audio up to 512 MiB. Export formats depend on browser capabilities, and larger exports may require direct file saving.',
         'Files and text stay in your browser, without uploads or persistent storage.',
       ],
     },

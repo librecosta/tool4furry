@@ -1,0 +1,377 @@
+{
+  "browser": "156.0.8078.4",
+  "viewports": [
+    {
+      "context": "zh-CN",
+      "viewport": 1280,
+      "theme": "dark",
+      "touch": false,
+      "analysis": {
+        "name": "Midnight-Drive.mp3",
+        "inputBytes": 6549741,
+        "uiMs": 3141,
+        "readToFirstPeakMs": 416,
+        "remainingWaveMs": 2168,
+        "mainHeapBytes": 71321884,
+        "initialDuration": "04:32.857"
+      },
+      "realHandleDrag": true,
+      "detailAfterZoom": true,
+      "playsRemovalSkip": true,
+      "loops": true,
+      "noHorizontalOverflow": true
+    },
+    {
+      "context": "en",
+      "viewport": 390,
+      "theme": "light",
+      "touch": true,
+      "analysis": {
+        "name": "Midnight-Drive.mp3",
+        "inputBytes": 6549741,
+        "uiMs": 2595,
+        "readToFirstPeakMs": 422,
+        "remainingWaveMs": 1840,
+        "mainHeapBytes": 73280661,
+        "initialDuration": "04:32.857"
+      },
+      "realHandleDrag": true,
+      "detailAfterZoom": true,
+      "playsRemovalSkip": true,
+      "loops": true,
+      "noHorizontalOverflow": true
+    }
+  ],
+  "longFiles": [
+    {
+      "name": "Thirty-Minutes.mp3",
+      "inputBytes": 21600907,
+      "uiMs": 9993,
+      "readToFirstPeakMs": 426,
+      "remainingWaveMs": 9144,
+      "mainHeapBytes": 71831548,
+      "initialDuration": "30:00.021"
+    },
+    {
+      "name": "Two-Hour-Recording.wav",
+      "inputBytes": 230400078,
+      "uiMs": 4282,
+      "readToFirstPeakMs": 191,
+      "remainingWaveMs": 3851,
+      "mainHeapBytes": 71396277,
+      "initialDuration": "02:00:00.000"
+    },
+    {
+      "name": "Near-512-MiB.wav",
+      "inputBytes": 536832078,
+      "uiMs": 10819,
+      "readToFirstPeakMs": 237,
+      "remainingWaveMs": 10313,
+      "mainHeapBytes": 71700027,
+      "initialDuration": "46:36.000"
+    },
+    {
+      "streamedWav": {
+        "bytes": 311040044,
+        "riff": "RIFF",
+        "containerBytes": 311040044,
+        "heap": 118614042,
+        "elapsedMs": 16434,
+        "destination": "Chromium OPFS test double for OS chooser"
+      }
+    },
+    {
+      "canceledExport": true,
+      "canceledNoDownload": true
+    }
+  ],
+  "exports": [
+    {
+      "sample": "desktop",
+      "format": "MP3",
+      "elapsedMs": 1507,
+      "filename": "Preview-trimmed.mp3",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "2.040000",
+            "bit_rate": "192000"
+          }
+        ],
+        "format": {
+          "format_name": "mp3",
+          "duration": "2.040000",
+          "size": "49536"
+        }
+      }
+    },
+    {
+      "sample": "desktop",
+      "format": "WAV",
+      "elapsedMs": 884,
+      "filename": "Preview-trimmed.wav",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "pcm_s16le",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "1.999000",
+            "bit_rate": "1536000"
+          }
+        ],
+        "format": {
+          "format_name": "wav",
+          "duration": "1.999000",
+          "size": "383852"
+        }
+      }
+    },
+    {
+      "sample": "desktop",
+      "format": "FLAC",
+      "elapsedMs": 928,
+      "filename": "Preview-trimmed.flac",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "flac",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "1.999000",
+            "bits_per_raw_sample": "24"
+          }
+        ],
+        "format": {
+          "format_name": "flac",
+          "duration": "1.999000",
+          "size": "88304"
+        }
+      }
+    },
+    {
+      "sample": "desktop",
+      "format": "M4A",
+      "elapsedMs": 586,
+      "filename": "Preview-trimmed.m4a",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "aac",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "2.005333",
+            "bit_rate": "192638"
+          }
+        ],
+        "format": {
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "duration": "2.005333",
+          "size": "49372"
+        }
+      }
+    },
+    {
+      "sample": "desktop",
+      "format": "OGG",
+      "elapsedMs": 579,
+      "filename": "Preview-trimmed.ogg",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "opus",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "2.020000"
+          }
+        ],
+        "format": {
+          "format_name": "ogg",
+          "duration": "2.020000",
+          "size": "32739"
+        }
+      }
+    },
+    {
+      "sample": "remove",
+      "format": "WAV",
+      "elapsedMs": 601,
+      "filename": "Preview-trimmed.wav",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "pcm_s16le",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "4.000000",
+            "bit_rate": "1536000"
+          }
+        ],
+        "format": {
+          "format_name": "wav",
+          "duration": "4.000000",
+          "size": "768044"
+        }
+      }
+    },
+    {
+      "sample": "Thirty-Minutes",
+      "format": "WAV",
+      "elapsedMs": 696,
+      "filename": "Thirty-Minutes-trimmed.wav",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "pcm_s16le",
+            "sample_rate": "44100",
+            "channels": 1,
+            "duration": "3.000000",
+            "bit_rate": "705600"
+          }
+        ],
+        "format": {
+          "format_name": "wav",
+          "duration": "3.000000",
+          "size": "264644"
+        }
+      }
+    },
+    {
+      "sample": "Two-Hour-Recording",
+      "format": "WAV",
+      "elapsedMs": 597,
+      "filename": "Two-Hour-Recording-trimmed.wav",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "pcm_s16le",
+            "sample_rate": "16000",
+            "channels": 1,
+            "duration": "3.000000",
+            "bit_rate": "256000"
+          }
+        ],
+        "format": {
+          "format_name": "wav",
+          "duration": "3.000000",
+          "size": "96044"
+        }
+      }
+    },
+    {
+      "sample": "Near-512-MiB",
+      "format": "WAV",
+      "elapsedMs": 726,
+      "filename": "Near-512-MiB-trimmed.wav",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "pcm_s16le",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "3.000000",
+            "bit_rate": "1536000"
+          }
+        ],
+        "format": {
+          "format_name": "wav",
+          "duration": "3.000000",
+          "size": "576044"
+        }
+      }
+    },
+    {
+      "sample": "global-mobile",
+      "format": "WAV",
+      "elapsedMs": 781,
+      "filename": "Midnight-Drive-trimmed.wav",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "pcm_s16le",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "1.999000",
+            "bit_rate": "1536000"
+          }
+        ],
+        "format": {
+          "format_name": "wav",
+          "duration": "1.999000",
+          "size": "383852"
+        }
+      }
+    },
+    {
+      "sample": "strict-csp",
+      "format": "FLAC",
+      "elapsedMs": 1074,
+      "filename": "Midnight-Drive-trimmed.flac",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "flac",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "1.999000",
+            "bits_per_raw_sample": "24"
+          }
+        ],
+        "format": {
+          "format_name": "flac",
+          "duration": "1.999000",
+          "size": "207007"
+        }
+      }
+    }
+  ],
+  "pcm": [
+    {
+      "frames": 192000,
+      "channels": 2,
+      "toleranceLsb": 1,
+      "checkpoints": [
+        0,
+        1,
+        3000,
+        5998,
+        5999,
+        6677,
+        95998,
+        95999,
+        96000,
+        96001,
+        98004,
+        180000,
+        180001,
+        186000,
+        191998,
+        191999
+      ],
+      "framesCompared": 192000,
+      "fadeInFrames": 6000,
+      "fadeOutFrames": 12000,
+      "removed": [
+        96000,
+        480000
+      ],
+      "container": "wav",
+      "reader": "FFmpeg raw PCM"
+    }
+  ],
+  "errors": []
+}
