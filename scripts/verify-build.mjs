@@ -80,7 +80,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64'], generalToolboxContent['timestamp-converter']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64'], generalToolboxContent['timestamp-converter'], generalToolboxContent['color-contrast']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -848,13 +848,16 @@ for (const page of htmlFiles) {
   );
   const dom = new JSDOM(content).window.document;
   const scopedToolStyles = [...dom.head.querySelectorAll('link[rel="stylesheet"]')]
-    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
+    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
   const toolId = dom.querySelector('main[data-tool-id]')?.dataset.toolId;
   const expectedToolStyles = [];
   if (toolId === 'subtitle-tools') expectedToolStyles.push('SubtitleTools');
   if (toolId === 'json-formatter') expectedToolStyles.push('JsonFormatter');
   if (toolId === 'url-base64') expectedToolStyles.push('UrlBase64');
   if (toolId === 'timestamp-converter') expectedToolStyles.push('TimestampConverter');
+  if (toolId === 'color-contrast') expectedToolStyles.push('ColorContrast');
+  if (['color-contrast', 'image-watermark', 'palette-extractor'].includes(toolId) && files.some(file => /\/react-colorful\.[\w-]+\.css$/.test(file)))
+    expectedToolStyles.push('react-colorful');
   if (['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
     expectedToolStyles.push('TextEditor');
   if (['json-formatter', 'text-cleaner', 'text-diff', 'url-base64'].includes(toolId) && files.some(file => /\/TextWorkbench\.[\w-]+\.css$/.test(file)))
@@ -973,6 +976,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/json-formatter/index.html') assertToolContent(dom, locale, generalToolboxContent['json-formatter'], 4, 4, 6);
     if (page === 'tools/url-base64/index.html') assertToolContent(dom, locale, generalToolboxContent['url-base64'], 4, 4, 6);
     if (page === 'tools/timestamp-converter/index.html') assertToolContent(dom, locale, generalToolboxContent['timestamp-converter'], 4, 4, 6);
+    if (page === 'tools/color-contrast/index.html') assertToolContent(dom, locale, generalToolboxContent['color-contrast'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1378,8 +1382,6 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
   assert(!/@stylexjs|virtual:stylex|stylex-dev-css/.test(js), `Retired styling runtime leaked: ${file}`);
   for (const id of ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'])
     if (!files.includes(`tools/${id}/index.html`)) assert(!js.includes(`data-${id}`), `Draft ${id} implementation leaked: ${file}`);
-  if (!published.some(tool => tool.id === 'color-contrast'))
-    assert(!js.includes('data-color-contrast-workspace'), `Draft color contrast implementation leaked: ${file}`);
   if (!files.includes('tools/palette-extractor/index.html'))
     assert(!/data-palette-extractor|data-palette-sampler/.test(js), `Draft palette implementation leaked: ${file}`);
   if (!files.includes('tools/image-resize-crop/index.html'))
@@ -1423,8 +1425,6 @@ const outputCSS = await Promise.all(cssFiles.map(file => readFile(resolve(root, 
 for (const css of outputCSS)
   assert(!/@layer priority|virtual:stylex|stylex-dev-css|@stylexjs/.test(css), 'All CSS uses the native styling pipeline');
 const combinedCSS = outputCSS.join('\n');
-if (!published.some(tool => tool.id === 'color-contrast'))
-  assert(!combinedCSS.includes('[data-color-contrast-workspace]'), 'Draft color contrast styles leaked');
 assert(!files.some(file => /(?:DioramaScene|DioramaObjects|graphics\.NOTICE|scene-capture)[.-]/.test(file)), 'QR Draft 3D assets stay private');
 if (!published.some(tool => tool.id === 'qr-code-generator'))
   assert(!files.some(file => /(?:QrCodeGenerator|qrcode\.NOTICE|jsqr(?:\.NOTICE)?|qr-workspace)[.-]/i.test(file)), 'Draft QR entry, styles and decoder stay private');
@@ -1629,6 +1629,31 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     assert.deepEqual(importsOf(entry, false), [], 'No static import of Timestamp');
     assert(scripts.get(loader).includes(timestampStyles[0]), 'Timestamp lazy loader references the tool and picker stylesheet');
   }
+  const colorContrastPublished = published.some(tool => tool.id === 'color-contrast');
+  const colorContrastEntries = findAsset('ColorContrast', '.js');
+  const colorContrastStyles = findAsset('ColorContrast', '.css');
+  assert.equal(colorContrastEntries.length, Number(colorContrastPublished), 'Color Contrast lazy entry follows publication');
+  assert.equal(colorContrastStyles.length, Number(colorContrastPublished), 'Color Contrast stylesheet follows publication');
+  for (const marker of ['data-color-contrast-workspace', 'data-color-license', 'Enter an opaque HEX']) {
+    assert.deepEqual(jsOwners(source => source.includes(marker)), colorContrastEntries,
+      'Color Contrast workbench, license reference and parser stay in the tool: ' + marker);
+  }
+  assert.deepEqual(cssFiles.filter((_, index) => outputCSS[index].includes('[data-color-contrast-workspace]')),
+    colorContrastStyles, 'Color Contrast styles stay private to the tool');
+  if (colorContrastPublished) {
+    const [entry] = colorContrastEntries;
+    const [loader, ...otherLoaders] = importsOf(entry, true);
+    assert(loader && loader.includes('ToolRuntime') && !otherLoaders.length, 'Only ToolRuntime dynamically imports Color Contrast');
+    assert.deepEqual(importsOf(entry, false), [], 'No static import of Color Contrast');
+    assert(scripts.get(loader).includes(colorContrastStyles[0]), 'Color Contrast lazy loader includes its stylesheet');
+    const notice = await readFile('src/tools/palette-extractor/react-colorful.NOTICE.txt');
+    const installedLicense = (await readFile('node_modules/react-colorful/LICENSE', 'utf8')).replace(/\r\n/g, '\n').trim();
+    assert(notice.toString('utf8').replace(/\r\n/g, '\n').includes(installedLicense), 'The notice preserves the installed react-colorful MIT license');
+    const emitted = findAsset('react-colorful.NOTICE', '.txt');
+    assert([...scripts.values()].some(js => js.includes(notice.toString('base64'))) ||
+      (await Promise.all(emitted.map(file => readFile(resolve(root, file))))).some(bytes => bytes.equals(notice)),
+    'Color Contrast delivers the complete react-colorful notice');
+  }
   const codecEntry = entries.get('url-base64');
   const codecWorkers = files.filter(file => /(?:^|\/)codec\.worker[.-][\w-]+\.js$/.test(file));
   const codecStyles = cssFiles.filter((_, index) => /\._?(?:codecWorkspace|codecToolbar|codecResultStatus)[_-]/.test(outputCSS[index]));
@@ -1809,8 +1834,9 @@ if (!files.includes('tools/exif-metadata/index.html')) {
 }
 if (!files.includes('tools/palette-extractor/index.html')) {
   assert(!files.some(file => /PaletteExtractor|colorthief\.NOTICE/.test(file)), 'Draft palette asset leaked');
+  const otherPickerPublished = published.some(tool => ['image-watermark', 'color-contrast'].includes(tool.id));
   for (const name of ['colorthief', 'react-colorful']) {
-    if (name === 'react-colorful' && files.includes('tools/image-watermark/index.html')) continue;
+    if (name === 'react-colorful' && otherPickerPublished) continue;
     const notice = await readFile(`src/tools/palette-extractor/${name}.NOTICE.txt`);
     assert(!files.some(file => file.includes(`${name}.NOTICE`)), `Draft-only ${name} notice asset leaked`);
     for (const file of files.filter(file => /\.(js|txt)$/.test(file))) {
@@ -1818,7 +1844,7 @@ if (!files.includes('tools/palette-extractor/index.html')) {
       assert(!bytes.equals(notice) && !bytes.toString().includes(notice.toString('base64')), `Draft palette notice leaked: ${file}`);
     }
   }
-  if (!files.includes('tools/image-watermark/index.html'))
+  if (!otherPickerPublished)
     for (const file of files.filter(file => file.endsWith('.css')))
       assert(!(await readFile(resolve(root, file), 'utf8')).includes('[data-palette-color-picker]'), `Draft picker CSS leaked: ${file}`);
 } else {

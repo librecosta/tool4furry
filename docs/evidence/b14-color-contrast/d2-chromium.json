@@ -1,0 +1,166 @@
+{
+  "browser": "157.0.8103.79",
+  "staticPages": [
+    {
+      "region": "cn",
+      "locale": "zh",
+      "canonical": "https://tool4furry.cn/tools/color-contrast/",
+      "title": "在线颜色转换与对比度检测 - HEX、RGB、HSL 与 WCAG | Tool4Furry",
+      "iconHash": "ef9b5f7f64bc8295bfe7552919242ccb4668adfdddf604ec778090462e8f0412",
+      "steps": 4,
+      "limitations": 6,
+      "faq": 4,
+      "relatedEntries": 0
+    },
+    {
+      "region": "cn",
+      "locale": "en",
+      "canonical": "https://tool4furry.cn/en/tools/color-contrast/",
+      "title": "Color Contrast Checker & HEX, RGB, HSL Converter | Tool4Furry",
+      "iconHash": "ef9b5f7f64bc8295bfe7552919242ccb4668adfdddf604ec778090462e8f0412",
+      "steps": 4,
+      "limitations": 6,
+      "faq": 4,
+      "relatedEntries": 0
+    },
+    {
+      "region": "global",
+      "locale": "zh",
+      "canonical": "https://tool4furry.com/zh/tools/color-contrast/",
+      "title": "在线颜色转换与对比度检测 - HEX、RGB、HSL 与 WCAG | Tool4Furry",
+      "iconHash": "ef9b5f7f64bc8295bfe7552919242ccb4668adfdddf604ec778090462e8f0412",
+      "steps": 4,
+      "limitations": 6,
+      "faq": 4,
+      "relatedEntries": 0
+    },
+    {
+      "region": "global",
+      "locale": "en",
+      "canonical": "https://tool4furry.com/tools/color-contrast/",
+      "title": "Color Contrast Checker & HEX, RGB, HSL Converter | Tool4Furry",
+      "iconHash": "ef9b5f7f64bc8295bfe7552919242ccb4668adfdddf604ec778090462e8f0412",
+      "steps": 4,
+      "limitations": 6,
+      "faq": 4,
+      "relatedEntries": 0
+    }
+  ],
+  "toolPagesPerRegion": 40,
+  "excludedDrafts": [
+    "qr-code-generator",
+    "audio-trimmer",
+    "markdown-editor",
+    "video-frame-extractor",
+    "csv-json-converter",
+    "code-image-generator",
+    "svg-to-png",
+    "regex-tester",
+    "uuid-generator"
+  ],
+  "interactions": [
+    {
+      "region": "cn",
+      "locale": "zh",
+      "initialAppearance": "dark",
+      "width": 1280,
+      "touchSimulation": false,
+      "initialContrast": 8.651508624315612,
+      "foregroundSuggestion": 4.506249350340663,
+      "backgroundSuggestion": 4.50983982329631,
+      "clipboard": [
+        {
+          "values": {
+            "HEX": "#F7CDAD",
+            "RGB": "rgb(247, 205, 173)",
+            "HSL": "hsl(25.9, 82.2%, 82.4%)"
+          },
+          "channels": [
+            247,
+            205,
+            173
+          ]
+        },
+        {
+          "values": {
+            "HEX": "#3583D2",
+            "RGB": "rgb(53, 131, 210)",
+            "HSL": "hsl(210.2, 63.6%, 51.6%)"
+          },
+          "channels": [
+            53,
+            131,
+            210
+          ]
+        }
+      ],
+      "nativeEyeDropper": true,
+      "licenseHash": "d295a96b9bbcc4e3c1fc5c105bfe3fab6c7e835bbdb5e8152ff53b0ed8053cb9",
+      "toolAssets": [
+        "/_astro/ColorContrast.B_iQACAB.js",
+        "/_astro/ColorContrast.DgbGpUNm.css"
+      ],
+      "sharedPickerStyle": "/_astro/react-colorful.BUa2ukG_.css",
+      "popupBounds": {
+        "x": 72,
+        "y": 403,
+        "width": 244,
+        "height": 234
+      },
+      "noHorizontalOverflow": true,
+      "noRuntimeErrors": true
+    },
+    {
+      "region": "global",
+      "locale": "en",
+      "initialAppearance": "light",
+      "width": 390,
+      "touchSimulation": true,
+      "initialContrast": 8.651508624315612,
+      "foregroundSuggestion": 4.506249350340663,
+      "backgroundSuggestion": 4.50983982329631,
+      "clipboard": [
+        {
+          "values": {
+            "HEX": "#F7CDAD",
+            "RGB": "rgb(247, 205, 173)",
+            "HSL": "hsl(25.9, 82.2%, 82.4%)"
+          },
+          "channels": [
+            247,
+            205,
+            173
+          ]
+        },
+        {
+          "values": {
+            "HEX": "#3583D2",
+            "RGB": "rgb(53, 131, 210)",
+            "HSL": "hsl(210.2, 63.6%, 51.6%)"
+          },
+          "channels": [
+            53,
+            131,
+            210
+          ]
+        }
+      ],
+      "nativeEyeDropper": true,
+      "licenseHash": "d295a96b9bbcc4e3c1fc5c105bfe3fab6c7e835bbdb5e8152ff53b0ed8053cb9",
+      "toolAssets": [
+        "/_astro/ColorContrast.B_iQACAB.js",
+        "/_astro/ColorContrast.DgbGpUNm.css"
+      ],
+      "sharedPickerStyle": "/_astro/react-colorful.BUa2ukG_.css",
+      "popupBounds": {
+        "x": 44,
+        "y": 427,
+        "width": 244,
+        "height": 234
+      },
+      "noHorizontalOverflow": true,
+      "noRuntimeErrors": true
+    }
+  ],
+  "eyeDropper": "API availability observed. Lifecycle and unsupported cases use D1 and current UI tests with injected responses. No native OS pixel sampling."
+}

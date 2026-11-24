@@ -9,7 +9,7 @@
 | 正式构建 | 生成可独立托管的静态页面与所需资源，不执行上传或上线 |
 | 实际部署 | 将产物发布到托管环境的独立操作，需要明确授权 |
 
-当前 Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF、ZIP Manager、Batch File Renamer、File Hash、Text Cleaner、Text Diff、Subtitle Tools、JSON Formatter 与 URL & Base64 十八款工具均为 Published，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
+当前 Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF、ZIP Manager、Batch File Renamer、File Hash、Text Cleaner、Text Diff、Subtitle Tools、JSON Formatter、URL & Base64、Timestamp Converter 与 Color & Contrast 二十款工具均为 Published，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
 
 Image Resize & Crop (`image-resize-crop`) 已通过 A1-D2 L2 审计，并依据维护者本任务授权提升源码资格。两地区正式构建包含其双语页面、按需实现、局部裁剪 CSS 和完整 ISC 许可声明；其他 Draft、Lab 和 Fixture 继续隔离。审计证据与 L3 边界见 [模块说明](../docs/image-resize-crop-implementation.md#a1-d2-beta-资格审计2026-10-31)。
 
@@ -55,7 +55,9 @@ URL & Base64（`url-base64`）依据 V0.8-B11-D2 维护者授权取得 CN/Global
 - [loaders.ts](../src/tools/loaders.ts) 在每个字面量动态 import 前直接使用对应常量（DEV 保留开发入口），让 Vite 在依赖发现前消除不可用分支；不得改成运行时 flags 索引、动态路径或全量 glob 扫描。配置读取 Loader AST 检查每个显式分支对应自身 ID，防止复制错资格常量；不生成或改写 Loader。当前地区 Published 缺 Loader、双语短文案或静态内容必须失败；未登记的 Loader 也必须失败。不得增加发布 Store、开关、staging 或第二套路径。
 - 正式工具自然进入当前地区路由、完整目录、适用的精选/手工角色/相关推荐与公开发现文件；精选排序或身份配置不能绕过发布门，也不强制所有工具出现在每个精选槽。
 
-Timestamp Converter（`timestamp-converter`）依据 V0.8-B12-D2 维护者授权获得 CN/Global Published 源码资格。两地区正式构建共用 Registry 和双语 Astro 内容，每地区有 38 个工具详情页。全站 29 款（19 Published / 10 Draft）。共享日期与时间选择器随该工具按需加载，构建守卫验证 JS/CSS 归属和 Base UI、Phosphor 的完整 MIT 许可。实际输出验收使用各格式的真实剪贴板值。[功能、验收和 CI](../docs/general-toolbox-v0.8.md#timestamp-converter--v08-b12-d2-seo-与-beta-资格)
+Timestamp Converter（`timestamp-converter`）依据 V0.8-B12-D2 维护者授权获得 CN/Global Published 源码资格。两地区正式构建共用 Registry 和双语 Astro 内容，该阶段每地区有 38 个工具详情页，全站 29 款（19 Published / 10 Draft）。共享日期与时间选择器随该工具按需加载，构建守卫验证 JS/CSS 归属和 Base UI、Phosphor 的完整 MIT 许可。实际输出验收使用各格式的真实剪贴板值。[功能、验收和 CI](../docs/general-toolbox-v0.8.md#timestamp-converter--v08-b12-d2-seo-与-beta-资格)
+
+Color & Contrast（`color-contrast`）依据 V0.8-B14-D2 维护者授权获得 CN/Global Published 源码资格。当前全站 29 款（20 Published / 9 Draft），每地区有 40 个双语工具详情页。正式构建验证工作区 JS/CSS、共享选色样式归属及 react-colorful MIT 通知。实际输出验收以真实剪贴板读取的 HEX、RGB 和 HSL 为准。[功能与验收](../docs/general-toolbox-v0.8.md#color--contrast--b14-d2-seo-与-beta-资格)
 
 ## 构建与部署隔离
 

@@ -14,6 +14,7 @@ import { definition as subtitles } from '../src/tools/subtitle-tools/definition'
 import { definition as json } from '../src/tools/json-formatter/definition';
 import { definition as codec } from '../src/tools/url-base64/definition';
 import { definition as timestamp } from '../src/tools/timestamp-converter/definition';
+import { definition as colorContrast } from '../src/tools/color-contrast/definition';
 
 const content = {
   title: 'Test — Tool4Furry',
@@ -64,6 +65,48 @@ describe('Astro-only content boundary', () => {
       expect(page.faq![1].answer).toMatch(/1704067200\.123.*1704067200123/);
       expect(JSON.stringify(page)).not.toMatch(/微秒|纳秒|批量转换|倒计时|microseconds|nanoseconds|batch conversion|countdown/i);
       expect(getRelatedTools(timestamp, region).map(tool => tool.id)).toEqual(['json-formatter', 'url-base64']);
+      if (locale === 'en') expect(JSON.stringify(page)).not.toMatch(/\p{Script=Han}/u);
+    }
+  });
+
+  it('publishes Color & Contrast with bilingual color conversion and WCAG guidance', () => {
+    const expected = {
+      zh: {
+        title: '在线颜色转换与对比度检测 - HEX、RGB、HSL 与 WCAG | Tool4Furry',
+        description: '在线转换 HEX、RGB、HSL 颜色，实时检测 WCAG 2.2 对比度，预览文字和 UI 配色，并获取达到 AA 或 AAA 对比度目标的颜色修正建议。',
+        h1: '颜色与对比度',
+        intro: '探索前景色与背景色的搭配效果，实时转换颜色格式、检测文字与 UI 对比度，并通过颜色修正改善配色的可读性。',
+      },
+      en: {
+        title: 'Color Contrast Checker & HEX, RGB, HSL Converter | Tool4Furry',
+        description: 'Convert HEX, RGB and HSL colors, check WCAG 2.2 contrast ratios, preview text and UI colors, and find color adjustments for your target contrast ratio.',
+        h1: 'Color & Contrast',
+        intro: 'Explore foreground and background color combinations, convert color formats, check accessibility contrast ratios, and find adjustments for more readable designs.',
+      },
+    };
+    expect(colorContrast).toMatchObject({
+      id: 'color-contrast', slug: 'color-contrast', category: 'creative', group: 'design-utilities',
+      roles: ['painter', 'developer'], mode: 'form', status: 'published', regions: ['cn', 'global'],
+      copy: {
+        zh: { title: '颜色与对比度', description: '转换 HEX、RGB、HSL，检测 WCAG 对比度并获取颜色修正建议。', summary: '实时预览配色、检查可读性并调整颜色。' },
+        en: { title: 'Color & Contrast', description: 'Convert HEX, RGB and HSL colors, check WCAG contrast, and find color adjustments.', summary: 'Preview color combinations, check readability, and adjust colors in real time.' },
+      },
+    });
+    for (const region of colorContrast.regions) for (const locale of ['zh', 'en'] as const) {
+      const page = getToolPageContent(colorContrast, region, toolPageContents, false, locale);
+      expect(page).toMatchObject(expected[locale]);
+      expect(page.steps).toHaveLength(4);
+      expect(page.limitations).toHaveLength(6);
+      expect(page.limitations![1]).toMatch(/8-bit sRGB.*Alpha/);
+      expect(page.limitations![2]).toMatch(/1:1.*21:1.*(?:未经舍入|unrounded)/);
+      expect(page.limitations![3]).toMatch(/24 CSS.*18\.67 CSS/);
+      expect(page.limitations![5]).toMatch(/EyeDropper.*(?:本地|locally)/);
+      expect(page.faq).toHaveLength(4);
+      expect(page.faq![1].answer).toMatch(/4\.5:1.*7:1.*3:1.*4\.5:1/);
+      expect(page.faq![2].answer).toMatch(/3:1.*4\.5:1.*7:1/);
+      expect(getRelatedTools(colorContrast, region)).toEqual([]);
+      expect(getRelatedTools(colorContrast, region, undefined, true).map(tool => tool.id))
+        .toEqual(['qr-code-generator', 'video-frame-extractor', 'code-image-generator']);
       if (locale === 'en') expect(JSON.stringify(page)).not.toMatch(/\p{Script=Han}/u);
     }
   });

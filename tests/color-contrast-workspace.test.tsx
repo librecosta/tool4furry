@@ -99,11 +99,11 @@ it.each([
   ['rgb(35 92 143)', '3.00', 'Large text', 'Fail · 3.0:1'],
   ['rgb(35 112 227)', '4.50', 'Normal text', 'Fail · 4.5:1'],
   ['rgb(35 166 155)', '7.00', 'Normal text', 'Fail · 7.0:1'],
-])('uses unrounded ratios for %s even though displayed as %s', (color, display, row, status) => {
+])('marks %s as below the %s threshold before rounding', (color, display, row, status) => {
   mount();
   edit(background(), '#000');
   edit(foreground(), color);
-  expect(result().textContent).toContain(display);
+  expect(result().textContent).toContain('< ' + display);
   expect(within(screen.getByRole('row', { name: new RegExp(row) })).getByRole('cell', { name: status })).toBeTruthy();
 });
 

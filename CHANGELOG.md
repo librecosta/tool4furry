@@ -27,6 +27,7 @@
 
 ### Changed
 
+- Color & Contrast 获得 CN/Global Published 源码资格，新增双语静态 SEO，并对从下方舍入到 WCAG 阈值的比值标注 `<`。正式构建复核选色样式归属及真实剪贴板值。
 - Color & Contrast（Draft）改为双颜色工作区，支持不透明 HEX/RGB/HSL 实时转换、独立复制、选色浮层、屏幕取色、配色交换和英文预览。按未舍入比值检查 WCAG 2.2 阈值，并提供可应用的单侧对比度修正。
 
 - QR Code Generator（Draft）改为场景主导工作区。三个程序化地貌可切换到同一 WebGL2 Canvas 内由矩阵构建的三维二维码，正视帧单独验证；二维 PNG/SVG 与三维截图独立导出。

@@ -10,13 +10,13 @@ import { draftIds } from './fixtures/general-toolbox';
 const read = (name: string) => readFileSync(name, 'utf8');
 it('publishes Text Diff in both regions while keeping its Worker and viewer behind the lazy loader', () => {
   expect(tools).toHaveLength(29);
-  expect(tools.filter(tool => tool.status === 'published')).toHaveLength(19);
+  expect(tools.filter(tool => tool.status === 'published')).toHaveLength(20);
   expect(tools.filter(tool => tool.status === 'draft').map(tool => tool.id)).toEqual(draftIds);
   expect(tools.find(tool => tool.id === 'text-diff')).toMatchObject({ status: 'published', regions: ['cn', 'global'] });
   for (const region of ['cn', 'global'] as const) {
     const defines = toolBuildDefines(tools, region);
     expect(defines['import.meta.env.T4F_TOOL_TEXT_DIFF_AVAILABLE']).toBe('true');
-    expect(Object.values(defines).filter(value => value === 'false')).toHaveLength(10);
+    expect(Object.values(defines).filter(value => value === 'false')).toHaveLength(9);
   }
   expect(read('src/tools/loaders.ts')).toMatch(/T4F_TOOL_TEXT_DIFF_AVAILABLE[\s\S]*?import\('\.\/text-diff\/TextDiff'\)/);
   expect(read('src/tools/text-diff/comparison.ts')).toContain("new URL('./diff.worker.ts', import.meta.url)");

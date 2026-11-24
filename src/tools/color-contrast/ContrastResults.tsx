@@ -41,11 +41,14 @@ export function ContrastResults({ locale, ratio, foreground, background, target,
     { side: 'background' as const, label: t('调整背景', 'Adjust background'), result: suggestContrast(background, foreground, target) },
   ] : [];
   const meetsAA = ratio !== undefined && ratio >= 4.5;
+  const ratioText = ratio?.toFixed(2);
+  const roundsUpToThreshold = ratio !== undefined &&
+    contrastTargets.some(threshold => ratio < threshold && Number(ratioText) === threshold);
 
   return <section className={s.results} aria-label={t('对比度检测', 'Contrast check')}>
     <h2>{t('对比度', 'Contrast')} · WCAG 2.2</h2>
     <div className={s.score} role="status" aria-label={t('对比度结果', 'Contrast ratio result')}>
-      <strong>{ratio === undefined ? '—' : <>{ratio.toFixed(2)} <span>: 1</span></>}</strong>
+      <strong>{ratioText === undefined ? '—' : <>{roundsUpToThreshold && '< '}{ratioText} <span>: 1</span></>}</strong>
       {ratio !== undefined && <span data-pass={meetsAA}>
         {meetsAA ? t('普通文字 AA 通过', 'Normal text passes AA') : t('普通文字 AA 未通过', 'Normal text fails AA')}
       </span>}
