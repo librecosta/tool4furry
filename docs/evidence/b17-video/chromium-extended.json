@@ -1,0 +1,56 @@
+{
+  "metrics": [
+    {
+      "operation": "import",
+      "file": "cfr.mp4",
+      "bytes": 776357,
+      "ms": 442,
+      "windowJsHeapBefore": 72200000,
+      "windowJsHeapAfter": 72200000
+    },
+    {
+      "operation": "import",
+      "file": "sar.mp4",
+      "bytes": 647051,
+      "ms": 807,
+      "windowJsHeapBefore": 72200000,
+      "windowJsHeapAfter": 72200000
+    },
+    {
+      "operation": "download",
+      "name": "sar-00-00.000000-0001.png",
+      "ms": 224,
+      "bytes": 81153
+    },
+    {
+      "operation": "import",
+      "file": "negative.mkv",
+      "bytes": 52224,
+      "ms": 775,
+      "windowJsHeapBefore": 72200000,
+      "windowJsHeapAfter": 72200000
+    },
+    {
+      "operation": "import",
+      "file": "8k.mp4",
+      "bytes": 100224,
+      "ms": 374,
+      "windowJsHeapBefore": 72200000,
+      "windowJsHeapAfter": 72200000
+    },
+    {
+      "operation": "download",
+      "name": "8k-00-00.000000-0001.png",
+      "ms": 125,
+      "bytes": 634661
+    },
+    {
+      "operation": "extended",
+      "sar": "sar-00-00.000000-0001.png",
+      "eight": "8k-00-00.000000-0001.png",
+      "workerCount": 0
+    }
+  ],
+  "seekMs": {},
+  "scriptErrors": []
+}

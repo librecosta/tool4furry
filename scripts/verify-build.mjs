@@ -1680,6 +1680,12 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     assert.deepEqual(importsOf(entry, false), [], 'No static import of Timestamp');
     assert(scripts.get(loader).includes(timestampStyles[0]), 'Timestamp lazy loader references the tool and picker stylesheet');
   }
+  if (!published.some(tool => tool.id === 'video-frame-extractor')) {
+    assert.deepEqual(files.filter(file => /(?:VideoFrameExtractor|video-frame\.worker|mediabunny\.NOTICE)/i.test(file)),
+      [], 'Video Frame Extractor Draft entry, stylesheet, worker and license stay outside the build');
+    assert.deepEqual(jsOwners(source => /data-video-frame-workspace|t4f-video-frame-worker/.test(source)),
+      [], 'Video Frame Extractor Draft markers stay outside all chunks');
+  }
   const audioPublished = published.some(tool => tool.id === 'audio-trimmer');
   if (!audioPublished) {
     assert.deepEqual(files.filter(file => /(?:AudioTrimmer|audio[.-]worker|audio-trimmer\.NOTICE|mp3-encoder-rebuild|mediabunny|wavesurfer)/i.test(file)),

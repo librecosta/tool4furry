@@ -37,6 +37,8 @@ Batch File Renamer 当前使用内嵌文件名组合器，快速/高级共享名
 
 Timestamp Workspace 在 Wide Form 中复用 `settingsPanel` 及分段控件，以均分双栏容纳短字段输入和可逐项复制的结果。≤900px 以同一 DOM 把输入放在结果前，保留各方向和高级模式的草稿。日期与时间使用共享选择组件，随 Timestamp Converter 的 CN/Global 正式源码按需交付。[时间戳格式和时区边界](general-toolbox-v0.8.md#timestamp-converter--v08-b12-d2-seo-与-beta-资格)
 
+Video Frame Extractor 使用文件条、播放器与提取设置双栏、全宽帧画廊。窄屏顺序堆叠。播放器预览使用原始显示宽高比，时间轴与逐帧操作共享相对时间；帧画廊使用独立缩略图，并复用文件预览对话框。[视频工作区与资源边界](general-toolbox-v0.8.md#video-frame-extractor--v08-b17-d1)
+
 Audio Trimmer 使用全宽时间轴的 Wide Form 例外布局。文件信息在上方，波形、选区和播放控件居中，裁切及导出设置位于下方。窄屏只堆叠设置区，时间轴保留内部滚动和同一播放状态。波形使用工具私有 WaveSurfer 并复用站点主题、分段控件及 Base UI Select。[音频工作区与资源边界](general-toolbox-v0.8.md#audio-trimmer--v08-b15-d1-波形与本地音频处理)
 
 ### 日期与时间输入

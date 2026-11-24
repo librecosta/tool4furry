@@ -9,7 +9,6 @@ import {
 import { readSvg, svgOutputSize } from '../src/tools/svg-to-png/core';
 import { evaluateRegex } from '../src/tools/regex-tester/core';
 import { generateUuids } from '../src/tools/uuid-generator/core';
-import { frameSize, frameTimes } from '../src/tools/video-frame-extractor/core';
 describe('second general toolbox batch', () => {
   it('renders GFM while rejecting executable and remote embedded content', async () => {
     const html = await renderMarkdown(
@@ -152,20 +151,5 @@ describe('second general toolbox batch', () => {
     for (const count of [0, -1, 1001, 1.5])
       expect(() => generateUuids(count)).toThrow();
     expect(() => generateUuids(1, {} as Crypto)).toThrow();
-  });
-  it('plans bounded interval frames without changing image proportions', () => {
-    expect(frameSize('640', { width: 1920, height: 1080 })).toEqual({
-      width: 640,
-      height: 360,
-    });
-    expect(frameTimes(2, '0.5', { width: 640, height: 360 })).toEqual([
-      0, 0.5, 1, 1.5,
-    ]);
-    for (const interval of ['0', '-1', 'x', '0.01'])
-      expect(() =>
-        frameTimes(2, interval, { width: 640, height: 360 }),
-      ).toThrow();
-    expect(() => frameTimes(120, '1', { width: 640, height: 360 })).toThrow();
-    expect(() => frameTimes(40, '1', { width: 3000, height: 2000 })).toThrow();
   });
 });

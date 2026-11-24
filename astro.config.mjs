@@ -113,6 +113,7 @@ export default defineConfig({
           handler(_, bundle) {
             const qrAvailable = toolDefines['import.meta.env.T4F_TOOL_QR_CODE_GENERATOR_AVAILABLE'] === 'true';
             const audioAvailable = toolDefines['import.meta.env.T4F_TOOL_AUDIO_TRIMMER_AVAILABLE'] === 'true';
+            const videoAvailable = toolDefines['import.meta.env.T4F_TOOL_VIDEO_FRAME_EXTRACTOR_AVAILABLE'] === 'true';
             const markdownAvailable = toolDefines['import.meta.env.T4F_TOOL_MARKDOWN_EDITOR_AVAILABLE'] === 'true';
             const audioPrivate = /\/(?:src\/tools\/audio-trimmer\/(?!definition\.ts$)|node_modules\/(?:mediabunny|wavesurfer\.js|@mediabunny)\/)/;
             const qrPrivate = /\/(?:src\/tools\/qr-code-generator\/(?!definition\.ts$)|node_modules\/(?:qrcode|jsqr)\/)/;
@@ -124,6 +125,9 @@ export default defineConfig({
                 if (markdownPrivate.test(source) &&
                     (!markdownAvailable || !/(?:^|\/)(?:MarkdownEditor|math-preview|katex|highlight)\.[\w-]+\.js$/.test(chunk.fileName))) {
                   this.error('Markdown private module in ' + chunk.fileName + ': ' + source);
+                }
+                if (!videoAvailable && /\/src\/tools\/video-frame-extractor\/(?!definition\.ts$)/.test(source)) {
+                  this.error('Video Frame Extractor Draft implementation in ' + chunk.fileName + ': ' + source);
                 }
                 if (!audioAvailable && audioPrivate.test(source)) {
                   this.error('Audio Trimmer Draft implementation in ' + chunk.fileName + ': ' + source);

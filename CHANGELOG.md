@@ -8,6 +8,8 @@
 
 ### Added
 
+- Video Frame Extractor（Draft）新增精确帧定位、四种提取模式、原始分辨率图片、帧画廊和联系表。支持分块读取 2 GiB 视频和可取消的流式 ZIP 导出。[视频取帧说明](docs/general-toolbox-v0.8.md#video-frame-extractor--v08-b17-d1)
+
 - 新增按需 CodeMirror 6 TextEditor、插槽式 TextEditorPane 和等宽双栏 TextWorkbench；Text Cleaner（仍为 Draft）改为快速/高级实时清理，默认保留缩进，支持明确 LF/CRLF、编辑器内复制/TXT 下载和基本统计。移除本工具旧 50 万字符配额，保留其他文本工具与发布资格，编辑器依赖及完整 MIT 通知按 Draft 资源隔离。
 
 - V0.8-A / A2 共新增 22 款双语通用 Draft：首批 PDF、文件、文本、编码、颜色、二维码和音频工具，以及第二批 Markdown、视频取帧、CSV/JSON、代码分享图、SVG 转 PNG、Regex 和 UUIDv4。复用既有工作区与发布门，安全预览、任务失效和输出预算由工具局部管理；原有七款 Published 不变，无专属图标或部署。能力和验收见 [通用工具说明](docs/general-toolbox-v0.8.md)。

@@ -1,258 +1,219 @@
 import { useEffect, useRef, useState } from 'react';
+import { FilmStripIcon } from '@phosphor-icons/react';
 import type { ToolProps } from '../types';
 import { Button } from '../../ui/Button';
-import { TextField } from '../../ui/TextField';
-import { SelectField } from '../../ui/SelectField';
-import { SliderField } from '../../ui/SliderField';
-import { Frame, Picker, tr, ErrorText, saveBlob, useBlobUrl,  } from '../general/ui';
-import s from '../general/ui.module.scss';
-import { useJob } from '../general/use-job';
-import { fail, integer, MiB } from '../general/bounds';
-import { packZip } from '../image-converter/zip';
-import { frameSize, frameTimes } from './core';
-import { loadVideo, captureFrame } from './video';
-import notice from '../general/fflate.NOTICE.txt?url';
-type FrameResult = { time: number; name: string; blob: Blob };
+import { ConfirmDialog } from '../../ui/ConfirmDialog';
+import { ErrorText, Frame, Picker, errorText, saveBlob, tr } from '../general/ui';
+import { chooseVideoZip, videoArchive } from './archive';
+import { displayTime, frameName, galleryLimit, memoryLimit, relativeTime, sourceName, VideoError,
+  type FramePlan, type ImageSettings, type SheetSettings } from './core';
+import { ExtractionSettings } from './ExtractionSettings';
+import { FrameGallery } from './FrameGallery';
+import type { GalleryFrame, VideoResults } from './protocol';
+import { contactSheet } from './sheet';
+import { videoTask } from './task';
+import { VideoPlayer } from './VideoPlayer';
+import zipNotice from '../general/fflate.NOTICE.txt?url';
+import mediaNotice from './mediabunny.NOTICE.txt?url&no-inline';
+import s from './video.module.scss';
+
+type Source = VideoResults['inspect'] & { file: File; key: number };
+
 export default function VideoFrameExtractor({ locale }: ToolProps) {
-  const [source, setSource] = useState<{
-      file: File;
-      duration: number;
-      width: number;
-      height: number;
-    }>(),
-    [time, setTime] = useState(0),
-    [width, setWidth] = useState('1280'),
-    [format, setFormat] = useState<'png' | 'jpeg'>('png'),
-    [quality, setQuality] = useState('90'),
-    [interval, setInterval] = useState('5'),
-    [progress, setProgress] = useState('');
-  const video = useRef<HTMLVideoElement>(null),
-    url = useRef<string | undefined>(undefined),
-    job = useJob<{ frames: FrameResult[]; zip?: Blob }>(locale),
-    preview = useBlobUrl(job.result?.frames[0]?.blob);
-  const release = () => {
-    const el = video.current;
-    if (el) {
-      el.pause();
-      el.removeAttribute('src');
-      el.load();
+  const t = (zh: string, en: string) => tr(locale, zh, en);
+  const [source, setSource] = useState<Source>(), [timestamp, setTimestamp] = useState<number>();
+  const [frames, setFrames] = useState<GalleryFrame[]>([]);
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [loading, setLoading] = useState(false), [working, setWorking] = useState(false);
+  const [progress, setProgress] = useState<{ frames: number; fraction?: number }>();
+  const [error, setError] = useState<string>(), [result, setResult] = useState<string>();
+  const [replace, setReplace] = useState(false);
+  const input = useRef<HTMLInputElement>(null), serial = useRef(0), version = useRef(0);
+  const loadTask = useRef<AbortController | undefined>(undefined);
+  const outputTask = useRef<AbortController | undefined>(undefined);
+
+  useEffect(() => () => {
+    loadTask.current?.abort();
+    outputTask.current?.abort();
+  }, []);
+
+  const cancelOutput = () => {
+    outputTask.current?.abort();
+    outputTask.current = undefined;
+    setWorking(false); setProgress(undefined);
+  };
+
+  const load = async (file: File) => {
+    loadTask.current?.abort();
+    cancelOutput();
+    const controller = new AbortController();
+    loadTask.current = controller;
+    setLoading(true); setError(undefined); setResult(undefined);
+    try {
+      const next = await videoTask({ type: 'inspect', file }, controller.signal);
+      controller.signal.throwIfAborted();
+      setSource({ ...next, file, key: ++version.current });
+      setTimestamp(next.preview.timestamp);
+      setFrames([]); setSelected(new Set()); serial.current = 0;
+    } catch (cause) {
+      if (!controller.signal.aborted) setError(errorText(cause, locale));
+    } finally {
+      if (!controller.signal.aborted) { setLoading(false); loadTask.current = undefined; }
     }
-    if (url.current) URL.revokeObjectURL(url.current);
-    url.current = undefined;
   };
-  useEffect(() => () => release(), []);
-  const clear = () => {
-    job.invalidate();
-    release();
-    setSource(undefined);
-    setTime(0);
-    setProgress('');
-  };
-  const invalidate = () => {
-    job.invalidate();
-    setProgress('');
-  };
-  const extract = (batch: boolean) => {
-    void job.run(async (signal) => {
-      if (!source || !video.current) throw new Error();
-      const size = frameSize(width, source),
-        q = integer(quality, 1, 100) / 100,
-        times = batch
-          ? frameTimes(source.duration, interval, size)
-          : [video.current.currentTime];
-      const frames: FrameResult[] = [];
-      let total = 0;
-      for (const [index, at] of times.entries()) {
-        const blob = await captureFrame(
-          video.current,
-          at,
-          size,
-          format,
-          q,
-          signal,
-        );
-        total += blob.size;
-        if (total > 96 * MiB)
-          fail('帧输出累计超过 96 MiB。', 'Frame output exceeds 96 MiB total.');
-        frames.push({
-          time: at,
-          name: `frame-${String(index + 1).padStart(3, '0')}-${at.toFixed(3).replace('.', '_')}.${format === 'jpeg' ? 'jpg' : 'png'}`,
-          blob,
-        });
-        if (!signal.aborted) setProgress(`${index + 1} / ${times.length}`);
+
+  const run = async (operation: (signal: AbortSignal) => Promise<void>) => {
+    if (outputTask.current || loadTask.current) return;
+    const controller = new AbortController();
+    outputTask.current = controller;
+    setWorking(true); setError(undefined); setResult(undefined); setProgress({ frames: 0 });
+    try { await operation(controller.signal); }
+    catch (cause) {
+      if (!controller.signal.aborted && !(cause instanceof DOMException && cause.name === 'AbortError')) {
+        setError(errorText(cause, locale));
       }
-      return { frames };
+    } finally {
+      if (outputTask.current === controller) {
+        outputTask.current = undefined;
+        setWorking(false); setProgress(undefined);
+      }
+    }
+  };
+
+  async function withArchive(name: string, signal: AbortSignal, make: (add: (name: string, image: Blob) => Promise<void>) => Promise<void>) {
+    // The picker has to run in the original click activation, before decoding.
+    const handle = await chooseVideoZip(name);
+    signal.throwIfAborted();
+    const sink = await handle?.createWritable().catch(() => { throw new VideoError('write'); });
+    const archive = videoArchive(signal, sink);
+    try {
+      await make(archive.add);
+      const blob = await archive.finish();
+      if (blob) saveBlob(blob, name);
+    } finally { await archive.dispose(); }
+  }
+
+  function extract(plan: FramePlan, settings: ImageSettings, zip: boolean) {
+    if (!source) return;
+    const { file, info } = source;
+    void run(async signal => {
+      const staged: GalleryFrame[] = [];
+      const gallery = zip ? undefined : {
+        frames: galleryLimit - frames.length,
+        bytes: memoryLimit - frames.reduce((total, frame) => total + frame.image.size + (frame.thumbnail?.size ?? 0), 0),
+      };
+      if (gallery && (gallery.frames <= 0 || gallery.bytes <= 0)) throw new VideoError('gallery');
+      let index = serial.current;
+      const perform = (add?: (name: string, image: Blob) => Promise<void>) =>
+        videoTask({ type: 'extract', file, info, plan, settings, gallery }, signal, {
+          frame: async frame => {
+            const id = ++index;
+            const name = frameName(file.name, relativeTime(frame.timestamp, info.origin), id, settings.format);
+            if (add) await add(name, frame.image);
+            else staged.push({ ...frame, id, name });
+          },
+          progress: progress => {
+            const fraction = plan.mode === 'single' ? progress.frames
+              : plan.mode === 'every' ? (progress.time - plan.start) / (plan.end - plan.start)
+              : progress.sampled / plan.count;
+            setProgress({ frames: progress.frames, fraction: Math.max(0, Math.min(1, fraction)) });
+          },
+        });
+      const output = zip
+        ? await (async () => {
+          let summary: VideoResults['extract'] | undefined;
+          await withArchive(sourceName(file.name) + '-frames.zip', signal, async add => { summary = await perform(add); });
+          return summary!;
+        })()
+        : await perform();
+      signal.throwIfAborted();
+      if (!zip) {
+        serial.current = index;
+        setFrames(previous => [...previous, ...staged]);
+        setSelected(previous => new Set([...previous, ...staged.map(frame => frame.id)]));
+      }
+      const duplicates = plan.mode === 'interval' || plan.mode === 'count' ? Math.max(0, output.sampled - output.frames) : 0;
+      setResult(t(output.frames + ' 帧已' + (zip ? '导出' : '添加') + (duplicates ? ' · 合并 ' + duplicates + ' 个重复采样' : ''),
+        output.frames + (zip ? ' frames exported' : ' frames added') + (duplicates ? ' · ' + duplicates + ' duplicate samples skipped' : '')));
+    });
+  }
+
+  const picked = () => frames.filter(frame => selected.has(frame.id))
+    .sort((a, b) => a.timestamp - b.timestamp || a.id - b.id);
+
+  const galleryZip = () => {
+    if (!source) return;
+    void run(async signal => {
+      const ordered = picked();
+      await withArchive(sourceName(source.file.name) + '-selected.zip', signal, async add => {
+        for (const [index, frame] of ordered.entries()) {
+          await add(frame.name, frame.image);
+          setProgress({ frames: index + 1, fraction: (index + 1) / ordered.length });
+        }
+      });
+      setResult(t(ordered.length + ' 帧已导出', ordered.length + ' frames exported'));
     });
   };
-  return (
-    <Frame locale={locale}>
-      <span hidden data-video-zip-license={notice} />
-      <Picker
-        locale={locale}
-        multiple={false}
-        accept="video/*"
-        disabled={job.busy}
-        onFiles={(files) => {
-          clear();
-          void job.run(async (signal) => {
-            if (!files[0].size || files[0].size > 100 * MiB)
-              fail('视频文件上限 100 MiB。', 'Video file limit: 100 MiB.');
-            const next = URL.createObjectURL(files[0]);
-            url.current = next;
-            try {
-              const info = await loadVideo(video.current!, next, signal);
-              if (signal.aborted) throw new Error();
-              setSource({ file: files[0], ...info });
-              setWidth(String(Math.min(info.width, 1280)));
-              return { frames: [] };
-            } catch (e) {
-              release();
-              throw e;
-            }
-          });
-        }}
-      />
-      <video
-        ref={video}
-        hidden={!source}
-        controls={!job.busy}
-        playsInline
-        preload="metadata"
-        onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
-        className={s.canvas}
-      />
-      <ErrorText error={job.error} />
-      {source && (
-        <>
-          <p>
-            {source.file.name} · {source.width} × {source.height} ·{' '}
-            {source.duration.toFixed(3)} s
-          </p>
-          <SliderField
-            label={tr(locale, '定位（秒）', 'Position (seconds)')}
-            value={Number(time.toFixed(2))}
-            onValueChange={(v) => {
-              invalidate();
-              setTime(v);
-              if (video.current)
-                video.current.currentTime = Math.min(
-                  v,
-                  source.duration - 0.001,
-                );
-            }}
-            min={0}
-            max={source.duration}
-            step={0.01}
-            disabled={job.busy}
-          />
-          <div className={s.columns}>
-            <TextField
-              label={tr(
-                locale,
-                '输出宽度（像素，保持比例）',
-                'Output width (pixels, keep aspect ratio)',
-              )}
-              value={width}
-              onChange={(v) => {
-                invalidate();
-                setWidth(v);
-              }}
-            />
-            <SelectField
-              label={tr(locale, '输出格式', 'Output format')}
-              value={format}
-              onValueChange={(v) => {
-                invalidate();
-                setFormat(v as typeof format);
-              }}
-              options={[
-                { value: 'png', label: 'PNG' },
-                { value: 'jpeg', label: 'JPEG' },
-              ]}
-            />
-            {format === 'jpeg' && (
-              <TextField
-                label={tr(locale, 'JPEG 质量（1–100）', 'JPEG quality (1–100)')}
-                value={quality}
-                onChange={(v) => {
-                  invalidate();
-                  setQuality(v);
-                }}
-              />
-            )}
-            <TextField
-              label={tr(locale, '批量间隔（秒）', 'Batch interval (seconds)')}
-              value={interval}
-              onChange={(v) => {
-                invalidate();
-                setInterval(v);
-              }}
-            />
+
+  const sheet = (settings: SheetSettings) => {
+    if (!source) return;
+    void run(async signal => {
+      const blob = await contactSheet(picked(), settings, source.file.name, source.info, signal);
+      saveBlob(blob, sourceName(source.file.name) + '-contact-sheet.' + (settings.format === 'png' ? 'png' : 'jpg'));
+      setResult(t('联系表已导出', 'Contact sheet exported'));
+    });
+  };
+
+  return <Frame locale={locale}>
+    <link rel="license" href={zipNotice} />
+    <link rel="license" href={mediaNotice} />
+    <div className={s.workspace} data-video-frame-workspace>
+      {!source ? <Picker locale={locale} multiple={false} disabled={loading} onFiles={files => void load(files[0])} /> :
+        <div className={s.file}>
+          <span className={s.fileIcon}><FilmStripIcon size={25} aria-hidden="true" /></span>
+          <div className={s.fileText}>
+            <strong title={source.file.name}>{source.file.name}</strong>
+            <span>{displayTime(source.info.duration)} · {source.info.width} × {source.info.height} ·
+              {' '}{t('约 ', '≈ ')}{source.info.fps.toFixed(2)} FPS · {(source.file.size / 1024 ** 2).toFixed(2)} MiB</span>
           </div>
-          <div className={s.row}>
-            <Button
-              variant="primary"
-              loading={job.busy}
-              onClick={() => extract(false)}
-            >
-              {tr(locale, '提取当前帧', 'Extract current frame')}
-            </Button>
-            <Button disabled={job.busy} onClick={() => extract(true)}>
-              {tr(locale, '按间隔提取', 'Extract at intervals')}
-            </Button>
-          </div>
-          <p role="status" className={s.note}>
-            {progress}
-          </p>
-        </>
-      )}
-      {!!job.result?.frames.length && (
-        <>
-          {preview && (
-            <img
-              src={preview}
-              alt={tr(locale, '提取的实际画面', 'Extracted frame')}
-              className={s.canvas}
-            />
-          )}
-          <ul className={s.list}>
-            {job.result.frames.map((frame) => (
-              <li key={frame.name} className={s.item}>
-                <span className={s.grow}>
-                  {frame.time.toFixed(3)} s ·{' '}
-                  {(frame.blob.size / 1024).toFixed(1)} KB
-                </span>
-                <Button onClick={() => saveBlob(frame.blob, frame.name)}>
-                  {tr(locale, '下载图片', 'Download image')}
-                </Button>
-              </li>
-            ))}
-          </ul>
-          <Button
-            loading={job.busy}
-            onClick={() => {
-              const frames = job.result!.frames;
-              void job.run(async (signal) => ({
-                frames,
-                zip: await packZip(
-                  frames.map((f) => ({ name: f.name, blob: f.blob })),
-                  signal,
-                ),
-              }));
-            }}
-          >
-            {tr(locale, '打包 ZIP', 'Create ZIP')}
-          </Button>
-          {job.result.zip && (
-            <Button onClick={() => saveBlob(job.result!.zip!, 'frames.zip')}>
-              {tr(locale, '下载 ZIP', 'Download ZIP')}
-            </Button>
-          )}
-        </>
-      )}
-      <Button onClick={clear}>
-        {tr(locale, '清空 / 取消', 'Clear / cancel')}
-      </Button>
-    </Frame>
-  );
+          <input type="file" ref={input} hidden onChange={event => {
+            const file = event.target.files?.[0];
+            event.target.value = '';
+            if (file) void load(file);
+          }} />
+          {frames.length ? <ConfirmDialog open={replace} onOpenChange={setReplace}
+            title={t('更换视频？', 'Replace the video?')}
+            description={t('新视频读取成功后将清空当前画廊。', 'The current gallery will clear when the new video opens.')}
+            confirmLabel={t('选择视频', 'Choose video')} cancelLabel={t('取消', 'Cancel')}
+            onConfirm={() => input.current?.click()}
+            trigger={<Button size="sm" disabled={loading}>{t('更换视频', 'Replace video')}</Button>} />
+            : <Button size="sm" disabled={loading} onClick={() => input.current?.click()}>{t('更换视频', 'Replace video')}</Button>}
+        </div>}
+      {loading && <div className={s.status} role="status">{t('正在读取视频轨道…', 'Reading video track…')}
+        <Button size="sm" variant="ghost" onClick={() => {
+          loadTask.current?.abort(); loadTask.current = undefined; setLoading(false);
+        }}>{t('取消', 'Cancel')}</Button>
+      </div>}
+      {source && <div className={s.body} key={source.key}>
+        <div className={s.columns}>
+          <VideoPlayer file={source.file} info={source.info} initial={source.preview} locale={locale}
+            disabled={loading || working} onFrame={setTimestamp} />
+          <ExtractionSettings info={source.info} timestamp={timestamp} locale={locale} disabled={loading || working} onExtract={extract} />
+        </div>
+        {working && <div className={s.status}>
+          <span role="status">{t('正在处理 · ' + (progress?.frames ?? 0) + ' 帧', 'Processing · ' + (progress?.frames ?? 0) + ' frames')}</span>
+          <progress aria-label={t('任务进度', 'Task progress')} max={1} value={progress?.fraction} />
+          <Button size="sm" onClick={cancelOutput}>{t('取消任务', 'Cancel task')}</Button>
+        </div>}
+        <FrameGallery frames={frames} selected={selected} info={source.info} locale={locale} disabled={loading || working}
+          onSelect={setSelected} onRemove={id => {
+            setFrames(values => values.filter(frame => frame.id !== id));
+            setSelected(values => new Set([...values].filter(value => value !== id)));
+          }} onClear={() => { setFrames([]); setSelected(new Set()); setResult(undefined); }}
+          onZip={galleryZip} onSheet={sheet} />
+      </div>}
+      <ErrorText error={error} />
+      {result && <p role="status" className={s.note}>{result}</p>}
+    </div>
+  </Frame>;
 }

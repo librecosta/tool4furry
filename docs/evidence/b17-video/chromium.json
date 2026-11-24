@@ -1,0 +1,149 @@
+{
+  "chromium": "156.0.8078.4",
+  "metrics": [
+    {
+      "operation": "import",
+      "file": "vfr.mp4",
+      "bytes": 136804,
+      "ms": 354,
+      "windowJsHeapBefore": 72200000,
+      "windowJsHeapAfter": 72200000
+    },
+    {
+      "operation": "download",
+      "name": "vfr-00-00.400000-0001.png",
+      "ms": 376,
+      "bytes": 30552
+    },
+    {
+      "operation": "download",
+      "name": "vfr-00-01.000000-0007.jpg",
+      "ms": 109,
+      "bytes": 10231
+    },
+    {
+      "operation": "download",
+      "name": "vfr-contact-sheet.png",
+      "ms": 241,
+      "bytes": 111758
+    },
+    {
+      "operation": "download",
+      "name": "vfr-selected.zip",
+      "ms": 407,
+      "bytes": 112073
+    },
+    {
+      "operation": "import",
+      "file": "4k.mp4",
+      "bytes": 1484911,
+      "ms": 953,
+      "windowJsHeapBefore": 72200000,
+      "windowJsHeapAfter": 72200000
+    },
+    {
+      "operation": "download",
+      "name": "4k-4k-00-00.000000-0001.png",
+      "ms": 181,
+      "bytes": 1288495
+    },
+    {
+      "operation": "import",
+      "file": "rotate.mp4",
+      "bytes": 206043,
+      "ms": 733,
+      "windowJsHeapBefore": 72200000,
+      "windowJsHeapAfter": 72200000
+    },
+    {
+      "operation": "download",
+      "name": "rotate-00-00.000000-0001.webp",
+      "ms": 114,
+      "bytes": 12290
+    },
+    {
+      "operation": "import",
+      "file": "long.mp4",
+      "bytes": 407400,
+      "ms": 728,
+      "windowJsHeapBefore": 72200000,
+      "windowJsHeapAfter": 72200000
+    },
+    {
+      "operation": "download",
+      "name": "long-31-04.000000-0001.png",
+      "ms": 124,
+      "bytes": 1028
+    },
+    {
+      "operation": "import",
+      "file": "large-segment.mp4",
+      "bytes": 278058185,
+      "ms": 1493,
+      "windowJsHeapBefore": 72200000,
+      "windowJsHeapAfter": 72200000
+    },
+    {
+      "operation": "import",
+      "file": "near2g.mp4",
+      "bytes": 2127660718,
+      "ms": 1046,
+      "windowJsHeapBefore": 72200000,
+      "windowJsHeapAfter": 72200000
+    },
+    {
+      "operation": "download",
+      "name": "near2g-00-37.000000-0001.png",
+      "ms": 188,
+      "bytes": 5962897
+    },
+    {
+      "operation": "desktop-gallery",
+      "urlsBefore": 11,
+      "base": 2,
+      "relativeFrames": 77,
+      "selectedZip": "vfr-selected.zip",
+      "png": "vfr-00-00.400000-0001.png",
+      "jpg": "vfr-00-01.000000-0007.jpg",
+      "sheet": "vfr-contact-sheet.png",
+      "webp": "rotate-00-00.000000-0001.webp",
+      "longResult": "long-31-04.000000-0001.png",
+      "nearResult": "near2g-00-37.000000-0001.png"
+    },
+    {
+      "operation": "import",
+      "file": "many.webm",
+      "bytes": 369480,
+      "ms": 933,
+      "windowJsHeapBefore": 72200000,
+      "windowJsHeapAfter": 72200000
+    },
+    {
+      "operation": "download",
+      "name": "many-frames.zip",
+      "ms": 6054,
+      "bytes": 12432476
+    },
+    {
+      "operation": "opfs-stream",
+      "writes": 1051,
+      "closed": true,
+      "aborted": false,
+      "bytes": 10955480,
+      "ms": 62627
+    },
+    {
+      "operation": "zip-cancel",
+      "priorFileIntact": true,
+      "archived": "many-frames.zip"
+    }
+  ],
+  "seekMs": {
+    "seek:0.45": 255,
+    "seek:0.65": 101,
+    "seek:1864": 269,
+    "seek:4": 393,
+    "seek:37": 376
+  },
+  "scriptErrors": []
+}

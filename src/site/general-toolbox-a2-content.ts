@@ -9,11 +9,11 @@ export const generalToolboxA2Content = {
       intro: '从本地视频提取当前画面或按间隔导出图片。',
       steps: [
         '选择浏览器支持的视频',
-        '定位画面，设置尺寸、格式或批量间隔',
-        '提取并下载图片或 ZIP。',
+        '定位画面，选择提取模式、图片格式及尺寸',
+        '将图片添加到画廊，或直接导出 ZIP。',
       ],
       limitations: [
-        '输入最多 100 MiB、30 分钟、1600 万源像素。单帧最多 800 万像素；批量最多 40 帧、8000 万像素、96 MiB。仅支持浏览器可解码视频，不保证逐帧精确定位。',
+        '输入最多 2 GiB，单帧输出最多 4000 万像素。画廊最多 300 帧，画廊和内存 ZIP 各有 256 MiB 预算。支持直接写文件的浏览器可流式保存更大的经典 ZIP。实际可解码的视频取决于浏览器和设备。',
         '所有文件与文本仅在当前浏览器本地处理，不上传、不持久保存。',
       ],
     },
@@ -25,11 +25,11 @@ export const generalToolboxA2Content = {
       intro: 'Extract a frame or interval-based images from a local video.',
       steps: [
         'Choose a browser-supported video',
-        'seek and set dimensions, format or interval',
-        'extract and download images or a ZIP.',
+        'Seek to a frame and choose an extraction mode, image format and size',
+        'Append images to the gallery or export a ZIP directly.',
       ],
       limitations: [
-        'Input limit: 100 MiB, 30 minutes and 16 million source pixels. Each output is limited to eight million pixels; batches to 40 frames, 80 million pixels and 96 MiB. Uses browser codecs and does not guarantee frame-exact seeking.',
+        'Input is limited to 2 GiB and individual images to 40 megapixels. The gallery holds up to 300 frames, with separate 256 MiB budgets for the gallery and in-memory ZIP exports. Browsers that can write directly to a file can stream larger classic ZIP archives. Video decoding depends on the browser and device.',
         'Files and text stay in your browser, without uploads or persistent storage.',
       ],
     },

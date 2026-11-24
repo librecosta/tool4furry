@@ -1,0 +1,29 @@
+{
+  "metrics": [
+    {
+      "operation": "import",
+      "file": "large-segment.mp4",
+      "bytes": 278058185,
+      "ms": 970,
+      "windowJsHeapBefore": 72200000,
+      "windowJsHeapAfter": 72200000
+    },
+    {
+      "operation": "download",
+      "name": "large-segment-frames.zip",
+      "ms": 772,
+      "bytes": 358135898
+    },
+    {
+      "operation": "large-opfs-stream",
+      "writes": 481,
+      "maxChunk": 1048576,
+      "bytes": 358135898,
+      "closed": true,
+      "aborted": false,
+      "ms": 13108,
+      "archive": "large-segment-frames.zip"
+    }
+  ],
+  "scriptErrors": []
+}

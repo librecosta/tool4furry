@@ -1,0 +1,85 @@
+{
+  "metrics": [
+    {
+      "operation": "import",
+      "file": "edit-preroll.mp4",
+      "bytes": 200928,
+      "ms": 524,
+      "windowJsHeapBefore": 72200000,
+      "windowJsHeapAfter": 72200000
+    },
+    {
+      "operation": "edit-list-and-native-error-event",
+      "firstEightPacketPts": [
+        -0.56,
+        -0.48,
+        -0.52,
+        -0.4,
+        -0.44,
+        -0.24,
+        -0.32,
+        -0.36
+      ],
+      "presented": [
+        0,
+        0.04,
+        0.08
+      ],
+      "extractedAfterNativeError": true
+    },
+    {
+      "operation": "import",
+      "file": "4k.mp4",
+      "bytes": 1484911,
+      "ms": 932,
+      "windowJsHeapBefore": 72200000,
+      "windowJsHeapAfter": 72200000
+    },
+    {
+      "operation": "download",
+      "name": "720p-4k-00-00.000000-0001.jpg",
+      "ms": 198,
+      "bytes": 33601
+    },
+    {
+      "operation": "download",
+      "name": "custom-4k-00-00.250000-0002.jpg",
+      "ms": 124,
+      "bytes": 10068
+    },
+    {
+      "operation": "download",
+      "name": "4k-contact-sheet.jpg",
+      "ms": 202,
+      "bytes": 15182
+    },
+    {
+      "operation": "verified-resized-output",
+      "outputs": [
+        {
+          "jpeg": "720p-4k-00-00.000000-0001.jpg",
+          "dimensions": [
+            1280,
+            720
+          ]
+        },
+        {
+          "resized": "custom-4k-00-00.250000-0002.jpg",
+          "dimensions": [
+            533,
+            300
+          ]
+        },
+        {
+          "sheet": "4k-contact-sheet.jpg",
+          "dimensions": [
+            436,
+            233
+          ],
+          "timestamps": false
+        }
+      ]
+    }
+  ],
+  "scriptErrors": []
+}

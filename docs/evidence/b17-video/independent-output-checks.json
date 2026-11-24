@@ -1,0 +1,254 @@
+{
+  "vfrSource": {
+    "origin": 2.0,
+    "frames": 77,
+    "bFrames": 45,
+    "firstRelativePts": [
+      0.0,
+      0.1,
+      0.2,
+      0.233333,
+      0.3,
+      0.4,
+      0.466667,
+      0.5
+    ],
+    "distinctIntervals": [
+      0.033333,
+      0.066667,
+      0.1
+    ]
+  },
+  "images": {
+    "vfr-00-00.400000-0001.png": {
+      "source": "vfr.mp4",
+      "codec": "png",
+      "pixels": [
+        320,
+        180
+      ],
+      "referenceMatrix": "bt709",
+      "meanAbsoluteRgbDifference": 1.02556
+    },
+    "vfr-00-01.000000-0007.jpg": {
+      "source": "vfr.mp4",
+      "codec": "mjpeg",
+      "pixels": [
+        320,
+        180
+      ],
+      "referenceMatrix": "bt709",
+      "meanAbsoluteRgbDifference": 3.94979
+    },
+    "rotate-00-00.000000-0001.webp": {
+      "source": "rotate.mp4",
+      "codec": "webp",
+      "pixels": [
+        360,
+        640
+      ],
+      "referenceMatrix": "bt709",
+      "meanAbsoluteRgbDifference": 2.54213
+    },
+    "4k-4k-00-00.000000-0001.png": {
+      "source": "4k.mp4",
+      "codec": "png",
+      "pixels": [
+        3840,
+        2160
+      ],
+      "referenceMatrix": "bt709",
+      "meanAbsoluteRgbDifference": 0.90689
+    },
+    "8k-00-00.000000-0001.png": {
+      "source": "8k.mp4",
+      "codec": "png",
+      "pixels": [
+        7680,
+        4320
+      ],
+      "referenceMatrix": "bt709",
+      "meanAbsoluteRgbDifference": 1.25301
+    },
+    "sar-00-00.000000-0001.png": {
+      "source": "sar.mp4",
+      "codec": "png",
+      "pixels": [
+        853,
+        360
+      ],
+      "referenceMatrix": "bt709",
+      "meanAbsoluteRgbDifference": 1.43978
+    },
+    "long-31-04.000000-0001.png": {
+      "source": "long.mp4",
+      "codec": "png",
+      "pixels": [
+        160,
+        90
+      ],
+      "referenceMatrix": "bt709",
+      "meanAbsoluteRgbDifference": 1.06229
+    },
+    "near2g-00-37.000000-0001.png": {
+      "source": "near2g.mp4",
+      "codec": "png",
+      "pixels": [
+        1920,
+        1080
+      ],
+      "referenceMatrix": "bt709",
+      "meanAbsoluteRgbDifference": 1.56034
+    }
+  },
+  "previewAndDownloadSha256": "03b585c9ce6b3ef5adb2ae5c5b742cac2a541aa56c6f2a4908ec322ff9a2a85c",
+  "archives": {
+    "vfr-selected.zip": {
+      "bytes": 112073,
+      "count": 9,
+      "ordered": true,
+      "stored": true,
+      "crcValid": true,
+      "selectedFrameMeanAbsoluteRgbDifference": {
+        "vfr-00-00.000000-0002.jpg": 3.63097,
+        "vfr-00-00.400000-0001.png": 1.02556,
+        "vfr-00-01.000000-0007.jpg": 3.94979
+      }
+    },
+    "many-frames.zip": {
+      "bytes": 12432476,
+      "count": 400,
+      "ordered": true,
+      "stored": true,
+      "crcValid": true,
+      "selectedFrameMeanAbsoluteRgbDifference": {
+        "many-00-00.000000-0026.png": 1.00467,
+        "many-00-04.000000-0226.png": 1.14495,
+        "many-00-07.980000-0425.png": 1.16762
+      }
+    },
+    "direct-many.zip": {
+      "bytes": 10955480,
+      "count": 350,
+      "ordered": true,
+      "stored": true,
+      "crcValid": true,
+      "selectedFrameMeanAbsoluteRgbDifference": {
+        "many-00-00.000000-0026.png": 1.00467,
+        "many-00-03.500000-0201.png": 1.09906,
+        "many-00-06.980000-0375.png": 1.28325
+      }
+    },
+    "large-segment-frames.zip": {
+      "bytes": 358135898,
+      "count": 60,
+      "ordered": true,
+      "stored": true,
+      "crcValid": true,
+      "selectedFrameMeanAbsoluteRgbDifference": {
+        "large-segment-00-00.000000-0001.png": 1.5547,
+        "large-segment-00-01.250000-0031.png": 1.55868,
+        "large-segment-00-02.458333-0060.png": 1.56068
+      }
+    }
+  },
+  "sheet": {
+    "width": 648,
+    "height": 608,
+    "selectedTileMeanAbsoluteRgbDifference": {
+      "vfr-00-00.000000-0002.jpg": 3.10821,
+      "vfr-00-00.400000-0001.png": 1.80686,
+      "vfr-00-01.000000-0007.jpg": 3.57409
+    }
+  },
+  "sourceMedia": {
+    "long.mp4": {
+      "programs": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 160,
+          "height": 90,
+          "sample_aspect_ratio": "1:1",
+          "start_time": "0.000000",
+          "duration": "1865.000000"
+        }
+      ],
+      "format": {
+        "duration": "1865.000000",
+        "size": "407400"
+      }
+    },
+    "near2g.mp4": {
+      "programs": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080,
+          "sample_aspect_ratio": "1:1",
+          "start_time": "0.000000",
+          "duration": "38.250000"
+        }
+      ],
+      "format": {
+        "duration": "38.250000",
+        "size": "2127660718"
+      }
+    },
+    "8k.mp4": {
+      "programs": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 7680,
+          "height": 4320,
+          "sample_aspect_ratio": "1:1",
+          "start_time": "0.000000",
+          "duration": "1.000000"
+        }
+      ],
+      "format": {
+        "duration": "1.000000",
+        "size": "100224"
+      }
+    },
+    "sar.mp4": {
+      "programs": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 640,
+          "height": 360,
+          "sample_aspect_ratio": "4:3",
+          "start_time": "0.000000",
+          "duration": "3.000000"
+        }
+      ],
+      "format": {
+        "duration": "3.000000",
+        "size": "647051"
+      }
+    },
+    "rotate.mp4": {
+      "programs": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 640,
+          "height": 360,
+          "sample_aspect_ratio": "1:1",
+          "start_time": "0.000000",
+          "duration": "2.080000",
+          "side_data_list": [
+            {}
+          ]
+        }
+      ],
+      "format": {
+        "duration": "2.080000",
+        "size": "206043"
+      }
+    }
+  }
+}

@@ -2,6 +2,14 @@
 
 两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast / Audio Trimmer / Markdown Editor 已获得 CN/Global Published 源码资格，其余 7 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（22 Published / 7 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
+## Video Frame Extractor — V0.8-B17-D1
+
+- CN/Global 均保持 Draft。通过 DEV 工具目录打开视频取帧。工作区包括文件信息条、可播放及逐帧定位的播放器、提取设置和可追加的帧画廊。窄屏按此顺序纵向排列。
+- 工具私有 Worker 使用 Mediabunny 1.66.3 BlobSource 按需读取最多 2 GiB 的本地视频，无固定时长上限。时间轴使用相对显示时间，逐帧操作使用真实呈现时间戳，暂停预览与单帧提取共用该时间戳。原生播放不可用时仍可浏览和提取受支持的帧。
+- 间隔可按秒或采样 FPS。数量模式使用 `start + i × (end − start) / N`，每次在半开区间内定位当前显示帧，并合并同帧采样。逐帧模式顺序处理半开区间内的实际帧。任务取消会终止 Worker，已生成画廊不受后续定位或输出设置影响。
+- PNG、JPEG、WebP 默认使用显示分辨率，尺寸预设保持宽高比且不放大。单图与联系表各受 40 MP 画布预算约束。画廊最多 300 帧及 256 MiB，缩略图单独限尺寸。联系表按时间排列，列数、尺寸、时间戳和格式可配置。
+- ZIP Only 逐帧编码并通过 fflate Store 写入，支持直接文件写入及 256 MiB 的 Blob 回退。当前 fflate 不写 ZIP64，归档最多 65,534 项且小于 4 GiB。Mediabunny 的完整 MPL-2.0 NOTICE 和现有 fflate MIT NOTICE 随工具交付。[浏览器与独立文件复检](evidence/b17-video/README.md)
+
 ## Markdown Editor — V0.8-B16 一体式编辑与 Beta 资格
 
 - 同一外壳提供格式工具栏、CodeMirror 6 源码区、连续预览区和状态栏。桌面默认分栏，窄屏默认编辑。视图切换保留文档、选区和撤销状态，分隔线可拖动、键盘调整及恢复等宽。同步滚动由 Marked 块的源码行和两侧实际布局位置插值，预览过期或单栏时暂停。
@@ -285,7 +293,7 @@
 | `color-contrast` | HEX/RGB/HSL、可视化选色、WCAG 比值、AA/AAA、复制 | 不透明 sRGB；大文字阈值不替代实际字号检查 |
 | `audio-trimmer` | 交互波形、保留/删除选区、循环试听、淡化与多格式导出 | 512 MiB 单声道/立体声输入，编解码按环境探测，内存导出预算 256 MiB，更大输出需浏览器直接写入 |
 | `markdown-editor` | CodeMirror 格式化与查找、分栏同步、GFM、Alerts、数学公式、本地导入与 Markdown / HTML 交付 | 超过 160,000 个 UTF-16 单元暂停自动预览，HTML 渲染有独立预算。预览可关闭远程 Markdown 图片 |
-| `video-frame-extractor` | 原生播放器/时间轴、PNG/JPEG 单帧与间隔批量、尺寸/质量、ZIP | 输入 100 MiB/30 分钟/1600 万像素；单帧 800 万像素，批量 40 帧/8000 万像素/96 MiB；依赖浏览器编解码，不保证逐帧精度 |
+| `video-frame-extractor` | 真实帧定位、四种提取模式、PNG/JPEG/WebP 帧画廊、联系表、流式 ZIP | 输入 2 GiB；单帧 40 MP；画廊 300 帧和 256 MiB；内存 ZIP 256 MiB；依赖浏览器解码 |
 | `csv-json-converter` | UTF-8 文件/粘贴、逗号/分号/Tab、双向转换、表格/复制/下载 | 文件 2 MiB、100 万字符、10000 行/100 列/20 万单元格；CSV 为字符串，JSON 为标量对象数组，拒绝不安全整数 |
 | `code-image-generator` | 9 种语言高亮、明暗图片主题、标题/行号/内边距、实时 Canvas 与 PNG | highlight.js 只注册所需语言；20000 字符/160 行；2× 输出最多 8192px、800 万像素，过长明确拒绝 |
 | `svg-to-png` | 文件/源码、安全图片预览、比例联动尺寸/倍率、透明/纯色 PNG | 复用 Watermark 的 SVG 白名单和独立图像解码；256 KiB/512 节点/16 层，形状/路径/渐变/裁切；不支持文本、CSS、滤镜或外部资源；PNG 最多 800 万像素 |

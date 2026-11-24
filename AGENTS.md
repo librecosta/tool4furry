@@ -6,7 +6,7 @@
 
 ## Current State
 
-- Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF、ZIP Manager、Batch File Renamer、File Hash、Text Cleaner、Text Diff、Subtitle Tools、JSON Formatter、URL & Base64、Timestamp Converter、Color & Contrast 与 Audio Trimmer 二十一款工具均为 Published。CN/Global 双语正式构建与产物守卫通过，**两个地区均未部署**。源码 Published 不代表部署授权。
+- Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF、ZIP Manager、Batch File Renamer、File Hash、Text Cleaner、Text Diff、Subtitle Tools、JSON Formatter、URL & Base64、Timestamp Converter、Color & Contrast、Audio Trimmer 与 Markdown Editor 二十二款工具均为 Published。CN/Global 双语正式构建与产物守卫通过，**两个地区均未部署**。源码 Published 不代表部署授权。
 - 当前没有后端、数据库、SSR 服务或用户系统。Lab 仅供 DEV，不能进入生产路由/资源图。
 - Image Compressor 已完成 B1-D1 SEO 与 Beta 资格收尾，保留 C1-R1 最长边步进器；EXIF Metadata 已完成 B4-D1 双语 SEO 与 Beta 收尾；Image Watermark 已完成 B3-D1 双语 SEO 与 Beta 收尾；Comic Page Organizer 已完成 B2-D1 双语 SEO，并按维护者明确要求提升为 CN/Global Published；转换归档真实落盘验收仍缺证据，不能声明 L2 已全部通过。当前能力、审计证据和 L3 边界见 [基础图片工具说明](docs/image-basics.md)。
 - Image Resize & Crop 已完成 A1-D2 Beta 资格审计；单张裁剪、批量缩放、双语静态页面与所需资源进入两地区正式构建。实现、资格证据及 L3 未测范围见 [Resize/Crop 说明](docs/image-resize-crop-implementation.md)。A1 已收尾，不继续扩展裁剪工作区。
@@ -22,6 +22,7 @@
 - Timestamp Converter 完成 B12-D2 双语 SEO 与真实剪贴板复核，具备 CN/Global Published 源码资格。快速模式支持精确秒/毫秒和 UTC/浏览器本地日历输入，高级模式支持带偏移的 ISO 输入及 IANA 展示。DST 缺失和重复本地时间均拒绝转换。共享 DatePickerField / TimePickerField 首次随正式工具按需交付。[通用工具说明](docs/general-toolbox-v0.8.md#timestamp-converter--v08-b12-d2-seo-与-beta-资格)
 - Color & Contrast 完成 B14-D2 双语静态 SEO，获得 CN/Global Published 源码资格。正式产物已复核前景与背景的颜色格式转换、WCAG 2.2 未舍入阈值、单侧修正、选色浮层和真实剪贴板。工具实现和共享选色样式按消费方交付，现有 react-colorful MIT 许可随工具提供。[验收记录](docs/evidence/b14-color-contrast/README.md#b14-d2-正式产物)
 
+- Video Frame Extractor 完成 B17-D1 Draft 视频工作区，支持真实帧 PTS 导航、四种提取模式、帧画廊、联系表与流式经典 ZIP。Mediabunny 由专属 Worker 按需使用，视频资源继续隔离于两个地区的正式产物。[视频取帧说明](docs/general-toolbox-v0.8.md#video-frame-extractor--v08-b17-d1)
 - Audio Trimmer 完成 B15-D2 双语 SEO 和 CN/Global Published 源码资格审计。试听与导出共用样本裁切计划，媒体 Worker、编码 Worker、WASM 与许可证按需交付。MP3 默认 192 kbps，浏览器不支持时回退至可用格式。完整 LAME 对应源码、Bridge、构建及替换材料随工具交付。[音频实现和验收](docs/general-toolbox-v0.8.md#audio-trimmer--v08-b15-波形与-beta-资格)
 
 - QR Code Generator 的 B13-B0 工作区保持 Draft。Recipe V1 和同一次编码的 QR Matrix 驱动独立二维下载及 3D 沙盘。世界与二维码共用一个按需加载的 WebGL2 Canvas，3D 正视帧直接通过 jsQR 比较文本与字节。CN/Global 正式构建继续检查真实的 chunk 和产物，排除 QR、Three.js / R3F 与 jsQR 的私有资源。[B0 实现及验证](docs/general-toolbox-v0.8.md#qr-code-generator--v08-b13-b0-地貌沙盘与双状态工作区)
