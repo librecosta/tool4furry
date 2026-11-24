@@ -2,6 +2,13 @@
 
 两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter 已获得 CN/Global Published 源码资格，其余 10 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（19 Published / 10 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
+## Color & Contrast — B14-D1
+
+- 前景和背景可用 HEX、RGB 或 HSL 输入。点击色块打开颜色浮层，在支持 EyeDropper 的浏览器中也可从屏幕取色。每侧独立显示并复制三种格式，交换配色保持对比度，重置恢复默认配色。页面支持双语，预览使用固定英文示例。
+- 工具处理不透明 8-bit sRGB。检测表按未舍入比值评估普通文字、大号文字和 UI 组件及必要图形。任一侧输入无效时清除对比度和修正建议，有效侧仍可独立使用。阈值见 [WCAG 2.2 SC 1.4.3](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html)、[SC 1.4.6](https://www.w3.org/WAI/WCAG22/Understanding/contrast-enhanced.html) 和 [SC 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html)。
+- 选定 3:1、4.5:1 或 7:1 后，可沿固定 HSL 色相和饱和度的明度方向查找单侧调整建议。候选量化为 sRGB 后复核实际对比度，只有主动点击应用才替换颜色。全部颜色计算在本地完成。
+- 源码资格保持 Draft，工作区和专属样式通过正式产物守卫核查。颜色选取复用 react-colorful 及现有 MIT 许可。[浏览器验收与截图](evidence/b14-color-contrast/README.md)。
+
 ## QR Image Fusion Lab — B13-2D-R0
 
 - 通过 DEV 的 Lab 菜单进入 `/lab/image-fusion`。同一图像、二维码内容及实验参数下对照 Blend、Colored Halftone、Hybrid，查看原图、结果及中央 7 × 7 模块。可导出每种 PNG、参数 JSON 和解码结果 JSON。

@@ -1371,6 +1371,8 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
   assert(!/@stylexjs|virtual:stylex|stylex-dev-css/.test(js), `Retired styling runtime leaked: ${file}`);
   for (const id of ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'])
     if (!files.includes(`tools/${id}/index.html`)) assert(!js.includes(`data-${id}`), `Draft ${id} implementation leaked: ${file}`);
+  if (!published.some(tool => tool.id === 'color-contrast'))
+    assert(!js.includes('data-color-contrast-workspace'), `Draft color contrast implementation leaked: ${file}`);
   if (!files.includes('tools/palette-extractor/index.html'))
     assert(!/data-palette-extractor|data-palette-sampler/.test(js), `Draft palette implementation leaked: ${file}`);
   if (!files.includes('tools/image-resize-crop/index.html'))
@@ -1414,6 +1416,8 @@ const outputCSS = await Promise.all(cssFiles.map(file => readFile(resolve(root, 
 for (const css of outputCSS)
   assert(!/@layer priority|virtual:stylex|stylex-dev-css|@stylexjs/.test(css), 'All CSS uses the native styling pipeline');
 const combinedCSS = outputCSS.join('\n');
+if (!published.some(tool => tool.id === 'color-contrast'))
+  assert(!combinedCSS.includes('[data-color-contrast-workspace]'), 'Draft color contrast styles leaked');
 assert(!files.some(file => /(?:DioramaScene|DioramaObjects|graphics\.NOTICE|scene-capture)[.-]/.test(file)), 'QR Draft 3D assets stay private');
 if (!published.some(tool => tool.id === 'qr-code-generator'))
   assert(!files.some(file => /(?:QrCodeGenerator|qrcode\.NOTICE|jsqr(?:\.NOTICE)?|qr-workspace)[.-]/i.test(file)), 'Draft QR entry, styles and decoder stay private');

@@ -1,0 +1,117 @@
+{
+  "browserVersion": "157.0.8103.79",
+  "checks": [
+    {
+      "name": "cn-dark",
+      "geometry": {
+        "viewport": 1280,
+        "document": 1280,
+        "foreground": {
+          "x": 49.59375,
+          "y": 308.78125,
+          "width": 568.40625,
+          "height": 217
+        },
+        "background": {
+          "x": 662,
+          "y": 308.78125,
+          "width": 568.40625,
+          "height": 217
+        }
+      },
+      "hasNative": true,
+      "copied": [
+        "#3583D2",
+        "rgb(53, 131, 210)",
+        "hsl(210.2, 63.6%, 51.6%)"
+      ],
+      "foregroundSuggestion": "#629EDC",
+      "foregroundRatio": 4.506249350340663,
+      "backgroundSuggestion": "#1B1717",
+      "backgroundRatio": 4.50983982329631,
+      "popupBackground": "rgb(57, 59, 62)",
+      "popupBounds": {
+        "x": 72,
+        "y": 403,
+        "width": 244,
+        "height": 234
+      },
+      "reactColorfulLicense": "matches repository notice"
+    },
+    {
+      "name": "global-light-mobile",
+      "geometry": {
+        "viewport": 390,
+        "document": 390,
+        "foreground": {
+          "x": 28,
+          "y": 283.59375,
+          "width": 334,
+          "height": 237
+        },
+        "background": {
+          "x": 28,
+          "y": 564.59375,
+          "width": 334,
+          "height": 237
+        }
+      },
+      "hasNative": true,
+      "copied": [
+        "#3583D2",
+        "rgb(53, 131, 210)",
+        "hsl(210.2, 63.6%, 51.6%)"
+      ],
+      "foregroundSuggestion": "#629EDC",
+      "foregroundRatio": 4.506249350340663,
+      "backgroundSuggestion": "#1B1717",
+      "backgroundRatio": 4.50983982329631,
+      "popupBackground": "rgb(255, 255, 255)",
+      "popupBounds": {
+        "x": 44,
+        "y": 380,
+        "width": 244,
+        "height": 234
+      },
+      "reactColorfulLicense": "matches repository notice"
+    },
+    {
+      "name": "prototype-width-light",
+      "geometry": {
+        "viewport": 848,
+        "document": 848,
+        "foreground": {
+          "x": 34.75,
+          "y": 302.578125,
+          "width": 367.25,
+          "height": 206.4375
+        },
+        "background": {
+          "x": 446,
+          "y": 302.578125,
+          "width": 367.25,
+          "height": 206.4375
+        }
+      },
+      "hasNative": true,
+      "copied": [
+        "#3583D2",
+        "rgb(53, 131, 210)",
+        "hsl(210.2, 63.6%, 51.6%)"
+      ],
+      "foregroundSuggestion": "#629EDC",
+      "foregroundRatio": 4.506249350340663,
+      "backgroundSuggestion": "#1B1717",
+      "backgroundRatio": 4.50983982329631,
+      "popupBackground": "rgb(255, 255, 255)",
+      "popupBounds": {
+        "x": 51,
+        "y": 391,
+        "width": 244,
+        "height": 234
+      },
+      "reactColorfulLicense": "matches repository notice"
+    }
+  ],
+  "eyeDropper": "Browser API presence checked; injected EyeDropper verified cancel, success, stale edit/swap/reset and unsupported. Physical screen sampling not exercised."
+}
