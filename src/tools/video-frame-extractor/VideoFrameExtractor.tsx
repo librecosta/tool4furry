@@ -186,8 +186,8 @@ export default function VideoFrameExtractor({ locale }: ToolProps) {
             description={t('新视频读取成功后将清空当前画廊。', 'The current gallery will clear when the new video opens.')}
             confirmLabel={t('选择视频', 'Choose video')} cancelLabel={t('取消', 'Cancel')}
             onConfirm={() => input.current?.click()}
-            trigger={<Button size="sm" disabled={loading}>{t('更换视频', 'Replace video')}</Button>} />
-            : <Button size="sm" disabled={loading} onClick={() => input.current?.click()}>{t('更换视频', 'Replace video')}</Button>}
+            trigger={<Button className={s.replace} size="sm" disabled={loading}>{t('更换视频', 'Replace video')}</Button>} />
+            : <Button className={s.replace} size="sm" disabled={loading} onClick={() => input.current?.click()}>{t('更换视频', 'Replace video')}</Button>}
         </div>}
       {loading && <div className={s.status} role="status">{t('正在读取视频轨道…', 'Reading video track…')}
         <Button size="sm" variant="ghost" onClick={() => {

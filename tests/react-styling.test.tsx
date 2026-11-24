@@ -63,6 +63,11 @@ describe('React native styling and cascade ownership', () => {
     expect(select).toContain('[data-disabled]');
     expect(select).toContain('var(--anchor-width)');
     expect(select).toContain('var(--available-height)');
+    for (const part of ['trigger', 'popup', 'item']) {
+      expect(select).toMatch(new RegExp('\\.' + part + '\\s*\\{[^}]*border: 0;[^}]*outline: none;'));
+    }
+    expect(select).toContain('transition-duration: 420ms');
+    expect(select).toContain('prefers-reduced-motion: reduce');
     for (const name of ['SelectField', 'Tooltip', 'ConfirmDialog', 'FilePreviewDialog', 'Toast']) {
       const css = compile(`src/ui/${name}.module.scss`).css;
       expect(css).toContain('var(--t4f-surface-floating)');

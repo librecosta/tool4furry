@@ -51,9 +51,22 @@
   }
 
   .replace {
-    border-color: transparent;
-    background: var(--t4f-surface);
+    border: 0;
+    background-color: var(--t4f-surface);
     flex: 0 0 auto;
+    transition-duration: 420ms;
+
+    &:where(:hover:not(:disabled)) {
+      background-color: var(--t4f-surface-hover);
+    }
+
+    &:where(:active:not(:disabled)) {
+      background-color: var(--t4f-surface-muted);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: 0ms;
+    }
   }
 
   .timeline {

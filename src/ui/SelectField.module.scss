@@ -1,4 +1,8 @@
 @layer t4f-ui {
+  .quiet {
+    background-color: var(--t4f-surface-panel);
+  }
+
   .trigger {
     display: flex;
     align-items: center;
@@ -7,32 +11,26 @@
     text-align: start;
     cursor: pointer;
     overflow-wrap: anywhere;
-
-    &:where(:disabled) {
-      cursor: not-allowed;
-    }
-  }
-
-  .quiet {
-    border-width: 0;
-    background-color: var(--t4f-surface-panel);
+    border: 0;
+    outline: none;
     box-shadow: none;
-    outline-style: none;
-    outline-width: 2px;
-    outline-color: var(--t4f-focus);
-    outline-offset: 2px;
+    transition-property: background-color, color;
 
-    &:where(:hover) {
+    &:where(:hover:not(:disabled), [data-popup-open]) {
       background-color: var(--t4f-surface-hover);
     }
 
-    &:where(:disabled) {
-      background-color: var(--t4f-surface-panel);
+    &:where(:focus-visible) {
+      background-color: color-mix(in srgb, var(--t4f-support-lavender) 16%, var(--t4f-input-surface));
+      color: var(--t4f-accent);
     }
 
-    &:where(:focus-visible) {
-      outline-style: solid;
-      box-shadow: none;
+    &:where([aria-invalid='true']) {
+      color: var(--t4f-danger);
+    }
+
+    &:where(:disabled) {
+      cursor: not-allowed;
     }
   }
 
@@ -49,17 +47,17 @@
     overscroll-behavior: contain;
     background-color: var(--t4f-surface-floating);
     color: var(--t4f-text-primary);
-    border-width: 1px;
-    border-style: solid;
-    border-color: var(--t4f-border);
+    border: 0;
+    outline: none;
     border-radius: var(--t4f-radius-lg);
     padding: var(--t4f-space-4);
     box-shadow: var(--t4f-shadow-floating);
-  }
+    transition-property: opacity, translate;
 
-  .quietPopup {
-    border-width: 0;
-    box-shadow: var(--t4f-shadow-floating);
+    &:where([data-starting-style], [data-ending-style]) {
+      opacity: 0;
+      translate: 0 3px;
+    }
   }
 
   .item {
@@ -73,46 +71,24 @@
     border-radius: var(--t4f-radius-sm);
     font-size: 14px;
     font-weight: 500;
+    border: 0;
     outline: none;
     cursor: pointer;
     overflow-wrap: anywhere;
+    transition-property: background-color, color;
   }
 
   .item:where([data-highlighted]) {
     background-color: var(--t4f-surface-hover);
     color: var(--t4f-text-primary);
-    outline: 2px solid var(--t4f-focus);
-    outline-offset: -2px;
   }
 
   .item:where([data-selected]) {
-    background-color: var(--t4f-action-tint);
-    color: var(--t4f-accent);
-  }
-
-  .quietItem {
-    outline-style: none;
-    outline-width: 2px;
-    outline-color: var(--t4f-focus);
-    outline-offset: -2px;
-
-    &:where(:is([data-highlighted])) {
-      background-color: var(--t4f-surface-hover);
-      color: var(--t4f-text-primary);
-    }
-
-    &:where(:is([data-highlighted]):focus-visible) {
-      outline-style: solid;
-    }
-  }
-
-  .quietItem:where([data-selected]) {
-    background-color: color-mix(in srgb, var(--t4f-support-lavender) 8%, var(--t4f-surface-floating));
+    background-color: color-mix(in srgb, var(--t4f-support-lavender) 10%, var(--t4f-surface-floating));
     color: var(--t4f-support-lavender);
 
-    &:where(:is([data-highlighted])) {
-      background-color: color-mix(in srgb, var(--t4f-support-lavender) 10%, var(--t4f-surface-floating));
-      color: var(--t4f-support-lavender);
+    &:where([data-highlighted]) {
+      background-color: color-mix(in srgb, var(--t4f-support-lavender) 20%, var(--t4f-surface-floating));
     }
   }
 
@@ -127,4 +103,12 @@
     flex-shrink: 0;
   }
 
+  .trigger, .popup, .item {
+    transition-duration: 420ms;
+    transition-timing-function: ease-out;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: 0ms;
+    }
+  }
 }

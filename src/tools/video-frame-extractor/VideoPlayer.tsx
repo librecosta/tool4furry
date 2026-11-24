@@ -131,7 +131,7 @@ export function VideoPlayer({ file, info, initial, locale, disabled, onFrame }: 
   const format = (value: number) => displayTime(value);
   const timeLabel = t('精确时间', 'Precise time');
   const control = (label: string, icon: React.ReactNode, action: () => void, unavailable = disabled) => (
-    <Tooltip content={label}><IconButton label={label} size="sm" variant="ghost" disabled={unavailable} onClick={action}>{icon}</IconButton></Tooltip>
+    <Tooltip content={label} borderless popupClassName={s.controlTooltip}><IconButton className={s.transportButton} label={label} size="sm" variant="ghost" disabled={unavailable} onClick={action}>{icon}</IconButton></Tooltip>
   );
 
   return <section ref={panel} className={s.player} data-expanded={expanded || undefined} aria-label={t('视频播放器', 'Video player')}>

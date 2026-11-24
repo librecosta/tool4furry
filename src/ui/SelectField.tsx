@@ -1,7 +1,6 @@
 import styles from './SelectField.module.scss';
 import { Select } from '@base-ui/react/select';
 import { CaretDownIcon, CheckIcon } from '@phosphor-icons/react';
-import motion from '../styles/motion.module.scss';
 import controls from './controls.module.scss';
 import { FieldFrame, useField, type FieldProps } from './Field';
 
@@ -47,7 +46,6 @@ export function SelectField({
             controls.input,
             styles.trigger,
             appearance === 'quiet' && styles.quiet,
-            !!field.error && controls.invalid,
           ].filter(Boolean).join(' ')}
         >
           <Select.Value placeholder={placeholder} />
@@ -63,17 +61,13 @@ export function SelectField({
             collisionPadding={12}
             className={styles.positioner}
           >
-            <Select.Popup className={[styles.popup, appearance === 'quiet' && styles.quietPopup].filter(Boolean).join(' ')}>
+            <Select.Popup className={styles.popup}>
               {options.map((option) => (
                 <Select.Item
                   key={option.value}
                   value={option.value}
                   disabled={option.disabled}
-                  className={[
-                    styles.item,
-                    motion.selection,
-                    appearance === 'quiet' && styles.quietItem,
-                  ].filter(Boolean).join(' ')}
+                  className={styles.item}
                 >
                   <Select.ItemIndicator className={styles.check}>
                     <CheckIcon size={18} aria-hidden="true" />
