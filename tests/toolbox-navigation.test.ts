@@ -9,7 +9,7 @@ import { fixtureTools } from './fixtures/tools';
 describe('native toolbox selections', () => {
   const publishedPicks = [
     'image-converter', 'image-resize-crop', 'image-compressor', 'comic-page-organizer',
-    'pdf-merge', 'zip-manager', 'json-formatter',
+    'pdf-merge', 'zip-manager', 'json-formatter', 'audio-trimmer',
   ];
   it.each(['cn', 'global'] as const)('projects independent editorial picks for %s in both languages and environments', region => {
     for (const locale of ['zh', 'en'] as const) for (const dev of [false, true]) {
@@ -39,7 +39,7 @@ describe('native toolbox selections', () => {
     const selection = ['unknown', 'other', 'draft', ...fixtures.map(tool => tool.id), 'fixture-1'];
     expect(getNavigationEntries('cn', registry, false, 'en', selection).map(entry => entry.id)).toEqual(fixtures.slice(0, 9).map(tool => tool.id));
     expect(getNavigationEntries('cn', registry, true, 'en', selection).map(entry => entry.id)).toEqual(['draft', ...fixtures.slice(0, 8).map(tool => tool.id)]);
-    expect(getToolboxGroups('cn', 'zh', false).find(group => group.id === 'composer')!.entries).toEqual([]);
+    expect(getToolboxGroups('cn', 'zh', false).find(group => group.id === 'composer')!.entries.map(entry => entry.id)).toEqual(['audio-trimmer']);
     expect(getToolboxGroups('global', 'en', false).find(group => group.id === 'studio')!.entries.map(entry => entry.id)).toEqual(['pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer']);
   });
 });
