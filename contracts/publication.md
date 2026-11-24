@@ -9,7 +9,7 @@
 | 正式构建 | 生成可独立托管的静态页面与所需资源，不执行上传或上线 |
 | 实际部署 | 将产物发布到托管环境的独立操作，需要明确授权 |
 
-当前 Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF、ZIP Manager、Batch File Renamer、File Hash、Text Cleaner、Text Diff、Subtitle Tools、JSON Formatter、URL & Base64、Timestamp Converter 与 Color & Contrast 二十款工具均为 Published，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
+当前 Image Converter、Image Resize & Crop、Palette Extractor、Image Compressor、Comic Page Organizer、Image Watermark、EXIF Metadata、PDF Merge、PDF Split、Images to PDF、ZIP Manager、Batch File Renamer、File Hash、Text Cleaner、Text Diff、Subtitle Tools、JSON Formatter、URL & Base64、Timestamp Converter、Color & Contrast 与 Audio Trimmer 二十一款工具均为 Published，登记 CN/Global；**两个地区均未部署**。这是当前事实，不是平台工具数上限，也不是另一个发布开关。
 
 Image Resize & Crop (`image-resize-crop`) 已通过 A1-D2 L2 审计，并依据维护者本任务授权提升源码资格。两地区正式构建包含其双语页面、按需实现、局部裁剪 CSS 和完整 ISC 许可声明；其他 Draft、Lab 和 Fixture 继续隔离。审计证据与 L3 边界见 [模块说明](../docs/image-resize-crop-implementation.md#a1-d2-beta-资格审计2026-10-31)。
 
@@ -57,9 +57,13 @@ URL & Base64（`url-base64`）依据 V0.8-B11-D2 维护者授权取得 CN/Global
 
 Timestamp Converter（`timestamp-converter`）依据 V0.8-B12-D2 维护者授权获得 CN/Global Published 源码资格。两地区正式构建共用 Registry 和双语 Astro 内容，该阶段每地区有 38 个工具详情页，全站 29 款（19 Published / 10 Draft）。共享日期与时间选择器随该工具按需加载，构建守卫验证 JS/CSS 归属和 Base UI、Phosphor 的完整 MIT 许可。实际输出验收使用各格式的真实剪贴板值。[功能、验收和 CI](../docs/general-toolbox-v0.8.md#timestamp-converter--v08-b12-d2-seo-与-beta-资格)
 
-Color & Contrast（`color-contrast`）依据 V0.8-B14-D2 维护者授权获得 CN/Global Published 源码资格。当前全站 29 款（20 Published / 9 Draft），每地区有 40 个双语工具详情页。正式构建验证工作区 JS/CSS、共享选色样式归属及 react-colorful MIT 通知。实际输出验收以真实剪贴板读取的 HEX、RGB 和 HSL 为准。[功能与验收](../docs/general-toolbox-v0.8.md#color--contrast--b14-d2-seo-与-beta-资格)
+Color & Contrast（`color-contrast`）依据 V0.8-B14-D2 维护者授权获得 CN/Global Published 源码资格。该阶段全站 29 款（20 Published / 9 Draft），每地区有 40 个双语工具详情页。正式构建验证工作区 JS/CSS、共享选色样式归属及 react-colorful MIT 通知。实际输出验收以真实剪贴板读取的 HEX、RGB 和 HSL 为准。[功能与验收](../docs/general-toolbox-v0.8.md#color--contrast--b14-d2-seo-与-beta-资格)
 
 ## 构建与部署隔离
+
+Audio Trimmer（`audio-trimmer`）依据 V0.8-B15-D2 授权取得 CN/Global Published 源码资格。全站 29 款（21 Published / 8 Draft），每地区 42 个双语工具详情页。音频专属样式、媒体 Worker、编码 Worker、许可与对应重建资料仅随工具按需交付。[实际下载和许可验收](../docs/evidence/b15-audio/README.md#b15-d2-production-builds)
+
+如托管启用 CSP，请允许文档和媒体 Worker 通过 `worker-src 'self'` 创建同源 Worker，并在媒体 Worker 及两个编码 Worker 的响应策略中使用 `script-src 'self' 'wasm-unsafe-eval'`。媒体 Worker 用 WASM SIMD 编译探测能力，在禁用时保留 WAV 及可用的原生编码。页面脚本可使用自身行内脚本的哈希。以上策略已在两地区本地正式产物验证，实际托管响应头仍需在部署阶段单独复核。
 
 - CN/Global 独立域名、缓存与 `dist/cn` / `dist/global`；同地区包含中英文，不把英文页面自动投向另一地区。
 - Draft、Lab、目录 Fixture、实验代码及其专用资源不得泄漏到正式页面、发现文件或资源图。不可用工具的 Worker/WASM 也应排除；当前已登记 Published 图片工具所需资源则正常生成并按需请求。

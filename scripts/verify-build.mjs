@@ -80,7 +80,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64'], generalToolboxContent['timestamp-converter'], generalToolboxContent['color-contrast']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64'], generalToolboxContent['timestamp-converter'], generalToolboxContent['color-contrast'], generalToolboxContent['audio-trimmer']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -848,7 +848,7 @@ for (const page of htmlFiles) {
   );
   const dom = new JSDOM(content).window.document;
   const scopedToolStyles = [...dom.head.querySelectorAll('link[rel="stylesheet"]')]
-    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
+    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
   const toolId = dom.querySelector('main[data-tool-id]')?.dataset.toolId;
   const expectedToolStyles = [];
   if (toolId === 'subtitle-tools') expectedToolStyles.push('SubtitleTools');
@@ -856,6 +856,7 @@ for (const page of htmlFiles) {
   if (toolId === 'url-base64') expectedToolStyles.push('UrlBase64');
   if (toolId === 'timestamp-converter') expectedToolStyles.push('TimestampConverter');
   if (toolId === 'color-contrast') expectedToolStyles.push('ColorContrast');
+  if (toolId === 'audio-trimmer') expectedToolStyles.push('AudioTrimmer');
   if (['color-contrast', 'image-watermark', 'palette-extractor'].includes(toolId) && files.some(file => /\/react-colorful\.[\w-]+\.css$/.test(file)))
     expectedToolStyles.push('react-colorful');
   if (['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
@@ -977,6 +978,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/url-base64/index.html') assertToolContent(dom, locale, generalToolboxContent['url-base64'], 4, 4, 6);
     if (page === 'tools/timestamp-converter/index.html') assertToolContent(dom, locale, generalToolboxContent['timestamp-converter'], 4, 4, 6);
     if (page === 'tools/color-contrast/index.html') assertToolContent(dom, locale, generalToolboxContent['color-contrast'], 4, 4, 6);
+    if (page === 'tools/audio-trimmer/index.html') assertToolContent(dom, locale, generalToolboxContent['audio-trimmer'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1629,11 +1631,42 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     assert.deepEqual(importsOf(entry, false), [], 'No static import of Timestamp');
     assert(scripts.get(loader).includes(timestampStyles[0]), 'Timestamp lazy loader references the tool and picker stylesheet');
   }
-  if (!published.some(tool => tool.id === 'audio-trimmer')) {
-    assert.deepEqual(files.filter(file => /(?:AudioTrimmer|audio[.-]worker|audio-trimmer\.NOTICE|mediabunny|wavesurfer)/i.test(file)),
+  const audioPublished = published.some(tool => tool.id === 'audio-trimmer');
+  if (!audioPublished) {
+    assert.deepEqual(files.filter(file => /(?:AudioTrimmer|audio[.-]worker|audio-trimmer\.NOTICE|mp3-encoder-rebuild|mediabunny|wavesurfer)/i.test(file)),
       [], 'Audio Draft modules, codec Workers and notices are absent');
     assert.deepEqual(jsOwners(source => /t4f-audio-trimmer|data-audio-trimmer|@mediabunny\//.test(source)),
       [], 'No Audio Draft implementation in a shared chunk');
+  } else {
+    const [entry, ...extraEntries] = findAsset('AudioTrimmer', '.js');
+    const [style, ...extraStyles] = findAsset('AudioTrimmer', '.css');
+    assert(entry && !extraEntries.length && style && !extraStyles.length, 'Audio owns one lazy entry and stylesheet');
+    const [loader, ...extraLoaders] = importsOf(entry, true);
+    assert(loader?.includes('ToolRuntime') && !extraLoaders.length && scripts.get(loader).includes(style),
+      'Only ToolRuntime dynamically imports the Audio workspace and its styles');
+    assert.deepEqual(importsOf(entry, false), [], 'No static import of Audio Trimmer');
+    assert.deepEqual(jsOwners(source => source.includes('data-audio-trimmer')), [entry], 'Audio interface stays in its own entry');
+    const workers = files.filter(file => /\/audio\.worker[-.][\w-]+\.js$/.test(file));
+    assert.equal(workers.length, 1, 'Audio export and preview have one same-origin media Worker');
+    assert.deepEqual(jsOwners(source => source.includes('t4f-audio-trimmer')), [entry], 'Only Audio Trimmer creates its own media Worker');
+    assert(scripts.get(entry).includes(basenameOf(workers[0])), 'Audio Trimmer creates the emitted media Worker');
+    for (const codec of ['mp3', 'flac']) {
+      const name = 'mediabunny-' + codec + '-encoder.worker';
+      const assets = files.filter(file => new RegExp('/' + name.replace('.', '\\.') + '[-.][\\w-]+\\.js$').test(file));
+      assert.equal(assets.length, 1, 'One independently replaceable codec Worker: ' + codec);
+      assert.deepEqual(jsOwners(source => source.includes(basenameOf(assets[0]))), workers,
+        'Only the audio export Worker owns the codec Worker URL: ' + codec);
+      const installed = await readFile('node_modules/@mediabunny/' + codec + '-encoder/dist/bundles/' + name + '.js');
+      assert((await readFile(resolve(root, assets[0]))).equals(installed), 'Codec Worker and embedded WASM ship byte-for-byte: ' + codec);
+    }
+    for (const asset of ['audio-trimmer.NOTICE.txt', 'licenses/mp3-encoder-rebuild.tar.gz']) {
+      const stem = basenameOf(asset).replace(/\.[^.]+$/, '');
+      const filesForAsset = files.filter(file => basenameOf(file).startsWith(stem + '-') || basenameOf(file).startsWith(stem + '.'));
+      assert.equal(filesForAsset.length, 1, 'Audio ships one local license material: ' + asset);
+      assert((await readFile(resolve(root, filesForAsset[0]))).equals(await readFile('src/tools/audio-trimmer/' + asset)),
+        'Audio license material is delivered intact');
+      assert.deepEqual(jsOwners(source => source.includes(basenameOf(filesForAsset[0]))), [entry], 'License material stays with Audio Trimmer');
+    }
   }
   const colorContrastPublished = published.some(tool => tool.id === 'color-contrast');
   const colorContrastEntries = findAsset('ColorContrast', '.js');

@@ -13,14 +13,30 @@ https://registry.npmjs.org/@mediabunny/flac-encoder/-/flac-encoder-1.66.3.tgz
 WaveSurfer.js 8.1.0, BSD-3-Clause
 https://github.com/katspaugh/wavesurfer.js/tree/eef9057e391698370e1a58788646432a562d63a5
 
-FLAC extension: libFLAC, Xiph.Org license. See the pinned Mediabunny source for its build recipe.
-https://github.com/xiph/flac
+FLAC extension: libFLAC, Xiph.Org license. Unmodified libFLAC source at
+https://github.com/xiph/flac/tree/3f1ecff843dd1b8c07fbb5f59425a4ec71fe4f6c
+Corresponding build recipe and Bridge:
+https://github.com/Vanilagy/mediabunny/tree/d1bc613f0e0c563ef39e728d7e93db3179a5ad40/packages/flac-encoder
 
-MP3 extension (local development only): LAME is linked into its WASM
-encoder. The upstream distribution supplies GNU Library GPL version 2.
+MP3 extension: Unmodified LAME 3.100 is statically linked into the encoder
+WASM under the GNU Library General Public License version 2 or later.
 https://lame.sourceforge.io/
-Production distribution of LAME WASM is excluded pending verification of
-the exact corresponding source, build artifacts and replacement/relinking.
+Corresponding LAME source (SHA-256 ddfe36cab873794038ae2c1210557ad34857a4b6bdc515785d1da9e175b1da1e):
+https://sourceforge.net/projects/lame/files/lame/3.100/lame-3.100.tar.gz/download
+Corresponding Mediabunny Bridge and encoder Worker (Emscripten 4.0.21):
+https://github.com/Vanilagy/mediabunny/tree/d1bc613f0e0c563ef39e728d7e93db3179a5ad40/packages/mp3-encoder
+
+The same-origin "MP3 source and rebuild kit" download beside this notice
+includes the complete LAME source, Bridge, Worker source and build script.
+Copies of the kit and rebuild/replacement instructions are also here:
+https://github.com/librecosta/tool4furry/raw/refs/heads/develop/src/tools/audio-trimmer/licenses/mp3-encoder-rebuild.tar.gz
+https://github.com/librecosta/tool4furry/blob/develop/docs/evidence/b15-audio/mp3-rebuild.md
+
+Recipients may modify the LGPL-covered component for their own use and
+reverse engineer this work to debug those modifications. The separately
+served MP3 Worker can be replaced in a local Tool4Furry build while
+keeping the application bundles unchanged. Tool4Furry source:
+https://github.com/librecosta/tool4furry
 
 ----- Mediabunny and both extensions - MPL-2.0 -----
 

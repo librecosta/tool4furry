@@ -1,0 +1,499 @@
+{
+  "browser": "156.0.8078.4",
+  "staticPages": [
+    {
+      "region": "cn",
+      "route": "/tools/audio-trimmer/",
+      "title": "在线音频裁切工具 - MP3、WAV、FLAC 音频剪辑 | Tool4Furry",
+      "h1": "音频裁切"
+    },
+    {
+      "region": "cn",
+      "route": "/en/tools/audio-trimmer/",
+      "title": "Online Audio Trimmer - Cut MP3, WAV & FLAC Audio | Tool4Furry",
+      "h1": "Audio Trimmer"
+    },
+    {
+      "region": "global",
+      "route": "/tools/audio-trimmer/",
+      "title": "Online Audio Trimmer - Cut MP3, WAV & FLAC Audio | Tool4Furry",
+      "h1": "Audio Trimmer"
+    },
+    {
+      "region": "global",
+      "route": "/zh/tools/audio-trimmer/",
+      "title": "在线音频裁切工具 - MP3、WAV、FLAC 音频剪辑 | Tool4Furry",
+      "h1": "音频裁切"
+    }
+  ],
+  "viewports": [
+    {
+      "context": "zh-CN",
+      "viewport": 1280,
+      "theme": "dark",
+      "touch": false,
+      "analysis": {
+        "name": "Midnight-Drive.mp3",
+        "inputBytes": 6549741,
+        "uiMs": 1433,
+        "readToFirstPeakMs": 76,
+        "remainingWaveMs": 1147,
+        "initialDuration": "04:32.857"
+      },
+      "realHandleDrag": true,
+      "detailAfterZoom": true,
+      "playsRemovalSkip": true,
+      "loops": true,
+      "noHorizontalOverflow": true
+    },
+    {
+      "context": "en",
+      "viewport": 390,
+      "theme": "light",
+      "touch": true,
+      "analysis": {
+        "name": "Midnight-Drive.mp3",
+        "inputBytes": 6549741,
+        "uiMs": 1426,
+        "readToFirstPeakMs": 68,
+        "remainingWaveMs": 979,
+        "initialDuration": "04:32.857"
+      },
+      "realHandleDrag": true,
+      "detailAfterZoom": true,
+      "playsRemovalSkip": true,
+      "loops": true,
+      "noHorizontalOverflow": true
+    }
+  ],
+  "longFiles": [
+    {
+      "name": "Two-Hour-Recording.wav",
+      "inputBytes": 230400078,
+      "uiMs": 2453,
+      "readToFirstPeakMs": 32,
+      "remainingWaveMs": 1987,
+      "initialDuration": "02:00:00.000",
+      "canceledExportProducedDownload": false
+    }
+  ],
+  "exports": [
+    {
+      "sample": "cn",
+      "format": "MP3",
+      "elapsedMs": 632,
+      "filename": "Preview-trimmed.mp3",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "2.040000",
+            "bit_rate": "192000"
+          }
+        ],
+        "format": {
+          "format_name": "mp3",
+          "duration": "2.040000",
+          "size": "49536"
+        }
+      },
+      "mime": "audio/mpeg"
+    },
+    {
+      "sample": "cn",
+      "format": "WAV",
+      "elapsedMs": 243,
+      "filename": "Preview-trimmed.wav",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "pcm_s16le",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "1.999000",
+            "bit_rate": "1536000"
+          }
+        ],
+        "format": {
+          "format_name": "wav",
+          "duration": "1.999000",
+          "size": "383852"
+        }
+      },
+      "mime": "audio/wav"
+    },
+    {
+      "sample": "cn",
+      "format": "FLAC",
+      "elapsedMs": 272,
+      "filename": "Preview-trimmed.flac",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "flac",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "1.999000",
+            "bits_per_raw_sample": "24"
+          }
+        ],
+        "format": {
+          "format_name": "flac",
+          "duration": "1.999000",
+          "size": "88304"
+        }
+      },
+      "mime": "audio/flac"
+    },
+    {
+      "sample": "cn",
+      "format": "M4A",
+      "elapsedMs": 258,
+      "filename": "Preview-trimmed.m4a",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "aac",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "2.005333",
+            "bit_rate": "192638"
+          }
+        ],
+        "format": {
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "duration": "2.005333",
+          "size": "49372"
+        }
+      },
+      "mime": "audio/mp4"
+    },
+    {
+      "sample": "cn",
+      "format": "OGG",
+      "elapsedMs": 200,
+      "filename": "Preview-trimmed.ogg",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "opus",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "2.020000"
+          }
+        ],
+        "format": {
+          "format_name": "ogg",
+          "duration": "2.020000",
+          "size": "32739"
+        }
+      },
+      "mime": "audio/ogg"
+    },
+    {
+      "sample": "two-hour-tail",
+      "format": "WAV",
+      "elapsedMs": 196,
+      "filename": "Two-Hour-Recording-trimmed.wav",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "pcm_s16le",
+            "sample_rate": "16000",
+            "channels": 1,
+            "duration": "3.000000",
+            "bit_rate": "256000"
+          }
+        ],
+        "format": {
+          "format_name": "wav",
+          "duration": "3.000000",
+          "size": "96044"
+        }
+      }
+    },
+    {
+      "sample": "global-mobile",
+      "format": "WAV",
+      "elapsedMs": 279,
+      "filename": "Midnight-Drive-trimmed.wav",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "pcm_s16le",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "1.999000",
+            "bit_rate": "1536000"
+          }
+        ],
+        "format": {
+          "format_name": "wav",
+          "duration": "1.999000",
+          "size": "383852"
+        }
+      }
+    },
+    {
+      "sample": "global",
+      "format": "MP3",
+      "elapsedMs": 445,
+      "filename": "Preview-trimmed.mp3",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "2.040000",
+            "bit_rate": "192000"
+          }
+        ],
+        "format": {
+          "format_name": "mp3",
+          "duration": "2.040000",
+          "size": "49536"
+        }
+      },
+      "mime": "audio/mpeg"
+    },
+    {
+      "sample": "global",
+      "format": "WAV",
+      "elapsedMs": 234,
+      "filename": "Preview-trimmed.wav",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "pcm_s16le",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "1.999000",
+            "bit_rate": "1536000"
+          }
+        ],
+        "format": {
+          "format_name": "wav",
+          "duration": "1.999000",
+          "size": "383852"
+        }
+      },
+      "mime": "audio/wav"
+    },
+    {
+      "sample": "global",
+      "format": "FLAC",
+      "elapsedMs": 232,
+      "filename": "Preview-trimmed.flac",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "flac",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "1.999000",
+            "bits_per_raw_sample": "24"
+          }
+        ],
+        "format": {
+          "format_name": "flac",
+          "duration": "1.999000",
+          "size": "88304"
+        }
+      },
+      "mime": "audio/flac"
+    },
+    {
+      "sample": "global",
+      "format": "M4A",
+      "elapsedMs": 212,
+      "filename": "Preview-trimmed.m4a",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "aac",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "2.005333",
+            "bit_rate": "192638"
+          }
+        ],
+        "format": {
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "duration": "2.005333",
+          "size": "49372"
+        }
+      },
+      "mime": "audio/mp4"
+    },
+    {
+      "sample": "global",
+      "format": "OGG",
+      "elapsedMs": 209,
+      "filename": "Preview-trimmed.ogg",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "opus",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "2.020000"
+          }
+        ],
+        "format": {
+          "format_name": "ogg",
+          "duration": "2.020000",
+          "size": "32739"
+        }
+      },
+      "mime": "audio/ogg"
+    },
+    {
+      "sample": "rebuilt-source-worker",
+      "format": "MP3",
+      "elapsedMs": 405,
+      "filename": "Preview-trimmed.mp3",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "2.040000",
+            "bit_rate": "192000"
+          }
+        ],
+        "format": {
+          "format_name": "mp3",
+          "duration": "2.040000",
+          "size": "49536"
+        }
+      }
+    },
+    {
+      "sample": "csp-without-wasm",
+      "format": "WAV",
+      "elapsedMs": 203,
+      "filename": "Preview-trimmed.wav",
+      "probe": {
+        "programs": [],
+        "streams": [
+          {
+            "codec_name": "pcm_s16le",
+            "sample_rate": "48000",
+            "channels": 2,
+            "duration": "1.999000",
+            "bit_rate": "1536000"
+          }
+        ],
+        "format": {
+          "format_name": "wav",
+          "duration": "1.999000",
+          "size": "383852"
+        }
+      }
+    }
+  ],
+  "productionAssetObservations": {
+    "4321/_astro/audio.worker-B9Q-AihY.js": {
+      "sha256": "46bc141d575cde680b45fef062dfe1b66269f3cbab62296fae1b99500c0d3d69",
+      "bytes": 479365,
+      "type": "text/javascript",
+      "csp": "worker-src 'self'; object-src 'none'; base-uri 'none'; script-src 'self' 'wasm-unsafe-eval'"
+    },
+    "4321/_astro/mediabunny-mp3-encoder.worker-CMi9uJjW.js": {
+      "sha256": "29e83e875dd8c64d0557363952a75c51054014a42612101f324a2a2cf9127d38",
+      "bytes": 387324,
+      "type": "text/javascript",
+      "csp": "worker-src 'self'; object-src 'none'; base-uri 'none'; script-src 'self' 'wasm-unsafe-eval'"
+    },
+    "4321/_astro/mediabunny-flac-encoder.worker-DrpT82SN.js": {
+      "sha256": "8edfe2bd841e97cf2b012cf49062027f7eb93d5babd9a56e81d08d9dda981b43",
+      "bytes": 269042,
+      "type": "text/javascript",
+      "csp": "worker-src 'self'; object-src 'none'; base-uri 'none'; script-src 'self' 'wasm-unsafe-eval'"
+    },
+    "4321/_astro/audio-trimmer.NOTICE.D3gBBhI4.txt": {
+      "sha256": "129fd70bfa8d3889f69c1a75ff2240d09e904b24b29aafca61c0ea16d4fe55f8",
+      "bytes": 48115,
+      "type": "text/plain; charset=utf-8",
+      "csp": "worker-src 'self'; object-src 'none'; base-uri 'none'; script-src 'self'"
+    },
+    "4321/_astro/mp3-encoder-rebuild.tar.BPFn6y2X.gz": {
+      "sha256": "7e4d632fa81b5b1bea146cfff55b754293666fc9bbfe3ecfe33c7753dc359eb5",
+      "bytes": 1657377,
+      "type": "application/gzip",
+      "csp": "worker-src 'self'; object-src 'none'; base-uri 'none'; script-src 'self'"
+    },
+    "4322/_astro/audio.worker-B9Q-AihY.js": {
+      "sha256": "46bc141d575cde680b45fef062dfe1b66269f3cbab62296fae1b99500c0d3d69",
+      "bytes": 479365,
+      "type": "text/javascript",
+      "csp": "worker-src 'self'; object-src 'none'; base-uri 'none'; script-src 'self' 'wasm-unsafe-eval'"
+    },
+    "4322/_astro/mediabunny-mp3-encoder.worker-CMi9uJjW.js": {
+      "sha256": "29e83e875dd8c64d0557363952a75c51054014a42612101f324a2a2cf9127d38",
+      "bytes": 387324,
+      "type": "text/javascript",
+      "csp": "worker-src 'self'; object-src 'none'; base-uri 'none'; script-src 'self' 'wasm-unsafe-eval'"
+    },
+    "4322/_astro/mediabunny-flac-encoder.worker-DrpT82SN.js": {
+      "sha256": "8edfe2bd841e97cf2b012cf49062027f7eb93d5babd9a56e81d08d9dda981b43",
+      "bytes": 269042,
+      "type": "text/javascript",
+      "csp": "worker-src 'self'; object-src 'none'; base-uri 'none'; script-src 'self' 'wasm-unsafe-eval'"
+    },
+    "4322/_astro/audio-trimmer.NOTICE.D3gBBhI4.txt": {
+      "sha256": "129fd70bfa8d3889f69c1a75ff2240d09e904b24b29aafca61c0ea16d4fe55f8",
+      "bytes": 48115,
+      "type": "text/plain; charset=utf-8",
+      "csp": "worker-src 'self'; object-src 'none'; base-uri 'none'; script-src 'self'"
+    },
+    "4322/_astro/mp3-encoder-rebuild.tar.BPFn6y2X.gz": {
+      "sha256": "7e4d632fa81b5b1bea146cfff55b754293666fc9bbfe3ecfe33c7753dc359eb5",
+      "bytes": 1657377,
+      "type": "application/gzip",
+      "csp": "worker-src 'self'; object-src 'none'; base-uri 'none'; script-src 'self'"
+    }
+  },
+  "replacement": {
+    "oldCodecHash": "29e83e875dd8c64d0557363952a75c51054014a42612101f324a2a2cf9127d38",
+    "newCodecHash": "74f7480748a50993f64ee9e7da2c9e345098d857608f88f6025ed9a445b22fea",
+    "changedServedFile": true,
+    "asset": {
+      "sha256": "74f7480748a50993f64ee9e7da2c9e345098d857608f88f6025ed9a445b22fea",
+      "bytes": 383637,
+      "type": "text/javascript",
+      "csp": "worker-src 'self'; object-src 'none'; base-uri 'none'; script-src 'self' 'wasm-unsafe-eval'"
+    }
+  },
+  "deniesWasm": {
+    "fallback": "WAV",
+    "mp3Disabled": true,
+    "flacDisabled": true,
+    "assets": {
+      "4322/_astro/audio.worker-B9Q-AihY.js": {
+        "sha256": "46bc141d575cde680b45fef062dfe1b66269f3cbab62296fae1b99500c0d3d69",
+        "bytes": 479365,
+        "type": "text/javascript",
+        "csp": "worker-src 'self'; object-src 'none'; base-uri 'none'; script-src 'self'"
+      }
+    }
+  },
+  "errors": []
+}

@@ -3,6 +3,7 @@ import { definition as jsonFormatterDefinition } from '../src/tools/json-formatt
 import { definition as urlBase64Definition } from '../src/tools/url-base64/definition';
 import { definition as timestampDefinition } from '../src/tools/timestamp-converter/definition';
 import { definition as colorContrastDefinition } from '../src/tools/color-contrast/definition';
+import { definition as audioTrimmerDefinition } from '../src/tools/audio-trimmer/definition';
 import { definition as subtitleToolsDefinition } from '../src/tools/subtitle-tools/definition';
 import { definition as textDiffDefinition } from '../src/tools/text-diff/definition';
 import { definition as batchFileRenamerDefinition } from '../src/tools/batch-file-renamer/definition';
@@ -290,8 +291,8 @@ describe('product navigation', () => {
       .toEqual(dev ? ['/tools/image-converter-slug/', '/tools/pdf-merge-slug/'] : ['/tools/image-converter-slug/']);
     expect(registry.tools.map(tool => tool.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', ...generalToolboxIds]); // Fixtures never populate the real registry.
     expect(imageConverterDefinition.status).toBe('published');
-    expect(original('cn', false)).toEqual([imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, comicPageOrganizerDefinition, imageWatermarkDefinition, exifMetadataDefinition, pdfMergeDefinition, pdfSplitDefinition, imagesToPdfDefinition, zipManagerDefinition, batchFileRenamerDefinition, fileHashDefinition, textCleanerDefinition, textDiffDefinition, subtitleToolsDefinition, jsonFormatterDefinition, urlBase64Definition, timestampDefinition, colorContrastDefinition]);
-    expect(original('global', false)).toEqual([imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, comicPageOrganizerDefinition, imageWatermarkDefinition, exifMetadataDefinition, pdfMergeDefinition, pdfSplitDefinition, imagesToPdfDefinition, zipManagerDefinition, batchFileRenamerDefinition, fileHashDefinition, textCleanerDefinition, textDiffDefinition, subtitleToolsDefinition, jsonFormatterDefinition, urlBase64Definition, timestampDefinition, colorContrastDefinition]);
+    expect(original('cn', false)).toEqual([imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, comicPageOrganizerDefinition, imageWatermarkDefinition, exifMetadataDefinition, pdfMergeDefinition, pdfSplitDefinition, imagesToPdfDefinition, zipManagerDefinition, batchFileRenamerDefinition, fileHashDefinition, textCleanerDefinition, textDiffDefinition, subtitleToolsDefinition, jsonFormatterDefinition, urlBase64Definition, timestampDefinition, colorContrastDefinition, audioTrimmerDefinition]);
+    expect(original('global', false)).toEqual([imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, comicPageOrganizerDefinition, imageWatermarkDefinition, exifMetadataDefinition, pdfMergeDefinition, pdfSplitDefinition, imagesToPdfDefinition, zipManagerDefinition, batchFileRenamerDefinition, fileHashDefinition, textCleanerDefinition, textDiffDefinition, subtitleToolsDefinition, jsonFormatterDefinition, urlBase64Definition, timestampDefinition, colorContrastDefinition, audioTrimmerDefinition]);
   });
 
   it.each([{ region: 'cn', dev: false }, { region: 'global', dev: false }, { region: 'cn', dev: true }, { region: 'global', dev: true }] as const)('links the real Published Converter in the $region toolbox (DEV=$dev)', async ({ region, dev }) => {

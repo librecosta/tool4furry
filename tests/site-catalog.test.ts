@@ -41,7 +41,7 @@ describe('static tool discovery', () => {
   });
 
   it.each(['cn', 'global'] as const)(
-    'discovers twenty Published and nine Draft tools in DEV %s',
+    'discovers twenty-one Published and eight Draft tools in DEV %s',
     (region) => {
       const entries = getCatalogEntries(region, undefined, true);
       expect(entries.map((entry) => [entry.id, entry.href, entry.title])).toEqual([
@@ -67,14 +67,14 @@ describe('static tool discovery', () => {
       const published = entries.filter(entry => entry.status === 'published');
       expect(getCatalogEntries(region)).toEqual(published);
       expect(getHomepageEntries(region)).toEqual(published.slice(0, 9)); // Homepage projection keeps its existing nine-entry cap.
-      // Catalog category order also places the creative tool before text.
+      // Catalog category order places both creative tools before text.
       expect(getCatalogSections(region).flatMap(section => section.groups.flatMap(group => group.entries))).toEqual([
-        ...published.slice(0, 7), published[19], ...published.slice(13, 16), ...published.slice(7, 10), ...published.slice(16, 19), ...published.slice(10, 13),
+        ...published.slice(0, 7), ...published.slice(19), ...published.slice(13, 16), ...published.slice(7, 10), ...published.slice(16, 19), ...published.slice(10, 13),
       ]);
       expect(imageConverterDefinition.status).toBe('published');
       expect(imageResizeCropDefinition.status).toBe('published');
       expect(paletteExtractorDefinition.status).toBe('published');
-      expect(published.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash', 'text-cleaner', 'text-diff', 'subtitle-tools', 'json-formatter', 'url-base64', 'timestamp-converter', 'color-contrast']);
+      expect(published.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash', 'text-cleaner', 'text-diff', 'subtitle-tools', 'json-formatter', 'url-base64', 'timestamp-converter', 'color-contrast', 'audio-trimmer']);
     },
   );
 

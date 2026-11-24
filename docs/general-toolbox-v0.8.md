@@ -1,13 +1,13 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast 已获得 CN/Global Published 源码资格，其余 9 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（20 Published / 9 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast / Audio Trimmer 已获得 CN/Global Published 源码资格，其余 8 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（21 Published / 8 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
-## Audio Trimmer — V0.8-B15-D1 波形与本地音频处理
+## Audio Trimmer — V0.8-B15 波形与 Beta 资格
 
 - 全宽时间轴包含文件信息、双声道波形包络、缩放和局部细化、可移动选区及试听。保留/删除、样本索引、最终输出淡化和时长共用裁切计划。删除保留前后两段的原始顺序，试听音量仅作用于播放器。
 - 工具私有 Worker 用 BlobSource 和 AudioSampleSink 按需读取与解码 512 MiB 以内的单声道和立体声音频。波形全览保留 8,192 组双声道合并最小/最大值，放大后解码可见时间段。WaveSurfer 只接收预计算峰值与时长，试听通过有界 Web Audio 调度。
-- AudioSampleSource 与 StreamTarget 仅处理裁切范围并等待背压。支持 WAV PCM16、24-bit FLAC、DEV MP3，以及原生编码能力支持时的 AAC/M4A 与 Opus/OGG。发生兼容转换时显示目标采样率。超过 256 MiB 内存预算的估算输出使用浏览器直接写入能力。
-- Mediabunny 与编码扩展 1.66.3，WaveSurfer 8.1.0。工作区附完整许可证和锁定版本来源。MP3 的 LAME WASM 保留在 DEV，分发前需核实对应源码、构建材料及重新链接或替换。专属实现、Worker、WASM 与许可均不进入 CN/Global 正式产物。Audio Trimmer 保持 Draft。[验收与许可记录](evidence/b15-audio/README.md)
+- AudioSampleSource 与 StreamTarget 仅处理裁切范围并等待背压。默认 MP3 192 kbps，另支持 WAV PCM16、24-bit FLAC，以及原生编码能力支持时的 AAC/M4A 与 Opus/OGG。发生兼容转换时显示目标采样率。超过 256 MiB 内存预算的估算输出使用浏览器直接写入能力。
+- B15-D2 进入 CN/Global Published，新增双语静态指南。Mediabunny 与编码扩展仍为 1.66.3，WaveSurfer 仍为 8.1.0。音频实现、样式、同源 Worker、WASM、NOTICE 及 MP3 重建材料由 Audio Trimmer 按需交付。已核对锁定 WASM 与 LAME 源码，通过独立 Worker 的本地替换验证实际 MP3 下载。[验收与许可记录](evidence/b15-audio/README.md#b15-d2-production-builds)
 
 ## Color & Contrast — B14-D2 SEO 与 Beta 资格
 
@@ -274,7 +274,7 @@
 | `timestamp-converter` | 时间戳/日期双向转换、精确秒/毫秒、UTC/本地输入、ISO 和 IANA 时区、单项复制 | 浏览器 Date 范围；拒绝缺少时区的 ISO、非法日期、闰秒及缺失或重复的本地时刻 |
 | `qr-code-generator` | 三种艺术风格、标准样式自动降级、纠错等级、同源 PNG/SVG 下载、3D 沙盘截图 | 2,000 个 UTF-16 代码单元、128–2048 px；检查真实编码容量、模块密度和逐字节扫码结果 |
 | `color-contrast` | HEX/RGB/HSL、可视化选色、WCAG 比值、AA/AAA、复制 | 不透明 sRGB；大文字阈值不替代实际字号检查 |
-| `audio-trimmer` | 交互波形、保留/删除选区、循环试听、淡化与多格式导出 | 512 MiB 单声道/立体声，编解码按环境探测，大输出使用直接写入或有界 Blob，MP3 扩展仍限 DEV |
+| `audio-trimmer` | 交互波形、保留/删除选区、循环试听、淡化与多格式导出 | 512 MiB 单声道/立体声输入，编解码按环境探测，内存导出预算 256 MiB，更大输出需浏览器直接写入 |
 | `markdown-editor` | 实时 GFM、双栏/编辑/预览、复制及 .md 下载、示例/清空 | 10 万字符；Marked + DOMPurify，移除脚本、图片及嵌入内容；不自动保存 |
 | `video-frame-extractor` | 原生播放器/时间轴、PNG/JPEG 单帧与间隔批量、尺寸/质量、ZIP | 输入 100 MiB/30 分钟/1600 万像素；单帧 800 万像素，批量 40 帧/8000 万像素/96 MiB；依赖浏览器编解码，不保证逐帧精度 |
 | `csv-json-converter` | UTF-8 文件/粘贴、逗号/分号/Tab、双向转换、表格/复制/下载 | 文件 2 MiB、100 万字符、10000 行/100 列/20 万单元格；CSV 为字符串，JSON 为标量对象数组，拒绝不安全整数 |

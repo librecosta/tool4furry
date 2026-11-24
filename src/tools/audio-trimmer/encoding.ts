@@ -4,6 +4,8 @@ import { AudioSample, AudioSampleSource, FlacOutputFormat, Mp3OutputFormat, Mp4O
 import { blobBudget, estimatedBytes, formats, type AudioInfo, type CutPlan, type Encoding, type Format } from './core';
 import { MediaFailure, renderPlan } from './media';
 import type { Capabilities } from './protocol';
+import mp3WorkerUrl from '../../../node_modules/@mediabunny/mp3-encoder/dist/bundles/mediabunny-mp3-encoder.worker.js?url&no-inline';
+import flacWorkerUrl from '../../../node_modules/@mediabunny/flac-encoder/dist/bundles/mediabunny-flac-encoder.worker.js?url&no-inline';
 
 const flacRates = [8000, 16000, 22050, 24000, 32000, 44100, 48000, 88200, 96000, 176400, 192000];
 const mp3Rates = [32000, 44100, 48000];
@@ -19,13 +21,15 @@ export async function encodingOptions({ sampleRate, channels }: AudioInfo): Prom
   const options: Capabilities = { wav: { 0: sampleRate } };
   let wasmAvailable = false;
   try {
-    // A valid empty module also detects a Worker CSP that disallows Wasm compilation.
-    await WebAssembly.compile(Uint8Array.of(0, 97, 115, 109, 1, 0, 0, 0));
+    // Compile a small i8x16.splat module to check SIMD and Worker CSP together.
+    await WebAssembly.compile(Uint8Array.of(
+      0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 96, 0, 1, 123,
+      3, 2, 1, 0, 10, 8, 1, 6, 0, 65, 0, 253, 15, 11,
+    ));
     wasmAvailable = true;
   } catch { /* Native WebCodecs and PCM remain available. */ }
   if (wasmAvailable) options.flac = { 0: flacRates.includes(sampleRate) ? sampleRate : 48000 };
-  // Upstream LAME's exact relinking materials still need a distribution audit.
-  if (wasmAvailable && import.meta.env.DEV) {
+  if (wasmAvailable) {
     options.mp3 = Object.fromEntries(formats.mp3.bitrates.map(bitrate =>
       [bitrate, mp3Rates.includes(sampleRate) || (bitrate === 128 && [16000, 22050, 24000].includes(sampleRate)) ? sampleRate : 44100]));
   }
@@ -47,20 +51,14 @@ export async function encodingOptions({ sampleRate, channels }: AudioInfo): Prom
 }
 
 async function prepare(format: Format) {
-  if (format === 'mp3' && import.meta.env.DEV) {
-    const [{ registerMp3Encoder }, { default: url }] = await Promise.all([
-      import('@mediabunny/mp3-encoder'),
-      import('../../../node_modules/@mediabunny/mp3-encoder/dist/bundles/mediabunny-mp3-encoder.worker.js?url&no-inline'),
-    ]);
-    Reflect.set(globalThis, Symbol.for('@mediabunny/mp3-encoder:workerUrl'), new URL(url, location.origin));
+  if (format === 'mp3') {
+    const { registerMp3Encoder } = await import('@mediabunny/mp3-encoder');
+    Reflect.set(globalThis, Symbol.for('@mediabunny/mp3-encoder:workerUrl'), new URL(mp3WorkerUrl, location.origin));
     registerMp3Encoder();
   }
   if (format === 'flac') {
-    const [{ registerFlacEncoder }, { default: url }] = await Promise.all([
-      import('@mediabunny/flac-encoder'),
-      import('../../../node_modules/@mediabunny/flac-encoder/dist/bundles/mediabunny-flac-encoder.worker.js?url&no-inline'),
-    ]);
-    Reflect.set(globalThis, Symbol.for('@mediabunny/flac-encoder:workerUrl'), new URL(url, location.origin));
+    const { registerFlacEncoder } = await import('@mediabunny/flac-encoder');
+    Reflect.set(globalThis, Symbol.for('@mediabunny/flac-encoder:workerUrl'), new URL(flacWorkerUrl, location.origin));
     registerFlacEncoder();
   }
 }

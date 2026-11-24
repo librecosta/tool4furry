@@ -20,6 +20,7 @@ import { audioTask, AudioTaskError } from './task';
 import { Audition } from './audition';
 import { Waveform } from './Waveform';
 import notice from './audio-trimmer.NOTICE.txt?url&no-inline';
+import mp3Source from './licenses/mp3-encoder-rebuild.tar.gz?url&no-inline';
 import s from './audio.module.scss';
 
 type SavePicker = (options: { suggestedName: string; types: {
@@ -343,7 +344,10 @@ export default function AudioTrimmer({ locale }: ToolProps) {
       </>}
       <ErrorText error={error ? t(...errors[error]) : undefined} />
       {noticeText && <p className={s.estimate} role="status">{noticeText}</p>}
-      <a className={s.license} href={notice} target="_blank" rel="noreferrer">{t('音频组件许可', 'Audio component licenses')}</a>
+      <div className={s.legal}>
+        <a className={s.license} href={notice} target="_blank" rel="noreferrer">{t('音频组件许可', 'Audio component licenses')}</a>
+        <a className={s.license} href={mp3Source} download="mp3-encoder-rebuild.tar.gz">{t('MP3 源码与重建材料', 'MP3 source and rebuild kit')}</a>
+      </div>
     </div>
   </Frame>;
 }

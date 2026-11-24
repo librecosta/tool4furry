@@ -27,6 +27,8 @@
 
 ### Changed
 
+- Audio Trimmer 获得 CN/Global Published 源码资格，新增双语静态 SEO。正式产物支持符合环境能力的 MP3、WAV、FLAC、AAC/M4A 与 Opus/OGG 导出，并随工具交付 LAME 源码、重新链接和替换材料。
+
 - Audio Trimmer（Draft）改为全宽波形工作区，支持 512 MiB 内的长音频、保留或删除选区、循环试听、样本级裁切、淡化及多格式本地导出。MP3 仅用于 DEV 分发核查。
 
 - Color & Contrast 获得 CN/Global Published 源码资格，新增双语静态 SEO，并对从下方舍入到 WCAG 阈值的比值标注 `<`。正式构建复核选色样式归属及真实剪贴板值。

@@ -15,6 +15,7 @@ import { definition as json } from '../src/tools/json-formatter/definition';
 import { definition as codec } from '../src/tools/url-base64/definition';
 import { definition as timestamp } from '../src/tools/timestamp-converter/definition';
 import { definition as colorContrast } from '../src/tools/color-contrast/definition';
+import { definition as audioTrimmer } from '../src/tools/audio-trimmer/definition';
 
 const content = {
   title: 'Test — Tool4Furry',
@@ -373,4 +374,37 @@ describe('Astro-only content boundary', () => {
       ]);
     },
   );
+});
+
+it('publishes bilingual Audio Trimmer pages and concise Registry copy in both regions', () => {
+  expect(audioTrimmer).toMatchObject({
+    id: 'audio-trimmer', slug: 'audio-trimmer', category: 'creative', group: 'audio-processing',
+    roles: ['composer', 'animator'], mode: 'form', status: 'published', regions: ['cn', 'global'],
+  });
+  expect(audioTrimmer.copy).toEqual({
+    zh: { title: '音频裁切', description: '通过可视化波形裁切音频，支持片段试听、淡入淡出及多格式导出。', summary: '精确选择音频片段，试听并保存裁切结果。' },
+    en: { title: 'Audio Trimmer', description: 'Trim audio with an interactive waveform, playback, fades and multiple export formats.', summary: 'Select, preview and export audio clips with precision.' },
+  });
+  const metadata = {
+    zh: {
+      title: '在线音频裁切工具 - MP3、WAV、FLAC 音频剪辑 | Tool4Furry',
+      description: '在线裁切 MP3、WAV 等音频，通过可视化波形精确选择片段，支持删除选区、循环试听、淡入淡出及多格式导出。最大支持 512 MiB 文件，全部在浏览器本地处理。',
+      h1: '音频裁切',
+    },
+    en: {
+      title: 'Online Audio Trimmer - Cut MP3, WAV & FLAC Audio | Tool4Furry',
+      description: 'Trim audio with an interactive waveform, precise selection, playback, fades and multiple export formats. Process files up to 512 MiB locally in your browser.',
+      h1: 'Audio Trimmer',
+    },
+  };
+  for (const region of ['cn', 'global'] as const) for (const locale of ['zh', 'en'] as const) {
+    const content = getToolPageContent(audioTrimmer, region, toolPageContents, false, locale);
+    expect(content).toMatchObject(metadata[locale]);
+    expect(content.steps).toHaveLength(4);
+    expect(content.limitations).toHaveLength(6);
+    expect(content.faq).toHaveLength(4);
+    expect(content.limitations![3]).toMatch(/MP3.*PCM16 WAV.*FLAC.*M4A\/AAC.*OGG\/Opus/);
+    expect(content.limitations![4]).toContain('256 MiB');
+    if (locale === 'en') expect(JSON.stringify(content)).not.toMatch(/\p{Script=Han}/u);
+  }
 });

@@ -6,19 +6,19 @@ export const definition = {
   group: 'audio-processing',
   roles: ['composer', 'animator'],
   mode: 'form',
-  status: 'draft',
+  status: 'published',
   regions: ['cn', 'global'],
   copy: {
     zh: {
       title: '音频裁切',
-      description: '在波形上裁切并试听音频，按浏览器能力导出。',
-      summary: '在波形上裁切并试听音频，按浏览器能力导出。',
+      description: '通过可视化波形裁切音频，支持片段试听、淡入淡出及多格式导出。',
+      summary: '精确选择音频片段，试听并保存裁切结果。',
     },
     en: {
       title: 'Audio Trimmer',
       description:
-        'Trim and preview audio on a waveform, then export in an available format.',
-      summary: 'Trim and preview audio on a waveform, then export in an available format.',
+        'Trim audio with an interactive waveform, playback, fades and multiple export formats.',
+      summary: 'Select, preview and export audio clips with precision.',
     },
   },
 } satisfies ToolDefinition;
