@@ -1,12 +1,14 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast / Audio Trimmer / Markdown Editor 已获得 CN/Global Published 源码资格，其余 7 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（22 Published / 7 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast / Audio Trimmer / Markdown Editor / Video Frame Extractor 已获得 CN/Global Published 源码资格，其余 6 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（23 Published / 6 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
 ## Video Frame Extractor — V0.8-B17-D1
 
-- CN/Global 均保持 Draft。通过 DEV 工具目录打开视频取帧。工作区包括文件信息条、可播放及逐帧定位的播放器、提取设置和可追加的帧画廊。窄屏按此顺序纵向排列。
+- B17-D2 完成双语静态 SEO 与正式产物验收，取得 CN/Global Published 源码资格。两地区各生成 46 个双语工具详情页。视频工作区、Worker、样式及 NOTICE 按需交付。[B17-D2 正式产物验收](evidence/b17-video/README.md#b17-d2-正式产物验收)
+
+- 工作区包括文件信息条、可播放及逐帧定位的播放器、提取设置和可追加的帧画廊。窄屏按此顺序纵向排列。
 - 工具私有 Worker 使用 Mediabunny 1.66.3 BlobSource 按需读取最多 2 GiB 的本地视频，无固定时长上限。时间轴使用相对显示时间，逐帧操作使用真实呈现时间戳，暂停预览与单帧提取共用该时间戳。原生播放不可用时仍可浏览和提取受支持的帧。
-- 间隔可按秒或采样 FPS。数量模式使用 `start + i × (end − start) / N`，每次在半开区间内定位当前显示帧，并合并同帧采样。逐帧模式顺序处理半开区间内的实际帧。任务取消会终止 Worker，已生成画廊不受后续定位或输出设置影响。
+- 间隔可按秒或采样 FPS。数量模式使用 `start + i × (end − start) / N`，每次在半开区间内定位当前显示帧，并合并同帧采样。逐帧模式顺序处理半开区间内的实际帧，并丢弃起点之前由解码预卷返回的帧。任务取消会终止 Worker，已生成画廊不受后续定位或输出设置影响。
 - PNG、JPEG、WebP 默认使用显示分辨率，尺寸预设保持宽高比且不放大。单图与联系表各受 40 MP 画布预算约束。画廊最多 300 帧及 256 MiB，缩略图单独限尺寸。联系表按时间排列，列数、尺寸、时间戳和格式可配置。
 - ZIP Only 逐帧编码并通过 fflate Store 写入，支持直接文件写入及 256 MiB 的 Blob 回退。当前 fflate 不写 ZIP64，归档最多 65,534 项且小于 4 GiB。Mediabunny 的完整 MPL-2.0 NOTICE 和现有 fflate MIT NOTICE 随工具交付。[浏览器与独立文件复检](evidence/b17-video/README.md)
 

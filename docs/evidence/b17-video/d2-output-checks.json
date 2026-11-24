@@ -1,0 +1,202 @@
+{
+  "chromium": "156.0.8078.4",
+  "vfr": {
+    "origin": 2.0,
+    "frames": 77,
+    "bFrames": 45
+  },
+  "browser": {
+    "cn": {
+      "png": "vfr-00-00.400000-0001.png",
+      "jpeg": "vfr-00-01.000000-0007.jpg",
+      "sheet": "vfr-contact-sheet.png",
+      "selected": "vfr-selected.zip",
+      "every": "vfr-frames.zip",
+      "selectedPts": [
+        0,
+        0.2,
+        0.4,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "everyPts": [
+        0.466667,
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        0.933333
+      ],
+      "sheetPts": [
+        0,
+        0,
+        0.1,
+        0.2,
+        0.4,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "actual": 0.4,
+      "interval": [
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1
+      ],
+      "unique": [
+        0,
+        0.1
+      ],
+      "videoAssets": {
+        "urls": 12,
+        "assets": [
+          "/_astro/VideoFrameExtractor.IF-BqI75.css",
+          "/_astro/VideoFrameExtractor.Dqcks6Wi.js",
+          "/_astro/video-frame.worker-CtchY2Rr.js"
+        ]
+      }
+    },
+    "global": {
+      "webp": "rotate-00-00.000000-0001.webp",
+      "sheet": "rotate-contact-sheet.jpg",
+      "videoAssets": {
+        "urls": 4,
+        "assets": [
+          "/_astro/VideoFrameExtractor.IF-BqI75.css",
+          "/_astro/VideoFrameExtractor.Dqcks6Wi.js",
+          "/_astro/video-frame.worker-CtchY2Rr.js"
+        ]
+      }
+    }
+  },
+  "images": {
+    "vfr-00-00.400000-0001.png": {
+      "codec": "png",
+      "size": [
+        320,
+        180
+      ],
+      "timestamp": 0.4,
+      "meanAbsoluteRgbDifference": 1.02556
+    },
+    "vfr-00-01.000000-0007.jpg": {
+      "codec": "mjpeg",
+      "size": [
+        320,
+        180
+      ],
+      "timestamp": 1.0,
+      "meanAbsoluteRgbDifference": 3.94979
+    },
+    "rotate-00-00.000000-0001.webp": {
+      "codec": "webp",
+      "size": [
+        360,
+        640
+      ],
+      "timestamp": 0,
+      "meanAbsoluteRgbDifference": 2.54213
+    }
+  },
+  "archives": {
+    "selected": {
+      "entries": [
+        "vfr-00-00.000000-0002.jpg",
+        "vfr-00-00.200000-0003.jpg",
+        "vfr-00-00.400000-0001.png",
+        "vfr-00-00.400000-0004.jpg",
+        "vfr-00-00.600000-0005.jpg",
+        "vfr-00-00.800000-0006.jpg",
+        "vfr-00-01.000000-0007.jpg"
+      ],
+      "timestamps": [
+        0.0,
+        0.2,
+        0.4,
+        0.4,
+        0.6,
+        0.8,
+        1.0
+      ],
+      "crcValid": true,
+      "storage": "store",
+      "meanAbsoluteRgbDifference": {
+        "vfr-00-00.000000-0002.jpg": 3.63097,
+        "vfr-00-00.200000-0003.jpg": 3.82886,
+        "vfr-00-00.400000-0001.png": 1.02556,
+        "vfr-00-00.400000-0004.jpg": 3.93637,
+        "vfr-00-00.600000-0005.jpg": 3.99106,
+        "vfr-00-00.800000-0006.jpg": 4.00335,
+        "vfr-00-01.000000-0007.jpg": 3.94979
+      }
+    },
+    "every": {
+      "entries": [
+        "vfr-00-00.466667-0010.png",
+        "vfr-00-00.500000-0011.png",
+        "vfr-00-00.600000-0012.png",
+        "vfr-00-00.700000-0013.png",
+        "vfr-00-00.800000-0014.png",
+        "vfr-00-00.900000-0015.png",
+        "vfr-00-00.933333-0016.png"
+      ],
+      "timestamps": [
+        0.466667,
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        0.933333
+      ],
+      "crcValid": true,
+      "storage": "store",
+      "meanAbsoluteRgbDifference": {
+        "vfr-00-00.466667-0010.png": 1.02622,
+        "vfr-00-00.500000-0011.png": 1.02837,
+        "vfr-00-00.600000-0012.png": 1.04036,
+        "vfr-00-00.700000-0013.png": 1.04725,
+        "vfr-00-00.800000-0014.png": 1.04337,
+        "vfr-00-00.900000-0015.png": 1.04115,
+        "vfr-00-00.933333-0016.png": 1.05183
+      }
+    }
+  },
+  "sheets": {
+    "cn": {
+      "codec": "png",
+      "size": [
+        648,
+        608
+      ],
+      "thumbnailMeanAbsoluteRgbDifference": [
+        2.35061,
+        2.34844,
+        2.45747,
+        2.46071,
+        2.54838,
+        2.57241,
+        2.59137,
+        2.58963,
+        2.63402
+      ]
+    },
+    "global": {
+      "codec": "mjpeg",
+      "size": [
+        204,
+        219
+      ],
+      "thumbnailMeanAbsoluteRgbDifference": [
+        8.30699
+      ]
+    }
+  }
+}

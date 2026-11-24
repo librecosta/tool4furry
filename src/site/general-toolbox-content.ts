@@ -862,4 +862,58 @@ export const generalToolboxContent = {
       ],
     },
   },
+  'video-frame-extractor': {
+    zh: {
+      title: '在线视频取帧工具 - 视频截图、批量提取与联系表 | Tool4Furry',
+      description: '从本地视频精确提取画面，支持逐帧定位、间隔采样、批量图片导出及视频帧联系表。支持 PNG、JPEG、WebP 和 ZIP，最大输入文件 2 GiB。',
+      h1: '视频取帧',
+      intro: '通过可视化视频工作区精确定位画面，截取单帧或批量提取图片，管理视频帧画廊，并制作带时间戳的视频帧联系表。',
+      steps: [
+        '**导入视频：** 选择或拖入本地视频文件，查看视频画面与媒体信息。',
+        '**选择提取方式：** 精确定位当前帧，或设置时间范围，按间隔、指定数量或逐帧提取图片。',
+        '**设置输出：** 选择图片格式、分辨率及质量，将提取结果添加至画廊，或直接导出 ZIP。',
+        '**保存画面：** 单独下载图片、批量下载所选帧，也可以生成视频帧联系表。',
+      ],
+      limitations: [
+        '支持最大 2 GiB 的本地视频文件，不设置固定 30 分钟时长限制。实际支持的容器与编码取决于浏览器及设备的解码能力。',
+        '精确定位依据实际视频帧及呈现时间戳，支持可变帧率视频。间隔及数量模式可能命中相同实际帧，重复采样会合并。',
+        '支持 PNG、JPEG、WebP 图片输出，默认保持原始显示分辨率。单帧与联系表最多 4000 万像素，并受实际 Canvas 和设备能力限制。',
+        '帧画廊最多保留 300 帧及 256 MiB 图片数据。大型提取任务可使用仅导出 ZIP 模式。',
+        'ZIP 内存输出预算为 256 MiB，更大的归档需要浏览器支持直接文件写入。经典 ZIP 最多支持 65,534 项且归档小于 4 GiB，不支持 ZIP64。',
+        '视频读取、解码和图片生成均在浏览器本地完成，不上传或持久保存原始视频。图片使用 sRGB 输出，不保证保留源视频的 HDR、色彩空间及原始位深。',
+      ],
+      faq: [
+        { question: '可以从视频中提取每一帧吗？', answer: '可以。选择逐帧模式并设置时间范围，工具会依次提取范围内的实际视频帧。数量较多时建议使用仅导出 ZIP 模式。' },
+        { question: '支持 4K 和 8K 视频截图吗？', answer: '支持在浏览器能够解码相应视频且满足输出资源预算时，按原始显示分辨率提取图片。实际能力取决于设备及视频编码。' },
+        { question: '为什么指定提取数量与实际生成数量不同？', answer: '多个采样时间可能对应同一个实际视频帧，尤其是低帧率或可变帧率视频。工具会合并重复采样，不人为生成不存在的新画面。' },
+        { question: '什么是视频帧联系表？', answer: '联系表将多个视频帧按时间排列到一张图片中，可设置列数、缩略图尺寸及时间戳，适合素材筛选、动画参考和视频内容整理。' },
+      ],
+    },
+    en: {
+      title: 'Online Video Frame Extractor - Screenshots & Contact Sheets | Tool4Furry',
+      description: 'Extract precise video frames, capture screenshots, sample frames at intervals and create contact sheets. Export PNG, JPEG, WebP or ZIP locally from videos up to 2 GiB.',
+      h1: 'Video Frame Extractor',
+      intro: 'Capture precise video frames in a visual workspace. Extract individual frames or image sequences, organize your captures and create video contact sheets.',
+      steps: [
+        '**Import a video:** Choose or drop a local video file to view its contents and media information.',
+        '**Choose an extraction mode:** Locate an individual frame or specify a time range for interval, count-based or frame-by-frame extraction.',
+        '**Configure output:** Select an image format, resolution and quality. Add extracted frames to the gallery or export directly to ZIP.',
+        '**Save your frames:** Download individual images, package selected frames into a ZIP archive or create a video contact sheet.',
+      ],
+      limitations: [
+        'Supports local video files up to 2 GiB without a fixed 30-minute duration limit. Supported containers and codecs depend on browser and device decoding capabilities.',
+        'Precise navigation uses actual video frames and presentation timestamps, including variable frame rate video. Repeated samples of the same frame are merged.',
+        'Supports PNG, JPEG and WebP output, using the original display resolution by default. Individual images and contact sheets have a 40-megapixel budget, subject to Canvas and device capabilities.',
+        'The frame gallery holds up to 300 frames and 256 MiB of image data. Larger extraction tasks can use ZIP-only mode.',
+        'In-memory ZIP exports have a 256 MiB budget. Larger archives require browser support for direct file writing. Classic ZIP archives are limited to 65,534 entries and less than 4 GiB. ZIP64 is unsupported.',
+        'Video decoding and image generation run locally without uploading or persistently storing the source video. Images use sRGB output and do not guarantee preservation of HDR, source color space or original bit depth.',
+      ],
+      faq: [
+        { question: 'Can I extract every frame from a video?', answer: 'Yes. Select Every Frame mode and specify a time range to extract the actual video frames within that range. ZIP-only mode is recommended for large extraction tasks.' },
+        { question: 'Can I capture frames from 4K and 8K videos?', answer: 'Yes, when your browser can decode the video and the output fits the resource budget. Original display resolution is supported, subject to device and codec capabilities.' },
+        { question: 'Why are fewer frames extracted than requested?', answer: 'Multiple sampling timestamps may correspond to the same actual video frame, especially with low or variable frame rates. Duplicate samples are merged rather than generating artificial frames.' },
+        { question: 'What is a video contact sheet?', answer: 'A contact sheet arranges selected video frames into a single image. Customizable columns, thumbnail sizes and timestamps make it useful for reviewing footage, collecting references and organizing visual content.' },
+      ],
+    },
+  },
 } satisfies ToolContentMap;

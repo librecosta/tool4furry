@@ -1,6 +1,6 @@
 import { BlobSource, Input, MATROSKA, MP4, MPEG_TS, QTFF, WEBM, WAVE, MP3, OGG,
   VideoSampleSink, type InputVideoTrack, type VideoSample } from 'mediabunny';
-import { fitSize, inputLimit, sampleTimes, VideoError, type FramePlan, type ImageSettings } from './core';
+import { fitSize, inputLimit, microseconds, sampleTimes, VideoError, type FramePlan, type ImageSettings } from './core';
 import type { Position, VideoInfo } from './protocol';
 
 export async function withVideo<T>(file: File, run: (track: InputVideoTrack, sink: VideoSampleSink) => Promise<T>) {
@@ -53,10 +53,21 @@ export async function positionSample(sink: VideoSampleSink, info: VideoInfo, pos
   return sink.getSample(Math.max(info.origin, target));
 }
 
-export function extractionSamples(sink: VideoSampleSink, info: VideoInfo, plan: FramePlan) {
-  if (plan.mode === 'every') return sink.samples(info.origin + plan.start, info.origin + plan.end);
-  if (plan.mode === 'single') return sink.samplesAtTimestamps([plan.timestamp]);
-  return sink.samplesAtTimestamps(sampleTimes(plan, info.origin));
+export async function* extractionSamples(sink: VideoSampleSink, info: VideoInfo, plan: FramePlan) {
+  if (plan.mode !== 'every') {
+    yield* sink.samplesAtTimestamps(plan.mode === 'single' ? [plan.timestamp] : sampleTimes(plan, info.origin));
+    return;
+  }
+
+  const origin = microseconds(info.origin);
+  const start = origin + microseconds(plan.start);
+  const end = origin + microseconds(plan.end);
+  for await (const sample of sink.samples(start / 1_000_000, end / 1_000_000)) {
+    // The sink can first yield the frame displayed at start, whose PTS precedes the range.
+    const timestamp = microseconds(sample.timestamp);
+    if (timestamp >= start && timestamp < end) yield sample;
+    else sample.close();
+  }
 }
 
 export async function encodeFrame(sample: VideoSample, settings: ImageSettings) {

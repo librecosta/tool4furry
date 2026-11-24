@@ -12,7 +12,7 @@ import { toolAvailabilityConstant, toolBuildDefines } from '../src/tools/build-a
 import { draftIds } from './fixtures/general-toolbox';
 
 const read = (path: string) => readFileSync(path, 'utf8');
-it('shares the editor across five Published tools while excluding all seven Draft tools', () => {
+it('shares the editor across five Published tools while excluding all six Draft tools', () => {
   for (const tool of [cleaner, diff, subtitles, json, codec]) {
     expect(tool.status).toBe('published');
     expect(tool.regions).toEqual(['cn', 'global']);
@@ -24,7 +24,7 @@ it('shares the editor across five Published tools while excluding all seven Draf
     expect(availability['import.meta.env.T4F_TOOL_SUBTITLE_TOOLS_AVAILABLE']).toBe('true');
     expect(availability['import.meta.env.T4F_TOOL_JSON_FORMATTER_AVAILABLE']).toBe('true');
     expect(availability['import.meta.env.T4F_TOOL_URL_BASE64_AVAILABLE']).toBe('true');
-    expect(draftIds).toHaveLength(7);
+    expect(draftIds).toHaveLength(6);
     expect(availability['import.meta.env.T4F_TOOL_MARKDOWN_EDITOR_AVAILABLE']).toBe('true');
     expect(draftIds).not.toContain('url-base64');
     for (const id of draftIds) {

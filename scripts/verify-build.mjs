@@ -848,7 +848,7 @@ for (const page of htmlFiles) {
   );
   const dom = new JSDOM(content).window.document;
   const scopedToolStyles = [...dom.head.querySelectorAll('link[rel="stylesheet"]')]
-    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|MarkdownEditor|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
+    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|MarkdownEditor|VideoFrameExtractor|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
   const toolId = dom.querySelector('main[data-tool-id]')?.dataset.toolId;
   const expectedToolStyles = [];
   if (toolId === 'subtitle-tools') expectedToolStyles.push('SubtitleTools');
@@ -858,6 +858,7 @@ for (const page of htmlFiles) {
   if (toolId === 'color-contrast') expectedToolStyles.push('ColorContrast');
   if (toolId === 'audio-trimmer') expectedToolStyles.push('AudioTrimmer');
   if (toolId === 'markdown-editor') expectedToolStyles.push('MarkdownEditor');
+  if (toolId === 'video-frame-extractor') expectedToolStyles.push('VideoFrameExtractor');
   if (['color-contrast', 'image-watermark', 'palette-extractor'].includes(toolId) && files.some(file => /\/react-colorful\.[\w-]+\.css$/.test(file)))
     expectedToolStyles.push('react-colorful');
   if (['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
@@ -981,6 +982,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/color-contrast/index.html') assertToolContent(dom, locale, generalToolboxContent['color-contrast'], 4, 4, 6);
     if (page === 'tools/audio-trimmer/index.html') assertToolContent(dom, locale, generalToolboxContent['audio-trimmer'], 4, 4, 6);
     if (page === 'tools/markdown-editor/index.html') assertToolContent(dom, locale, generalToolboxContent['markdown-editor'], 4, 4, 6);
+    if (page === 'tools/video-frame-extractor/index.html') assertToolContent(dom, locale, generalToolboxContent['video-frame-extractor'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1680,15 +1682,43 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     assert.deepEqual(importsOf(entry, false), [], 'No static import of Timestamp');
     assert(scripts.get(loader).includes(timestampStyles[0]), 'Timestamp lazy loader references the tool and picker stylesheet');
   }
-  if (!published.some(tool => tool.id === 'video-frame-extractor')) {
-    assert.deepEqual(files.filter(file => /(?:VideoFrameExtractor|video-frame\.worker|mediabunny\.NOTICE)/i.test(file)),
-      [], 'Video Frame Extractor Draft entry, stylesheet, worker and license stay outside the build');
-    assert.deepEqual(jsOwners(source => /data-video-frame-workspace|t4f-video-frame-worker/.test(source)),
-      [], 'Video Frame Extractor Draft markers stay outside all chunks');
+  const videoAvailable = published.some(tool => tool.id === 'video-frame-extractor');
+  const videoEntries = findAsset('VideoFrameExtractor', '.js');
+  const videoStyles = findAsset('VideoFrameExtractor', '.css');
+  const videoWorkers = files.filter(file => /\/video-frame\.worker[.-][\w-]+\.js$/.test(file));
+  const videoNotices = files.filter(file => /\/mediabunny\.NOTICE[.-][\w-]+\.txt$/.test(file));
+  for (const assets of [videoEntries, videoStyles, videoWorkers, videoNotices])
+    assert.equal(assets.length, Number(videoAvailable), 'Video entry, style, Worker and notice follow publication');
+  assert.deepEqual(jsOwners(source => /data-video-frame-workspace|t4f-video-frame-worker/.test(source)),
+    videoEntries, 'Video workspace and Worker constructor stay in its lazy entry');
+  assert.deepEqual(cssFiles.filter((_, index) => /\._?(?:transportButton|galleryActions)[_-]/.test(outputCSS[index])),
+    videoStyles, 'Video workspace styles stay private to the tool');
+  if (videoAvailable) {
+    const [entry] = videoEntries;
+    const [worker] = videoWorkers;
+    const [notice] = videoNotices;
+    const [loader, ...otherLoaders] = importsOf(entry, true);
+    assert(loader?.includes('ToolRuntime') && !otherLoaders.length && scripts.get(loader).includes(videoStyles[0]),
+      'Only ToolRuntime dynamically loads the video workspace and styles');
+    assert.deepEqual(importsOf(entry, false), [], 'No static import of the video workspace');
+    assert.deepEqual(jsOwners(source => source.includes(basenameOf(worker))), [entry], 'Only video creates its media Worker');
+    assert.deepEqual(jsOwners(source => source.includes(basenameOf(notice))), [entry], 'Video links its full notice');
+    assert(![entry, worker].some(file => /AudioTrimmer|audio\.worker|wavesurfer|mediabunny-(?:mp3|flac)-encoder|t4f-audio-trimmer/i.test(scripts.get(file))),
+      'Video entry and Worker do not depend on audio-only assets');
+    const shippedNotice = await readFile(resolve(root, notice));
+    assert(shippedNotice.equals(await readFile('src/tools/video-frame-extractor/mediabunny.NOTICE.txt')), 'Video notice is delivered intact');
+    const normalize = text => text.replace(/\r\n/g, '\n').trim();
+    assert(normalize(shippedNotice.toString('utf8')).includes(normalize(await readFile('node_modules/mediabunny/LICENSE', 'utf8'))),
+      'Video notice preserves the installed Mediabunny MPL-2.0 license');
+    const zipNotice = await readFile('src/tools/general/fflate.NOTICE.txt');
+    const zipLicense = scripts.get(entry).includes(zipNotice.toString('base64')) ||
+      [...scripts].some(([owner, source]) => source.includes(zipNotice.toString('base64')) && importsOf(owner, false).includes(entry)) ||
+      files.some(file => /fflate\.NOTICE/.test(file) && scripts.get(entry).includes(basenameOf(file)));
+    assert(zipLicense, 'Video links the shared fflate notice');
   }
   const audioPublished = published.some(tool => tool.id === 'audio-trimmer');
   if (!audioPublished) {
-    assert.deepEqual(files.filter(file => /(?:AudioTrimmer|audio[.-]worker|audio-trimmer\.NOTICE|mp3-encoder-rebuild|mediabunny|wavesurfer)/i.test(file)),
+    assert.deepEqual(files.filter(file => /(?:AudioTrimmer|audio[.-]worker|audio-trimmer\.NOTICE|mp3-encoder-rebuild|mediabunny-(?:mp3|flac)-encoder|wavesurfer)/i.test(file)),
       [], 'Audio Draft modules, codec Workers and notices are absent');
     assert.deepEqual(jsOwners(source => /t4f-audio-trimmer|data-audio-trimmer|@mediabunny\//.test(source)),
       [], 'No Audio Draft implementation in a shared chunk');

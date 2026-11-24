@@ -4,6 +4,39 @@ import { toolPageContents, getToolPageContent } from '../src/site/tool-content';
 import { toolLoaders } from '../src/tools/loaders';
 import { groups } from '../src/site/taxonomy';
 import { draftIds, generalToolboxIds, firstBatchIds, secondBatchIds } from './fixtures/general-toolbox';
+it('publishes the bilingual Video Frame Extractor guide and registry copy', () => {
+  const tool = tools.find(tool => tool.id === 'video-frame-extractor')!;
+  expect(tool).toMatchObject({
+    slug: 'video-frame-extractor', category: 'creative', group: 'design-utilities',
+    roles: ['animator', 'operations'], mode: 'form', status: 'published', regions: ['cn', 'global'],
+    copy: {
+      zh: { title: '视频取帧', description: '精确提取视频画面，支持单帧截图、批量提取及视频帧联系表。', summary: '从本地视频提取、整理并导出图片。' },
+      en: { title: 'Video Frame Extractor', description: 'Extract precise video frames, batch images and create contact sheets.', summary: 'Capture, organize and export frames from local videos.' },
+    },
+  });
+  const expected = {
+    zh: {
+      title: '在线视频取帧工具 - 视频截图、批量提取与联系表 | Tool4Furry',
+      description: '从本地视频精确提取画面，支持逐帧定位、间隔采样、批量图片导出及视频帧联系表。支持 PNG、JPEG、WebP 和 ZIP，最大输入文件 2 GiB。',
+    },
+    en: {
+      title: 'Online Video Frame Extractor - Screenshots & Contact Sheets | Tool4Furry',
+      description: 'Extract precise video frames, capture screenshots, sample frames at intervals and create contact sheets. Export PNG, JPEG, WebP or ZIP locally from videos up to 2 GiB.',
+    },
+  };
+  for (const region of tool.regions) for (const locale of ['zh', 'en'] as const) {
+    const content = getToolPageContent(tool, region, toolPageContents, false, locale);
+    expect(content).toMatchObject({ ...expected[locale], h1: tool.copy[locale].title });
+    expect(content.steps).toHaveLength(4);
+    expect(content.limitations).toHaveLength(6);
+    expect(content.limitations![0]).toContain('2 GiB');
+    expect(content.limitations![3]).toMatch(/300.*256 MiB/);
+    expect(content.limitations![4]).toMatch(/256 MiB.*65,534.*4 GiB.*ZIP64/);
+    expect(content.faq).toHaveLength(4);
+    if (locale === 'en') expect(JSON.stringify(content)).not.toMatch(/\p{Script=Han}/u);
+  }
+});
+
 it('publishes Text Cleaner SEO and short copy for its frozen live editor workflow', () => {
   const tool = tools.find(tool => tool.id === 'text-cleaner')!;
   expect(tool).toMatchObject({ id: 'text-cleaner', slug: 'text-cleaner', category: 'text', group: 'text-processing', roles: ['operations', 'studio'], mode: 'form', status: 'published', regions: ['cn', 'global'] });
@@ -46,7 +79,7 @@ it('publishes File Hash bilingual static SEO and concise metadata matching its f
   expect(tool.copy.zh).toEqual({ title: '文件哈希', description: '批量计算 MD5、SHA 系列与 CRC32，支持本地哈希比对。', summary: '拖入文件自动计算哈希，支持多种算法与批量导出。' });
   expect(tool.copy.en).toEqual({ title: 'File Hash', description: 'Calculate MD5, SHA and CRC32 checksums locally for multiple files.', summary: 'Automatically hash files, compare checksums and export results.' });
 });
-it('keeps both implementation batches intact with twenty-two Published and seven Draft tools', () => {
+it('keeps both implementation batches intact with twenty-three Published and six Draft tools', () => {
   expect(tools).toHaveLength(29);
   expect(firstBatchIds).toHaveLength(15);
   expect(firstBatchIds).toContain('pdf-merge');
@@ -57,12 +90,12 @@ it('keeps both implementation batches intact with twenty-two Published and seven
   expect(firstBatchIds).toContain('file-hash');
   expect(firstBatchIds).toContain('text-cleaner');
   expect(secondBatchIds).toHaveLength(7);
-  expect(draftIds).toHaveLength(7);
+  expect(draftIds).toHaveLength(6);
   expect(tools.filter((t) => t.status === 'draft').map((t) => t.id)).toEqual(
     draftIds,
   );
   for (const region of ['cn', 'global'] as const) {
-    expect(getAvailableTools(region, false)).toHaveLength(22);
+    expect(getAvailableTools(region, false)).toHaveLength(23);
     expect(getAvailableTools(region, true)).toHaveLength(29);
     for (const id of generalToolboxIds) {
       const tool = tools.find((t) => t.id === id)!;

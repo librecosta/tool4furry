@@ -1,39 +1,6 @@
 import type { ToolContentMap } from './tool-content';
 // Static Astro content only; never imported by the client or registry.
 export const generalToolboxA2Content = {
-  'video-frame-extractor': {
-    zh: {
-      title: '视频取帧 | Tool4Furry',
-      description: '从本地视频提取当前画面或按间隔导出图片。',
-      h1: '视频取帧',
-      intro: '从本地视频提取当前画面或按间隔导出图片。',
-      steps: [
-        '选择浏览器支持的视频',
-        '定位画面，选择提取模式、图片格式及尺寸',
-        '将图片添加到画廊，或直接导出 ZIP。',
-      ],
-      limitations: [
-        '输入最多 2 GiB，单帧输出最多 4000 万像素。画廊最多 300 帧，画廊和内存 ZIP 各有 256 MiB 预算。支持直接写文件的浏览器可流式保存更大的经典 ZIP。实际可解码的视频取决于浏览器和设备。',
-        '所有文件与文本仅在当前浏览器本地处理，不上传、不持久保存。',
-      ],
-    },
-    en: {
-      title: 'Video Frame Extractor | Tool4Furry',
-      description:
-        'Extract a frame or interval-based images from a local video.',
-      h1: 'Video Frame Extractor',
-      intro: 'Extract a frame or interval-based images from a local video.',
-      steps: [
-        'Choose a browser-supported video',
-        'Seek to a frame and choose an extraction mode, image format and size',
-        'Append images to the gallery or export a ZIP directly.',
-      ],
-      limitations: [
-        'Input is limited to 2 GiB and individual images to 40 megapixels. The gallery holds up to 300 frames, with separate 256 MiB budgets for the gallery and in-memory ZIP exports. Browsers that can write directly to a file can stream larger classic ZIP archives. Video decoding depends on the browser and device.',
-        'Files and text stay in your browser, without uploads or persistent storage.',
-      ],
-    },
-  },
   'csv-json-converter': {
     zh: {
       title: 'CSV / JSON 转换 | Tool4Furry',

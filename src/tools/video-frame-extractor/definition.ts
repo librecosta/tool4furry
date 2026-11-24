@@ -6,19 +6,18 @@ export const definition = {
   group: 'design-utilities',
   roles: ['animator', 'operations'],
   mode: 'form',
-  status: 'draft',
+  status: 'published',
   regions: ['cn', 'global'],
   copy: {
     zh: {
       title: '视频取帧',
-      summary: '从本地视频提取当前画面或按间隔导出图片。',
-      description: '从本地视频提取当前画面或按间隔导出图片。',
+      summary: '从本地视频提取、整理并导出图片。',
+      description: '精确提取视频画面，支持单帧截图、批量提取及视频帧联系表。',
     },
     en: {
       title: 'Video Frame Extractor',
-      summary: 'Extract a frame or interval-based images from a local video.',
-      description:
-        'Extract a frame or interval-based images from a local video.',
+      summary: 'Capture, organize and export frames from local videos.',
+      description: 'Extract precise video frames, batch images and create contact sheets.',
     },
   },
 } satisfies ToolDefinition;

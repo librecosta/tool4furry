@@ -18,6 +18,7 @@ const toolStyleOwners = {
   ColorContrast: ['color-contrast'],
   AudioTrimmer: ['audio-trimmer'],
   MarkdownEditor: ['markdown-editor'],
+  VideoFrameExtractor: ['video-frame-extractor'],
   'react-colorful': ['color-contrast', 'image-watermark', 'palette-extractor'],
   TextEditor: ['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64'],
   TextWorkbench: ['json-formatter', 'text-cleaner', 'text-diff', 'url-base64'],
@@ -37,7 +38,7 @@ const scopeToolStyles = {
         const headEnd = html.indexOf('</head>');
         const head = html.slice(0, headEnd);
         const scoped = head.replace(
-          /<link rel="stylesheet" href="\/_astro\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|MarkdownEditor|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css">/g,
+          /<link rel="stylesheet" href="\/_astro\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|MarkdownEditor|VideoFrameExtractor|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css">/g,
           (link, stem) => toolStyleOwners[stem].includes(tool.id) ? link : '',
         );
         if (scoped !== head) await writeFile(destination, scoped + html.slice(headEnd));

@@ -36,3 +36,16 @@
 Mediabunny 1.66.3 与 fflate 0.8.3 使用仓库已有锁定版本，MPL-2.0 对应源码和 MIT 通知随工具交付。视频工作区网络记录没有音频编码器、WaveSurfer 或音频 Worker。CN/Global 的正式构建守卫检查视频专属 JS、CSS、Worker、NOTICE 及全部成品脚本中的专属标记，Mediabunny 仍可由 Published Audio Trimmer 使用。pnpm check、52 项定向、样式及回归测试、CN/Global 正式构建及两地区平台夹具均通过。
 
 尚未实测真实设备触摸和 OS 保存对话框，也未覆盖 Safari、Firefox、HDR 实机色彩或经典 ZIP 临界尺寸的全量写入。8K 结果来自本次 H.264 样本。
+
+## B17-D2 正式产物验收
+
+Windows Chromium 156.0.8078.4 直接访问 CN 和 Global 的静态构建。CN 使用简体中文、Dark、1280px，Global 使用英文、Light、390px 手机模拟视口。实际验证导入与替换、播放与全屏、精确定位与前后逐帧、四种提取模式、画廊追加与选择、删除、清空及取消。任务后没有存活的视频 Worker，清空画廊后 Blob URL 回到播放器的两份。
+
+- [CN 桌面](d2-cn-desktop-dark.png) · [CN 联系表参数](d2-contact-sheet-cn.png) · [Global 手机模拟](d2-global-mobile-light.png)
+- VFR MP4 样本起始 PTS 为 2 s，包含 B 帧。请求相对时间 0.450 s 时显示 0.400 s，单帧下载 PNG 与精确预览字节一致。数量模式请求 40 次时保留 2 个实际帧。
+- 修正逐帧模式会接收 Mediabunny 返回的区间前一帧的问题。`[0.450, 1.000)` ZIP Only 下载了 7 帧，从 0.466667 s 到 0.933333 s，排除了 0.400 s 的前一帧及 1.000 s 的终点帧。
+- ffprobe 复检 PNG、JPEG、旋转后 360 × 640 的 WebP，以及 648 × 608 PNG 和 204 × 219 JPEG 联系表。FFmpeg 复检画面内容及联系表缩略图。所选和 ZIP Only 各下载 7 项，由 Python `zipfile` 逐项核对时间戳、呈现顺序及 CRC。[复检数据](d2-output-checks.json)
+- `pnpm check` 零诊断，22 个定向测试文件的 257 项测试通过。两地区均通过正式构建及资源守卫，各生成 46 个双语工具详情页。四个视频取帧页面的静态 SEO、发现入口和同地区语言链接均通过检查。六款 Draft、QR 实验、DEV Lab 与 Fixture 继续隔离。
+- Chromium 请求记录确认视频样式、工作区及同源 Worker 随视频工具加载，视频未请求音频 Worker、WaveSurfer 或 MP3/FLAC 编码器。Mediabunny 1.66.3 完整 MPL-2.0 和 fflate 0.8.3 完整 MIT 通知可从正式工具的许可证链接获取。Mediabunny 的 npm `gitHead` 与 NOTICE 的源码提交一致。
+
+复用 D1 的 1.98 GiB、31 分钟、4K / 8K、400 帧及 358 MB 直写 ZIP 证据。D1 的直写使用 OPFS，真实操作系统保存对话框、Firefox、Safari、iOS/Android 真机、HDR 设备色彩及经典 ZIP 临界尺寸仍待 L3 复核。[基线 CI](https://github.com/librecosta/tool4furry/actions/runs/45437624904)

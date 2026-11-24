@@ -3,6 +3,7 @@
 import { unzipSync } from 'fflate';
 import { describe, expect, it, vi } from 'vitest';
 import { videoArchive } from '../src/tools/video-frame-extractor/archive';
+import { extractionSamples } from '../src/tools/video-frame-extractor/media';
 import {
   checkSize, displayTime, frameName, framePlan, inputLimit, memoryLimit, outputSize, parseTime,
   relativeTime, sampleTimes, sheetLayout,
@@ -11,6 +12,17 @@ import {
 const interval = { mode: 'interval', start: '0.250', end: '2.250', interval: '0.5', sampling: 'seconds', count: '5' } as const;
 
 describe('precise extraction plans', () => {
+  it('excludes and closes pre-roll and end-boundary frames in Every Frame mode', async () => {
+    const frames = [2.2, 2.24, 2.28, 2.3].map(timestamp => ({ timestamp, close: vi.fn() }));
+    const sink = { samples: vi.fn(() => frames.values()) } as unknown as Parameters<typeof extractionSamples>[0];
+    const info = { origin: 2.2 } as Parameters<typeof extractionSamples>[1];
+    const result = [];
+    for await (const frame of extractionSamples(sink, info, { mode: 'every', start: .02, end: .1 })) result.push(frame);
+    expect(sink.samples).toHaveBeenCalledWith(2.22, 2.3);
+    expect(result.map(frame => frame?.timestamp)).toEqual([2.24, 2.28]);
+    expect(frames.map(frame => frame.close.mock.calls.length)).toEqual([1, 0, 0, 1]);
+  });
+
   it('preserves microseconds for PTS names and parses long relative seek positions', () => {
     expect(parseTime('01:02:03.123456')).toBe(3723.123456);
     expect(parseTime('74:01.005')).toBe(4441.005);
