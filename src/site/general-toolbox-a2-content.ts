@@ -13,8 +13,8 @@ export const generalToolboxA2Content = {
         '复制或下载 Markdown 或 HTML。',
       ],
       limitations: [
-        '支持 GFM、代码高亮、GitHub Alerts 和数学公式。长文档可暂停自动预览，继续编辑或导出源码。',
-        '文档在浏览器本地处理。远程图片默认显示占位，主动允许后才会向第三方发送图片请求。',
+        '支持 GitHub 风格的 Markdown、代码高亮、GitHub Alerts 和数学公式。长文档可暂停自动预览，继续编辑或导出源码。',
+        '文档在浏览器本地处理。预览默认加载远程 Markdown 图片，可能向第三方发送请求。可在更多操作中关闭。',
       ],
     },
     en: {
@@ -28,8 +28,8 @@ export const generalToolboxA2Content = {
         'Copy or download Markdown or HTML.',
       ],
       limitations: [
-        'Supports GFM, syntax highlighting, GitHub Alerts and math. Long documents can pause automatic preview while you keep editing or export the source.',
-        'Documents are processed in your browser. Remote images appear as placeholders until you allow requests to third parties.',
+        'Supports GitHub Flavored Markdown, syntax highlighting, GitHub Alerts and math. Long documents can pause automatic preview while you keep editing or export the source.',
+        'Documents are processed in your browser. Preview loads remote Markdown images by default and may make third-party requests. Turn this off in More actions.',
       ],
     },
   },

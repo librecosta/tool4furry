@@ -59,12 +59,6 @@ const theme = EditorView.theme({
     background: 'color-mix(in srgb, var(--t4f-accent) 25%, transparent)',
   },
   '.cm-panels': { border: '0', color: 'var(--t4f-text-primary)', background: 'var(--md-editor-surface)' },
-  '.cm-panel.cm-search': { padding: '8px 28px 8px 8px', lineHeight: '2' },
-  '.cm-search .cm-textfield, .cm-search .cm-button': {
-    background: 'var(--t4f-input-surface)', color: 'inherit', border: '1px solid var(--t4f-border)',
-    borderRadius: '5px', maxWidth: '100%', minWidth: '0',
-  },
-  '.cm-search .cm-textfield:focus-visible, .cm-search button:focus-visible': { outline: '2px solid var(--t4f-accent)' },
   '.cm-searchMatch': { background: 'color-mix(in srgb, var(--t4f-warning) 30%, transparent)' },
   '.cm-searchMatch.cm-searchMatch-selected': { background: 'color-mix(in srgb, var(--t4f-accent) 40%, transparent)' },
 });

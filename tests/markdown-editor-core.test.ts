@@ -100,6 +100,8 @@ $\includegraphics{https://example.org/bad.png}$
     await expect(readMarkdown(new File([Uint8Array.of(0xff)], 'bad.txt'))).rejects.toThrow('UTF-8');
     expect(exportName('Notes.MARKDOWN', 'html')).toBe('Notes.html');
     expect(exportName('journal.txt', 'md')).toBe('journal.md');
+    expect(exportName('笔记 2026.html', 'md')).toBe('笔记 2026.md');
+    expect(exportName('笔记 2026.html', 'html')).toBe('笔记 2026.html');
     const html = htmlDocument(await renderMarkdown(example), 'A <b> document', 'en');
     const doc = new DOMParser().parseFromString(html, 'text/html');
     expect(doc.querySelector('title')?.textContent).toBe('A <b> document');

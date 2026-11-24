@@ -18,7 +18,7 @@ type Translate = (zh: string, en: string) => string;
 function Icon({ label, children, onClick, pressed, disabled, className }: {
   label: string; children: ReactNode; onClick: () => void; pressed?: boolean; disabled?: boolean; className?: string;
 }) {
-  return <Tooltip content={label}><IconButton
+  return <Tooltip content={label} borderless popupClassName={s.floatingMotion}><IconButton
     label={label} variant="ghost" size="sm" className={[s.iconButton, className].filter(Boolean).join(' ')}
     aria-pressed={pressed} disabled={disabled} onClick={onClick}
   >{children}</IconButton></Tooltip>;
@@ -28,7 +28,7 @@ function Dropdown({ label, icon, children, primary = false, className = '' }: {
   label: string; icon: ReactNode; children: ReactNode; primary?: boolean; className?: string;
 }) {
   return <Menu.Root modal={false}>
-    <Tooltip content={label}>
+    <Tooltip content={label} borderless popupClassName={s.floatingMotion}>
       <Menu.Trigger
         aria-label={label}
         className={[s.iconButton, primary && s.exportButton, className].filter(Boolean).join(' ')}
@@ -36,21 +36,20 @@ function Dropdown({ label, icon, children, primary = false, className = '' }: {
     </Tooltip>
     <Menu.Portal>
       <Menu.Positioner align="end" sideOffset={6} collisionPadding={12} className={menu.positioner}>
-        <Menu.Popup aria-label={label} className={[menu.popup, s.menu].join(' ')}>{children}</Menu.Popup>
+        <Menu.Popup aria-label={label} className={[menu.popup, s.menu, s.floatingMotion].join(' ')}>{children}</Menu.Popup>
       </Menu.Positioner>
     </Menu.Portal>
   </Menu.Root>;
 }
 
 export function Toolbar({ t, mode, onMode, fullscreen, onFullscreen, onOpen, undo, redo, canUndo, canRedo,
-  onFormat, onFind, onClear, onSample, onDeliver, busy, allowImages, onImages, notices,
+  onFormat, onFind, onClear, onSample, onDeliver, busy, allowImages, onImages,
 }: {
   t: Translate; mode: ViewMode; onMode: (mode: ViewMode) => void; fullscreen: boolean;
   onFullscreen: () => void; onOpen: () => void; undo: () => void; redo: () => void;
   canUndo: boolean; canRedo: boolean; onFormat: (format: Format) => void; onFind: () => void;
   onClear: () => void; onSample: () => void; onDeliver: (format: 'md' | 'html', download: boolean) => void;
   busy: boolean; allowImages: boolean; onImages: (allow: boolean) => void;
-  notices: { markdown: string; editor: string };
 }) {
   const emphasis = [
     { id: 'bold', label: t('粗体', 'Bold'), icon: TextBIcon },
@@ -121,10 +120,7 @@ export function Toolbar({ t, mode, onMode, fullscreen, onFullscreen, onOpen, und
         <Menu.CheckboxItemIndicator className={s.check} aria-hidden="true">✓</Menu.CheckboxItemIndicator>
         {t('允许加载远程图片', 'Allow remote images')}
       </Menu.CheckboxItem>
-      <p className={menu.note}>{t('远程图片会向第三方发送请求，可能暴露你的 IP。仅对当前文档有效。', 'Remote images make requests to third parties and may reveal your IP. This applies only to the current document.')}</p>
-      <Menu.Separator className={s.menuLine} />
-      <Menu.LinkItem className={menu.item} href={notices.markdown} target="_blank" rel="noreferrer">{t('Markdown 组件许可', 'Markdown component licenses')}</Menu.LinkItem>
-      <Menu.LinkItem className={menu.item} href={notices.editor} target="_blank" rel="noreferrer">{t('CodeMirror 核心许可', 'CodeMirror core licenses')}</Menu.LinkItem>
+      <p className={menu.note}>{t('远程图片会向第三方发送请求，可能暴露你的 IP。', 'Remote images make requests to third parties and may reveal your IP.')}</p>
     </Dropdown>
     <div className={s.viewCluster} role="group" aria-label={t('文档视图', 'Document views')}>
       {views.map(({ id, label, icon: Glyph }) => <Icon key={id} label={label} pressed={mode === id} onClick={() => onMode(id)}><Glyph size={17} /></Icon>)}

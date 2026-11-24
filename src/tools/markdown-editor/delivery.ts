@@ -5,7 +5,7 @@ import typography from './article.css?raw';
 export const defaultName = 'document.md';
 
 export function exportName(filename: string, format: 'md' | 'html') {
-  return (filename.replace(/\.(?:md|markdown|txt)$/i, '') || 'document') + '.' + format;
+  return (filename.replace(/\.(?:md|markdown|txt|html?)$/i, '') || 'document') + '.' + format;
 }
 
 export async function readMarkdown(file: File) {

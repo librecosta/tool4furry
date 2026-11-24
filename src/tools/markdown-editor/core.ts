@@ -168,7 +168,7 @@ export async function renderMarkdown(input: string, {
         const alt = escapeHtml(text);
         if (url) return `<img src="${escapeHtml(url)}" alt="${alt}" loading="lazy" decoding="async" referrerpolicy="no-referrer">`;
         const label = locale === 'zh' ? '图片占位' : 'Image placeholder';
-        return `<span class="md-image-placeholder" role="img" aria-label="${label}${alt ? `: ${alt}` : ''}">${alt || label}</span>`;
+        return `<span class="md-image-placeholder" role="img" aria-label="${label}${alt ? ` (${alt})` : ''}">${alt || label}</span>`;
       },
       code({ text, lang }) {
         const language = lang?.trim().split(/\s+/, 1)[0]?.slice(0, 32);

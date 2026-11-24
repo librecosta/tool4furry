@@ -5,10 +5,10 @@
 ## Markdown Editor — V0.8-B16-D1 一体式编辑与实时预览
 
 - 同一外壳提供格式工具栏、CodeMirror 6 源码区、连续预览区和状态栏。桌面默认分栏，窄屏默认编辑。视图切换保留文档、选区和撤销状态，分隔线可拖动、键盘调整及恢复等宽。同步滚动由 Marked 块的源码行和两侧实际布局位置插值，预览过期或单栏时暂停。
-- Marked 和 DOMPurify 提供 GFM 与安全预览。代码语言按需高亮，GitHub Alerts 保留独立标题及图标。预览中的 KaTeX 按需加载并关闭信任模式。Markdown 图片默认显示 Alt 占位，只有主动许可才加载当前文档的 HTTP/HTTPS 图片。换文档会撤销许可。
-- 本地导入支持 UTF-8 的 `.md`、`.markdown` 和 `.txt`。覆盖未保存修改前需确认。Markdown 直接取自编辑器源码，按 LF 作为换行符。HTML 复制和下载在交付时重新生成安全内容，下载含内联排版和原生 MathML，可离线打开。HTML 保留图片占位。
+- Marked 和 DOMPurify 提供 GitHub 风格的 Markdown 与安全预览。代码语言按需高亮，GitHub Alerts 保留独立标题及图标。预览中的 KaTeX 按需加载并关闭信任模式。预览默认加载合规的 HTTP/HTTPS Markdown 图片，关闭开关后显示 Alt 占位。开关在当前工作区会话内有效。
+- 本地导入支持 UTF-8 的 `.md`、`.markdown` 和 `.txt`。覆盖未保存修改前需确认。标题栏文件名可直接编辑，下载按所选格式使用相应扩展名。Markdown 直接取自编辑器源码，按 LF 作为换行符。HTML 复制和下载在交付时重新生成安全内容，下载含内联排版和原生 MathML，可离线打开。HTML 保留图片占位。
 - 自动预览在 160,000 UTF-16 单元以上暂停。手动预览和 HTML 导出各以 1,200,000 源码单元、8,000 个解析 Token 和 2,000,000 HTML 单元为预算。超预算明确反馈，源码仍可编辑和导出。状态栏按 UTF-16 单元统计，UTF-8 表示文件编码。
-- Markdown 语言 6.5.2、查找 6.7.2、Lezer Markdown 1.8.1 和 KaTeX 0.19.1 已锁定。完整新增 NOTICE 及现有 CodeMirror 核心 NOTICE 可从工具菜单访问。工具继续 Draft，发布资格及 SEO 留给 D2。[Chromium 验收记录](evidence/b16-markdown/design-qa.md)
+- Markdown 语言 6.5.2、查找 6.7.2、Lezer Markdown 1.8.1 和 KaTeX 0.19.1 已锁定。许可文件存放在源码的 [Markdown NOTICE](../src/tools/markdown-editor/dependencies.NOTICE.txt) 和 [CodeMirror NOTICE](../src/ui/text-editor/codemirror.NOTICE.txt)。工具继续 Draft，发布资格及 SEO 留给 D2。[初版 Chromium 验收记录](evidence/b16-markdown/design-qa.md)
 
 ## Audio Trimmer — V0.8-B15 波形与 Beta 资格
 
@@ -283,7 +283,7 @@
 | `qr-code-generator` | 三种艺术风格、标准样式自动降级、纠错等级、同源 PNG/SVG 下载、3D 沙盘截图 | 2,000 个 UTF-16 代码单元、128–2048 px；检查真实编码容量、模块密度和逐字节扫码结果 |
 | `color-contrast` | HEX/RGB/HSL、可视化选色、WCAG 比值、AA/AAA、复制 | 不透明 sRGB；大文字阈值不替代实际字号检查 |
 | `audio-trimmer` | 交互波形、保留/删除选区、循环试听、淡化与多格式导出 | 512 MiB 单声道/立体声输入，编解码按环境探测，内存导出预算 256 MiB，更大输出需浏览器直接写入 |
-| `markdown-editor` | CodeMirror 格式化与查找、分栏同步、GFM、Alerts、数学公式、本地导入与 Markdown / HTML 交付 | 超过 160,000 个 UTF-16 单元暂停自动预览，HTML 渲染有独立预算。远程 Markdown 图片默认显示占位 |
+| `markdown-editor` | CodeMirror 格式化与查找、分栏同步、GFM、Alerts、数学公式、本地导入与 Markdown / HTML 交付 | 超过 160,000 个 UTF-16 单元暂停自动预览，HTML 渲染有独立预算。预览可关闭远程 Markdown 图片 |
 | `video-frame-extractor` | 原生播放器/时间轴、PNG/JPEG 单帧与间隔批量、尺寸/质量、ZIP | 输入 100 MiB/30 分钟/1600 万像素；单帧 800 万像素，批量 40 帧/8000 万像素/96 MiB；依赖浏览器编解码，不保证逐帧精度 |
 | `csv-json-converter` | UTF-8 文件/粘贴、逗号/分号/Tab、双向转换、表格/复制/下载 | 文件 2 MiB、100 万字符、10000 行/100 列/20 万单元格；CSV 为字符串，JSON 为标量对象数组，拒绝不安全整数 |
 | `code-image-generator` | 9 种语言高亮、明暗图片主题、标题/行号/内边距、实时 Canvas 与 PNG | highlight.js 只注册所需语言；20000 字符/160 行；2× 输出最多 8192px、800 万像素，过长明确拒绝 |

@@ -6,12 +6,14 @@ export function Tooltip({
   children,
   content,
   borderless,
+  popupClassName,
   open,
   onOpenChange,
 }: {
   children: ReactElement;
   content: ReactNode;
   borderless?: boolean;
+  popupClassName?: string;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }) {
@@ -24,7 +26,7 @@ export function Tooltip({
           collisionPadding={12}
           className={styles.positioner}
         >
-          <BaseTooltip.Popup className={borderless ? `${styles.popup} ${styles.borderless}` : styles.popup}>
+          <BaseTooltip.Popup className={[styles.popup, borderless && styles.borderless, popupClassName].filter(Boolean).join(' ')}>
             {content}
           </BaseTooltip.Popup>
         </BaseTooltip.Positioner>

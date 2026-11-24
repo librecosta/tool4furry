@@ -2,7 +2,7 @@ import {
   useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent,
 } from 'react';
 import { EditorState, Transaction, type Text } from '@codemirror/state';
-import { redo, undo } from '@codemirror/commands';
+import { isolateHistory, redo, undo } from '@codemirror/commands';
 import { openSearchPanel } from '@codemirror/search';
 import { EditorView } from '@codemirror/view';
 import { AlertDialog } from '@base-ui/react/alert-dialog';
@@ -17,8 +17,6 @@ import { formatCommand, type Format } from './commands';
 import { autoPreviewLimit, example, renderMarkdown } from './core';
 import { defaultName, exportName, htmlDocument, readMarkdown } from './delivery';
 import { useScrollSync } from './scrollSync';
-import notice from './dependencies.NOTICE.txt?url&no-inline';
-import editorNotice from '../../ui/text-editor/codemirror.NOTICE.txt?url';
 import './article.css';
 import s from './markdown.module.scss';
 
@@ -26,6 +24,37 @@ type Rendered = { doc: Text; html: string; images: boolean };
 type Refresh = { doc: Text };
 type Replacement = { text: string; name: string };
 const mobile = '(max-width: 640px)';
+
+function DocumentName({ name, label, onRename }: { name: string; label: string; onRename: (value: string) => void }) {
+  const [editing, setEditing] = useState(false);
+  const input = useRef<HTMLInputElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const refocus = useRef(false);
+  useLayoutEffect(() => {
+    if (editing) {
+      input.current?.focus();
+      input.current?.select();
+    } else if (refocus.current) {
+      refocus.current = false;
+      trigger.current?.focus();
+    }
+  }, [editing]);
+
+  return editing
+    ? <input ref={input} type="text" aria-label={label} className={s.filename} defaultValue={name} spellCheck={false}
+        onBlur={event => { onRename(event.currentTarget.value); setEditing(false); }}
+        onKeyDown={event => {
+          if (event.nativeEvent.isComposing || (event.key !== 'Enter' && event.key !== 'Escape')) return;
+          event.preventDefault();
+          event.stopPropagation();
+          if (event.key === 'Enter') onRename(event.currentTarget.value);
+          refocus.current = true;
+          setEditing(false);
+        }}
+      />
+    : <button ref={trigger} type="button" className={s.filename} aria-label={`${label} ${name}`} title={name}
+        onClick={() => setEditing(true)}>{name}</button>;
+}
 
 export default function MarkdownEditor({ locale }: ToolProps) {
   const t = (zh: string, en: string) => tr(locale, zh, en);
@@ -36,7 +65,7 @@ export default function MarkdownEditor({ locale }: ToolProps) {
   const [ratio, setRatio] = useState(50);
   const [sync, setSync] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
-  const [imagePermission, setImagePermission] = useState<number>();
+  const [images, setImages] = useState(true);
   const [rendered, setRendered] = useState<Rendered>();
   const [previewError, setPreviewError] = useState<{ doc: Text; images: boolean; message: string }>();
   const [refresh, setRefresh] = useState<Refresh>();
@@ -60,7 +89,6 @@ export default function MarkdownEditor({ locale }: ToolProps) {
   const ownedFullscreen = useRef(false);
 
   const filename = source.file.name;
-  const images = imagePermission === source.file.id;
   const showEditor = mode !== 'preview', showPreview = mode !== 'editor';
   const current = rendered?.doc === source.doc && rendered.images === images;
   const paused = source.doc.length > autoPreviewLimit && refresh?.doc !== source.doc;
@@ -221,23 +249,33 @@ export default function MarkdownEditor({ locale }: ToolProps) {
     input.click();
   }
 
+  function renameFile(value: string) {
+    const editor = view.current;
+    if (!editor) return;
+    const file = sourceState(editor.state).file;
+    const name = value.trim().replace(/[<>:"/\\|?*]/g, '_').replace(/[. ]+$/, '');
+    if (!name || name === file.name) return;
+    editor.dispatch({ effects: replaceFile.of({ ...file, name }), annotations: isolateHistory.of('full') });
+  }
+
   async function deliver(format: 'md' | 'html', download: boolean) {
     const editor = view.current;
     if (!editor) return;
-    const doc = editor.state.doc, sourceText = doc.toString();
+    const { doc, file } = sourceState(editor.state);
+    const sourceText = doc.toString();
     let copying = false;
     if (format === 'html') setDeliveryBusy(true);
     try {
       const html = format === 'html' ? await renderMarkdown(sourceText, { locale }) : undefined;
-      if (view.current?.state.doc !== doc) {
+      if (view.current?.state.doc !== doc || sourceState(view.current.state).file !== file) {
         if (view.current) setMessage({ text: t('文档已变化，请重新导出。', 'The document changed. Try exporting again.'), error: true });
         return;
       }
       if (download) {
-        const content = html === undefined ? sourceText : htmlDocument(html, filename, locale);
+        const content = html === undefined ? sourceText : htmlDocument(html, file.name, locale);
         const mime = format === 'md' ? 'text/markdown;charset=utf-8' : 'text/html;charset=utf-8';
-        saveBlob(new Blob([content], { type: mime }), exportName(filename, format));
-        if (format === 'md') saved.current = { doc, file: activeFile.current };
+        saveBlob(new Blob([content], { type: mime }), exportName(file.name, format));
+        if (format === 'md') saved.current = { doc, file: file.id };
         setMessage({ text: t('下载已开始', 'Download started') });
       } else {
         copying = true;
@@ -281,6 +319,8 @@ export default function MarkdownEditor({ locale }: ToolProps) {
     }
   }
 
+  const nameControl = <DocumentName key={source.file.id} name={filename}
+    label={t('编辑文件名', 'Edit file name')} onRename={renameFile} />;
   return <Frame locale={locale}>
     <div ref={workspace} className={s.workspace} data-markdown-workspace data-narrow={narrow || undefined} data-fullscreen={fullscreen || undefined}>
       <section className={s.shell} data-drop={drop || undefined} aria-label={t('Markdown 工作区', 'Markdown workspace')}
@@ -306,17 +346,13 @@ export default function MarkdownEditor({ locale }: ToolProps) {
           onFormat={runFormat} onFind={find} onClear={() => replaceWithConfirmation({ text: '', name: filename })}
           onSample={() => replaceWithConfirmation({ text: example, name: defaultName })}
           busy={deliveryBusy} onDeliver={(format, download) => void deliver(format, download)}
-          allowImages={images} onImages={allow => setImagePermission(allow ? source.file.id : undefined)}
-          notices={{ markdown: notice, editor: editorNotice }}
+          allowImages={images} onImages={setImages}
         />
         <div ref={panes} className={s.panes} data-view={mode} style={{ '--md-split': `${ratio}%` } as CSSProperties}>
           <section className={s.pane} hidden={!showEditor} aria-label={t('编辑区域', 'Editor pane')}>
-            <header className={s.paneHeader}><span>Markdown</span><span className={s.filename} title={filename}>{filename}</span></header>
+            <header className={s.paneHeader}><span>Markdown</span>{showEditor && nameControl}</header>
             <MarkdownSource viewRef={view} locale={locale} onUpdate={next => {
-              if (activeFile.current !== next.file.id) {
-                activeFile.current = next.file.id;
-                setImagePermission(undefined);
-              }
+              activeFile.current = next.file.id;
               setSource(next);
             }} onGeometry={() => updateGeometry.current()} />
           </section>
@@ -331,7 +367,7 @@ export default function MarkdownEditor({ locale }: ToolProps) {
             }} onPointerMove={dragSplit}
           ><span /></div>
           <section className={`${s.pane} ${s.previewPane}`} hidden={!showPreview} aria-label={t('预览区域', 'Preview pane')}>
-            <header className={s.paneHeader}><span>{t('预览', 'Preview')}</span><span>GFM</span></header>
+            <header className={s.paneHeader}><span>{t('预览', 'Preview')}</span>{!showEditor && nameControl}</header>
             {(paused || failed || !current) && <div className={s.previewStatus} role={failed ? 'alert' : 'status'} data-paused={paused || undefined}>
               <span>{failed || (paused
                 ? t('长文档已暂停自动预览。', 'Automatic preview is paused for this long document.')
@@ -355,7 +391,6 @@ export default function MarkdownEditor({ locale }: ToolProps) {
             <ArrowsInLineHorizontalIcon size={14} aria-hidden="true" />
             {sync ? t('同步滚动', 'Sync scroll') : t('同步关闭', 'Sync off')}
           </Button>
-          <span className={s.local}>{t('本地处理', 'Local processing')}</span>
         </footer>
         {(message || deliveryBusy) && <div className={s.feedback} role={message?.error && !deliveryBusy ? 'alert' : 'status'}>
           {deliveryBusy ? t('正在准备 HTML…', 'Preparing HTML…') : message?.text}

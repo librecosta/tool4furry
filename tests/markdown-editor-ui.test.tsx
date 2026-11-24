@@ -85,6 +85,39 @@ describe('unified Markdown workspace', () => {
     expect(screen.getByText('document.md')).toBeTruthy();
   });
 
+  it('renames the document, cancels an edit with Escape, and can undo a rename', () => {
+    render(<MarkdownEditor locale="en" region="global" />);
+    fireEvent.click(screen.getByRole('button', { name: 'Edit file name document.md' }));
+    let input = screen.getByRole('textbox', { name: 'Edit file name' });
+    expect(document.activeElement).toBe(input);
+    fireEvent.change(input, { target: { value: '笔记 2026.html' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    const renamed = screen.getByRole('button', { name: 'Edit file name 笔记 2026.html' });
+    expect(document.activeElement).toBe(renamed);
+    expect(source().state.doc.toString()).toBe(example);
+    fireEvent.click(screen.getByRole('button', { name: 'Preview' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Edit file name 笔记 2026.html' }));
+    input = screen.getByRole('textbox', { name: 'Edit file name' });
+    fireEvent.change(input, { target: { value: 'discarded' } });
+    fireEvent.keyDown(input, { key: 'Escape' });
+    expect(screen.getByRole('button', { name: 'Edit file name 笔记 2026.html' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    expect(screen.getByRole('button', { name: 'Edit file name document.md' })).toBeTruthy();
+  });
+
+  it('loads remote Markdown images by default and replaces them with placeholders when switched off', async () => {
+    render(<MarkdownEditor locale="en" region="global" />);
+    edit(source(), '![Example image](https://example.com/image.png)');
+    const live = screen.getByLabelText('Live Markdown preview');
+    const image = await within(live).findByRole('img', { name: 'Example image' });
+    expect(image.getAttribute('src')).toBe('https://example.com/image.png');
+    fireEvent.keyDown(screen.getByRole('button', { name: 'More actions' }), { key: 'ArrowDown' });
+    const toggle = await screen.findByRole('menuitemcheckbox', { name: 'Allow remote images' });
+    expect(toggle.getAttribute('aria-checked')).toBe('true');
+    fireEvent.click(toggle);
+    expect((await within(live).findByRole('img', { name: 'Image placeholder (Example image)' })).tagName).toBe('SPAN');
+  });
+
   it('pauses previews of long files while keeping all source editable and allowing manual refresh', async () => {
     render(<MarkdownEditor locale="en" region="global" />);
     const view = source();
