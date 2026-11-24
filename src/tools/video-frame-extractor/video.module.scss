@@ -168,7 +168,7 @@
     border: 0;
     border-radius: var(--t4f-radius-sm);
     background: var(--t4f-input-surface);
-    color: var(--t4f-text);
+    color: var(--t4f-text-primary);
     font: inherit;
     &:focus-visible { outline: 2px solid var(--t4f-focus); outline-offset: 1px; }
   }
@@ -177,7 +177,7 @@
   .settings, .gallery {
     h2 {
       margin: 0;
-      color: var(--t4f-text);
+      color: var(--t4f-text-primary);
       font-size: .92rem;
       font-weight: 650;
     }
@@ -296,7 +296,7 @@
     gap: 10px;
     inline-size: min(19rem, calc(100vw - 24px));
     padding: 13px;
-    color: var(--t4f-text);
+    color: var(--t4f-text-primary);
     background: var(--t4f-surface-floating);
     border-radius: var(--t4f-radius-lg);
     box-shadow: var(--t4f-shadow-floating);

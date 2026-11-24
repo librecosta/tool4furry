@@ -33,6 +33,6 @@
 
 每行是本机的一次端到端测量。导入计时包含文件选择到精确预览出现，定位计时包含 Worker 解码。Window JS Heap 读数粒度较粗，导入前后均约 72.2 MB。该读数不覆盖 Worker、浏览器其余进程、解码器、GPU 或峰值内存。350 帧 OPFS 小归档的记录耗时包含将成品读回测试运行器。[大归档直写数据](chromium-large-zip.json)
 
-Mediabunny 1.66.3 与 fflate 0.8.3 使用仓库已有锁定版本，MPL-2.0 对应源码和 MIT 通知随工具交付。视频工作区网络记录没有音频编码器、WaveSurfer 或音频 Worker。CN/Global 的正式构建守卫检查视频专属 JS、CSS、Worker、NOTICE 及全部成品脚本中的专属标记，Mediabunny 仍可由 Published Audio Trimmer 使用。pnpm check、49 项定向与回归测试、CN/Global 正式构建及两地区平台夹具均通过。
+Mediabunny 1.66.3 与 fflate 0.8.3 使用仓库已有锁定版本，MPL-2.0 对应源码和 MIT 通知随工具交付。视频工作区网络记录没有音频编码器、WaveSurfer 或音频 Worker。CN/Global 的正式构建守卫检查视频专属 JS、CSS、Worker、NOTICE 及全部成品脚本中的专属标记，Mediabunny 仍可由 Published Audio Trimmer 使用。pnpm check、52 项定向、样式及回归测试、CN/Global 正式构建及两地区平台夹具均通过。
 
 尚未实测真实设备触摸和 OS 保存对话框，也未覆盖 Safari、Firefox、HDR 实机色彩或经典 ZIP 临界尺寸的全量写入。8K 结果来自本次 H.264 样本。
