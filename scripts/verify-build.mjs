@@ -1381,6 +1381,8 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
   assert(!/data-qr-diorama-scene|WebGL2 context creation failed|dark matrix relief/.test(js), 'QR Draft scene code leaked: ' + file);
   if (!published.some(tool => tool.id === 'qr-code-generator'))
     assert(!/data-qr-artwork|data-qr-license|Could not rasterize QR SVG/.test(js), 'Draft QR tool code leaked: ' + file);
+  if (!published.some(tool => tool.id === 'markdown-editor'))
+    assert(!/data-markdown-workspace|KaTeX parse error|md-image-placeholder/.test(js), 'Draft Markdown tool code leaked: ' + file);
   assert(!/@stylexjs|virtual:stylex|stylex-dev-css/.test(js), `Retired styling runtime leaked: ${file}`);
   for (const id of ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'])
     if (!files.includes(`tools/${id}/index.html`)) assert(!js.includes(`data-${id}`), `Draft ${id} implementation leaked: ${file}`);
@@ -1424,6 +1426,12 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
 // extracting native modules must not pull private Draft/Lab CSS into production.
 const cssFiles = files.filter(file => file.endsWith('.css'));
 const outputCSS = await Promise.all(cssFiles.map(file => readFile(resolve(root, file), 'utf8')));
+if (!published.some(tool => tool.id === 'markdown-editor')) {
+  assert(!files.some(file => /(?:^|\/)(?:MarkdownEditor|math-preview|katex[.-]|KaTeX_|dependencies\.NOTICE)/i.test(file)),
+    'Markdown Draft entries, KaTeX fonts and private notices stay outside the output');
+  assert(!outputCSS.some(source => /data-markdown-article|katex-html|font-family:\s*KaTeX_/i.test(source)),
+    'Markdown Draft typography and KaTeX styles stay outside the output');
+}
 for (const css of outputCSS)
   assert(!/@layer priority|virtual:stylex|stylex-dev-css|@stylexjs/.test(css), 'All CSS uses the native styling pipeline');
 const combinedCSS = outputCSS.join('\n');

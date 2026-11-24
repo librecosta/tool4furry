@@ -1,0 +1,87 @@
+[data-markdown-article] {
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+  --md-ink: var(--t4f-text-primary, #202428);
+  --md-muted: var(--t4f-text-secondary, #58616b);
+  --md-line: var(--t4f-border, #cdd2d7);
+  --md-panel: var(--t4f-surface-panel, #f1f3f5);
+  --md-accent: var(--t4f-accent, #6d5883);
+  color: var(--md-ink);
+}
+[data-markdown-article] :is(h1,h2,h3,h4,h5,h6) {
+  margin: 1.05em 0 .42em;
+  line-height: 1.24;
+  letter-spacing: -.02em;
+  font-weight: 700;
+}
+[data-markdown-article] h1 { font-size: 1.95em; }
+[data-markdown-article] h2 { font-size: 1.43em; }
+[data-markdown-article] h3 { font-size: 1.22em; }
+[data-markdown-article] :is(p,ul,ol,pre,blockquote,table,hr,.md-code,.md-alert,.md-math-block) { margin: .7em 0; }
+[data-markdown-article] > :first-child,
+[data-markdown-article] > :first-child > :first-child { margin-block-start: 0; }
+[data-markdown-article] :is(ul,ol) { padding-inline-start: 1.55em; }
+[data-markdown-article] li:has(> input[type="checkbox"]) { list-style: none; }
+[data-markdown-article] input[type="checkbox"] { accent-color: var(--md-accent); margin-inline: 0 .4em; }
+[data-markdown-article] blockquote {
+  margin-inline: 0;
+  padding: .13em .8em;
+  border-inline-start: 3px solid var(--md-line);
+  color: var(--md-muted);
+}
+[data-markdown-article] hr { border: 0; border-top: 1px solid var(--md-line); }
+[data-markdown-article] a { color: var(--md-accent); text-decoration: underline; text-underline-offset: .17em; }
+[data-markdown-article] code { font: .9em var(--t4f-font-mono, ui-monospace, monospace); }
+[data-markdown-article] :not(pre) > code { padding: .12em .3em; border-radius: .25em; background: var(--md-panel); }
+[data-markdown-article] .md-code { border: 1px solid var(--md-line); border-radius: .5em; overflow: hidden; }
+[data-markdown-article] .md-code-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5em;
+  padding: .32em .75em;
+  min-height: 2em;
+  background: var(--md-panel);
+  color: var(--md-muted);
+  font-size: .82em;
+}
+[data-markdown-article] .md-code-label button {
+  border: 0;
+  padding: .25em .4em;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+[data-markdown-article] .md-code-label button:hover { color: var(--md-ink); text-decoration: underline; }
+[data-markdown-article] .md-code pre { margin: 0; padding: .65em .75em; overflow: auto; white-space: pre; }
+[data-markdown-article] :is(.hljs-keyword,.hljs-literal,.hljs-selector-tag,.hljs-built_in) { color: var(--md-accent); font-weight: 650; }
+[data-markdown-article] :is(.hljs-string,.hljs-attr,.hljs-template-variable) { color: var(--t4f-positive, #286749); }
+[data-markdown-article] :is(.hljs-number,.hljs-variable,.hljs-title) { color: var(--t4f-warning, #785313); }
+[data-markdown-article] :is(.hljs-comment,.hljs-quote) { color: var(--md-muted); font-style: italic; }
+[data-markdown-article] table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
+[data-markdown-article] :is(th,td) { padding: .43em .75em; border: 1px solid var(--md-line); }
+[data-markdown-article] th { background: var(--md-panel); text-align: start; }
+[data-markdown-article] :is(th,td)[align="center"] { text-align: center; }
+[data-markdown-article] :is(th,td)[align="right"] { text-align: right; }
+[data-markdown-article] .md-alert {
+  --md-alert: var(--md-accent);
+  padding: .45em .8em;
+  border-inline-start: 3px solid var(--md-alert);
+  background: color-mix(in srgb, var(--md-alert) 7%, transparent);
+}
+[data-markdown-article] .md-alert-tip { --md-alert: var(--t4f-positive, #286749); }
+[data-markdown-article] .md-alert-warning { --md-alert: var(--t4f-warning, #785313); }
+[data-markdown-article] .md-alert-caution { --md-alert: var(--t4f-danger, #a5373e); }
+[data-markdown-article] .md-alert-label { display: flex; align-items: center; gap: .42em; margin: 0; color: var(--md-alert); font-weight: 650; }
+[data-markdown-article] .md-alert > :last-child { margin-block-end: 0; }
+[data-markdown-article] .md-image-placeholder {
+  display: inline-block;
+  padding: .28em .6em;
+  border: 1px dashed var(--md-line);
+  color: var(--md-muted);
+  border-radius: .35em;
+}
+[data-markdown-article] img { max-width: 100%; height: auto; }
+[data-markdown-article] .md-math-block { max-width: 100%; overflow: auto; text-align: center; }
+[data-markdown-article] .md-math-source { white-space: pre-wrap; }

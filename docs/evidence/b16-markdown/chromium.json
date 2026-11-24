@@ -1,0 +1,82 @@
+{
+  "browser": "156.0.8078.4",
+  "observations": [
+    {
+      "scenario": "desktop",
+      "locale": "zh-CN",
+      "width": 1280,
+      "theme": "dark plus light toggle",
+      "clipboard": [
+        "Markdown",
+        "HTML",
+        "code"
+      ],
+      "realResize": true,
+      "fullscreenEscape": true,
+      "searchReplace": true,
+      "chromiumComposition": "你好",
+      "previewImageRequests": 1,
+      "clipboardLineEndings": "CRLF",
+      "html": {
+        "file": "Example.html",
+        "length": 6756,
+        "sha256": "fcd4197e138240c09eed2a1671fa8204782980ad4e43304118d78a4e0d19818d"
+      }
+    },
+    {
+      "scenario": "scroll",
+      "fromSource": {
+        "s": 22748,
+        "p": 7933,
+        "sp": 0.4686154543394516,
+        "pp": 0.3051036498596208
+      },
+      "fromPreview": {
+        "s": 42417,
+        "p": 18981,
+        "sp": 0.8676362297496318,
+        "pp": 0.7300103842159917
+      },
+      "previewAnchorLine": 633,
+      "sourceAnchorLine": 633,
+      "disableStopsSync": true
+    },
+    {
+      "scenario": "long",
+      "sourceUnits": 1346400,
+      "sourceBytes": 1438200,
+      "lines": 15301,
+      "importMs": 489,
+      "scrollTop": 555269,
+      "renderedLines": 25,
+      "exportedBytes": 1438215,
+      "sha256": "eaa81537f2ab43e9a2f4d3bfb52c3687a478a85a145c586ce98430dae6af181b",
+      "byteMatch": true
+    },
+    {
+      "scenario": "offline-file",
+      "filename": "Example.html",
+      "mathElements": 2,
+      "displayMathBounds": {
+        "x": 248,
+        "y": 453.90625,
+        "width": 784,
+        "height": 31.03125
+      },
+      "network": [],
+      "scripts": 0
+    },
+    {
+      "scenario": "mobile simulation",
+      "locale": "en",
+      "width": 390,
+      "theme": "light",
+      "default": "editor",
+      "preview": true,
+      "horizontalOverflow": false,
+      "download": true,
+      "fileDrop": true
+    }
+  ],
+  "issues": []
+}

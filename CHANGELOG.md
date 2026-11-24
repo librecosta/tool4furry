@@ -27,6 +27,8 @@
 
 ### Changed
 
+- Markdown Editor（Draft）改为一体式 CodeMirror 工作区，支持格式化、分栏同步滚动、安全预览及 Markdown / 离线 HTML 交付。英文示例展示 GFM、GitHub Alerts、语法高亮和数学公式。
+
 - Audio Trimmer 获得 CN/Global Published 源码资格，新增双语静态 SEO。正式产物支持符合环境能力的 MP3、WAV、FLAC、AAC/M4A 与 Opus/OGG 导出，并随工具交付 LAME 源码、重新链接和替换材料。
 
 - Audio Trimmer（Draft）改为全宽波形工作区，支持 512 MiB 内的长音频、保留或删除选区、循环试听、样本级裁切、淡化及多格式本地导出。MP3 仅用于 DEV 分发核查。

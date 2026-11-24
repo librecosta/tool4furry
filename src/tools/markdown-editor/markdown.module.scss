@@ -1,0 +1,259 @@
+@layer t4f-tools {
+  .workspace {
+    --md-chrome: color-mix(in srgb, var(--t4f-surface-muted) 88%, var(--t4f-page));
+    --md-editor-surface: color-mix(in srgb, var(--t4f-page) 74%, var(--t4f-input-surface));
+    --md-preview-surface: color-mix(in srgb, var(--t4f-workspace) 30%, var(--t4f-input-surface));
+    min-width: 0;
+    padding: 10px;
+    background: var(--t4f-workspace);
+    border: 1px solid var(--t4f-border);
+    border-radius: var(--t4f-radius-xl);
+    container-type: inline-size;
+  }
+
+  .workspace[data-fullscreen] {
+    position: fixed;
+    z-index: calc(var(--t4f-layer-dialog) - 1);
+    inset: 0;
+    display: grid;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .workspace[data-fullscreen] .shell {
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .shell {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    height: clamp(475px, 68vh, 780px);
+    min-width: 0;
+    background: var(--md-preview-surface);
+    border: 1px solid var(--t4f-border);
+    border-radius: var(--t4f-radius-md);
+    overflow: hidden;
+  }
+
+  .shell[data-drop] { outline: 2px dashed var(--t4f-accent); outline-offset: -4px; }
+
+  .toolbar, .status {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    background: var(--md-chrome);
+    color: var(--t4f-text-secondary);
+  }
+
+  .toolbar {
+    min-height: 45px;
+    padding: 5px 10px;
+    gap: 4px;
+    border-bottom: 1px solid var(--t4f-border);
+  }
+
+  .cluster, .viewCluster {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1px;
+  }
+
+  .cluster { padding-inline-end: 5px; }
+  .cluster::after {
+    content: '';
+    width: 1px;
+    height: 18px;
+    margin-inline: 4px 0;
+    background: var(--t4f-border);
+  }
+
+  .viewCluster {
+    margin-inline-start: auto;
+    padding: 2px;
+    background: var(--t4f-action-tint);
+    border-radius: 7px;
+  }
+
+  .iconButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 28px;
+    min-width: 28px;
+    min-height: 30px;
+    height: 30px;
+    padding: 0;
+    color: var(--t4f-text-secondary);
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+    gap: 1px;
+  }
+
+  .iconButton:hover:not(:disabled),
+  .iconButton[data-popup-open] {
+    color: var(--t4f-text-primary);
+    background: var(--t4f-surface-hover);
+  }
+  .iconButton:disabled { opacity: .45; cursor: default; }
+  .iconButton:focus-visible, .divider:focus-visible, .previewScroll:focus-visible {
+    outline: 2px solid var(--t4f-focus);
+    outline-offset: -2px;
+  }
+  .viewCluster .iconButton { height: 26px; min-height: 26px; }
+  .viewCluster .iconButton[aria-pressed='true'] {
+    background: var(--t4f-surface-floating);
+    color: var(--t4f-accent);
+    box-shadow: var(--t4f-shadow-soft);
+  }
+  .iconButton.exportButton {
+    width: 42px;
+    color: var(--t4f-on-action);
+    background: var(--t4f-action);
+  }
+  .iconButton.exportButton:hover, .iconButton.exportButton[data-popup-open] { background: var(--t4f-action-hover); }
+
+  .menu { width: max-content; min-width: 156px; max-width: min(285px, calc(100vw - 24px)); }
+  .menuLine { margin: 4px; height: 1px; background: var(--t4f-border); }
+  .check { margin-inline-end: 8px; color: var(--t4f-accent); }
+  .smallShow, .structureMenu { display: none; }
+
+  .panes { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; min-height: 0; }
+  .panes[data-view='split'] { grid-template-columns: minmax(0, var(--md-split)) 0 minmax(0, 1fr); }
+  .pane { display: grid; grid-template-rows: auto minmax(0, 1fr); min-width: 0; min-height: 0; }
+  .pane[hidden], .divider[hidden] { display: none; }
+  .sourcePane { background: var(--md-editor-surface); }
+  .previewPane { grid-template-rows: auto auto minmax(0, 1fr); }
+  .paneHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    min-height: 30px;
+    padding: 3px 12px;
+    background: color-mix(in srgb, var(--md-chrome) 58%, var(--md-editor-surface));
+    border-bottom: 1px solid var(--t4f-border);
+    color: var(--t4f-text-secondary);
+    font-size: 12px;
+  }
+  .filename { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .editorHost { min-height: 0; min-width: 0; overflow: hidden; }
+  .previewScroll {
+    grid-row: 3;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 16px clamp(14px, 2.25vw, 30px) 24px;
+    font-size: 14px;
+  }
+  .previewScroll > div { max-width: 58rem; margin-inline: auto; }
+  .previewScroll :global([data-md-line]) { display: flow-root; }
+  .previewScroll :global([data-md-line]) > :first-child { margin-block-start: 0; }
+  .previewStatus {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 10px;
+    border-bottom: 1px solid var(--t4f-border);
+    background: var(--md-chrome);
+    color: var(--t4f-text-secondary);
+    font-size: 12px;
+  }
+  .previewStatus[role='alert'] { color: var(--t4f-danger); }
+  .refresh { flex: 0 0 auto; min-height: 26px; padding: 0 7px; }
+
+  .divider {
+    position: relative;
+    z-index: 1;
+    align-self: stretch;
+    width: 13px;
+    margin-inline-start: -6px;
+    display: grid;
+    place-items: center;
+    cursor: col-resize;
+    touch-action: none;
+  }
+  .divider::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    width: 1px;
+    background: var(--t4f-border);
+  }
+  .divider span {
+    position: relative;
+    width: 7px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--t4f-border-strong);
+  }
+  .divider:hover span, .divider:active span, .divider:focus-visible span { background: var(--t4f-accent); }
+
+  .status {
+    min-height: 33px;
+    gap: clamp(7px, 1vw, 16px);
+    padding: 2px 12px;
+    border-top: 1px solid var(--t4f-border);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    flex-wrap: wrap;
+  }
+  .status > span { white-space: nowrap; }
+  .status .sync { min-height: 25px; padding: 0 5px; font-size: inherit; color: inherit; border-radius: 5px; }
+  .status .sync:disabled { opacity: .55; }
+  .local { margin-inline-start: auto; }
+  .feedback {
+    position: absolute;
+    inset-inline-end: 10px;
+    inset-block-end: 44px;
+    max-width: calc(100% - 20px);
+    z-index: 2;
+    padding: 7px 11px;
+    background: var(--t4f-surface-floating);
+    color: var(--t4f-text-primary);
+    border: 1px solid var(--t4f-border);
+    border-radius: var(--t4f-radius-sm);
+    box-shadow: var(--t4f-shadow-soft);
+    font-size: 13px;
+    pointer-events: none;
+  }
+  .feedback[role='alert'] { color: var(--t4f-danger); }
+
+  @container (max-width: 705px) {
+    .toolbar .structure { display: none; }
+  }
+  @container (max-width: 510px) {
+    .toolbar .smallHide { display: none; }
+    .cluster { padding-inline-end: 0; }
+    .cluster::after { margin-inline: 1px; }
+  }
+  // Portaled menus are outside the workspace's container query.
+  @media (max-width: 810px) { .structureMenu { display: block; } }
+  @media (max-width: 600px) { .smallShow { display: block; } }
+
+  @media (max-width: 640px) {
+    .workspace { padding: 5px; border-radius: 12px; }
+    .shell { height: clamp(440px, 72dvh, 655px); }
+    .toolbar { padding-inline: 5px; gap: 2px; }
+    .status { padding-inline: 7px; row-gap: 1px; }
+    .panes[data-view='split'] { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, var(--md-split)) 0 minmax(0, 1fr); }
+    .workspace:not([data-narrow]) .panes[data-view='split'] { grid-template-rows: minmax(0, 1fr); }
+    .workspace:not([data-narrow]) .panes[data-view='split'] :is(.divider, .previewPane) { display: none; }
+    .divider { width: 100%; height: 13px; margin: -6px 0 0; cursor: row-resize; }
+    .divider::before { inset: auto 0; width: 100%; height: 1px; }
+    .divider span { width: 30px; height: 7px; }
+  }
+  @media (max-width: 355px) {
+    .toolbar .iconButton { width: 24px; min-width: 24px; }
+    .toolbar .exportButton { width: 31px; }
+  }
+}

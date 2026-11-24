@@ -11,8 +11,8 @@ import { evaluateRegex } from '../src/tools/regex-tester/core';
 import { generateUuids } from '../src/tools/uuid-generator/core';
 import { frameSize, frameTimes } from '../src/tools/video-frame-extractor/core';
 describe('second general toolbox batch', () => {
-  it('renders GFM while rejecting executable and remote embedded content', () => {
-    const html = renderMarkdown(
+  it('renders GFM while rejecting executable and remote embedded content', async () => {
+    const html = await renderMarkdown(
       '# Hello\n\n- [x] Task\n\n| A | B |\n| - | - |\n| 1 | 2 |\n\n```js\nconst a = 1;\n```\n\n<script>alert(1)</script><img src="https://evil.invalid/a" onerror="alert(1)"><iframe src="https://evil.invalid/"></iframe>\n\n[bad](javascript:alert(1))',
     );
     const el = document.createElement('div');

@@ -8,13 +8,13 @@ export const generalToolboxA2Content = {
       h1: 'Markdown 编辑器',
       intro: '编写 Markdown，实时预览并保存文档。',
       steps: [
-        '编辑 Markdown 或载入示例',
-        '选择双栏、编辑或预览视图',
-        '复制 Markdown 或下载 .md 文件。',
+        '编辑 Markdown、打开本地文件或载入示例。',
+        '选择分栏、编辑或预览视图。',
+        '复制或下载 Markdown 或 HTML。',
       ],
       limitations: [
-        '支持常见 GFM 表格、任务列表及代码块，最多 10 万字符。HTML 会安全清理，图片和嵌入内容不加载；不会自动保存。',
-        '所有文件与文本仅在当前浏览器本地处理，不上传、不持久保存。',
+        '支持 GFM、代码高亮、GitHub Alerts 和数学公式。长文档可暂停自动预览，继续编辑或导出源码。',
+        '文档在浏览器本地处理。远程图片默认显示占位，主动允许后才会向第三方发送图片请求。',
       ],
     },
     en: {
@@ -23,13 +23,13 @@ export const generalToolboxA2Content = {
       h1: 'Markdown Editor',
       intro: 'Write Markdown with a live preview and save your document.',
       steps: [
-        'Edit Markdown or load the example',
-        'choose split, editor or preview mode',
-        'copy Markdown or download an .md file.',
+        'Write Markdown, open a local file or load the example.',
+        'Choose Split, Editor or Preview.',
+        'Copy or download Markdown or HTML.',
       ],
       limitations: [
-        'Supports common GFM tables, tasks and code blocks, up to 100,000 characters. HTML is sanitized; images and embedded content are not loaded. No autosave.',
-        'Files and text stay in your browser, without uploads or persistent storage.',
+        'Supports GFM, syntax highlighting, GitHub Alerts and math. Long documents can pause automatic preview while you keep editing or export the source.',
+        'Documents are processed in your browser. Remote images appear as placeholders until you allow requests to third parties.',
       ],
     },
   },
