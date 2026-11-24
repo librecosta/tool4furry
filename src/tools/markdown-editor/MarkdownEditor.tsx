@@ -310,7 +310,7 @@ export default function MarkdownEditor({ locale }: ToolProps) {
           notices={{ markdown: notice, editor: editorNotice }}
         />
         <div ref={panes} className={s.panes} data-view={mode} style={{ '--md-split': `${ratio}%` } as CSSProperties}>
-          <section className={`${s.pane} ${s.sourcePane}`} hidden={!showEditor} aria-label={t('编辑区域', 'Editor pane')}>
+          <section className={s.pane} hidden={!showEditor} aria-label={t('编辑区域', 'Editor pane')}>
             <header className={s.paneHeader}><span>Markdown</span><span className={s.filename} title={filename}>{filename}</span></header>
             <MarkdownSource viewRef={view} locale={locale} onUpdate={next => {
               if (activeFile.current !== next.file.id) {

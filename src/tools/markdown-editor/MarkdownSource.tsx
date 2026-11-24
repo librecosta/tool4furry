@@ -58,7 +58,7 @@ const theme = EditorView.theme({
   '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': {
     background: 'color-mix(in srgb, var(--t4f-accent) 25%, transparent)',
   },
-  '.cm-panels': { border: '0', color: 'var(--t4f-text-primary)', background: 'var(--md-chrome)' },
+  '.cm-panels': { border: '0', color: 'var(--t4f-text-primary)', background: 'var(--md-editor-surface)' },
   '.cm-panel.cm-search': { padding: '8px 28px 8px 8px', lineHeight: '2' },
   '.cm-search .cm-textfield, .cm-search .cm-button': {
     background: 'var(--t4f-input-surface)', color: 'inherit', border: '1px solid var(--t4f-border)',

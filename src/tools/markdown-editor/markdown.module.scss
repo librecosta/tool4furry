@@ -1,13 +1,8 @@
 @layer t4f-tools {
   .workspace {
-    --md-chrome: color-mix(in srgb, var(--t4f-surface-muted) 88%, var(--t4f-page));
-    --md-editor-surface: color-mix(in srgb, var(--t4f-page) 74%, var(--t4f-input-surface));
-    --md-preview-surface: color-mix(in srgb, var(--t4f-workspace) 30%, var(--t4f-input-surface));
+    --md-editor-surface: color-mix(in srgb, var(--t4f-surface-floating) 25%, var(--t4f-page));
+    --md-rule: color-mix(in srgb, var(--t4f-border) 72%, transparent);
     min-width: 0;
-    padding: 10px;
-    background: var(--t4f-workspace);
-    border: 1px solid var(--t4f-border);
-    border-radius: var(--t4f-radius-xl);
     container-type: inline-size;
   }
 
@@ -16,9 +11,6 @@
     z-index: calc(var(--t4f-layer-dialog) - 1);
     inset: 0;
     display: grid;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
   }
 
   .workspace[data-fullscreen] .shell {
@@ -33,8 +25,8 @@
     grid-template-rows: auto minmax(0, 1fr) auto;
     height: clamp(475px, 68vh, 780px);
     min-width: 0;
-    background: var(--md-preview-surface);
-    border: 1px solid var(--t4f-border);
+    background: var(--md-editor-surface);
+    border: 1px solid var(--md-rule);
     border-radius: var(--t4f-radius-md);
     overflow: hidden;
   }
@@ -45,15 +37,14 @@
     display: flex;
     align-items: center;
     min-width: 0;
-    background: var(--md-chrome);
     color: var(--t4f-text-secondary);
   }
 
   .toolbar {
     min-height: 45px;
-    padding: 5px 10px;
+    padding: 5px 12px;
     gap: 4px;
-    border-bottom: 1px solid var(--t4f-border);
+    border-bottom: 1px solid var(--md-rule);
   }
 
   .cluster, .viewCluster {
@@ -67,16 +58,13 @@
   .cluster::after {
     content: '';
     width: 1px;
-    height: 18px;
+    height: 14px;
     margin-inline: 4px 0;
-    background: var(--t4f-border);
+    background: var(--md-rule);
   }
 
   .viewCluster {
     margin-inline-start: auto;
-    padding: 2px;
-    background: var(--t4f-action-tint);
-    border-radius: 7px;
   }
 
   .iconButton {
@@ -95,6 +83,7 @@
     border-radius: 6px;
     cursor: pointer;
     gap: 1px;
+    text-decoration: none;
   }
 
   .iconButton:hover:not(:disabled),
@@ -107,18 +96,14 @@
     outline: 2px solid var(--t4f-focus);
     outline-offset: -2px;
   }
-  .viewCluster .iconButton { height: 26px; min-height: 26px; }
   .viewCluster .iconButton[aria-pressed='true'] {
-    background: var(--t4f-surface-floating);
+    background: var(--t4f-action-tint);
     color: var(--t4f-accent);
-    box-shadow: var(--t4f-shadow-soft);
   }
   .iconButton.exportButton {
-    width: 42px;
-    color: var(--t4f-on-action);
-    background: var(--t4f-action);
+    width: 34px;
+    color: var(--t4f-accent);
   }
-  .iconButton.exportButton:hover, .iconButton.exportButton[data-popup-open] { background: var(--t4f-action-hover); }
 
   .menu { width: max-content; min-width: 156px; max-width: min(285px, calc(100vw - 24px)); }
   .menuLine { margin: 4px; height: 1px; background: var(--t4f-border); }
@@ -129,7 +114,6 @@
   .panes[data-view='split'] { grid-template-columns: minmax(0, var(--md-split)) 0 minmax(0, 1fr); }
   .pane { display: grid; grid-template-rows: auto minmax(0, 1fr); min-width: 0; min-height: 0; }
   .pane[hidden], .divider[hidden] { display: none; }
-  .sourcePane { background: var(--md-editor-surface); }
   .previewPane { grid-template-rows: auto auto minmax(0, 1fr); }
   .paneHeader {
     display: flex;
@@ -138,8 +122,7 @@
     gap: 8px;
     min-height: 30px;
     padding: 3px 12px;
-    background: color-mix(in srgb, var(--md-chrome) 58%, var(--md-editor-surface));
-    border-bottom: 1px solid var(--t4f-border);
+    border-bottom: 1px solid var(--md-rule);
     color: var(--t4f-text-secondary);
     font-size: 12px;
   }
@@ -163,8 +146,7 @@
     justify-content: space-between;
     gap: 8px;
     padding: 4px 10px;
-    border-bottom: 1px solid var(--t4f-border);
-    background: var(--md-chrome);
+    border-bottom: 1px solid var(--md-rule);
     color: var(--t4f-text-secondary);
     font-size: 12px;
   }
@@ -187,14 +169,14 @@
     position: absolute;
     inset-block: 0;
     width: 1px;
-    background: var(--t4f-border);
+    background: var(--md-rule);
   }
   .divider span {
     position: relative;
-    width: 7px;
-    height: 30px;
-    border-radius: 8px;
-    background: var(--t4f-border-strong);
+    width: 3px;
+    height: 22px;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--t4f-text-secondary) 48%, transparent);
   }
   .divider:hover span, .divider:active span, .divider:focus-visible span { background: var(--t4f-accent); }
 
@@ -202,13 +184,24 @@
     min-height: 33px;
     gap: clamp(7px, 1vw, 16px);
     padding: 2px 12px;
-    border-top: 1px solid var(--t4f-border);
+    border-top: 1px solid var(--md-rule);
     font-size: 11px;
     font-variant-numeric: tabular-nums;
     flex-wrap: wrap;
   }
   .status > span { white-space: nowrap; }
-  .status .sync { min-height: 25px; padding: 0 5px; font-size: inherit; color: inherit; border-radius: 5px; }
+  .status .sync {
+    min-height: 25px;
+    padding: 0 5px;
+    font-size: inherit;
+    font-weight: 500;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    text-decoration: none;
+  }
+  .status .sync[aria-pressed='true']:not(:disabled) { color: var(--t4f-accent); }
+  .status .sync:hover:not(:disabled) { background: var(--t4f-surface-hover); }
   .status .sync:disabled { opacity: .55; }
   .local { margin-inline-start: auto; }
   .feedback {
@@ -241,7 +234,6 @@
   @media (max-width: 600px) { .smallShow { display: block; } }
 
   @media (max-width: 640px) {
-    .workspace { padding: 5px; border-radius: 12px; }
     .shell { height: clamp(440px, 72dvh, 655px); }
     .toolbar { padding-inline: 5px; gap: 2px; }
     .status { padding-inline: 7px; row-gap: 1px; }
@@ -250,10 +242,18 @@
     .workspace:not([data-narrow]) .panes[data-view='split'] :is(.divider, .previewPane) { display: none; }
     .divider { width: 100%; height: 13px; margin: -6px 0 0; cursor: row-resize; }
     .divider::before { inset: auto 0; width: 100%; height: 1px; }
-    .divider span { width: 30px; height: 7px; }
+    .divider span { width: 22px; height: 3px; }
   }
   @media (max-width: 355px) {
     .toolbar .iconButton { width: 24px; min-width: 24px; }
     .toolbar .exportButton { width: 31px; }
   }
 }
+
+// Match the article stylesheet's cascade without changing downloaded HTML.
+.previewScroll :global([data-markdown-article] .md-code) {
+  border: 0;
+  border-radius: 5px;
+  background: var(--t4f-surface-panel);
+}
+.previewScroll :global([data-markdown-article] .md-code-label) { background: transparent; }
