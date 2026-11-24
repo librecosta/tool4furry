@@ -13,7 +13,7 @@ import s from './color-contrast.module.scss';
 
 const sides = ['foreground', 'background'] as const;
 type Side = typeof sides[number];
-const defaults = { foreground: '#3583D2', background: '#383131' };
+const defaults = { foreground: '#F7CDAD', background: '#383131' };
 const defaultTarget: ContrastTarget = 4.5;
 type ScreenPicker = { open: (options: { signal: AbortSignal }) => Promise<{ sRGBHex: string }> };
 const getScreenPicker = () => (window as Window & { EyeDropper?: new () => ScreenPicker }).EyeDropper;
@@ -93,7 +93,7 @@ export default function ColorContrast({ locale }: ToolProps) {
           <ColorEditor side={side} locale={locale} value={values[side]}
             parsed={side === 'foreground' ? foreground : background} onChange={value => edit(side, value)}
             onPick={screenPickerAvailable ? () => void pick(side) : undefined} picking={picking === side} />
-          {side === 'foreground' && <Tooltip content={t('交换前景色和背景色', 'Swap foreground and background')}>
+          {side === 'foreground' && <Tooltip borderless content={t('交换前景色和背景色', 'Swap foreground and background')}>
             <IconButton className={s.swap} variant="ghost" label={t('交换颜色', 'Swap colors')} onClick={() => {
               cancelPick();
               setValues(({ foreground, background }) => ({ foreground: background, background: foreground }));

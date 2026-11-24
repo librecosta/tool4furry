@@ -7,6 +7,8 @@ export type ComplianceEntry = Readonly<{
   href?: string;
   iconSrc?: string;
 }>;
+type RegistrationKind = 'icp' | 'public-security';
+type ListedComplianceEntry = ComplianceEntry & { kind: RegistrationKind | 'additional' };
 export type SiteCompliance = Readonly<{
   icp?: { number: string };
   publicSecurity?: { number: string; href: string; iconSrc: string };
@@ -15,18 +17,18 @@ export type SiteCompliance = Readonly<{
 export type RegionalCompliance = Readonly<Record<Region, SiteCompliance>>;
 
 // Add only approved, site-specific records and the actual approved link/icon.
-// Empty configuration renders no public records; only CN DEV may mark the slot.
+// CN DEV can show a placeholder for each missing registration.
 export const siteCompliance: RegionalCompliance = {
-  cn: {},
+  cn: { icp: { number: '蜀ICP备2025158691号-4' } },
   global: {},
 };
 
 export function getComplianceEntries(
   region: Region,
   configuration: RegionalCompliance = siteCompliance,
-): readonly (ComplianceEntry & { kind: 'icp' | 'public-security' | 'additional' })[] {
+): readonly ListedComplianceEntry[] {
   const current = configuration[region];
-  const entries: (ComplianceEntry & { kind: 'icp' | 'public-security' | 'additional' })[] = [];
+  const entries: ListedComplianceEntry[] = [];
   if (region === 'cn') {
     if (current.icp?.number.trim())
       entries.push({ kind: 'icp', label: current.icp.number.trim(), href: icpQueryUrl });
@@ -45,6 +47,6 @@ export function getComplianceEntries(
 }
 
 /** Presentation hint only; never represented as an approved compliance entry. */
-export function showCompliancePreview(region: Region, dev: boolean, entries: readonly ComplianceEntry[]) {
-  return dev && region === 'cn' && entries.length === 0;
+export function showCompliancePreview(region: Region, dev: boolean, entries: readonly ListedComplianceEntry[], kind: RegistrationKind) {
+  return dev && region === 'cn' && !entries.some(entry => entry.kind === kind);
 }

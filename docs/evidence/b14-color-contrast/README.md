@@ -1,5 +1,7 @@
 # B14-D1 Color & Contrast 验收
 
+截图和测量记录对应 B14-D1 首版 `865290e`。当前默认前景色为 `#F7CDAD`。
+
 ## Chromium
 
 | DEV 页面 | 主题与视口 | 截图 |

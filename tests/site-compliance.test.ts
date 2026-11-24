@@ -20,23 +20,35 @@ const records: RegionalCompliance = {
   },
   global: { additional: [{ label: 'GLOBAL_ONLY_NOTICE' }] },
 };
+const empty: RegionalCompliance = { cn: {}, global: {} };
 
 describe('static regional compliance configuration', () => {
-  it('ships no records, placeholders or invented registrations', () => {
-    expect(siteCompliance).toEqual({ cn: {}, global: {} });
-    expect(getComplianceEntries('cn')).toEqual([]);
+  it('ships the configured ICP record for CN only and preserves the police preview in CN DEV', () => {
+    expect(siteCompliance).toEqual({
+      cn: { icp: { number: '蜀ICP备2025158691号-4' } },
+      global: {},
+    });
+    expect(getComplianceEntries('cn')).toEqual([
+      { kind: 'icp', label: '蜀ICP备2025158691号-4', href: icpQueryUrl },
+    ]);
     expect(getComplianceEntries('global')).toEqual([]);
+    const cn = getComplianceEntries('cn');
+    expect(showCompliancePreview('cn', true, cn, 'icp')).toBe(false);
+    expect(showCompliancePreview('cn', true, cn, 'public-security')).toBe(true);
+    expect(showCompliancePreview('cn', false, cn, 'public-security')).toBe(false);
   });
 
   it.each(['cn', 'global'] as const)('limits the empty-slot hint to CN DEV, without adding an entry (%s)', region => {
-    const entries = getComplianceEntries(region);
-    expect(showCompliancePreview(region, true, entries)).toBe(region === 'cn');
-    expect(showCompliancePreview(region, false, entries)).toBe(false);
+    const entries = getComplianceEntries(region, empty);
     expect(entries).toEqual([]);
     // Approved fixtures replace the hint; Global additional notices stay valid.
     const configured = getComplianceEntries(region, records);
-    expect(showCompliancePreview(region, true, configured)).toBe(false);
-    expect(showCompliancePreview(region, false, configured)).toBe(false);
+    for (const kind of ['icp', 'public-security'] as const) {
+      expect(showCompliancePreview(region, true, entries, kind)).toBe(region === 'cn');
+      expect(showCompliancePreview(region, false, entries, kind)).toBe(false);
+      expect(showCompliancePreview(region, true, configured, kind)).toBe(false);
+      expect(showCompliancePreview(region, false, configured, kind)).toBe(false);
+    }
     expect(configured).toHaveLength(region === 'cn' ? 3 : 1);
   });
 

@@ -5,11 +5,13 @@ import { Popover } from '@base-ui/react/popover';
 export function Tooltip({
   children,
   content,
+  borderless,
   open,
   onOpenChange,
 }: {
   children: ReactElement;
   content: ReactNode;
+  borderless?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }) {
@@ -22,7 +24,7 @@ export function Tooltip({
           collisionPadding={12}
           className={styles.positioner}
         >
-          <BaseTooltip.Popup className={styles.popup}>
+          <BaseTooltip.Popup className={borderless ? `${styles.popup} ${styles.borderless}` : styles.popup}>
             {content}
           </BaseTooltip.Popup>
         </BaseTooltip.Positioner>

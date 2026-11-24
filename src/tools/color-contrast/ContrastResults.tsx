@@ -1,9 +1,12 @@
 import { CheckIcon, XIcon } from '@phosphor-icons/react';
 import type { Locale } from '../../i18n/locale';
 import { Button } from '../../ui/Button';
+import { SelectField } from '../../ui/SelectField';
 import { tr } from '../general/ui';
 import { contrastTargets, suggestContrast, type ContrastTarget, type RGB } from './core';
 import s from './color-contrast.module.scss';
+
+const targetOptions = contrastTargets.map(target => ({ value: String(target), label: `${target}:1` }));
 
 function Threshold({ ratio, minimum, locale }: { ratio: number; minimum?: number; locale: Locale }) {
   if (minimum === undefined) return <td aria-label={tr(locale, '不适用', 'Not applicable')}>—</td>;
@@ -60,15 +63,13 @@ export function ContrastResults({ locale, ratio, foreground, background, target,
     <div className={s.correction}>
       <div className={s.correctionHeading}>
         <h3>{t('颜色修正', 'Color correction')}</h3>
-        <label className={s.target}>
-          {t('目标', 'Target')}
-          <select value={target} onChange={event => {
-            const next = contrastTargets.find(value => String(value) === event.currentTarget.value);
+        <div className={s.target}>
+          <SelectField label={t('目标', 'Target')} appearance="quiet" options={targetOptions}
+            value={String(target)} onValueChange={value => {
+            const next = contrastTargets.find(target => String(target) === value);
             if (next !== undefined) onTarget(next);
-          }}>
-            {contrastTargets.map(value => <option key={value} value={value}>{value}:1</option>)}
-          </select>
-        </label>
+          }} />
+        </div>
       </div>
       {ratio === undefined ? <p className={s.note}>{t('请输入两种有效颜色。', 'Enter two valid colors.')}</p>
         : needsFix ? suggestions.map(({ side, label, result }) => result ? (

@@ -46,6 +46,7 @@ const { getToolIcon } = await staticData('src/site/tool-icons.ts');
 const { getRelatedCatalogEntries } = await staticData('src/site/tool-content.ts');
 const { roleShowcases } = await staticData('src/site/homepage-showcase.ts');
 const { getToolboxGroups } = await staticData('src/site/toolbox-navigation.ts');
+const { getComplianceEntries } = await staticData('src/config/compliance.ts');
 const verifiedAssets = new Map();
 async function assertImportedAsset(url, source) {
   assert(source.startsWith('src/assets/'), 'Only component-owned sources are audited as imported assets');
@@ -206,17 +207,21 @@ function assertStaticNavigation(dom, homepage = false) {
   }
   assert.equal(dom.querySelectorAll('link[rel="modulepreload"], link[as="script"]').length, 0);
 }
-function copyWithoutLanguageLink(dom) {
+function englishPageCopy(dom) {
   const body = dom.body.cloneNode(true);
   for (const link of body.querySelectorAll('[data-language-link]')) {
     assert.equal(link.textContent.trim(), 'EN / 中');
     link.remove();
   }
+  const icpLink = body.querySelector('[data-site-footer] [data-footer-compliance-slot] [data-compliance-kind="icp"] > a');
+  if (configuredIcp && icpLink?.textContent.trim() === configuredIcp.label
+      && icpLink.getAttribute('href') === configuredIcp.href) icpLink.remove();
   return body.textContent;
 }
 
 const region = process.argv[2];
 assert(['cn', 'global'].includes(region), 'Specify cn or global');
+const configuredIcp = getComplianceEntries(region).find(entry => entry.kind === 'icp');
 const root = process.argv[3]
   ? resolve(process.argv[3])
   : resolve('dist', region);
@@ -655,8 +660,8 @@ assert.equal(
 );
 if (locale === 'en')
   assert(
-    !/[\u4e00-\u9fff]/u.test(copyWithoutLanguageLink(document)),
-    'Chinese copy in global homepage',
+    !/[\u4e00-\u9fff]/u.test(englishPageCopy(document)),
+    'Chinese copy in English homepage',
   );
 const fullHTML = await readHTML('tools/index.html');
 const fullCatalog = new JSDOM(fullHTML).window.document;
@@ -676,8 +681,8 @@ assertStaticNavigation(fullCatalog);
 assert(!fullHTML.includes('/lab/'), 'Lab links leaked into full catalog');
 if (locale === 'en')
   assert(
-    !/[\u4e00-\u9fff]/u.test(copyWithoutLanguageLink(fullCatalog)),
-    'Chinese copy in global catalog',
+    !/[\u4e00-\u9fff]/u.test(englishPageCopy(fullCatalog)),
+    'Chinese copy in English catalog',
   );
 const cards = [...catalog.querySelectorAll('[data-home-tool]')];
 assert.deepEqual([...document.querySelectorAll('[data-home-section]')].map(section => section.dataset.homeSection),
@@ -930,9 +935,11 @@ for (const page of htmlFiles) {
   if (records.length === 0) assert.equal(slot.childElementCount, 0, 'Unconfigured production slot stays empty');
   if (region === 'global')
     assert.equal(slot.querySelector('[data-compliance-kind="icp"], [data-compliance-kind="public-security"]'), null, 'Global never inherits CN registrations');
-  for (const icp of slot.querySelectorAll('[data-compliance-kind="icp"]')) {
-    assert(icp.querySelector('a > span')?.textContent.trim(), 'Approved ICP number itself is linked');
-    assert.equal(icp.querySelector('a')?.getAttribute('href'), 'https://beian.miit.gov.cn/');
+  const icpRecords = slot.querySelectorAll('[data-compliance-kind="icp"]');
+  assert.equal(icpRecords.length, configuredIcp ? 1 : 0, 'Footer renders the regional ICP configuration');
+  for (const icp of icpRecords) {
+    assert.equal(icp.querySelector('a > span')?.textContent.trim(), configuredIcp.label, 'The configured ICP number itself is linked');
+    assert.equal(icp.querySelector('a')?.getAttribute('href'), configuredIcp.href);
     assert.equal(icp.querySelectorAll('a').length, 1, 'No duplicate ICP query line');
   }
   assert.deepEqual([...legal.querySelectorAll('nav a')].map(a => a.getAttribute('href')), [localPath('/privacy/'), localPath('/terms/'), `${github}/blob/master/LICENSE`]);
@@ -1207,7 +1214,7 @@ for (const page of htmlFiles) {
       assert(section.querySelector('h2')?.textContent.trim() && section.querySelector('p')?.textContent.trim());
     assert(!/TODO|Lorem ipsum|待完善|即将补充/i.test(article.textContent), 'No placeholder information copy');
     assert.equal(languageURL.pathname, alternatePath(`/${informationKind}/`), 'Information language link preserves path');
-    if (locale === 'en') assert(!/[\u4e00-\u9fff]/u.test(copyWithoutLanguageLink(dom)), 'Chinese copy in Global information page');
+    if (locale === 'en') assert(!/[\u4e00-\u9fff]/u.test(englishPageCopy(dom)), 'Chinese copy in English information page');
     for (const link of article.querySelectorAll('a[href^="/"]')) {
       const target = link.getAttribute('href').slice(1) + 'index.html';
       assert(allHTMLFiles.includes(target), `Broken local information link: ${target}`);

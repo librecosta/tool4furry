@@ -14,7 +14,8 @@ const t = messages[locale];
 const github = 'https://github.com/librecosta/tool4furry';
 const companyName = locale === 'zh' ? '成都远岸开物科技有限公司' : 'Chengdu Yuanan Kaiwu Technology Co., Ltd.';
 const compliance = getComplianceEntries(region);
-const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, compliance);
+const icpPreview = showCompliancePreview(region, import.meta.env.DEV, compliance, 'icp');
+const policePreview = showCompliancePreview(region, import.meta.env.DEV, compliance, 'public-security');
 ---
 <footer data-site-footer class:list={[styles.fullBleed, styles.fluid, styles.footerRoot]}>
   <div class={styles.homeWidth}>
@@ -48,17 +49,15 @@ const compliancePreview = showCompliancePreview(region, import.meta.env.DEV, com
       </div>
     </nav>
     <div data-footer-compliance-slot class={styles.footerComplianceSlot}>
-      {compliance.length > 0 && <div data-site-compliance aria-label={locale === 'zh' ? '备案与许可信息' : 'Registrations and licenses'} class={styles.footerCompliance}>
+      {(compliance.length > 0 || icpPreview || policePreview) && <div data-site-compliance={compliance.length > 0 || undefined} aria-label={locale === 'zh' ? '备案与许可信息' : 'Registrations and licenses'} class={styles.footerCompliance}>
+        {icpPreview && <p data-footer-compliance-preview="icp" class:list={[styles.complianceCell, styles.compliancePreview]}>{locale === 'zh' ? 'ICP备案展示位置 · 开发预览' : 'ICP registration location · Development preview'}</p>}
         {compliance.map(entry => <div data-compliance-kind={entry.kind} class:list={[styles.complianceCell, entry.kind === 'public-security' && styles.compliancePolice, entry.kind === 'additional' && styles.complianceAdditional]}>
           {entry.href ? <a href={entry.href} class={styles.complianceLink}>
             {entry.iconSrc && <img src={entry.iconSrc} width="20" height="20" alt="" aria-hidden="true" class={styles.complianceIcon} />}
             <span class={styles.footerLinkText}>{entry.label}</span>
           </a> : <span class={styles.complianceText}>{entry.label}</span>}
         </div>)}
-      </div>}
-      {compliancePreview && <div data-footer-compliance-preview class={styles.footerCompliance}>
-        <p class:list={[styles.complianceCell, styles.compliancePreview]}>{locale === 'zh' ? 'ICP备案展示位置 · 开发预览' : 'ICP registration location · Development preview'}</p>
-        <p class:list={[styles.complianceCell, styles.compliancePolice, styles.compliancePreview]}>{locale === 'zh' ? '公安备案展示位置 · 开发预览' : 'Public security registration location · Development preview'}</p>
+        {policePreview && <p data-footer-compliance-preview="public-security" class:list={[styles.complianceCell, styles.compliancePolice, styles.compliancePreview]}>{locale === 'zh' ? '公安备案展示位置 · 开发预览' : 'Public security registration location · Development preview'}</p>}
       </div>}
     </div>
     <div data-footer-legal class={styles.footerBottom}>

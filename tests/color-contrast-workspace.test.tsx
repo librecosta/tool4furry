@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, expect, it, vi } from 'vitest';
 import type { Locale } from '../src/i18n/locale';
@@ -25,31 +25,31 @@ it('updates the preview and results, swaps colors, copies individual formats and
   const user = userEvent.setup();
   vi.stubGlobal('EyeDropper', undefined);
   mount();
-  expect(foreground().value).toBe('#3583D2');
+  expect(foreground().value).toBe('#F7CDAD');
   expect(background().value).toBe('#383131');
-  expect(result().textContent).toContain('3.23');
+  expect(result().textContent).toContain('8.65');
   expect(screen.queryByRole('button', { name: /pick .* from screen/i })).toBeNull();
   const sample = screen.getByText('Good design starts here.').closest<HTMLElement>('[lang="en"]')!;
-  expect(sample.style.color).toBe('rgb(53, 131, 210)');
+  expect(sample.style.color).toBe('rgb(247, 205, 173)');
   expect(sample.style.backgroundColor).toBe('rgb(56, 49, 49)');
   expect(screen.getByText('Button preview').style.color).toBe('rgb(56, 49, 49)');
   const copy = vi.spyOn(navigator.clipboard, 'writeText');
   for (const [format, text] of [
-    ['HEX', '#3583D2'],
-    ['RGB', 'rgb(53, 131, 210)'],
-    ['HSL', 'hsl(210.2, 63.6%, 51.6%)'],
+    ['HEX', '#F7CDAD'],
+    ['RGB', 'rgb(247, 205, 173)'],
+    ['HSL', 'hsl(25.9, 82.2%, 82.4%)'],
   ]) {
     await user.click(screen.getByRole('button', { name: 'Copy foreground ' + format }));
     expect(copy).toHaveBeenLastCalledWith(text);
   }
   click('Swap colors');
   expect(foreground().value).toBe('#383131');
-  expect(background().value).toBe('#3583D2');
-  expect(result().textContent).toContain('3.23');
+  expect(background().value).toBe('#F7CDAD');
+  expect(result().textContent).toContain('8.65');
   edit(foreground(), 'rgb(20% 40% 60%)');
   expect(sample.style.color).toBe('rgb(51, 102, 153)');
   click('Reset');
-  expect(foreground().value).toBe('#3583D2');
+  expect(foreground().value).toBe('#F7CDAD');
   expect(background().value).toBe('#383131');
 });
 
@@ -69,23 +69,30 @@ it('keeps the other conversion valid and clears stale results after invalid inpu
   expect(result().textContent).toContain('12.71');
 });
 
-it('applies a suggestion only on demand and reports when neither side can reach the target', () => {
+it('applies suggestions on demand and checks the custom target selector', async () => {
+  const user = userEvent.setup();
   mount();
+  edit(foreground(), '#3583D2');
   expect(foreground().value).toBe('#3583D2');
   click('Apply foreground suggestion');
   expect(background().value).toBe('#383131');
   expect(contrast(parseColor(foreground().value), parseColor(background().value))).toBeGreaterThanOrEqual(4.5);
   expect(screen.getByText('These colors meet the target.')).toBeTruthy();
   click('Reset');
+  edit(foreground(), '#3583D2');
   click('Apply background suggestion');
   expect(foreground().value).toBe('#3583D2');
   expect(contrast(parseColor(foreground().value), parseColor(background().value))).toBeGreaterThanOrEqual(4.5);
   edit(foreground(), '#777');
   edit(background(), '#888');
-  fireEvent.change(screen.getByRole('combobox', { name: 'Target' }), { target: { value: '7' } });
+  const target = screen.getByRole('combobox', { name: 'Target' });
+  expect(target.tagName).toBe('BUTTON');
+  await user.click(target);
+  await user.click(await screen.findByRole('option', { name: '7:1' }));
+  await waitFor(() => expect(screen.queryByRole('listbox')).toBeNull());
   expect(screen.getAllByText(/target is out of reach/i)).toHaveLength(2);
   click('Reset');
-  expect(screen.getByRole<HTMLSelectElement>('combobox', { name: 'Target' }).value).toBe('4.5');
+  expect(target.textContent).toContain('4.5:1');
 });
 
 it.each([
@@ -102,7 +109,7 @@ it.each([
 
 it('localizes the workspace and keeps the English preview in Chinese', () => {
   mount('zh');
-  expect(screen.getByRole<HTMLInputElement>('textbox', { name: '前景色' }).value).toBe('#3583D2');
+  expect(screen.getByRole<HTMLInputElement>('textbox', { name: '前景色' }).value).toBe('#F7CDAD');
   expect(screen.getByRole('button', { name: '交换颜色' })).toBeTruthy();
   expect(screen.getByRole('cell', { name: '不适用' }).textContent).toBe('—');
   expect(screen.getByText('Good design starts here.').closest('[lang="en"]')).toBeTruthy();
@@ -121,7 +128,7 @@ it('handles screen-picking cancellation, success and invalidation after an edit,
     return requests.at(-1)!;
   };
   await act(async () => start().reject(new DOMException('Canceled', 'AbortError')));
-  expect(foreground().value).toBe('#3583D2');
+  expect(foreground().value).toBe('#F7CDAD');
   const success = start();
   await act(async () => success.resolve({ sRGBHex: '#ad42c8' }));
   expect(foreground().value).toBe('#AD42C8');

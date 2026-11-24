@@ -53,7 +53,7 @@ export function ColorEditor({ side, locale, value, parsed: { color, error }, onC
     <label className={s.editorLabel} htmlFor={id} id={`${id}-label`}>{label}</label>
     <div className={s.field} data-invalid={error ? '' : undefined}>
       <Popover.Root>
-        <Tooltip content={pickerLabel}>
+        <Tooltip borderless content={pickerLabel}>
           <Popover.Trigger render={<IconButton label={pickerLabel} variant="ghost" className={s.swatchButton}>
             <span className={s.swatch} style={{ backgroundColor: color?.hex }} aria-hidden />
           </IconButton>} />
@@ -71,7 +71,7 @@ export function ColorEditor({ side, locale, value, parsed: { color, error }, onC
       <input id={id} type="text" value={value} onChange={event => onChange(event.currentTarget.value)}
         placeholder="#RGB / #RRGGBB" spellCheck={false} autoComplete="off" autoCapitalize="off"
         aria-invalid={error ? true : undefined} aria-describedby={error ? `${id}-error` : undefined} />
-      {onPick && <Tooltip content={dropperLabel}>
+      {onPick && <Tooltip borderless content={dropperLabel}>
         <IconButton label={dropperLabel} variant="ghost" className={s.actionIcon} loading={picking} onClick={onPick}>
           <EyedropperIcon size={20} aria-hidden />
         </IconButton>
@@ -85,7 +85,7 @@ export function ColorEditor({ side, locale, value, parsed: { color, error }, onC
         return <div key={format} className={s.format}>
           <dt>{name}</dt>
           <dd><code>{color?.[format] ?? '—'}</code></dd>
-          <dd><Tooltip content={copyLabel}>
+          <dd><Tooltip borderless content={copyLabel}>
             <IconButton label={copyLabel} variant="ghost" className={s.actionIcon} disabled={!color} onClick={() => void copy(format)}>
               <CopySimpleIcon size={16} aria-hidden />
             </IconButton>
