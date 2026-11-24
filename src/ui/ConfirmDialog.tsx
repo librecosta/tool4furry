@@ -14,6 +14,7 @@ export interface ConfirmDialogProps {
   onConfirm: () => void;
   onCancel?: () => void;
   danger?: boolean;
+  popupClassName?: string;
   trigger: ReactElement;
 }
 export function ConfirmDialog({
@@ -26,6 +27,7 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
   danger = false,
+  popupClassName,
   trigger,
 }: ConfirmDialogProps) {
   const cancelRef = useRef<HTMLButtonElement>(null);
@@ -42,7 +44,7 @@ export function ConfirmDialog({
         <AlertDialog.Backdrop forceRender className={[styles.backdrop, motion.backdrop].filter(Boolean).join(' ')} />
         <AlertDialog.Popup
           initialFocus={cancelRef}
-          className={[styles.popup, controls.stack, motion.dialog].filter(Boolean).join(' ')}
+          className={[styles.popup, controls.stack, motion.dialog, popupClassName].filter(Boolean).join(' ')}
         >
           <AlertDialog.Title className={[controls.heading, styles.title].filter(Boolean).join(' ')}>
             {title}

@@ -96,7 +96,7 @@ export function FrameGallery({ frames, selected, info, locale, disabled, onSelec
           </Popover.Portal>
         </Popover.Root>
         <Button size="sm" disabled={!selected.size || disabled} onClick={onZip}>{t('下载所选 ZIP', 'Download selected ZIP')}</Button>
-        <ConfirmDialog open={clear} onOpenChange={setClear} danger
+        <ConfirmDialog open={clear} onOpenChange={setClear} danger popupClassName={s.confirmation}
           title={t('清空画廊？', 'Clear the frame gallery?')}
           description={t('清除本次提取的所有图片。', 'Remove all extracted images from this gallery.')}
           confirmLabel={t('清空', 'Clear')} cancelLabel={t('取消', 'Cancel')} onConfirm={onClear}

@@ -21,6 +21,16 @@
   .replace {
     border: 0;
     flex: 0 0 auto;
+    transition-duration: 420ms;
+
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: 0ms;
+    }
+  }
+
+  .status button, .galleryActions > button, .extractBottom > button,
+  .sheet > button, .confirmation button {
+    border: 0;
   }
 
   .fileIcon {
@@ -352,6 +362,19 @@
     background: var(--t4f-surface-floating);
     border-radius: var(--t4f-radius-lg);
     box-shadow: var(--t4f-shadow-floating);
+    transition-duration: 180ms;
+
+    :is(input:is(:not([type]), [type='text']), [role='combobox']) {
+      background-color: color-mix(in srgb, var(--t4f-surface-floating) 84%, var(--t4f-text-primary));
+
+      &:where(:hover, [data-popup-open]) {
+        background-color: color-mix(in srgb, var(--t4f-surface-floating) 79%, var(--t4f-text-primary));
+      }
+
+      &:where(:focus-visible) {
+        background-color: color-mix(in srgb, var(--t4f-surface-floating) 72%, var(--t4f-support-lavender));
+      }
+    }
   }
 
   .controlTooltip, .sheet {
@@ -364,11 +387,14 @@
     }
   }
 
-  .workspace button, .sheet, .sheet button, .controlTooltip,
+  .transportButton, .play, .modes button, .controlTooltip,
   :is(.settings, .sheet) input:is(:not([type]), [type='text']) {
-    transition-duration: 420ms;
+    transition-duration: var(--t4f-duration-fast);
+  }
 
-    @media (prefers-reduced-motion: reduce) {
+  @media (prefers-reduced-motion: reduce) {
+    .transportButton, .play, .modes button, .controlTooltip, .sheet,
+    :is(.settings, .sheet) input:is(:not([type]), [type='text']) {
       transition-duration: 0ms;
     }
   }

@@ -66,7 +66,8 @@ describe('React native styling and cascade ownership', () => {
     for (const part of ['trigger', 'popup', 'item']) {
       expect(select).toMatch(new RegExp('\\.' + part + '\\s*\\{[^}]*border: 0;[^}]*outline: none;'));
     }
-    expect(select).toContain('transition-duration: 420ms');
+    expect(select).toContain('transition-duration: var(--t4f-duration-fast)');
+    expect(select).toContain('transition-duration: 180ms');
     expect(select).toContain('prefers-reduced-motion: reduce');
     for (const name of ['SelectField', 'Tooltip', 'ConfirmDialog', 'FilePreviewDialog', 'Toast']) {
       const css = compile(`src/ui/${name}.module.scss`).css;

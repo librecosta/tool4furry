@@ -181,7 +181,7 @@ export default function VideoFrameExtractor({ locale }: ToolProps) {
             event.target.value = '';
             if (file) void load(file);
           }} />
-          {frames.length ? <ConfirmDialog open={replace} onOpenChange={setReplace}
+          {frames.length ? <ConfirmDialog open={replace} onOpenChange={setReplace} popupClassName={s.confirmation}
             title={t('更换视频？', 'Replace the video?')}
             description={t('新视频读取成功后将清空当前画廊。', 'The current gallery will clear when the new video opens.')}
             confirmLabel={t('选择视频', 'Choose video')} cancelLabel={t('取消', 'Cancel')}

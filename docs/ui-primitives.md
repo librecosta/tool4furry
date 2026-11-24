@@ -13,11 +13,11 @@
 | `Button.tsx` / `Button` | 原生 button 属性和 ref；`variant`: primary/secondary/ghost/danger，`size`: sm/md；默认 type=button；disabled/loading 禁止操作，loading 保留文字占位与宽度 |
 | `Button.tsx` / `IconButton` | 同上，必须提供 `label` 作为 aria-label，children 放图标 |
 | `TextField.tsx` / `TextField`, `TextAreaField` | `value: string`、`onChange(value: string)`、label/hint/error/disabled/required；保留适用的原生输入属性 |
-| `SelectField.tsx` / `SelectField` | `value: string`、`onValueChange(string)`、`options: {value,label,disabled?}[]`、placeholder；空字符串表示未选；选项应使用非空唯一 value。触发器、菜单和选项统一无边框，悬停、键盘焦点及选中态由底色与选中勾区分。交互过渡为 420ms，遵循减少动态效果偏好。`appearance="quiet"` 使用面板底色 |
+| `SelectField.tsx` / `SelectField` | `value: string`、`onValueChange(string)`、`options: {value,label,disabled?}[]`、placeholder；空字符串表示未选；选项应使用非空唯一 value。触发器、菜单和选项统一无边框，悬停、键盘焦点及选中态由底色与选中勾区分。触发器和选项使用快速过渡，菜单使用短暂淡入淡出，遵循减少动态效果偏好。`appearance="quiet"` 使用面板底色 |
 | `CheckboxField.tsx` / `CheckboxField` | `checked: boolean`、`onCheckedChange(boolean)`、label/hint/error/disabled/required |
 | `SliderField.tsx` / `SliderField` | 单值 `value: number`、`onValueChange(number)`、min/max/step、label/hint/error/disabled、可选 unit/name；默认 0–100、步长 1 |
 | `Tooltip.tsx` / `Tooltip` | children 为可接收 props/ref 的按钮，content 为辅助提示；可选 open/onOpenChange；按钮仍需独立可访问名称 |
-| `ConfirmDialog.tsx` / `ConfirmDialog` | 必须提供受控 open/onOpenChange、trigger、title/description、confirmLabel/cancelLabel、onConfirm；可选 onCancel/danger。初始聚焦取消，只有确认按钮触发 onConfirm |
+| `ConfirmDialog.tsx` / `ConfirmDialog` | 必须提供受控 open/onOpenChange、trigger、title/description、confirmLabel/cancelLabel、onConfirm；可选 onCancel/danger/popupClassName。初始聚焦取消，只有确认按钮触发 onConfirm |
 | `Toast.tsx` / `useToast` | `notify({type?,title,description?,id?,timeout?})` 返回 id；`close(id?)`；同 id 更新并刷新计时；type 为 info/success/warning/error |
 | `UiProvider.tsx` / `UiProvider` | children + `labels`（通知区域、关闭与四类状态文案）；包裹 Base UI Tooltip/Toast Provider 与 ToastViewport |
 | `FileTaskList.tsx` / `FileTaskList` | `label` + 受控 `items`：稳定 id、name、可选 media 槽位（44px，缺省回退 icon）、metadata/output、status/statusLabel、error 和 actions；状态为 validating/queued/processing/ready/stale/error，操作提供 label、回调或下载链接及禁用原因。两行紧凑布局、44px 操作区；不持有 File/Blob、Object URL 或媒体任务。 |

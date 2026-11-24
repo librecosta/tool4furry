@@ -53,6 +53,7 @@
     padding: var(--t4f-space-4);
     box-shadow: var(--t4f-shadow-floating);
     transition-property: opacity, translate;
+    transition-duration: 180ms;
 
     &:where([data-starting-style], [data-ending-style]) {
       opacity: 0;
@@ -103,8 +104,11 @@
     flex-shrink: 0;
   }
 
+  .trigger, .item {
+    transition-duration: var(--t4f-duration-fast);
+  }
+
   .trigger, .popup, .item {
-    transition-duration: 420ms;
     transition-timing-function: ease-out;
 
     @media (prefers-reduced-motion: reduce) {
