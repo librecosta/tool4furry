@@ -120,7 +120,6 @@ export function Toolbar({ t, mode, onMode, fullscreen, onFullscreen, onOpen, und
         <Menu.CheckboxItemIndicator className={s.check} aria-hidden="true">✓</Menu.CheckboxItemIndicator>
         {t('允许加载远程图片', 'Allow remote images')}
       </Menu.CheckboxItem>
-      <p className={menu.note}>{t('远程图片会向第三方发送请求，可能暴露你的 IP。', 'Remote images make requests to third parties and may reveal your IP.')}</p>
     </Dropdown>
     <div className={s.viewCluster} role="group" aria-label={t('文档视图', 'Document views')}>
       {views.map(({ id, label, icon: Glyph }) => <Icon key={id} label={label} pressed={mode === id} onClick={() => onMode(id)}><Glyph size={17} /></Icon>)}
