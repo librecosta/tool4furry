@@ -11,7 +11,7 @@ describe('catalog-only DEV samples', () => {
     for (const locale of ['zh', 'en'] as const) for (const dev of [false, true]) {
       const real = getCatalogEntries(region, tools, dev, locale), sections = getCatalogSections(region, tools, dev, locale);
       expect(real.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash', 'text-cleaner', 'text-diff', 'subtitle-tools', 'json-formatter', 'url-base64', 'timestamp-converter',
-        ...(dev ? ['qr-code-generator'] : []), 'color-contrast', 'audio-trimmer',
+        ...(dev ? ['qr-code-generator'] : []), 'color-contrast', 'audio-trimmer', 'markdown-editor',
         ...(dev ? draftIds.filter(id => id !== 'qr-code-generator') : [])]);
       expect(addCatalogFixture(real, sections, locale)).toEqual({ entries: real, sections, fixtureCount: 0 });
       expect(addCatalogFixture(real, sections, locale, 'off')).toEqual({ entries: real, sections, fixtureCount: 0 });

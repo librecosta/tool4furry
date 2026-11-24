@@ -80,7 +80,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64'], generalToolboxContent['timestamp-converter'], generalToolboxContent['color-contrast'], generalToolboxContent['audio-trimmer']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64'], generalToolboxContent['timestamp-converter'], generalToolboxContent['color-contrast'], generalToolboxContent['audio-trimmer'], generalToolboxContent['markdown-editor']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -848,7 +848,7 @@ for (const page of htmlFiles) {
   );
   const dom = new JSDOM(content).window.document;
   const scopedToolStyles = [...dom.head.querySelectorAll('link[rel="stylesheet"]')]
-    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
+    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|MarkdownEditor|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
   const toolId = dom.querySelector('main[data-tool-id]')?.dataset.toolId;
   const expectedToolStyles = [];
   if (toolId === 'subtitle-tools') expectedToolStyles.push('SubtitleTools');
@@ -857,6 +857,7 @@ for (const page of htmlFiles) {
   if (toolId === 'timestamp-converter') expectedToolStyles.push('TimestampConverter');
   if (toolId === 'color-contrast') expectedToolStyles.push('ColorContrast');
   if (toolId === 'audio-trimmer') expectedToolStyles.push('AudioTrimmer');
+  if (toolId === 'markdown-editor') expectedToolStyles.push('MarkdownEditor');
   if (['color-contrast', 'image-watermark', 'palette-extractor'].includes(toolId) && files.some(file => /\/react-colorful\.[\w-]+\.css$/.test(file)))
     expectedToolStyles.push('react-colorful');
   if (['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
@@ -979,6 +980,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/timestamp-converter/index.html') assertToolContent(dom, locale, generalToolboxContent['timestamp-converter'], 4, 4, 6);
     if (page === 'tools/color-contrast/index.html') assertToolContent(dom, locale, generalToolboxContent['color-contrast'], 4, 4, 6);
     if (page === 'tools/audio-trimmer/index.html') assertToolContent(dom, locale, generalToolboxContent['audio-trimmer'], 4, 4, 6);
+    if (page === 'tools/markdown-editor/index.html') assertToolContent(dom, locale, generalToolboxContent['markdown-editor'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1588,7 +1590,8 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     }).map(([owner]) => owner);
   }
 
-  const runtimeMarkers = /data-text-editor|data-editor-license|cm-content|cm-lineNumbers/;
+  const markdownEntry = findAsset('MarkdownEditor', '.js')[0];
+  const runtimeMarkers = /data-text-editor|data-editor-license/;
   const notice = await readFile('src/ui/text-editor/codemirror.NOTICE.txt');
   const notices = findAsset('codemirror.NOTICE', '.txt');
   const runtimeOwners = [...scripts].filter(([, text]) => runtimeMarkers.test(text)).map(([file]) => file);
@@ -1621,6 +1624,44 @@ if (!published.some(tool => tool.id === 'file-hash')) {
   const jsonEntry = entries.get('json-formatter');
   const jsonWorkers = files.filter(file => /(?:^|\/)json\.worker[.-][\w-]+\.js$/.test(file));
   const jsOwners = matches => [...scripts].filter(([, source]) => matches(source)).map(([file]) => file);
+  if (published.some(tool => tool.id === 'markdown-editor')) {
+    const [entry, ...extraEntries] = findAsset('MarkdownEditor', '.js');
+    const [style, ...extraStyles] = findAsset('MarkdownEditor', '.css');
+    const [preview, ...extraPreviews] = findAsset('math-preview', '.js');
+    const [katex, ...extraKatex] = findAsset('katex', '.js');
+    const [highlight, ...extraHighlights] = findAsset('highlight', '.js');
+    assert(entry && !extraEntries.length && style && !extraStyles.length &&
+      preview && !extraPreviews.length && katex && !extraKatex.length &&
+      highlight && !extraHighlights.length, 'Markdown owns one editor entry, style, math preview and highlighter adapter');
+    const [loader, ...otherLoaders] = importsOf(entry, true);
+    assert(loader?.includes('ToolRuntime') && !otherLoaders.length, 'Only ToolRuntime loads the Markdown workspace');
+    assert.deepEqual(importsOf(entry, false), [], 'No static imports of the Markdown workspace');
+    assert.deepEqual(importsOf(preview, true), [entry], 'Only Markdown opens the math preview');
+    assert.deepEqual(importsOf(preview, false), [], 'Math preview remains lazy');
+    assert.deepEqual(importsOf(katex, false), [preview], 'Only the math preview statically imports KaTeX');
+    assert.deepEqual(importsOf(katex, true), [entry], 'HTML delivery uses bare KaTeX only as needed');
+    assert.deepEqual(importsOf(highlight, false), [], 'Markdown highlighting remains lazy');
+    assert.deepEqual(importsOf(highlight, true), [entry], 'Only Markdown loads its highlighter adapter');
+    assert.deepEqual(jsOwners(source => /data-markdown-workspace|md-image-placeholder/.test(source)), [entry],
+      'Markdown workspace and renderer stay private to its lazy entry');
+    assert.deepEqual(cssFiles.filter((_, index) => outputCSS[index].includes('data-markdown-article')), [style],
+      'Markdown article styling stays in its own stylesheet');
+    const mathStyles = cssFiles.filter((_, index) => /font-family:\s*KaTeX_/.test(outputCSS[index]));
+    assert.equal(mathStyles.length, 1, 'KaTeX fonts have a dedicated stylesheet');
+    assert.deepEqual(jsOwners(source => source.includes(mathStyles[0])), [preview], 'Only Markdown preview loads the KaTeX stylesheet');
+    const mathFonts = files.filter(file => /\/KaTeX_[^/]+\.(?:ttf|woff2?)$/.test(file));
+    assert(mathFonts.length > 0, 'Math preview ships local KaTeX fonts');
+    const mathCSS = outputCSS[cssFiles.indexOf(mathStyles[0])];
+    for (const font of mathFonts) assert(mathCSS.includes(basenameOf(font)), 'KaTeX preview references ' + font);
+    for (const [stem, path] of [
+      ['dependencies.NOTICE', 'src/tools/markdown-editor/dependencies.NOTICE.txt'],
+      ['codemirror.NOTICE', 'src/ui/text-editor/codemirror.NOTICE.txt'],
+    ]) {
+      const [asset, ...extraAssets] = findAsset(stem, '.txt');
+      assert(asset && !extraAssets.length && scripts.get(entry).includes(basenameOf(asset)), 'Markdown links its full notice: ' + stem);
+      assert((await readFile(resolve(root, asset))).equals(await readFile(path)), 'Markdown notice preserves the full source: ' + stem);
+    }
+  }
   const timestampPublished = published.some(tool => tool.id === 'timestamp-converter');
   const timestampEntries = findAsset('TimestampConverter', '.js');
   const timestampStyles = findAsset('TimestampConverter', '.css');
@@ -1755,8 +1796,22 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     assert.equal(runtimeOwners.length, 1, 'One CodeMirror runtime for the available editor tools');
     const [editor] = runtimeOwners;
     const editorSource = scripts.get(editor);
+    const codeMirrorCore = jsOwners(source => source.includes('cm-content') && source.includes('cm-lineNumbers') && source.includes('cm-editor'));
+    assert.equal(codeMirrorCore.length, 1, 'Only one implementation of the CodeMirror core');
     assert.deepEqual(jsOwners(source => editorSelectors.test(source)).sort(),
-      [...new Set([editor, ...(jsonEntry ? [jsonEntry] : [])])].sort(), 'Only CodeMirror and the private JSON editor theme contain editor selectors');
+      [...new Set([editor, ...codeMirrorCore, ...[jsonEntry, markdownEntry].filter(Boolean)])].sort(),
+      'Only CodeMirror and private editor themes contain editor selectors');
+    if (markdownEntry) {
+      const [core] = codeMirrorCore;
+      const directUsers = importsOf(core, false);
+      const support = directUsers.filter(file => ![editor, markdownEntry, jsonEntry].includes(file));
+      assert(directUsers.includes(markdownEntry) && directUsers.includes(editor), 'Markdown and the shared editor use the same CodeMirror core');
+      for (const file of support) {
+        assert(importsOf(file, false).every(owner => [jsonEntry, markdownEntry].includes(owner)) &&
+          !importsOf(file, true).length, 'Only the lazy Markdown and JSON editors consume the editor core support chunk');
+      }
+      assert.deepEqual(importsOf(core, true), [], 'No independent dynamic import of the CodeMirror core');
+    }
     for (const marker of ['data-text-editor', 'data-editor-license', 'cm-content'])
       assert(editorSource.includes(marker), 'Complete editor runtime: ' + marker);
     const shared = editorTools.length > 1;
@@ -1786,8 +1841,8 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     }
     assert.equal(notices.length, 1, 'One complete CodeMirror runtime license resource');
     assert((await readFile(resolve(root, notices[0]))).equals(notice), 'The emitted editor license matches the complete MIT notices');
-    assert.deepEqual([...scripts].filter(([, text]) => text.includes(basenameOf(notices[0]))).map(([file]) => file),
-      [editor], 'Only the editor runtime owns the MIT notice URL');
+    assert.deepEqual(jsOwners(text => text.includes(basenameOf(notices[0]))).sort(),
+      [editor, ...findAsset('MarkdownEditor', '.js')].sort(), 'Only the editor runtime and Markdown link to the MIT notice');
   }
 
   const diffEntry = entries.get('text-diff');

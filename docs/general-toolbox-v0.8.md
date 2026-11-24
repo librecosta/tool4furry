@@ -1,14 +1,15 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast / Audio Trimmer 已获得 CN/Global Published 源码资格，其余 8 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（21 Published / 8 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast / Audio Trimmer / Markdown Editor 已获得 CN/Global Published 源码资格，其余 7 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（22 Published / 7 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
-## Markdown Editor — V0.8-B16-D1 一体式编辑与实时预览
+## Markdown Editor — V0.8-B16 一体式编辑与 Beta 资格
 
 - 同一外壳提供格式工具栏、CodeMirror 6 源码区、连续预览区和状态栏。桌面默认分栏，窄屏默认编辑。视图切换保留文档、选区和撤销状态，分隔线可拖动、键盘调整及恢复等宽。同步滚动由 Marked 块的源码行和两侧实际布局位置插值，预览过期或单栏时暂停。
 - Marked 和 DOMPurify 提供 GitHub 风格的 Markdown 与安全预览。代码语言按需高亮，GitHub Alerts 保留独立标题及图标。预览中的 KaTeX 按需加载并关闭信任模式。预览默认加载合规的 HTTP/HTTPS Markdown 图片，关闭开关后显示 Alt 占位。开关在当前工作区会话内有效。
 - 本地导入支持 UTF-8 的 `.md`、`.markdown` 和 `.txt`。覆盖未保存修改前需确认。标题栏文件名可直接编辑，下载按所选格式使用相应扩展名。Markdown 直接取自编辑器源码，按 LF 作为换行符。HTML 复制和下载在交付时重新生成安全内容，下载含内联排版和原生 MathML，可离线打开。HTML 保留图片占位。
 - 自动预览在 160,000 UTF-16 单元以上暂停。手动预览和 HTML 导出各以 1,200,000 源码单元、8,000 个解析 Token 和 2,000,000 HTML 单元为预算。超预算明确反馈，源码仍可编辑和导出。状态栏按 UTF-16 单元统计，UTF-8 表示文件编码。
-- Markdown 语言 6.5.2、查找 6.7.2、Lezer Markdown 1.8.1 和 KaTeX 0.19.1 已锁定。许可文件存放在源码的 [Markdown NOTICE](../src/tools/markdown-editor/dependencies.NOTICE.txt) 和 [CodeMirror NOTICE](../src/ui/text-editor/codemirror.NOTICE.txt)。工具继续 Draft，发布资格及 SEO 留给 D2。[初版 Chromium 验收记录](evidence/b16-markdown/design-qa.md)
+- B16-D2 增加双语静态指南，Markdown Editor 获得 CN/Global Published 源码资格。两个地区各生成 44 个工具详情页。工作区、渲染器、Markdown 语言与查找扩展仅随编辑器加载。KaTeX 预览样式与字体按需加载。
+- Markdown 语言 6.5.2、查找 6.7.2、Lezer Markdown 1.8.1 和 KaTeX 0.19.1 维持锁定。工具使用 `rel="license"` 引用构建中交付的 [Markdown NOTICE](../src/tools/markdown-editor/dependencies.NOTICE.txt) 和 [CodeMirror NOTICE](../src/ui/text-editor/codemirror.NOTICE.txt)。正式产物浏览器验证见 [B16-D2 验收记录](evidence/b16-markdown/design-qa.md#b16-d2-正式产物验收)。
 
 ## Audio Trimmer — V0.8-B15 波形与 Beta 资格
 

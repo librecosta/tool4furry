@@ -26,10 +26,12 @@ it('uses the bounded page render in the interactive viewer, supports zoom/keyboa
   const user = userEvent.setup();
   const { unmount } = render(preview());
   const image = await screen.findByRole('img', { name: 'Preview of page 1' });
-  fireEvent.load(image);
+  // Wait for the viewer's initial source reset and fit to commit before
+  // dispatching the synthetic load event. A real raster loads after mounting.
+  await waitFor(() => expect(image.style.transform).toContain(`scale(${600 / 1555})`));
+  await act(async () => fireEvent.load(image));
   const actual = screen.getByRole('button', { name: 'Actual size' });
-  // The asynchronous raster mounts a separate viewer. Wait for its loaded state
-  // and React's committed interaction updates, rather than reading a prior fit.
+  // Wait for React's committed interaction updates before reading the zoom.
   await waitFor(() => expect(actual).toHaveProperty('disabled', false));
   const viewport = screen.getByRole('region', { name: 'PDF page preview' });
   const fitted = image.style.transform;

@@ -1,0 +1,241 @@
+{
+  "browser": "156.0.8078.4",
+  "observations": [
+    {
+      "scenario": "desktop",
+      "locale": "zh-CN",
+      "width": 1280,
+      "theme": "dark plus light toggle",
+      "clipboard": [
+        "Markdown",
+        "HTML",
+        "code"
+      ],
+      "realResize": true,
+      "fullscreenEscape": true,
+      "searchReplace": true,
+      "chromiumComposition": "你好",
+      "previewImageRequests": 1,
+      "clipboardLineEndings": "CRLF",
+      "mediaRequests": [
+        {
+          "url": "https://markdown-image.test/pixel.png",
+          "referer": null
+        }
+      ],
+      "remoteImageOptOut": true,
+      "fileRename": true,
+      "localMathStyleAndFont": true,
+      "notices": [
+        "/_astro/dependencies.NOTICE.CHHfDFHg.txt",
+        "/_astro/codemirror.NOTICE.6_RAYuGZ.txt"
+      ],
+      "md": {
+        "file": "发布 notes.md",
+        "mime": "text/markdown;charset=utf-8",
+        "length": 473,
+        "sha256": "4f8cc2dba6f61fb3a5e0c3b45c2b87b68b04f9310ca95f4330605ca65a99ec8d",
+        "sourceMatch": true
+      },
+      "html": {
+        "file": "发布 notes.html",
+        "mime": "text/html;charset=utf-8",
+        "length": 6757,
+        "sha256": "ca837ed660f59aeece0fd1e71b45bde2e729e575a8a1d54588d399726dccefcf"
+      }
+    },
+    {
+      "scenario": "scroll",
+      "fromSource": {
+        "s": 22251,
+        "p": 7970,
+        "sp": 0.47070147233034354,
+        "pp": 0.3069753110195278
+      },
+      "fromPreview": {
+        "s": 41396,
+        "p": 18296,
+        "sp": 0.8689519091500661,
+        "pp": 0.704695143088241
+      },
+      "previewAnchorLine": 633,
+      "sourceAnchorLine": 633,
+      "disableStopsSync": true
+    },
+    {
+      "scenario": "long",
+      "sourceUnits": 1346400,
+      "sourceBytes": 1438200,
+      "lines": 15301,
+      "importMs": 796,
+      "scrollTop": 548539,
+      "renderedLines": 25,
+      "exportedBytes": 1438215,
+      "sha256": "eaa81537f2ab43e9a2f4d3bfb52c3687a478a85a145c586ce98430dae6af181b",
+      "byteMatch": true,
+      "staleInert": true,
+      "manualRefreshAndHtmlBudgetRejected": true
+    },
+    {
+      "scenario": "offline-file",
+      "filename": "发布 notes.html",
+      "mathElements": 2,
+      "displayMathBounds": {
+        "x": 248,
+        "y": 453.90625,
+        "width": 784,
+        "height": 31.03125
+      },
+      "network": [],
+      "scripts": 0
+    },
+    {
+      "scenario": "mobile simulation",
+      "locale": "en",
+      "width": 390,
+      "theme": "light",
+      "default": "editor",
+      "preview": true,
+      "horizontalOverflow": false,
+      "fileDrop": true,
+      "clipboard": true,
+      "markdown": {
+        "file": "Mobile Proof.md",
+        "sha256": "ca1b78447fca1d48cf5b1542d120b792fff75f2340fefa26aab723a0217a77d4"
+      },
+      "html": {
+        "file": "Mobile Proof.html",
+        "sha256": "eb311d42777bfc1ad20a84de9e70f9d9e63ef295f714f742e1169246aa963155"
+      }
+    },
+    {
+      "scenario": "production routes",
+      "region": "cn",
+      "pages": [
+        {
+          "path": "/tools/markdown-editor/",
+          "lang": "zh-CN",
+          "title": "在线 Markdown 编辑器 - 实时预览与 HTML 导出 | Tool4Furry",
+          "h1": [
+            "Markdown 编辑器"
+          ],
+          "description": "在线编写和预览 Markdown，支持语法高亮、格式化工具栏、GFM 表格、任务列表、数学公式及同步滚动，可导入本地文档并导出 Markdown 或 HTML。",
+          "og": "在线 Markdown 编辑器 - 实时预览与 HTML 导出 | Tool4Furry",
+          "twitter": "summary_large_image",
+          "canonical": "https://tool4furry.cn/tools/markdown-editor/",
+          "alternate": [
+            [
+              "zh-CN",
+              "https://tool4furry.cn/tools/markdown-editor/"
+            ],
+            [
+              "en",
+              "https://tool4furry.cn/en/tools/markdown-editor/"
+            ]
+          ],
+          "icon": true,
+          "steps": 4,
+          "restrictions": 6,
+          "faq": 4,
+          "related": 2
+        },
+        {
+          "path": "/en/tools/markdown-editor/",
+          "lang": "en",
+          "title": "Online Markdown Editor - Live Preview & HTML Export | Tool4Furry",
+          "h1": [
+            "Markdown Editor"
+          ],
+          "description": "Write and preview Markdown online with syntax highlighting, formatting tools, GFM tables, math formulas and synchronized scrolling. Import files and export Markdown or HTML.",
+          "og": "Online Markdown Editor - Live Preview & HTML Export | Tool4Furry",
+          "twitter": "summary_large_image",
+          "canonical": "https://tool4furry.cn/en/tools/markdown-editor/",
+          "alternate": [
+            [
+              "en",
+              "https://tool4furry.cn/en/tools/markdown-editor/"
+            ],
+            [
+              "zh-CN",
+              "https://tool4furry.cn/tools/markdown-editor/"
+            ]
+          ],
+          "icon": true,
+          "steps": 4,
+          "restrictions": 6,
+          "faq": 4,
+          "related": 2
+        }
+      ],
+      "catalog": true,
+      "sitemap": true,
+      "llms": true,
+      "otherEditorMarkdownRequests": 0
+    },
+    {
+      "scenario": "production routes",
+      "region": "global",
+      "pages": [
+        {
+          "path": "/tools/markdown-editor/",
+          "lang": "en",
+          "title": "Online Markdown Editor - Live Preview & HTML Export | Tool4Furry",
+          "h1": [
+            "Markdown Editor"
+          ],
+          "description": "Write and preview Markdown online with syntax highlighting, formatting tools, GFM tables, math formulas and synchronized scrolling. Import files and export Markdown or HTML.",
+          "og": "Online Markdown Editor - Live Preview & HTML Export | Tool4Furry",
+          "twitter": "summary_large_image",
+          "canonical": "https://tool4furry.com/tools/markdown-editor/",
+          "alternate": [
+            [
+              "en",
+              "https://tool4furry.com/tools/markdown-editor/"
+            ],
+            [
+              "zh-CN",
+              "https://tool4furry.com/zh/tools/markdown-editor/"
+            ]
+          ],
+          "icon": true,
+          "steps": 4,
+          "restrictions": 6,
+          "faq": 4,
+          "related": 2
+        },
+        {
+          "path": "/zh/tools/markdown-editor/",
+          "lang": "zh-CN",
+          "title": "在线 Markdown 编辑器 - 实时预览与 HTML 导出 | Tool4Furry",
+          "h1": [
+            "Markdown 编辑器"
+          ],
+          "description": "在线编写和预览 Markdown，支持语法高亮、格式化工具栏、GFM 表格、任务列表、数学公式及同步滚动，可导入本地文档并导出 Markdown 或 HTML。",
+          "og": "在线 Markdown 编辑器 - 实时预览与 HTML 导出 | Tool4Furry",
+          "twitter": "summary_large_image",
+          "canonical": "https://tool4furry.com/zh/tools/markdown-editor/",
+          "alternate": [
+            [
+              "zh-CN",
+              "https://tool4furry.com/zh/tools/markdown-editor/"
+            ],
+            [
+              "en",
+              "https://tool4furry.com/tools/markdown-editor/"
+            ]
+          ],
+          "icon": true,
+          "steps": 4,
+          "restrictions": 6,
+          "faq": 4,
+          "related": 2
+        }
+      ],
+      "catalog": true,
+      "sitemap": true,
+      "llms": true,
+      "otherEditorMarkdownRequests": 0
+    }
+  ],
+  "issues": []
+}

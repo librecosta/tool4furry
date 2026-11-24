@@ -1,38 +1,6 @@
 import type { ToolContentMap } from './tool-content';
 // Static Astro content only; never imported by the client or registry.
 export const generalToolboxA2Content = {
-  'markdown-editor': {
-    zh: {
-      title: 'Markdown 编辑器 | Tool4Furry',
-      description: '编写 Markdown，实时预览并保存文档。',
-      h1: 'Markdown 编辑器',
-      intro: '编写 Markdown，实时预览并保存文档。',
-      steps: [
-        '编辑 Markdown、打开本地文件或载入示例。',
-        '选择分栏、编辑或预览视图。',
-        '复制或下载 Markdown 或 HTML。',
-      ],
-      limitations: [
-        '支持 GitHub 风格的 Markdown、代码高亮、GitHub Alerts 和数学公式。长文档可暂停自动预览，继续编辑或导出源码。',
-        '文档在浏览器本地处理。预览默认加载远程 Markdown 图片，可能向第三方发送请求。可在更多操作中关闭。',
-      ],
-    },
-    en: {
-      title: 'Markdown Editor | Tool4Furry',
-      description: 'Write Markdown with a live preview and save your document.',
-      h1: 'Markdown Editor',
-      intro: 'Write Markdown with a live preview and save your document.',
-      steps: [
-        'Write Markdown, open a local file or load the example.',
-        'Choose Split, Editor or Preview.',
-        'Copy or download Markdown or HTML.',
-      ],
-      limitations: [
-        'Supports GitHub Flavored Markdown, syntax highlighting, GitHub Alerts and math. Long documents can pause automatic preview while you keep editing or export the source.',
-        'Documents are processed in your browser. Preview loads remote Markdown images by default and may make third-party requests. Turn this off in More actions.',
-      ],
-    },
-  },
   'video-frame-extractor': {
     zh: {
       title: '视频取帧 | Tool4Furry',

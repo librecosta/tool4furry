@@ -17,6 +17,8 @@ import { formatCommand, type Format } from './commands';
 import { autoPreviewLimit, example, renderMarkdown } from './core';
 import { defaultName, exportName, htmlDocument, readMarkdown } from './delivery';
 import { useScrollSync } from './scrollSync';
+import dependencyNotice from './dependencies.NOTICE.txt?url&no-inline';
+import editorNotice from '../../ui/text-editor/codemirror.NOTICE.txt?url&no-inline';
 import './article.css';
 import s from './markdown.module.scss';
 
@@ -322,6 +324,8 @@ export default function MarkdownEditor({ locale }: ToolProps) {
   const nameControl = <DocumentName key={source.file.id} name={filename}
     label={t('编辑文件名', 'Edit file name')} onRename={renameFile} />;
   return <Frame locale={locale}>
+    <link rel="license" href={dependencyNotice} />
+    <link rel="license" href={editorNotice} />
     <div ref={workspace} className={s.workspace} data-markdown-workspace data-narrow={narrow || undefined} data-fullscreen={fullscreen || undefined}>
       <section className={s.shell} data-drop={drop || undefined} aria-label={t('Markdown 工作区', 'Markdown workspace')}
         onKeyDown={event => {

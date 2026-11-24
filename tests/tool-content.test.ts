@@ -16,6 +16,7 @@ import { definition as codec } from '../src/tools/url-base64/definition';
 import { definition as timestamp } from '../src/tools/timestamp-converter/definition';
 import { definition as colorContrast } from '../src/tools/color-contrast/definition';
 import { definition as audioTrimmer } from '../src/tools/audio-trimmer/definition';
+import { definition as markdownEditor } from '../src/tools/markdown-editor/definition';
 
 const content = {
   title: 'Test — Tool4Furry',
@@ -272,8 +273,8 @@ describe('Astro-only content boundary', () => {
       expect(page.limitations![5]).toMatch(/规范化输入的换行|normalizes input line endings/);
       if (locale === 'en') expect(JSON.stringify(page)).not.toMatch(/\p{Script=Han}/u);
     }
-    expect(getRelatedTools(textDiff, 'cn').map(tool => tool.id)).toEqual(['text-cleaner']);
-    expect(getRelatedTools(textDiff, 'global').map(tool => tool.id)).toEqual(['text-cleaner']);
+    expect(getRelatedTools(textDiff, 'cn').map(tool => tool.id)).toEqual(['text-cleaner', 'markdown-editor']);
+    expect(getRelatedTools(textDiff, 'global').map(tool => tool.id)).toEqual(['text-cleaner', 'markdown-editor']);
   });
   it.each([
     ['zh', '在线图片格式转换器 - PNG、JPG、WebP、AVIF 互转 | Tool4Furry',
@@ -374,6 +375,32 @@ describe('Astro-only content boundary', () => {
       ]);
     },
   );
+});
+
+it('publishes bilingual Markdown Editor pages with accurate rendering and image privacy limits', () => {
+  expect(markdownEditor).toMatchObject({
+    id: 'markdown-editor', slug: 'markdown-editor', category: 'text', group: 'text-processing',
+    roles: ['developer', 'operations', 'studio'], mode: 'form', status: 'published', regions: ['cn', 'global'],
+    copy: {
+      zh: { title: 'Markdown 编辑器', description: '编写 Markdown，实时预览排版，支持格式化编辑及 Markdown / HTML 导出。', summary: '在统一工作区编辑、预览并保存 Markdown 文档。' },
+      en: { title: 'Markdown Editor', description: 'Write Markdown with live preview, formatting tools and Markdown or HTML export.', summary: 'Edit, preview and save Markdown documents in a unified workspace.' },
+    },
+  });
+  for (const region of ['cn', 'global'] as const) for (const locale of ['zh', 'en'] as const) {
+    const content = getToolPageContent(markdownEditor, region, toolPageContents, false, locale);
+    expect(content.title).toBe(locale === 'zh'
+      ? '在线 Markdown 编辑器 - 实时预览与 HTML 导出 | Tool4Furry'
+      : 'Online Markdown Editor - Live Preview & HTML Export | Tool4Furry');
+    expect(content.h1).toBe(markdownEditor.copy[locale].title);
+    expect(content.steps).toHaveLength(4);
+    expect(content.steps?.every(step => /^\*\*.+\*\* /.test(step))).toBe(true);
+    expect(content.limitations).toHaveLength(6);
+    expect(content.limitations?.[3]).toMatch(/160,000.*UTF-16/);
+    expect(content.limitations?.[4]).toMatch(/MathML.*(?:占位|placeholders)/);
+    expect(content.limitations?.[5]).toMatch(locale === 'zh' ? /默认开启.*服务器发送请求.*关闭/ : /enabled by default.*requests.*disabled/);
+    expect(content.faq).toHaveLength(4);
+    if (locale === 'en') expect(JSON.stringify(content)).not.toMatch(/\p{Script=Han}/u);
+  }
 });
 
 it('publishes bilingual Audio Trimmer pages and concise Registry copy in both regions', () => {

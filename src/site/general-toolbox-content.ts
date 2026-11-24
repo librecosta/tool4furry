@@ -808,4 +808,58 @@ export const generalToolboxContent = {
       ],
     },
   },
+  'markdown-editor': {
+    zh: {
+      title: '在线 Markdown 编辑器 - 实时预览与 HTML 导出 | Tool4Furry',
+      description: '在线编写和预览 Markdown，支持语法高亮、格式化工具栏、GFM 表格、任务列表、数学公式及同步滚动，可导入本地文档并导出 Markdown 或 HTML。',
+      h1: 'Markdown 编辑器',
+      intro: '在统一的 Markdown 工作区中编写文档、实时预览排版，通过格式化工具栏快速编辑内容，并将作品保存为 Markdown 或 HTML 文件。',
+      steps: [
+        '**编写或导入：** 直接输入 Markdown 内容，或打开本地 .md、.markdown、.txt 文档。',
+        '**编辑内容：** 使用格式化工具栏、快捷键及查找替换功能编辑标题、列表、链接、代码块和表格。',
+        '**实时预览：** 在编辑、分栏与预览模式之间切换，查看代码高亮、数学公式和文档排版。',
+        '**保存文档：** 设置文件名，复制 Markdown 或 HTML 内容，也可以下载相应格式的文件。',
+      ],
+      limitations: [
+        '支持常见 Markdown 与 GFM 语法，包括表格、任务列表、删除线、代码块和 GitHub Alerts。',
+        '支持常见编程语言的代码高亮及 LaTeX 数学公式，不支持 Mermaid 图表、任意 HTML 脚本执行或富文本编辑。',
+        '支持 UTF-8 编码的 .md、.markdown 和 .txt 文件导入，以及 Markdown 和 HTML 文件导出。Markdown 输出使用 LF 换行。',
+        '长文档可以继续编辑及导出 Markdown。超过 160,000 UTF-16 代码单元时暂停自动预览，手动预览和 HTML 导出仍受源码长度、解析复杂度及 HTML 大小预算限制。',
+        'HTML 导出包含内联排版样式和原生 MathML，可离线打开。远程图片以占位形式保留，数学公式的最终显示效果取决于浏览器支持。',
+        '文档处理在浏览器本地完成，不上传或持久保存文档。远程图片预览默认开启，浏览器会向对应图片服务器发送请求，可通过工具栏关闭。',
+      ],
+      faq: [
+        { question: '支持哪些 Markdown 语法？', answer: '支持常见 Markdown 和 GitHub Flavored Markdown 语法，包括标题、列表、引用、链接、表格、任务列表和代码块，并支持 GitHub Alerts、代码高亮及数学公式。' },
+        { question: '可以将 Markdown 转换成 HTML 吗？', answer: '可以。工具支持复制经过安全清洗的 HTML 内容，也可以下载带有内联排版样式的完整 HTML 文档。' },
+        { question: '为什么长文档会暂停实时预览？', answer: '大型 Markdown 文档的解析及 HTML 渲染可能消耗较多资源。工具会在文档超过自动预览预算时暂停实时更新，仍允许继续编辑和导出源码，也可以尝试手动刷新预览。' },
+        { question: '我的 Markdown 文档会上传或自动保存吗？', answer: '不会。文档在当前浏览器中处理，不会自动上传或持久保存。启用远程图片预览时，浏览器可能向第三方图片服务器发送请求。关闭图片预览可避免这些请求。' },
+      ],
+    },
+    en: {
+      title: 'Online Markdown Editor - Live Preview & HTML Export | Tool4Furry',
+      description: 'Write and preview Markdown online with syntax highlighting, formatting tools, GFM tables, math formulas and synchronized scrolling. Import files and export Markdown or HTML.',
+      h1: 'Markdown Editor',
+      intro: 'Write, edit and preview documents in a unified Markdown workspace. Format your content with editing tools and save your work as Markdown or HTML.',
+      steps: [
+        '**Write or import:** Enter Markdown directly or open a local .md, .markdown or .txt document.',
+        '**Edit your content:** Use formatting tools, keyboard shortcuts and find and replace to edit headings, lists, links, code blocks and tables.',
+        '**Preview your document:** Switch between editor, split and preview modes to review syntax highlighting, math formulas and document formatting.',
+        '**Save your work:** Set a filename, copy Markdown or HTML, or download the document in your preferred format.',
+      ],
+      limitations: [
+        'Supports common Markdown and GFM syntax, including tables, task lists, strikethrough, code blocks and GitHub Alerts.',
+        'Supports syntax highlighting for common programming languages and LaTeX math formulas. Mermaid diagrams, arbitrary HTML script execution and rich-text editing are unsupported.',
+        'Imports UTF-8 .md, .markdown and .txt files and exports Markdown or HTML. Markdown output uses LF line endings.',
+        'Large documents remain editable and exportable as Markdown. Automatic preview pauses above 160,000 UTF-16 code units. Manual preview and HTML export remain subject to source length, parsing complexity and HTML size budgets.',
+        'HTML downloads contain inline typography styles and native MathML for offline viewing. Remote images are represented by placeholders. Math rendering depends on browser support.',
+        'Documents are processed locally without uploads or persistent storage. Remote image previews are enabled by default and make requests to the corresponding image servers. This option can be disabled in the toolbar.',
+      ],
+      faq: [
+        { question: 'Which Markdown syntax is supported?', answer: 'The editor supports common Markdown and GitHub Flavored Markdown syntax, including headings, lists, quotes, links, tables, task lists and code blocks, along with GitHub Alerts, syntax highlighting and math formulas.' },
+        { question: 'Can I convert Markdown to HTML?', answer: 'Yes. You can copy sanitized HTML or download a complete HTML document with inline typography styles.' },
+        { question: 'Why does live preview pause for large documents?', answer: 'Parsing large Markdown documents and rendering their HTML can require significant resources. Automatic preview pauses above its configured budget, while source editing and Markdown export remain available. You can also try refreshing the preview manually.' },
+        { question: 'Are my Markdown documents uploaded or automatically saved?', answer: 'No. Documents are processed in your browser without automatic uploads or persistent storage. When remote image previews are enabled, your browser may contact third-party image servers. Disable remote images to prevent those requests.' },
+      ],
+    },
+  },
 } satisfies ToolContentMap;

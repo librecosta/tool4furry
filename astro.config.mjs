@@ -17,6 +17,7 @@ const toolStyleOwners = {
   TimestampConverter: ['timestamp-converter'],
   ColorContrast: ['color-contrast'],
   AudioTrimmer: ['audio-trimmer'],
+  MarkdownEditor: ['markdown-editor'],
   'react-colorful': ['color-contrast', 'image-watermark', 'palette-extractor'],
   TextEditor: ['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64'],
   TextWorkbench: ['json-formatter', 'text-cleaner', 'text-diff', 'url-base64'],
@@ -36,7 +37,7 @@ const scopeToolStyles = {
         const headEnd = html.indexOf('</head>');
         const head = html.slice(0, headEnd);
         const scoped = head.replace(
-          /<link rel="stylesheet" href="\/_astro\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css">/g,
+          /<link rel="stylesheet" href="\/_astro\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|MarkdownEditor|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css">/g,
           (link, stem) => toolStyleOwners[stem].includes(tool.id) ? link : '',
         );
         if (scoped !== head) await writeFile(destination, scoped + html.slice(headEnd));
@@ -104,7 +105,7 @@ export default defineConfig({
       },
       {
         // Check actual emitted client modules, including dependencies merged into shared chunks.
-        name: 'exclude-draft-media-resources',
+        name: 'guard-private-tool-resources',
         apply: 'build',
         applyToEnvironment: environment => environment.name === 'client',
         generateBundle: {
@@ -112,12 +113,18 @@ export default defineConfig({
           handler(_, bundle) {
             const qrAvailable = toolDefines['import.meta.env.T4F_TOOL_QR_CODE_GENERATOR_AVAILABLE'] === 'true';
             const audioAvailable = toolDefines['import.meta.env.T4F_TOOL_AUDIO_TRIMMER_AVAILABLE'] === 'true';
+            const markdownAvailable = toolDefines['import.meta.env.T4F_TOOL_MARKDOWN_EDITOR_AVAILABLE'] === 'true';
             const audioPrivate = /\/(?:src\/tools\/audio-trimmer\/(?!definition\.ts$)|node_modules\/(?:mediabunny|wavesurfer\.js|@mediabunny)\/)/;
             const qrPrivate = /\/(?:src\/tools\/qr-code-generator\/(?!definition\.ts$)|node_modules\/(?:qrcode|jsqr)\/)/;
+            const markdownPrivate = /\/(?:src\/tools\/markdown-editor\/(?!definition\.ts$)|node_modules\/(?:@codemirror\/(?:lang-markdown|search)|@lezer\/markdown|dompurify|marked|katex)\/)/;
             for (const chunk of Object.values(bundle)) {
               if (chunk.type !== 'chunk') continue;
               for (const id of Object.keys(chunk.modules)) {
                 const source = id.replaceAll('\\', '/');
+                if (markdownPrivate.test(source) &&
+                    (!markdownAvailable || !/(?:^|\/)(?:MarkdownEditor|math-preview|katex|highlight)\.[\w-]+\.js$/.test(chunk.fileName))) {
+                  this.error('Markdown private module in ' + chunk.fileName + ': ' + source);
+                }
                 if (!audioAvailable && audioPrivate.test(source)) {
                   this.error('Audio Trimmer Draft implementation in ' + chunk.fileName + ': ' + source);
                 }
