@@ -29,6 +29,8 @@
 
 ### Changed
 
+- CSV / JSON Converter（Draft）升级为双栏 CodeMirror 工作区，Worker 支持 64 MiB CSV、JSON 数字字面量保真，以及可分页的表格和完整文件下载。[B18-D1 验收](docs/evidence/b18-csv-json/README.md)
+
 - Video Frame Extractor 完成双语静态 SEO，获得 CN/Global Published 源码资格。逐帧提取严格使用所选半开时间区间。[B17-D2 验收](docs/evidence/b17-video/README.md#b17-d2-正式产物验收)
 
 - Markdown Editor 改为一体式 CodeMirror 工作区，支持格式化、分栏同步滚动、安全预览及 Markdown / 离线 HTML 交付。英文示例展示 GFM、GitHub Alerts、语法高亮和数学公式。B16-D2 增加双语静态指南，并取得 CN/Global Published 源码资格。

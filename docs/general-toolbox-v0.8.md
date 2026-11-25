@@ -296,7 +296,7 @@
 | `audio-trimmer` | 交互波形、保留/删除选区、循环试听、淡化与多格式导出 | 512 MiB 单声道/立体声输入，编解码按环境探测，内存导出预算 256 MiB，更大输出需浏览器直接写入 |
 | `markdown-editor` | CodeMirror 格式化与查找、分栏同步、GFM、Alerts、数学公式、本地导入与 Markdown / HTML 交付 | 超过 160,000 个 UTF-16 单元暂停自动预览，HTML 渲染有独立预算。预览可关闭远程 Markdown 图片 |
 | `video-frame-extractor` | 真实帧定位、四种提取模式、PNG/JPEG/WebP 帧画廊、联系表、流式 ZIP | 输入 2 GiB；单帧 40 MP；画廊 300 帧和 256 MiB；内存 ZIP 256 MiB；依赖浏览器解码 |
-| `csv-json-converter` | UTF-8 文件/粘贴、逗号/分号/Tab、双向转换、表格/复制/下载 | 文件 2 MiB、100 万字符、10000 行/100 列/20 万单元格；CSV 为字符串，JSON 为标量对象数组，拒绝不安全整数 |
+| `csv-json-converter` | 双栏 CodeMirror、双向转换、表格分页、UTF-8 CSV/TSV/JSON、完整下载 | CSV 输入 64 MiB，JSON 输入 16 Mi UTF-16 单元及 500,000 个节点，输出 64 MiB。[B18-D1](#csv--json-converter--v08-b18-d1) |
 | `code-image-generator` | 9 种语言高亮、明暗图片主题、标题/行号/内边距、实时 Canvas 与 PNG | highlight.js 只注册所需语言；20000 字符/160 行；2× 输出最多 8192px、800 万像素，过长明确拒绝 |
 | `svg-to-png` | 文件/源码、安全图片预览、比例联动尺寸/倍率、透明/纯色 PNG | 复用 Watermark 的 SVG 白名单和独立图像解码；256 KiB/512 节点/16 层，形状/路径/渐变/裁切；不支持文本、CSS、滤镜或外部资源；PNG 最多 800 万像素 |
 | `regex-tester` | JavaScript flags、实时高亮/数量/捕获组、替换/复制 | 局部 Worker，1500ms 超时真实 terminate；表达式 500 字符、文本 20 万字符、1000 处匹配；与其他引擎可能不同 |
@@ -367,3 +367,13 @@
 - CN/Global 各一次正式构建及产物守卫通过：各 16 个双语工具页面、26 条公开发现 URL；PDF Merge 的四个地区/语言页面可索引，Canonical/hreflang、目录、导航总精选与工作室关联正确。pdf-lib / dnd-kit MIT 许可完整交付，21 款 Draft 的路由、实现入口、私有 Worker/NOTICE 保持排除，静态长文不进入客户端实现。未运行无关多工具夹具。
 - 基线 `32e474e` 的 CI 在首页图片归属断言失败；本次补齐既有导航图标的精确 Registry/URL 归属，同时保留原始图片字节与资格校验。首次集成 CI 另发现一处旧七工具名单断言，已同步且保留原有检查；修正提交 `b39e8ca` 的[既有 CI 全部通过](https://github.com/librecosta/tool4furry/actions/runs/41676614664)（check、1138 项测试、CN/Global 构建）。L2 七项满足，依据维护者授权确认 Published；不新增工作流。
 - 桌面及 390px 手机视口的中英文核心路径、亮暗主题与等宽按钮可用，无横向溢出。视口模拟不是触控真机证据；Firefox、Safari、真实 iOS/Android、低端设备、临界规模压力和原生操作瞬时内存仍属 L3 未测。源码 Published 不代表部署，未部署。
+
+## CSV / JSON Converter — V0.8-B18-D1
+
+工具继续保持 Draft。桌面使用上方转换工具栏与等宽输入/结果栏，窄屏上下排列。两个方向各自保留输入草稿。交换将完整有效的输出填入反向输入，失败、过期或局部预览结果无法交换。中英文工作区使用同一份英文示例。
+
+默认 CSV → JSON 保留字符串、以首行为表头并自动检测分隔符。支持四种分隔符、表头开关、对象或数组输出、空值选项及缩进。智能推断只接受小写布尔值和可安全保留有效数字的普通十进制数字。前导零、超长数字、科学计数形式和风险小数保留为原始字符串。结构性换行与带引号字段内部的换行单独处理。对象表头必须非空且唯一，所有记录需要相同字段数。
+
+JSON → CSV 复用 JSON Formatter 的严格源码范围解析，按源码字段首次出现顺序生成列。数字与嵌套 JSON 保留原始数字字面量。嵌套对象可按点路径展开，冲突明确报错；数组保留在原单元格，缺失与 null 均输出为空字段。公式防护默认关闭，开启后会同时改写可疑表头与数据。CSV/TSV 输出共用既定分隔符、换行与 BOM 设置。
+
+专属 Worker 对 CSV 文件分块解码，以完整逻辑记录交由 Papa Parse 解析。JSON 输入采用有界 AST。输出分段编码为 Blob，表格按字节索引复用实际输出，支持每页 50、100、200 行以及按列分组浏览。源码预览预算为 256 Ki UTF-16 单元，超出时保留完整下载。第三方通知复用 Papa Parse、CodeMirror 和 JSON 语言扩展的完整 MIT 文本。双地区生产产物守卫排除工具入口、Worker、局部 CSS 和 Papa Parse 许可资源。[B18 浏览器与下载复检](evidence/b18-csv-json/README.md)

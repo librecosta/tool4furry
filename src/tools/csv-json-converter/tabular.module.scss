@@ -1,0 +1,208 @@
+@layer t4f-tools {
+  .workspace { --t4f-editor-font: var(--t4f-font-mono); position: relative; min-width: 0; }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--t4f-space-8) var(--t4f-space-12);
+    padding: var(--t4f-space-12);
+    border-radius: var(--t4f-radius-lg);
+    background: var(--t4f-surface-panel);
+  }
+
+  .inlineSelect label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    clip-path: inset(50%);
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .inlineSelect button { min-height: 36px; }
+  .segments { flex: none; }
+  .segments button { min-height: 36px; white-space: nowrap; padding-inline: 9px; }
+  .more { margin-inline-start: auto; }
+  .more, .surfaceButton { background: var(--t4f-input-surface); }
+
+  .icon {
+    padding-inline: 0;
+    width: 34px;
+    min-width: 34px;
+  }
+
+  .exchange {
+    position: absolute;
+    inset-inline-start: 50%;
+    top: min(51%, 340px);
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    padding: 3px;
+    border-radius: 50%;
+    background: var(--t4f-workspace);
+  }
+
+  .exchange button {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--t4f-surface-panel);
+    color: var(--t4f-accent);
+  }
+
+  .positioner { z-index: 10; }
+  .options, .cellDialog {
+    display: grid;
+    gap: var(--t4f-space-12);
+    padding: var(--t4f-space-16);
+    border-radius: var(--t4f-radius-lg);
+    background: var(--t4f-surface-floating);
+    color: var(--t4f-text-primary);
+    box-shadow: var(--t4f-shadow-floating);
+  }
+
+  .options { width: min(18rem, calc(100vw - 24px)); }
+  .optionTitle { margin: 0; font-size: 15px; font-weight: 600; }
+  .hint { margin: 0; color: var(--t4f-text-secondary); font-size: 12px; }
+  .dropArea { height: 100%; position: relative; }
+  .dropArea[data-dragging]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px dashed var(--t4f-accent);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .footer {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .success { color: var(--t4f-positive); }
+  .filename { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .task { min-height: 30px; padding-inline: 2px; }
+
+  .tabularPreview {
+    height: 100%;
+    min-width: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .tableScroll { overflow: auto; }
+  .tableScroll:focus-visible { outline-offset: -2px; }
+  .tableScroll > p, .empty { margin: 0; padding: var(--t4f-space-12); }
+
+  .table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: max-content;
+    min-width: 100%;
+    text-align: start;
+    font-size: 13px;
+  }
+
+  .table :is(th, td) {
+    border-block-end: 1px solid var(--t4f-border);
+    text-align: start;
+    font-weight: 400;
+  }
+
+  .table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--t4f-surface-panel);
+    font-weight: 600;
+  }
+
+  .table th:first-child {
+    padding-inline: 10px;
+    color: var(--t4f-text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .table button {
+    display: block;
+    width: 100%;
+    min-width: 82px;
+    max-width: 230px;
+    padding: 7px 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: pre;
+    text-align: start;
+    color: var(--t4f-text-primary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  .table button:hover { background: var(--t4f-surface-panel); }
+  .table button:focus-visible { outline: 2px solid var(--t4f-accent); outline-offset: -2px; }
+
+  .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--t4f-space-4);
+    padding: 5px;
+    background: var(--t4f-surface-panel);
+  }
+
+  .navigation { display: flex; align-items: center; gap: 4px; font-size: 12px; }
+
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: rgb(0 0 0 / 40%);
+  }
+
+  .cellDialog {
+    position: fixed;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    transform: translate(-50%, -50%);
+    width: min(36rem, calc(100vw - 32px));
+    z-index: 41;
+  }
+
+  .dialogHeader { display: flex; align-items: center; justify-content: space-between; }
+  .dialogHeader h2 { margin: 0; font-size: 1rem; }
+  .cellValue {
+    padding: var(--t4f-space-12);
+    background: var(--t4f-input-surface);
+    color: inherit;
+    border: none;
+    border-radius: var(--t4f-radius-sm);
+    font-family: var(--t4f-font-mono);
+    width: 100%;
+    height: min(35vh, 18rem);
+    resize: vertical;
+    white-space: pre-wrap;
+  }
+
+  @media (min-width: 901px) and (max-width: 970px), (max-width: 470px) {
+    .actionName { display: none; }
+    .segments button { padding-inline: 7px; }
+  }
+
+  @media (max-width: 900px) {
+    .exchange {
+      position: static;
+      transform: none;
+      justify-self: center;
+      margin-block: -13px;
+      rotate: 90deg;
+    }
+    .more { margin-inline-start: 0; }
+  }
+}

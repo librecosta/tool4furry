@@ -1,0 +1,71 @@
+{
+  "chromium": "156.0.8078.4",
+  "scenarios": {
+    "cn-desktop-dark": {
+      "viewport": {
+        "width": 1280,
+        "height": 960
+      },
+      "bounds": [
+        {
+          "x": 25.59375,
+          "y": 308.78125,
+          "width": 606.40625,
+          "height": 526.390625
+        },
+        {
+          "x": 648,
+          "y": 308.78125,
+          "width": 606.40625,
+          "height": 526.390625
+        }
+      ],
+      "theme": "dark",
+      "privateWorker": true,
+      "browserErrors": 0,
+      "blobTypes": [
+        "application/json;charset=utf-8",
+        "text/csv;charset=utf-8",
+        "text/tab-separated-values;charset=utf-8"
+      ]
+    },
+    "global-mobile-light": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "bounds": [
+        {
+          "x": 16,
+          "y": 447.59375,
+          "width": 358,
+          "height": 424
+        },
+        {
+          "x": 16,
+          "y": 927.59375,
+          "width": 358,
+          "height": 424
+        }
+      ],
+      "theme": "light",
+      "privateWorker": true,
+      "browserErrors": 0,
+      "blobTypes": [
+        "application/json;charset=utf-8",
+        "text/csv;charset=utf-8",
+        "text/tab-separated-values;charset=utf-8"
+      ]
+    }
+  },
+  "output": {
+    "inputBytes": 66059212,
+    "outputBytes": 66220321,
+    "records": 32224,
+    "elapsedMs": 1165,
+    "mainThreadTimerTicks": 64,
+    "maxObservedTimerGapMs": 39,
+    "cancelled": true,
+    "refusedOverBudgetOutput": true
+  }
+}

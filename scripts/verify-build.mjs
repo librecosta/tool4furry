@@ -1387,6 +1387,9 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
     assert(!/data-qr-artwork|data-qr-license|Could not rasterize QR SVG/.test(js), 'Draft QR tool code leaked: ' + file);
   if (!published.some(tool => tool.id === 'markdown-editor'))
     assert(!/data-markdown-workspace|KaTeX parse error|md-image-placeholder/.test(js), 'Draft Markdown tool code leaked: ' + file);
+  if (!published.some(tool => tool.id === 'csv-json-converter'))
+    assert(!/data-csv-json-converter|The converted output exceeds 64 MiB|Could not determine the CSV delimiter/.test(js),
+      'Draft CSV / JSON conversion code leaked: ' + file);
   assert(!/@stylexjs|virtual:stylex|stylex-dev-css/.test(js), `Retired styling runtime leaked: ${file}`);
   for (const id of ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'])
     if (!files.includes(`tools/${id}/index.html`)) assert(!js.includes(`data-${id}`), `Draft ${id} implementation leaked: ${file}`);
@@ -1439,6 +1442,11 @@ if (!published.some(tool => tool.id === 'markdown-editor')) {
 for (const css of outputCSS)
   assert(!/@layer priority|virtual:stylex|stylex-dev-css|@stylexjs/.test(css), 'All CSS uses the native styling pipeline');
 const combinedCSS = outputCSS.join('\n');
+if (!published.some(tool => tool.id === 'csv-json-converter')) {
+  assert(!files.some(file => /(?:CsvJsonConverter|tabular-conversion\.worker|papaparse|tabular\.)/i.test(file)),
+    'Draft CSV / JSON entry, worker, style and notice stay private');
+  assert(!/\._?tabularPreview[_-]/.test(combinedCSS), 'Draft CSV / JSON preview CSS stays private');
+}
 assert(!files.some(file => /(?:DioramaScene|DioramaObjects|graphics\.NOTICE|scene-capture)[.-]/.test(file)), 'QR Draft 3D assets stay private');
 if (!published.some(tool => tool.id === 'qr-code-generator'))
   assert(!files.some(file => /(?:QrCodeGenerator|qrcode\.NOTICE|jsqr(?:\.NOTICE)?|qr-workspace)[.-]/i.test(file)), 'Draft QR entry, styles and decoder stay private');

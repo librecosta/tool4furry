@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { renderMarkdown } from '../src/tools/markdown-editor/core';
 import { convertTable } from '../src/tools/csv-json-converter/core';
+import { csvDefaults, jsonDefaults, type Delimiter } from '../src/tools/csv-json-converter/settings';
 import {
   highlightCode,
   codeLines,
@@ -24,34 +25,19 @@ describe('second general toolbox batch', () => {
       el.querySelector('script,img,iframe,[onerror],[href^="javascript:"]'),
     ).toBeNull();
   });
-  it('round trips quoted Unicode CSV with literal numbers and multiline cells', () => {
-    const original =
-      'name,note,id\r\n"你好, friend","line 1\nline ""2""",90071992547409931234';
-    const json = convertTable(original, 'csv-json', ',');
-    expect(JSON.parse(json.output)).toEqual([
-      {
-        name: '你好, friend',
-        note: 'line 1\nline "2"',
-        id: '90071992547409931234',
-      },
+  it('round trips quoted Unicode CSV with literal numbers and multiline cells', async () => {
+    const csv = (source: string, delimiter: Delimiter) => convertTable(source, { direction: 'csv-json', settings: { ...csvDefaults, delimiter } });
+    const original = 'name,note,id\r\n"你好, friend","line 1\nline ""2""",90071992547409931234';
+    const fromCsv = await csv(original, ',');
+    expect(JSON.parse(fromCsv.result.preview.text)).toEqual([
+      { name: '你好, friend', note: 'line 1\nline "2"', id: '90071992547409931234' },
     ]);
-    const csv = convertTable(json.output, 'json-csv', ';');
-    expect(convertTable(csv.output, 'csv-json', ';').rows).toEqual(json.rows);
-    expect(convertTable('a\tb\n0\ttrue', 'csv-json', '\t').rows).toEqual([
-      ['0', 'true'],
-    ]);
-  });
-  it('rejects malformed tables, duplicate headers and unsafe JSON numbers', () => {
-    for (const input of ['a,a\n1,2', 'a,b\n1', 'a,b\n"unclosed,2'])
-      expect(() => convertTable(input, 'csv-json', ',')).toThrow();
-    for (const input of ['{}', '[1]', '[{"a":{}}]', '[{"a":9007199254740993}]'])
-      expect(() => convertTable(input, 'json-csv', ',')).toThrow();
-    expect(
-      convertTable('[{"a":true},{"b":null}]', 'json-csv', ',').rows,
-    ).toEqual([
-      ['true', ''],
-      ['', ''],
-    ]);
+    const fromJson = await convertTable(fromCsv.result.preview.text, {
+      direction: 'json-csv', settings: { ...jsonDefaults, delimiter: ';' },
+    });
+    expect((await csv(fromJson.result.preview.text, ';')).result.preview.text).toBe(fromCsv.result.preview.text);
+    for (const delimiterInput of ['a,a\n1,2', 'a,b\n1', 'a,b\n"unclosed,2'])
+      await expect(csv(delimiterInput, ',')).rejects.toThrow();
   });
   it('highlights all nine languages without interpreting code as HTML', () => {
     for (const lang of Object.keys(languages) as (keyof typeof languages)[]) {

@@ -1,0 +1,44 @@
+{
+  "independentParsers": [
+    "Python csv.reader(strict=True)",
+    "Python json.load"
+  ],
+  "artifacts": {
+    "cn-desktop-dark-literal.json": {
+      "bytes": 196,
+      "sha256": "2d5616145fb0118f1d46c16c6f0d1c1a55857c6ff0fb2d4932555afb132f71a8"
+    },
+    "cn-desktop-dark-default.csv": {
+      "bytes": 173,
+      "sha256": "d04f4e58a189b863edb39fb63de40897a6efeacd36d64304cc023573d2696c4a"
+    },
+    "cn-desktop-dark-exact.tsv": {
+      "bytes": 174,
+      "sha256": "6f6964848c3b925909c89b746239205d112ef188bcced0614478a604c702c8d9"
+    },
+    "global-mobile-light-literal.json": {
+      "bytes": 196,
+      "sha256": "2d5616145fb0118f1d46c16c6f0d1c1a55857c6ff0fb2d4932555afb132f71a8"
+    },
+    "global-mobile-light-default.csv": {
+      "bytes": 173,
+      "sha256": "d04f4e58a189b863edb39fb63de40897a6efeacd36d64304cc023573d2696c4a"
+    },
+    "global-mobile-light-exact.tsv": {
+      "bytes": 174,
+      "sha256": "6f6964848c3b925909c89b746239205d112ef188bcced0614478a604c702c8d9"
+    },
+    "large-result.json": {
+      "bytes": 66220321,
+      "sha256": "09055be2739723847cd1d362785a0ff303ff142bc4ea08f24c9f3cf7efeb442e"
+    }
+  },
+  "matchedLargeRecords": 32224,
+  "windowsClipboardNormalization": "CRLF record separators from the OS matched LF after normalization for the TSV fixture",
+  "checkedLexemes": [
+    "9007199254740993",
+    "123.4500",
+    "1.234567890123456789",
+    "1e+100"
+  ]
+}
