@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type DragEvent, type ReactNode } from 'react';
-import { ArrowsLeftRightIcon, CopyIcon, DownloadSimpleIcon, FolderOpenIcon, TrashIcon } from '@phosphor-icons/react';
+import { CopyIcon, DownloadSimpleIcon, FolderOpenIcon, TrashIcon } from '@phosphor-icons/react';
 import { Button, IconButton } from '../../ui/Button';
 import { TextEditor } from '../../ui/text-editor/TextEditor';
 import { TextEditorPane } from '../../ui/text-editor/TextEditorPane';
@@ -19,7 +19,6 @@ import s from './tabular.module.scss';
 type Draft = { source: Source; name?: string };
 const samples = { 'csv-json': csvSample, 'json-csv': jsonSample };
 const hasFiles = (event: DragEvent) => Array.from(event.dataTransfer.types).includes('Files');
-const otherDirection = (direction: Direction) => direction === 'csv-json' ? 'json-csv' : 'csv-json';
 
 function IconAction({ label, icon, onClick, disabled }: {
   label: string; icon: ReactNode; onClick: () => void; disabled?: boolean;
@@ -78,14 +77,6 @@ export default function CsvJsonConverter({ locale }: ToolProps) {
     const next = ext === 'json' ? 'json-csv' : 'csv-json';
     if (next === 'csv-json') setCsv(previous => ({ ...previous, delimiter: ext === 'tsv' ? '\t' : 'auto' }));
     replace(next, { source: file, name: file.name });
-    setDirection(next);
-  }
-
-  function swap() {
-    if (!result || result.preview.partial) return;
-    const next = otherDirection(direction);
-    if (next === 'csv-json') setCsv(previous => ({ ...previous, delimiter: result.delimiter, header: json.header }));
-    replace(next, { source: result.preview.text, name: draft.name });
     setDirection(next);
   }
 
@@ -159,10 +150,6 @@ export default function CsvJsonConverter({ locale }: ToolProps) {
               onChange={text => replace(direction, { source: text, name: draft.name })} />
           </div>
         </TextEditorPane>
-        <div className={s.exchange}>
-          <IconAction label={t('交换输入与结果', 'Swap input and result')} icon={<ArrowsLeftRightIcon size={21} aria-hidden="true" />}
-            disabled={!result || result.preview.partial} onClick={swap} />
-        </div>
         <TextEditorPane title={outputLabel} actions={<>
           <Segments label={t('结果视图', 'Result view')} value={view} onChange={setView}
             choices={[[ 'source', t('源码', 'Source') ], ['table', t('表格', 'Table')]]} />

@@ -1,5 +1,5 @@
 @layer t4f-tools {
-  .workspace { --t4f-editor-font: var(--t4f-font-mono); position: relative; min-width: 0; }
+  .workspace { --t4f-editor-font: var(--t4f-font-mono); min-width: 0; }
 
   .toolbar {
     display: flex;
@@ -30,25 +30,6 @@
     padding-inline: 0;
     width: 34px;
     min-width: 34px;
-  }
-
-  .exchange {
-    position: absolute;
-    inset-inline-start: 50%;
-    top: min(51%, 340px);
-    transform: translate(-50%, -50%);
-    z-index: 2;
-    padding: 3px;
-    border-radius: 50%;
-    background: var(--t4f-workspace);
-  }
-
-  .exchange button {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: var(--t4f-surface-panel);
-    color: var(--t4f-accent);
   }
 
   .positioner { z-index: 10; }
@@ -196,13 +177,6 @@
   }
 
   @media (max-width: 900px) {
-    .exchange {
-      position: static;
-      transform: none;
-      justify-self: center;
-      margin-block: -13px;
-      rotate: 90deg;
-    }
     .more { margin-inline-start: 0; }
   }
 }

@@ -65,25 +65,24 @@ function edit(text: string) {
   act(() => view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: text }, userEvent: 'input.paste' }));
 }
 
-it('preserves per-direction drafts, invalidates stale output, and swaps the full result explicitly', async () => {
+it('switches directions from the toolbar, preserving drafts and invalidating stale output', async () => {
   setup();
   expect(doc('CSV input')).toBe(csvSample);
   await waitReady();
+  expect(screen.queryByRole('button', { name: 'Swap input and result' })).toBeNull();
   edit('id,note\r\n001,"one\r\ntwo"');
-  expect(button('Swap input and result').disabled).toBe(true);
+  expect(button('Download JSON').disabled).toBe(true);
   await waitReady();
   expect(JSON.parse(doc('JSON result'))).toEqual([{ id: '001', note: 'one\r\ntwo' }]);
   click('JSON → CSV');
   expect(doc('JSON input')).toBe(jsonSample);
+  await waitReady('CSV');
+  expect(doc('CSV result')).toBe(csvSample.replaceAll('\n', '\r\n'));
   click('CSV → JSON');
   expect(doc('CSV input')).toBe('id,note\r\n001,"one\r\ntwo"');
   await waitReady();
   click('Copy result');
   expect(copy).toHaveBeenCalledWith(doc('JSON result'));
-  click('Swap input and result');
-  await waitReady('CSV');
-  expect(JSON.parse(doc('JSON input'))).toEqual([{ id: '001', note: 'one\r\ntwo' }]);
-  expect(doc('CSV result')).toBe('id,note\r\n001,"one\r\ntwo"');
 });
 
 it('terminates the worker on cancellation and unmount, and ignores a superseded task', async () => {
@@ -106,7 +105,7 @@ it('terminates the worker on cancellation and unmount, and ignores a superseded 
   expect(active.terminate).toHaveBeenCalled();
 });
 
-it('shows later table pages, then disables complete-only actions for a partial result', async () => {
+it('shows later table pages and keeps download available when the result is too large to copy', async () => {
   setup();
   edit('id\n' + Array.from({ length: 104 }, (_, index) => 'item_' + index).join('\n'));
   await waitReady();
@@ -120,6 +119,5 @@ it('shows later table pages, then disables complete-only actions for a partial r
   edit('a\n' + 'x'.repeat(editorLimit - 4));
   await waitReady();
   expect(button('Copy result').disabled).toBe(true);
-  expect(button('Swap input and result').disabled).toBe(true);
   expect(screen.getByText('Partial result preview. Download the complete file.')).toBeTruthy();
 });
