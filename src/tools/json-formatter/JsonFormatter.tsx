@@ -13,11 +13,11 @@ import { fail } from '../general/bounds';
 import { maxJsonInput, type JsonIndent, type JsonIssue } from './core';
 import type { FormatResult } from './protocol';
 import { createJsonNamer, jsonMime, maxJsonFile, readJsonFile, type OutputStyle } from './delivery';
-import { jsonDiagnostic, jsonLanguage } from './editor';
+import { jsonDiagnostic } from './editor';
+import { jsonLanguage, jsonLanguageNotice as notice } from './json-language';
 import { JsonTree } from './JsonTree';
 import { issueMessage, workerMessage } from './messages';
 import { JsonProcessor } from './processing';
-import notice from './json-language.NOTICE.txt?url';
 import s from './json.module.scss';
 
 const sampleFields = { project: 'Tool4Furry', enabled: true, tools: ['JSON', 'Text', 'Image'], version: 1 };

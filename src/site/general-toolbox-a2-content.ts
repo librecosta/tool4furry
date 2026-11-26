@@ -1,40 +1,6 @@
 import type { ToolContentMap } from './tool-content';
 // Static Astro content only; never imported by the client or registry.
 export const generalToolboxA2Content = {
-  'csv-json-converter': {
-    zh: {
-      title: 'CSV / JSON 转换 | Tool4Furry',
-      description: '转换 CSV 与对象数组 JSON，预览表格并保留 CSV 字符串。',
-      h1: 'CSV / JSON 转换',
-      intro: '转换 CSV 与对象数组 JSON，预览表格并保留 CSV 字符串。',
-      steps: [
-        '粘贴文本或导入 UTF-8 文件',
-        '选择转换方向与 CSV 分隔符',
-        '查看表格，复制或下载结果。',
-      ],
-      limitations: [
-        '文件最多 2 MiB、文本 100 万字符；最多 10000 行、100 列、20 万单元格。CSV 保留字符串；JSON 仅支持对象数组中的标量字段，拒绝非安全整数与嵌套对象。',
-        '所有文件与文本仅在当前浏览器本地处理，不上传、不持久保存。',
-      ],
-    },
-    en: {
-      title: 'CSV / JSON Converter | Tool4Furry',
-      description:
-        'Convert CSV and JSON object arrays with a table preview and string-preserving CSV input.',
-      h1: 'CSV / JSON Converter',
-      intro:
-        'Convert CSV and JSON object arrays with a table preview and string-preserving CSV input.',
-      steps: [
-        'Paste text or import a UTF-8 file',
-        'choose the direction and CSV delimiter',
-        'review the table, then copy or download.',
-      ],
-      limitations: [
-        'Files: 2 MiB; text: one million characters. Up to 10,000 rows, 100 columns and 200,000 cells. CSV values remain strings. JSON supports scalar fields in object arrays; unsafe integers and nested objects are rejected.',
-        'Files and text stay in your browser, without uploads or persistent storage.',
-      ],
-    },
-  },
   'code-image-generator': {
     zh: {
       title: '代码分享图 | Tool4Furry',

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { convertTable, inferCell } from '../src/tools/csv-json-converter/core';
+import { createDownloadNamer } from '../src/tools/csv-json-converter/delivery';
 import { CsvRecords, detectDelimiter } from '../src/tools/csv-json-converter/csv';
 import { OutputBuffer } from '../src/tools/csv-json-converter/output';
 import { chunkSize, csvDefaults, jsonDefaults, outputLimit, utf8, type CsvSettings, type JsonSettings } from '../src/tools/csv-json-converter/settings';
@@ -114,6 +115,26 @@ describe('JSON → CSV fidelity', () => {
 });
 
 describe('bounded delivery', () => {
+  it('uses local click times and a deterministic sequence for repeated milliseconds', () => {
+    const name = createDownloadNamer();
+    const first = new Date(2026, 10, 26, 22, 55, 30, 128);
+    const next = new Date(2026, 10, 26, 22, 55, 32, 315);
+    expect(name('', 'JSON', first)).toBe('converted-20261126-225530-128.json');
+    expect(name('', 'JSON', first)).toBe('converted-20261126-225530-128-2.json');
+    expect(name('', 'CSV', next)).toBe('converted-20261126-225532-315.csv');
+    expect(name('', 'JSON', first)).toBe('converted-20261126-225530-128-3.json');
+  });
+
+  it('preserves safe Unicode stems and chooses the actual output extension', () => {
+    const name = createDownloadNamer();
+    const now = new Date(2026, 10, 26, 22, 55, 38, 512);
+    expect(name('用户🌌.v1.JSON', 'TSV', now)).toBe('用户🌌.v1-20261126-225538-512.tsv');
+    expect(name('用/户?:表.CSV', 'JSON', now)).toBe('用-户--表-20261126-225538-512-2.json');
+    expect(name('CON.backup.TSV', 'CSV', now)).toBe('_CON.backup-20261126-225538-512-3.csv');
+    expect(name('...CSV', 'JSON', now)).toBe('converted-20261126-225538-512-4.json');
+    expect(name('🌌'.repeat(50) + '.csv', 'JSON', now)).toBe('🌌'.repeat(40) + '-20261126-225538-512-5.json');
+  });
+
   it('serves later row and column pages from the final output', async () => {
     const input = Array.from({ length: 105 }, (_, row) =>
       Array.from({ length: 120 }, (_, col) => row + '-' + col).join(',')).join('\n');

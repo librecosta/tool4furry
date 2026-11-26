@@ -258,7 +258,7 @@ it('registers the third bilingual Published tool in both regions', () => {
       'file-hash',
       'text-cleaner',
       'text-diff',
-      'subtitle-tools', 'json-formatter', 'url-base64', 'timestamp-converter', 'color-contrast', 'audio-trimmer', 'markdown-editor', 'video-frame-extractor',
+      'subtitle-tools', 'json-formatter', 'url-base64', 'timestamp-converter', 'color-contrast', 'audio-trimmer', 'markdown-editor', 'video-frame-extractor', 'csv-json-converter',
     ]);
     expect(getAvailableTools(region, true)).toContain(tool);
     for (const locale of ['zh', 'en'] as const) {

@@ -1,0 +1,87 @@
+{
+  "independentParsers": [
+    "Python csv.reader(strict=True)",
+    "Python json.loads"
+  ],
+  "downloads": {
+    "cn-desktop-dark": [
+      {
+        "filename": "converted-20261126-225530-128.json",
+        "bytes": 373,
+        "sha256": "ba5e8b6fd18a4d9400ce69de2c42627a5b8b6b35dd2c89f2e2ea406c4d66d48c"
+      },
+      {
+        "filename": "converted-20261126-225530-128-2.json",
+        "bytes": 373,
+        "sha256": "ba5e8b6fd18a4d9400ce69de2c42627a5b8b6b35dd2c89f2e2ea406c4d66d48c"
+      },
+      {
+        "filename": "converted-20261126-225532-315.json",
+        "bytes": 373,
+        "sha256": "ba5e8b6fd18a4d9400ce69de2c42627a5b8b6b35dd2c89f2e2ea406c4d66d48c"
+      },
+      {
+        "filename": "用户🌌-20261126-225532-315-2.json",
+        "bytes": 196,
+        "sha256": "2d5616145fb0118f1d46c16c6f0d1c1a55857c6ff0fb2d4932555afb132f71a8"
+      },
+      {
+        "filename": "账目 v1-20261126-225532-315-3.csv",
+        "bytes": 173,
+        "sha256": "d04f4e58a189b863edb39fb63de40897a6efeacd36d64304cc023573d2696c4a"
+      },
+      {
+        "filename": "账目 v1-20261126-225532-315-4.tsv",
+        "bytes": 166,
+        "sha256": "9597dd5f88ccbae6575e113cee3c025783a869585bb5fbf51f0fe0fdd2cdcc7e"
+      }
+    ],
+    "global-mobile-light": [
+      {
+        "filename": "converted-20261126-095530-128.json",
+        "bytes": 373,
+        "sha256": "ba5e8b6fd18a4d9400ce69de2c42627a5b8b6b35dd2c89f2e2ea406c4d66d48c"
+      },
+      {
+        "filename": "converted-20261126-095530-128-2.json",
+        "bytes": 373,
+        "sha256": "ba5e8b6fd18a4d9400ce69de2c42627a5b8b6b35dd2c89f2e2ea406c4d66d48c"
+      },
+      {
+        "filename": "converted-20261126-095532-315.json",
+        "bytes": 373,
+        "sha256": "ba5e8b6fd18a4d9400ce69de2c42627a5b8b6b35dd2c89f2e2ea406c4d66d48c"
+      },
+      {
+        "filename": "用户🌌-20261126-095532-315-2.json",
+        "bytes": 196,
+        "sha256": "2d5616145fb0118f1d46c16c6f0d1c1a55857c6ff0fb2d4932555afb132f71a8"
+      },
+      {
+        "filename": "账目 v1-20261126-095532-315-3.csv",
+        "bytes": 173,
+        "sha256": "d04f4e58a189b863edb39fb63de40897a6efeacd36d64304cc023573d2696c4a"
+      },
+      {
+        "filename": "账目 v1-20261126-095532-315-4.tsv",
+        "bytes": 166,
+        "sha256": "9597dd5f88ccbae6575e113cee3c025783a869585bb5fbf51f0fe0fdd2cdcc7e"
+      }
+    ]
+  },
+  "checkedLexemes": [
+    "9007199254740993",
+    "123.4500",
+    "1.234567890123456789",
+    "1e+100"
+  ],
+  "verified": [
+    "All JSON records and string types",
+    "CSV quoted field CRLF and Unicode",
+    "CSV output CRLF without BOM",
+    "TSV output LF and UTF-8 BOM",
+    "Flattening, special property names and opt-in formula protection",
+    "Windows clipboard content matched TSV bytes after CRLF normalization",
+    "Repeated download bytes matched the original view"
+  ]
+}

@@ -6,14 +6,14 @@ import { TextEditorPane } from '../../ui/text-editor/TextEditorPane';
 import { TextWorkbench } from '../../ui/text-editor/TextWorkbench';
 import { Tooltip } from '../../ui/Tooltip';
 import { ErrorText, Frame, saveBlob, tr } from '../general/ui';
-import { jsonLanguage } from '../json-formatter/editor';
+import { jsonLanguage, jsonLanguageNotice as languageNotice } from '../json-formatter/json-language';
 import type { ToolProps } from '../types';
 import { ConversionControls, Segments } from './controls';
+import { createDownloadNamer } from './delivery';
 import { TablePreview } from './TablePreview';
 import { csvDefaults, csvSample, jsonDefaults, jsonSample, previewText, type Conversion, type Direction, type Source } from './settings';
 import { useConversion } from './use-conversion';
 import papaNotice from './papaparse.NOTICE.txt?url';
-import languageNotice from '../json-formatter/json-language.NOTICE.txt?url';
 import s from './tabular.module.scss';
 
 type Draft = { source: Source; name?: string };
@@ -37,6 +37,7 @@ export default function CsvJsonConverter({ locale }: ToolProps) {
   const [csv, setCsv] = useState(csvDefaults);
   const [json, setJson] = useState(jsonDefaults);
   const [view, setView] = useState<'source' | 'table'>('source');
+  const [downloadName] = useState(createDownloadNamer);
   const [fileError, setFileError] = useState<string>();
   const [dragging, setDragging] = useState(false);
   const [clipboard, setClipboard] = useState<{ token: object; message: string }>();
@@ -92,8 +93,7 @@ export default function CsvJsonConverter({ locale }: ToolProps) {
 
   const download = () => {
     if (!result) return;
-    const base = draft.name?.replace(/\.(?:csv|tsv|json)$/i, '') || 'converted';
-    saveBlob(result.blob, base + '.' + outputType.toLowerCase());
+    saveBlob(result.blob, downloadName(draft.name ?? '', outputType));
   };
 
   const delimiterName = result && {

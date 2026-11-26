@@ -1,0 +1,127 @@
+{
+  "chromium": "156.0.8078.4",
+  "staticPages": [
+    {
+      "port": 4321,
+      "route": "/tools/csv-json-converter/",
+      "canonical": "https://tool4furry.cn/tools/csv-json-converter/",
+      "alternates": [
+        "zh-CN",
+        "en"
+      ],
+      "title": "在线 CSV 与 JSON 转换工具 - 双向转换与表格预览 | Tool4Furry",
+      "desc": "在线将 CSV 转换为 JSON，或将 JSON 转换为 CSV、TSV。支持分隔符检测、类型推断、嵌套对象展开、数字精度保真及表格预览，全部在浏览器本地处理。",
+      "og": "在线 CSV 与 JSON 转换工具 - 双向转换与表格预览 | Tool4Furry",
+      "twitter": "summary_large_image",
+      "h1": [
+        "CSV / JSON 转换"
+      ]
+    },
+    {
+      "port": 4321,
+      "route": "/en/tools/csv-json-converter/",
+      "canonical": "https://tool4furry.cn/en/tools/csv-json-converter/",
+      "alternates": [
+        "en",
+        "zh-CN"
+      ],
+      "title": "CSV to JSON & JSON to CSV Converter | Tool4Furry",
+      "desc": "Convert CSV to JSON or JSON to CSV and TSV. Supports delimiter detection, type inference, nested objects, numeric precision and table previews, locally in your browser.",
+      "og": "CSV to JSON & JSON to CSV Converter | Tool4Furry",
+      "twitter": "summary_large_image",
+      "h1": [
+        "CSV / JSON Converter"
+      ]
+    },
+    {
+      "port": 4322,
+      "route": "/tools/csv-json-converter/",
+      "canonical": "https://tool4furry.com/tools/csv-json-converter/",
+      "alternates": [
+        "en",
+        "zh-CN"
+      ],
+      "title": "CSV to JSON & JSON to CSV Converter | Tool4Furry",
+      "desc": "Convert CSV to JSON or JSON to CSV and TSV. Supports delimiter detection, type inference, nested objects, numeric precision and table previews, locally in your browser.",
+      "og": "CSV to JSON & JSON to CSV Converter | Tool4Furry",
+      "twitter": "summary_large_image",
+      "h1": [
+        "CSV / JSON Converter"
+      ]
+    },
+    {
+      "port": 4322,
+      "route": "/zh/tools/csv-json-converter/",
+      "canonical": "https://tool4furry.com/zh/tools/csv-json-converter/",
+      "alternates": [
+        "zh-CN",
+        "en"
+      ],
+      "title": "在线 CSV 与 JSON 转换工具 - 双向转换与表格预览 | Tool4Furry",
+      "desc": "在线将 CSV 转换为 JSON，或将 JSON 转换为 CSV、TSV。支持分隔符检测、类型推断、嵌套对象展开、数字精度保真及表格预览，全部在浏览器本地处理。",
+      "og": "在线 CSV 与 JSON 转换工具 - 双向转换与表格预览 | Tool4Furry",
+      "twitter": "summary_large_image",
+      "h1": [
+        "CSV / JSON 转换"
+      ]
+    }
+  ],
+  "scenarios": {
+    "cn-desktop-dark": {
+      "locale": "zh",
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 960
+      },
+      "timezone": "Asia/Shanghai",
+      "downloadNames": [
+        "converted-20261126-225530-128.json",
+        "converted-20261126-225530-128-2.json",
+        "converted-20261126-225532-315.json",
+        "用户🌌-20261126-225532-315-2.json",
+        "账目 v1-20261126-225532-315-3.csv",
+        "账目 v1-20261126-225532-315-4.tsv"
+      ],
+      "mimes": [
+        "application/json;charset=utf-8",
+        "text/csv;charset=utf-8",
+        "text/tab-separated-values;charset=utf-8"
+      ],
+      "worker": "http://127.0.0.1:4321/_astro/tabular-conversion.worker-DNONYUIS.js",
+      "errors": [],
+      "invalidRejected": true,
+      "cancelled": true,
+      "partialCopyDisabled": true,
+      "reversePaste": true
+    },
+    "global-mobile-light": {
+      "locale": "en",
+      "theme": "light",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "timezone": "America/New_York",
+      "downloadNames": [
+        "converted-20261126-095530-128.json",
+        "converted-20261126-095530-128-2.json",
+        "converted-20261126-095532-315.json",
+        "用户🌌-20261126-095532-315-2.json",
+        "账目 v1-20261126-095532-315-3.csv",
+        "账目 v1-20261126-095532-315-4.tsv"
+      ],
+      "mimes": [
+        "application/json;charset=utf-8",
+        "text/csv;charset=utf-8",
+        "text/tab-separated-values;charset=utf-8"
+      ],
+      "worker": "http://127.0.0.1:4322/_astro/tabular-conversion.worker-DNONYUIS.js",
+      "errors": [],
+      "invalidRejected": true,
+      "cancelled": true,
+      "partialCopyDisabled": true,
+      "reversePaste": true
+    }
+  }
+}

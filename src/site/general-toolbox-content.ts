@@ -916,4 +916,58 @@ export const generalToolboxContent = {
       ],
     },
   },
+  'csv-json-converter': {
+    zh: {
+      title: '在线 CSV 与 JSON 转换工具 - 双向转换与表格预览 | Tool4Furry',
+      description: '在线将 CSV 转换为 JSON，或将 JSON 转换为 CSV、TSV。支持分隔符检测、类型推断、嵌套对象展开、数字精度保真及表格预览，全部在浏览器本地处理。',
+      h1: 'CSV / JSON 转换',
+      intro: '在 CSV 与 JSON 之间快速转换数据，灵活设置表头、分隔符及数据类型，通过源码和表格预览检查结果，并保存完整转换文件。',
+      steps: [
+        '**选择转换方向：** 在 CSV → JSON 和 JSON → CSV 之间切换，输入、粘贴或导入本地数据文件。',
+        '**设置转换规则：** 根据需要调整分隔符、表头、数据类型、JSON 结构及其他输出选项。',
+        '**检查转换结果：** 工具自动转换数据，可切换源码或表格视图，分页查看记录及完整单元格。',
+        '**保存结果：** 复制完整转换内容，或下载 CSV、TSV、JSON 文件。也可以复制结果，切换方向后粘贴到输入栏进行反向转换。',
+      ],
+      limitations: [
+        '支持 UTF-8 编码的 CSV、TSV 和 JSON 文件。CSV 支持逗号、分号、Tab 和竖线分隔符，以及引号转义和多行字段。',
+        'CSV 可转换为 JSON 对象数组或二维数组，默认保留字段字符串。可选类型推断可能改变字段的类型及数值表示。',
+        'JSON 支持单个对象、对象数组及规则二维数组。嵌套对象可保留为 JSON 字符串或展开为列，嵌套数组不会自动展开为多行。',
+        'JSON 数字字面量在 CSV 输出中保留原始表示。CSV 不具备完整的 JSON 类型系统，双向转换不保证恢复全部原始结构、类型及空值语义。',
+        'CSV 输入上限为 64 MiB，JSON 输入上限为 16 Mi UTF-16 代码单元及 500,000 个解析节点，转换输出上限为 64 MiB。大型数据可能仅显示局部源码预览，但成功转换后仍可下载完整结果。',
+        '数据转换在浏览器本地完成，不上传或持久保存数据。可选 Excel 公式注入防护会修改具有公式风险的字段内容；工具不支持 XLSX 文件转换。',
+      ],
+      faq: [
+        { question: 'CSV 转换为 JSON 时会丢失前导零吗？', answer: '默认不会。工具默认将 CSV 字段保留为字符串，例如 001 仍然是字符串 "001"。智能类型推断是可选功能，并保留带前导零及存在数值精度风险的字段。' },
+        { question: '支持包含嵌套对象的 JSON 吗？', answer: '支持。嵌套对象默认作为 JSON 字符串写入 CSV，也可以选择展开为独立列。嵌套数组保留为 JSON 字符串，不自动生成额外记录。' },
+        { question: '可以转换大文件吗？', answer: '可以。工具使用 Worker 进行本地转换，支持最大 64 MiB 的 CSV 输入。JSON 输入及转换输出具有独立的资源预算。大型结果可通过分页表格查看，并下载完整文件。' },
+        { question: '为什么 CSV 转回 JSON 后与原始 JSON 不完全一样？', answer: 'CSV 没有统一的数据类型和嵌套结构定义。数字、布尔值、空值和嵌套对象转换为 CSV 后，可能无法自动恢复其原始 JSON 语义。' },
+      ],
+    },
+    en: {
+      title: 'CSV to JSON & JSON to CSV Converter | Tool4Furry',
+      description: 'Convert CSV to JSON or JSON to CSV and TSV. Supports delimiter detection, type inference, nested objects, numeric precision and table previews, locally in your browser.',
+      h1: 'CSV / JSON Converter',
+      intro: 'Convert data between CSV and JSON with flexible delimiter, header and data type settings. Inspect your results in source or table view and download the complete converted file.',
+      steps: [
+        '**Choose a direction:** Select CSV to JSON or JSON to CSV, then enter, paste or import a local data file.',
+        '**Configure conversion:** Adjust delimiters, headers, data types, JSON structure and other output options.',
+        '**Review your results:** Conversion runs automatically. Switch between source and table views to inspect records and complete cell values.',
+        '**Save the output:** Copy the complete result or download a CSV, TSV or JSON file. To convert the result back, switch directions and paste it into the input pane.',
+      ],
+      limitations: [
+        'Supports UTF-8 CSV, TSV and JSON files. CSV supports comma, semicolon, tab and pipe delimiters, escaped quotes and multiline fields.',
+        'CSV can be converted into JSON object arrays or two-dimensional arrays. Fields remain strings by default. Optional type inference may change field types and numeric representations.',
+        'JSON input supports a single object, arrays of objects and rectangular arrays. Nested objects can be serialized as JSON strings or flattened into columns. Nested arrays are not expanded into multiple rows.',
+        'JSON numeric literals retain their original representations in CSV output. CSV lacks a complete JSON type system, so round-trip conversion cannot guarantee preservation of every original structure, type or null value.',
+        'CSV input is limited to 64 MiB. JSON input is limited to 16 Mi UTF-16 code units and 500,000 parsed nodes. Converted output is limited to 64 MiB. Large results may have partial source previews while complete downloads remain available after successful conversion.',
+        'Data is processed locally without uploads or persistent storage. Optional spreadsheet formula injection protection modifies potentially dangerous field values. XLSX conversion is unsupported.',
+      ],
+      faq: [
+        { question: 'Does converting CSV to JSON remove leading zeros?', answer: 'Not by default. CSV fields remain strings, so a value such as 001 is preserved as "001". Optional type inference also preserves values with leading zeros or identified numeric precision risks.' },
+        { question: 'Can I convert nested JSON objects to CSV?', answer: 'Yes. Nested objects are serialized as JSON strings by default or can be flattened into separate columns. Nested arrays remain JSON strings rather than creating additional rows.' },
+        { question: 'Can I convert large files?', answer: 'Yes. Conversion runs locally in a Worker and supports CSV files up to 64 MiB. JSON input and converted output have separate resource budgets. Large results can be inspected using paginated tables and downloaded in full.' },
+        { question: 'Why does converting CSV back to JSON produce different data?', answer: 'CSV does not define a universal type system or nested data structure. Numbers, booleans, null values and nested objects may not recover their original JSON semantics automatically.' },
+      ],
+    },
+  },
 } satisfies ToolContentMap;

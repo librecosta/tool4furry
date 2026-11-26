@@ -17,6 +17,7 @@ import { definition as timestamp } from '../src/tools/timestamp-converter/defini
 import { definition as colorContrast } from '../src/tools/color-contrast/definition';
 import { definition as audioTrimmer } from '../src/tools/audio-trimmer/definition';
 import { definition as markdownEditor } from '../src/tools/markdown-editor/definition';
+import { definition as csv } from '../src/tools/csv-json-converter/definition';
 
 const content = {
   title: 'Test — Tool4Furry',
@@ -28,6 +29,30 @@ const map: ToolContentMap = {
   one: { zh: content, en: { ...content, h1: 'English heading' } },
 };
 describe('Astro-only content boundary', () => {
+  it('publishes bilingual CSV / JSON SEO describing the actual reverse-conversion workflow', () => {
+    expect(csv).toMatchObject({
+      id: 'csv-json-converter', slug: 'csv-json-converter', category: 'development', group: 'developer-utilities',
+      roles: ['developer', 'operations', 'studio'], mode: 'form', regions: ['cn', 'global'], status: 'published',
+      copy: {
+        zh: { title: 'CSV / JSON 转换', description: '双向转换 CSV 与 JSON，支持数据类型设置、数字精度保真及表格预览。', summary: '转换、检查并导出 CSV、TSV 和 JSON 数据。' },
+        en: { title: 'CSV / JSON Converter', description: 'Convert CSV and JSON with configurable data types, numeric precision and table previews.', summary: 'Convert, inspect and export CSV, TSV and JSON data.' },
+      },
+    });
+    for (const region of csv.regions) for (const locale of ['zh', 'en'] as const) {
+      const page = getToolPageContent(csv, region, toolPageContents, false, locale);
+      expect(page.title).toBe(locale === 'zh'
+        ? '在线 CSV 与 JSON 转换工具 - 双向转换与表格预览 | Tool4Furry'
+        : 'CSV to JSON & JSON to CSV Converter | Tool4Furry');
+      expect(page.h1).toBe(csv.copy[locale].title);
+      expect(page.steps).toHaveLength(4);
+      expect(page.limitations).toHaveLength(6);
+      expect(page.faq).toHaveLength(4);
+      expect(page.steps![3]).toMatch(/切换方向后粘贴|switch directions and paste/);
+      expect(page.limitations![4]).toMatch(/64 MiB.*16 Mi.*500,000.*64 MiB/);
+      expect(getRelatedTools(csv, region).map(tool => tool.id)).toEqual(['json-formatter', 'url-base64', 'timestamp-converter']);
+    }
+  });
+
   it('publishes bilingual Timestamp SEO and short copy matching the date and timezone workflow', () => {
     const expected = {
       zh: {
@@ -66,7 +91,7 @@ describe('Astro-only content boundary', () => {
       expect(page.faq).toHaveLength(4);
       expect(page.faq![1].answer).toMatch(/1704067200\.123.*1704067200123/);
       expect(JSON.stringify(page)).not.toMatch(/微秒|纳秒|批量转换|倒计时|microseconds|nanoseconds|batch conversion|countdown/i);
-      expect(getRelatedTools(timestamp, region).map(tool => tool.id)).toEqual(['json-formatter', 'url-base64']);
+      expect(getRelatedTools(timestamp, region).map(tool => tool.id)).toEqual(['json-formatter', 'url-base64', 'csv-json-converter']);
       if (locale === 'en') expect(JSON.stringify(page)).not.toMatch(/\p{Script=Han}/u);
     }
   });
@@ -151,7 +176,7 @@ describe('Astro-only content boundary', () => {
       expect(page.limitations![5]).toMatch(/不是加密|provide no encryption/);
       expect(page.faq).toHaveLength(4);
       expect(JSON.stringify(page)).not.toMatch(/JWT|加密保护|file to Base64|unlimited/i);
-      expect(getRelatedTools(codec, region).map(tool => tool.id)).toEqual(['json-formatter', 'timestamp-converter']);
+      expect(getRelatedTools(codec, region).map(tool => tool.id)).toEqual(['json-formatter', 'timestamp-converter', 'csv-json-converter']);
       if (locale === 'en') expect(JSON.stringify(page)).not.toMatch(/\p{Script=Han}/u);
     }
   });
@@ -193,7 +218,7 @@ describe('Astro-only content boundary', () => {
       expect(page.limitations![4]).toMatch(/40.*直属子节点|40 direct child nodes/);
       expect(page.limitations![5]).toMatch(/不执行 JSON Schema.*不会自动修复|not JSON Schema.*does not automatically repair/);
       expect(JSON.stringify(page)).not.toMatch(/50 万字符|500,000 characters|128 层|128 nesting|JSONPath|JSONC|YAML/);
-      expect(getRelatedTools(json, region).map(tool => tool.id)).toEqual(['url-base64', 'timestamp-converter']);
+      expect(getRelatedTools(json, region).map(tool => tool.id)).toEqual(['url-base64', 'timestamp-converter', 'csv-json-converter']);
       if (locale === 'en') expect(JSON.stringify(page)).not.toMatch(/\p{Script=Han}/u);
     }
   });

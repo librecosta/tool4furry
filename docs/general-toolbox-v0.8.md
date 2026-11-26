@@ -1,6 +1,6 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast / Audio Trimmer / Markdown Editor / Video Frame Extractor 已获得 CN/Global Published 源码资格，其余 6 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（23 Published / 6 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast / Audio Trimmer / Markdown Editor / Video Frame Extractor / CSV / JSON Converter 已获得 CN/Global Published 源码资格，其余 5 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（24 Published / 5 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
 ## Video Frame Extractor — V0.8-B17-D1
 
@@ -370,10 +370,12 @@
 
 ## CSV / JSON Converter — V0.8-B18-D1
 
-工具继续保持 Draft。桌面使用上方转换工具栏与等宽输入/结果栏，窄屏上下排列。通过顶部工具栏切换方向，两个方向各自保留输入草稿。中英文工作区使用同一份英文示例。
+B18-D2 完成双语静态 SEO，工具已取得 CN/Global Published 源码资格。桌面使用上方转换工具栏与等宽输入/结果栏，窄屏上下排列。通过顶部工具栏切换方向，两个方向各自保留输入草稿。可复制有效结果并粘贴到另一方向的输入栏。中英文工作区使用同一份英文示例。
 
 默认 CSV → JSON 保留字符串、以首行为表头并自动检测分隔符。支持四种分隔符、表头开关、对象或数组输出、空值选项及缩进。智能推断只接受小写布尔值和可安全保留有效数字的普通十进制数字。前导零、超长数字、科学计数形式和风险小数保留为原始字符串。结构性换行与带引号字段内部的换行单独处理。对象表头必须非空且唯一，所有记录需要相同字段数。
 
 JSON → CSV 复用 JSON Formatter 的严格源码范围解析，按源码字段首次出现顺序生成列。数字与嵌套 JSON 保留原始数字字面量。嵌套对象可按点路径展开，冲突明确报错；数组保留在原单元格，缺失与 null 均输出为空字段。公式防护默认关闭，开启后会同时改写可疑表头与数据。CSV/TSV 输出共用既定分隔符、换行与 BOM 设置。
 
-专属 Worker 对 CSV 文件分块解码，以完整逻辑记录交由 Papa Parse 解析。JSON 输入采用有界 AST。输出分段编码为 Blob，表格按字节索引复用实际输出，支持每页 50、100、200 行以及按列分组浏览。源码预览预算为 256 Ki UTF-16 单元，超出时保留完整下载。第三方通知复用 Papa Parse、CodeMirror 和 JSON 语言扩展的完整 MIT 文本。双地区生产产物守卫排除工具入口、Worker、局部 CSS 和 Papa Parse 许可资源。[B18 浏览器与下载复检](evidence/b18-csv-json/README.md)
+专属 Worker 对 CSV 文件分块解码，以完整逻辑记录交由 Papa Parse 解析。JSON 输入采用有界 AST。输出分段编码为 Blob，表格按字节索引复用实际输出，支持每页 50、100、200 行以及按列分组浏览。源码预览预算为 256 Ki UTF-16 单元，超出时保留完整下载。第三方通知复用 Papa Parse、CodeMirror 和 JSON 语言扩展的完整 MIT 文本。双地区生产产物守卫检查专属入口、Worker、局部 CSS 和 Papa Parse 许可随工具按需交付。JSON 语法由本工具与 JSON Formatter 共用。
+
+下载在点击时生成 `{basename}-{yyyyMMdd-HHmmss-SSS}.{extension}`，使用浏览器本地时间。同一毫秒内后续下载依次追加 `-2`、`-3`。导入文件保留清理后的基本名称，手动输入和示例使用 `converted`。扩展名及 MIME 随实际 JSON、CSV 或 TSV 输出确定。[B18 浏览器与下载复检](evidence/b18-csv-json/README.md)

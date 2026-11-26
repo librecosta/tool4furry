@@ -67,6 +67,8 @@ Markdown Editor（`markdown-editor`）依据 V0.8-B16-D2 授权取得 CN/Global 
 
 Video Frame Extractor（`video-frame-extractor`）依据 V0.8-B17-D2 授权取得 CN/Global Published 源码资格。全站 29 款（23 Published / 6 Draft），每地区 46 个双语工具详情页。视频工作区、专属样式、同源 Worker 和完整 NOTICE 按需交付。视频与音频使用同一版本的 Mediabunny，视频加载链排除音频编码器及 WaveSurfer。[正式产物与真实输出验收](../docs/evidence/b17-video/README.md#b17-d2-正式产物验收)
 
+CSV / JSON Converter（`csv-json-converter`）依据 V0.8-B18-D2 授权取得 CN/Global Published 源码资格。全站 29 款（24 Published / 5 Draft），每地区 48 个双语工具详情页。转换工作区、专属样式、同源 Worker 和完整 Papa Parse MIT 通知按需交付。CodeMirror JSON 语言与 JSON Formatter 共享。[正式产物、剪贴板及实际下载验收](../docs/evidence/b18-csv-json/README.md#b18-d2-正式产物验收)
+
 如托管启用 CSP，请允许文档和媒体 Worker 通过 `worker-src 'self'` 创建同源 Worker，并在媒体 Worker 及两个编码 Worker 的响应策略中使用 `script-src 'self' 'wasm-unsafe-eval'`。媒体 Worker 用 WASM SIMD 编译探测能力，在禁用时保留 WAV 及可用的原生编码。页面脚本可使用自身行内脚本的哈希。以上策略已在两地区本地正式产物验证，实际托管响应头仍需在部署阶段单独复核。
 
 - CN/Global 独立域名、缓存与 `dist/cn` / `dist/global`；同地区包含中英文，不把英文页面自动投向另一地区。

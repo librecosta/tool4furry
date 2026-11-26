@@ -6,14 +6,15 @@ import { definition as cleaner } from '../src/tools/text-cleaner/definition';
 import { definition as diff } from '../src/tools/text-diff/definition';
 import { definition as subtitles } from '../src/tools/subtitle-tools/definition';
 import { definition as json } from '../src/tools/json-formatter/definition';
+import { definition as csv } from '../src/tools/csv-json-converter/definition';
 import { definition as codec } from '../src/tools/url-base64/definition';
 import { tools } from '../src/tools/registry';
 import { toolAvailabilityConstant, toolBuildDefines } from '../src/tools/build-availability';
 import { draftIds } from './fixtures/general-toolbox';
 
 const read = (path: string) => readFileSync(path, 'utf8');
-it('shares the editor across five Published tools while excluding all six Draft tools', () => {
-  for (const tool of [cleaner, diff, subtitles, json, codec]) {
+it('shares the editor across six Published tools while excluding all five Draft tools', () => {
+  for (const tool of [cleaner, diff, subtitles, json, codec, csv]) {
     expect(tool.status).toBe('published');
     expect(tool.regions).toEqual(['cn', 'global']);
   }
@@ -24,9 +25,10 @@ it('shares the editor across five Published tools while excluding all six Draft 
     expect(availability['import.meta.env.T4F_TOOL_SUBTITLE_TOOLS_AVAILABLE']).toBe('true');
     expect(availability['import.meta.env.T4F_TOOL_JSON_FORMATTER_AVAILABLE']).toBe('true');
     expect(availability['import.meta.env.T4F_TOOL_URL_BASE64_AVAILABLE']).toBe('true');
-    expect(draftIds).toHaveLength(6);
+    expect(draftIds).toHaveLength(5);
     expect(availability['import.meta.env.T4F_TOOL_MARKDOWN_EDITOR_AVAILABLE']).toBe('true');
     expect(draftIds).not.toContain('url-base64');
+    expect(availability['import.meta.env.T4F_TOOL_CSV_JSON_CONVERTER_AVAILABLE']).toBe('true');
     for (const id of draftIds) {
       expect(tools.find(tool => tool.id === id)?.status).toBe('draft');
       expect(availability[toolAvailabilityConstant(id)]).toBe('false');
@@ -46,7 +48,7 @@ it('shares the editor across five Published tools while excluding all six Draft 
   expect(read('src/tools/subtitle-tools/definition.ts')).not.toMatch(/@codemirror|TextEditor|SubtitleTools|['"]\.\/core['"]/);
   expect(read('src/tools/json-formatter/JsonFormatter.tsx')).toContain("from '../../ui/text-editor/TextEditor'");
   expect(read('src/tools/json-formatter/definition.ts')).not.toMatch(/@codemirror|TextEditor|JsonFormatter|['"]\.\/core['"]/);
-  expect(read('src/tools/json-formatter/editor.ts')).toContain("from '@codemirror/lang-json'");
+  expect(read('src/tools/json-formatter/json-language.ts')).toContain("from '@codemirror/lang-json'");
   expect(read('src/tools/loaders.ts')).toMatch(/T4F_TOOL_JSON_FORMATTER_AVAILABLE\s*\?\s*\(\) => import\('\.\/json-formatter\/JsonFormatter'\)/);
   expect(read('src/tools/loaders.ts')).toMatch(/T4F_TOOL_URL_BASE64_AVAILABLE\s*\?\s*\(\) => import\('\.\/url-base64\/UrlBase64'\)/);
   expect(read('src/tools/url-base64/UrlBase64.tsx')).toContain("from '../../ui/text-editor/TextEditor'");
@@ -87,7 +89,9 @@ it('ships the complete JSON language and grammar notices separately from the sha
     expect(toolNotice).toContain(read(join(root, 'LICENSE')).replace(/\r\n/g, '\n'));
     expect(sharedNotice).not.toContain(`${pkg.name}@`);
   }
-  expect(read('src/tools/json-formatter/JsonFormatter.tsx')).toContain('./json-language.NOTICE.txt?url');
+  expect(read('src/tools/json-formatter/json-language.ts')).toContain('./json-language.NOTICE.txt?url');
+  for (const path of ['src/tools/json-formatter/JsonFormatter.tsx', 'src/tools/csv-json-converter/CsvJsonConverter.tsx'])
+    expect(read(path)).toContain('jsonLanguageNotice');
 });
 
 it('ships the complete MIT license of every installed editor runtime dependency', () => {

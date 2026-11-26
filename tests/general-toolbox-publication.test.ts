@@ -79,7 +79,7 @@ it('publishes File Hash bilingual static SEO and concise metadata matching its f
   expect(tool.copy.zh).toEqual({ title: '文件哈希', description: '批量计算 MD5、SHA 系列与 CRC32，支持本地哈希比对。', summary: '拖入文件自动计算哈希，支持多种算法与批量导出。' });
   expect(tool.copy.en).toEqual({ title: 'File Hash', description: 'Calculate MD5, SHA and CRC32 checksums locally for multiple files.', summary: 'Automatically hash files, compare checksums and export results.' });
 });
-it('keeps both implementation batches intact with twenty-three Published and six Draft tools', () => {
+it('keeps both implementation batches intact with twenty-four Published and five Draft tools', () => {
   expect(tools).toHaveLength(29);
   expect(firstBatchIds).toHaveLength(15);
   expect(firstBatchIds).toContain('pdf-merge');
@@ -90,12 +90,12 @@ it('keeps both implementation batches intact with twenty-three Published and six
   expect(firstBatchIds).toContain('file-hash');
   expect(firstBatchIds).toContain('text-cleaner');
   expect(secondBatchIds).toHaveLength(7);
-  expect(draftIds).toHaveLength(6);
+  expect(draftIds).toHaveLength(5);
   expect(tools.filter((t) => t.status === 'draft').map((t) => t.id)).toEqual(
     draftIds,
   );
   for (const region of ['cn', 'global'] as const) {
-    expect(getAvailableTools(region, false)).toHaveLength(23);
+    expect(getAvailableTools(region, false)).toHaveLength(24);
     expect(getAvailableTools(region, true)).toHaveLength(29);
     for (const id of generalToolboxIds) {
       const tool = tools.find((t) => t.id === id)!;

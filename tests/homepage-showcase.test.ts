@@ -106,15 +106,16 @@ describe('homepage editorial role projection', () => {
   });
 
   const video = tools.find(tool => tool.id === 'video-frame-extractor')!;
+  const csv = tools.find(tool => tool.id === 'csv-json-converter')!;
   const associatedRoles = ['painter', 'composer', 'developer', 'animator', 'operations', 'studio'];
-  const publishedTools = [imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, jsonFormatterDefinition, urlBase64Definition, timestampDefinition, markdownEditorDefinition, comicPageOrganizerDefinition, imageWatermarkDefinition, exifMetadataDefinition, pdfMergeDefinition, pdfSplitDefinition, imagesToPdfDefinition, zipManagerDefinition, batchFileRenamerDefinition, fileHashDefinition, textCleanerDefinition, textDiffDefinition, subtitleToolsDefinition, colorContrastDefinition, audioTrimmerDefinition, video];
+  const publishedTools = [imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition, imageCompressorDefinition, jsonFormatterDefinition, urlBase64Definition, timestampDefinition, markdownEditorDefinition, comicPageOrganizerDefinition, imageWatermarkDefinition, exifMetadataDefinition, pdfMergeDefinition, pdfSplitDefinition, imagesToPdfDefinition, zipManagerDefinition, batchFileRenamerDefinition, fileHashDefinition, textCleanerDefinition, textDiffDefinition, subtitleToolsDefinition, colorContrastDefinition, audioTrimmerDefinition, video, csv];
   const roleTools = (id: string, list = publishedTools) => {
     const ordered = id === 'operations'
       ? [...list.filter(tool => !['timestamp-converter', 'markdown-editor', 'video-frame-extractor'].includes(tool.id)), ...list.filter(tool => ['timestamp-converter', 'markdown-editor', 'video-frame-extractor'].includes(tool.id))]
       : list;
     if (id === 'studio') return [
       ...list.filter(tool => ['pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer'].includes(tool.id)),
-      ...list.filter(tool => tool.id === 'markdown-editor'),
+      ...list.filter(tool => ['markdown-editor', 'csv-json-converter'].includes(tool.id)),
     ];
     if (id === 'composer') return list.filter(tool => tool.id === 'audio-trimmer');
     return ordered.filter(tool => !['pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'color-contrast'].includes(tool.id) && (tool.id !== 'palette-extractor' || ['painter', 'animator'].includes(id)) &&
@@ -125,13 +126,14 @@ describe('homepage editorial role projection', () => {
       (!['subtitle-tools', 'audio-trimmer'].includes(tool.id) || id === 'animator') &&
       (tool.id !== 'timestamp-converter' || ['developer', 'operations'].includes(id)) &&
       (tool.id !== 'markdown-editor' || id === 'operations') &&
+      (tool.id !== 'csv-json-converter' || id === 'developer') &&
       (tool.id !== 'video-frame-extractor' || ['animator', 'operations'].includes(id)) &&
       (!['json-formatter', 'url-base64'].includes(tool.id) || id === 'developer') &&
       (tool.id !== 'exif-metadata' || ['painter', 'operations'].includes(id)) &&
       (tool.id !== 'image-watermark' || ['painter', 'animator', 'operations'].includes(id)));
   };
 
-  it.each(['cn', 'global'] as const)('filters twenty-three Published tools through %s editorial slots', region => {
+  it.each(['cn', 'global'] as const)('filters twenty-four Published tools through %s editorial slots', region => {
     for (const locale of ['zh', 'en'] as const) {
       const production = getRoleShowcases(region, locale);
       expect(production).toHaveLength(6);
@@ -153,7 +155,7 @@ describe('homepage editorial role projection', () => {
         expect(role.entries.filter(entry => entry.status === 'draft').map(entry=>entry.id)).toEqual(role.toolIds.filter(id=>tools.some(tool=>tool.id===id&&tool.status==='draft')).slice(0,12-productionRole.entries.length));
       }
     }
-    expect(publishedTools.map(tool => tool.status)).toEqual(Array(23).fill('published'));
+    expect(publishedTools.map(tool => tool.status)).toEqual(Array(24).fill('published'));
   });
 
   it.each(['cn', 'global'] as const)('keeps %s editorial IDs behind Registry Draft and region filtering in both locales', region => {
@@ -177,7 +179,7 @@ describe('homepage editorial role projection', () => {
       expect(getRoleShowcases(region, locale, false, list).flatMap(role => role.entries)).toEqual([]);
       expect(getRoleShowcases(region, locale, true, list).flatMap(role => role.entries)).toEqual([]);
     }
-    expect(publishedTools.map(tool => tool.status)).toEqual(Array(23).fill('published'));
+    expect(publishedTools.map(tool => tool.status)).toEqual(Array(24).fill('published'));
   });
 
   it('deduplicates editorial IDs, ignores unknown/unavailable IDs, and caps each role at twelve', () => {
