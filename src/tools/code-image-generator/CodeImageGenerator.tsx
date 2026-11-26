@@ -1,175 +1,326 @@
-import { useEffect, useRef, useState } from 'react';
-import type { ToolProps } from '../types';
-import { TextAreaField, TextField } from '../../ui/TextField';
-import { SelectField } from '../../ui/SelectField';
-import { CheckboxField } from '../../ui/CheckboxField';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { EditorState } from '@codemirror/state';
+import { indentWithTab } from '@codemirror/commands';
+import { keymap } from '@codemirror/view';
+import { Popover } from '@base-ui/react/popover';
+import { CaretDownIcon, CodeIcon, CopySimpleIcon, DownloadSimpleIcon, FolderOpenIcon, ImageSquareIcon } from '@phosphor-icons/react';
 import { Button } from '../../ui/Button';
-import { Frame, tr, ErrorText, errorText, saveBlob } from '../general/ui';
-import s from '../general/ui.module.scss';
-import { useJob } from '../general/use-job';
-import { encodeCanvas } from '../general/canvas-output';
-import { drawCode, languages, type CodeSettings } from './core';
-import notice from './highlight.NOTICE.txt?url';
+import { SelectField } from '../../ui/SelectField';
+import { SliderField } from '../../ui/SliderField';
+import { TextEditor } from '../../ui/text-editor/TextEditor';
+import { Frame, errorText, saveBlob, tr } from '../general/ui';
+import type { ToolProps } from '../types';
+import aurora from '../../assets/code-image-presets/code-preset-aurora.webp?url';
+import forest from '../../assets/code-image-presets/code-preset-forest.webp?url';
+import glacier from '../../assets/code-image-presets/code-preset-glacier.webp?url';
+import lavender from '../../assets/code-image-presets/code-preset-lavender.webp?url';
+import midnight from '../../assets/code-image-presets/code-preset-midnight.webp?url';
+import monochrome from '../../assets/code-image-presets/code-preset-monochrome.webp?url';
+import paper from '../../assets/code-image-presets/code-preset-paper.webp?url';
+import sunset from '../../assets/code-image-presets/code-preset-sunset.webp?url';
+import { AppearancePanel } from './AppearancePanel';
+import { Stage } from './Stage';
+import { canvasMeasure, prepareFont } from './fonts';
+import { createCodeNamer, readBackground, readCode } from './delivery';
+import { layoutCode, outputSize } from './core';
+import { renderRaster, renderSvg, webpSupported } from './render';
+import { highlightBudget } from './highlight-data';
+import { useHighlight } from './use-highlight';
+import { defaultPreset, defaults, languageForFile, languages, presets, sampleCode, scales,
+  type CodeImageSettings, type Language, type OutputFormat, type Preset, type Scale } from './settings';
+import license from './code-image.NOTICE.txt?url';
+import editorLicense from '../../ui/text-editor/codemirror.NOTICE.txt?url';
+import s from './studio.module.scss';
+
+const thumbnails: Record<Preset, string> = {
+  Midnight: midnight, Glacier: glacier, Sunset: sunset, Forest: forest,
+  Paper: paper, Aurora: aurora, Monochrome: monochrome, Lavender: lavender,
+};
+const formats: readonly [OutputFormat, string][] = [['png', 'PNG'], ['svg', 'SVG'], ['jpeg', 'JPEG'], ['webp', 'WebP']];
+
 export default function CodeImageGenerator({ locale }: ToolProps) {
-  const [code, setCode] = useState(
-      'const greet = (name: string) => {\n  return `Hello, ${name}!`;\n};',
-    ),
-    [settings, setSettings] = useState<CodeSettings>({
-      language: 'typescript',
-      theme: 'dark',
-      title: 'hello.ts',
-      lines: true,
-      padding: 32,
-    }),
-    [error, setError] = useState<string>(),
-    [size, setSize] = useState('');
-  const canvas = useRef<HTMLCanvasElement>(null),
-    job = useJob<Blob>(locale);
+  const t = (zh: string, en: string) => tr(locale, zh, en);
+  const [code, setCode] = useState(sampleCode);
+  const [language, setLanguage] = useState<Language>('typescript');
+  const [settings, setSettings] = useState(defaults);
+  const [preset, setPreset] = useState<Preset | undefined>(defaultPreset);
+  const [editing, setEditing] = useState(false);
+  const [filename, setFilename] = useState('');
+  const [backgroundFile, setBackgroundFile] = useState<{ image: ImageBitmap; name: string }>();
+  const [scale, setScale] = useState<Scale>(2);
+  const [quality, setQuality] = useState(90);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [webp, setWebp] = useState(false);
+  const [canCopyImage, setCanCopyImage] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState('');
+  const [actionError, setActionError] = useState('');
+  const [makeName] = useState(createCodeNamer);
+  const root = useRef<HTMLDivElement>(null);
+  const sourceInput = useRef<HTMLInputElement>(null);
+  const sourceRead = useRef(0);
+  const backgroundRead = useRef(0);
+  const revision = useRef(0);
+  const delivering = useRef(false);
+  const editFocus = useRef(false);
+
+  const tokens = useHighlight(code, language, settings.theme);
+  const fontRequest = useMemo(() => ({ font: settings.font, text: code + settings.title }), [settings.font, code, settings.title]);
+  const [readyFont, setReadyFont] = useState<{ request: typeof fontRequest; error?: unknown }>();
   useEffect(() => {
-    let alive = true;
-    const timer = setTimeout(() => {
-      void document.fonts.ready.then(() => {
-        if (!alive || !canvas.current) return;
-        try {
-          const dimensions = drawCode(canvas.current, code, settings);
-          setSize(`${dimensions.width} × ${dimensions.height}`);
-          setError(undefined);
-        } catch (e) {
-          canvas.current.width = canvas.current.height = 1;
-          setSize('');
-          setError(errorText(e, locale));
-        }
-      });
-    }, 120);
-    return () => {
-      alive = false;
-      clearTimeout(timer);
-    };
-  }, [code, settings, locale]);
-  useEffect(
-    () => () => {
-      if (canvas.current) canvas.current.width = canvas.current.height = 0;
-    },
-    [],
-  );
-  const update = (patch: Partial<CodeSettings>) => {
-    job.invalidate();
-    setSettings({ ...settings, ...patch });
-    setSize('');
+    if (fontRequest.text.length > highlightBudget + 120) return;
+    let current = true;
+    void prepareFont(fontRequest.font, fontRequest.text).then(
+      () => { if (current) setReadyFont({ request: fontRequest }); },
+      (error: unknown) => { if (current) setReadyFont({ request: fontRequest, error }); },
+    );
+    return () => { current = false; };
+  }, [fontRequest]);
+
+  useEffect(() => {
+    let active = true;
+    setCanCopyImage(typeof ClipboardItem !== 'undefined' && !!navigator.clipboard?.write &&
+      (!ClipboardItem.supports || ClipboardItem.supports('image/png')));
+    void webpSupported().then(supported => { if (active) setWebp(supported); });
+    return () => { active = false; };
+  }, []);
+  useEffect(() => {
+    const synchronize = () => setFullscreen(document.fullscreenElement === root.current);
+    document.addEventListener('fullscreenchange', synchronize);
+    return () => document.removeEventListener('fullscreenchange', synchronize);
+  }, []);
+  useEffect(() => () => backgroundFile?.image.close(), [backgroundFile]);
+  useEffect(() => () => { sourceRead.current++; backgroundRead.current++; revision.current++; }, []);
+
+  const picture = useMemo(() => {
+    if (!tokens || readyFont?.request !== fontRequest || readyFont.error) return {};
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 1;
+    try {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas 2D is unavailable');
+      const actual = settings.background.kind === 'image'
+        ? { ...settings, background: { ...settings.background, image: backgroundFile?.image } } : settings;
+      return { scene: layoutCode(tokens, actual, canvasMeasure(ctx, settings.font)) };
+    } catch (error) {
+      return { error };
+    } finally {
+      canvas.width = canvas.height = 0;
+    }
+  }, [fontRequest, readyFont, tokens, settings, backgroundFile]);
+
+  const scene = picture.scene;
+  const dimensions = useMemo(() => {
+    if (!scene) return {};
+    try { return { output: outputSize(scene.width, scene.height, scale) }; }
+    catch (error) { return { error }; }
+  }, [scene, scale]);
+
+  useLayoutEffect(() => {
+    revision.current++;
+    setMessage('');
+    setActionError('');
+  }, [code, language, settings, backgroundFile, scale, quality]);
+  useLayoutEffect(() => {
+    if (editing && editFocus.current) {
+      editFocus.current = false;
+      root.current?.querySelector<HTMLElement>('.cm-content')?.focus();
+    }
+  }, [editing]);
+  const editorBindings = useMemo(() => [EditorState.tabSize.of(settings.tabWidth), keymap.of([indentWithTab])], [settings.tabWidth]);
+  const edit = () => { editFocus.current = true; setEditing(true); };
+  const sample = () => {
+    sourceRead.current++;
+    setCode(sampleCode);
+    setLanguage('typescript');
+    setFilename('');
+    setSettings(previous => ({ ...previous, title: 'greet.ts' }));
   };
-  return (
-    <Frame locale={locale}>
-      <span hidden data-code-license={notice} />
-      <div className={s.columns}>
-        <TextAreaField
-          label={tr(locale, '代码', 'Code')}
-          rows={16}
-          maxLength={20000}
-          value={code}
-          onChange={(v) => {
-            job.invalidate();
-            setCode(v);
-            setSize('');
-          }}
-        />
-        <div className={s.stack}>
-          <div className={s.columns}>
-            <SelectField
-              label={tr(locale, '语言', 'Language')}
-              value={settings.language}
-              onValueChange={(v) =>
-                update({ language: v as CodeSettings['language'] })
-              }
-              options={Object.keys(languages).map((value) => ({
-                value,
-                label: (
-                  {
-                    typescript: 'TypeScript',
-                    javascript: 'JavaScript',
-                    go: 'Go',
-                    python: 'Python',
-                    rust: 'Rust',
-                    json: 'JSON',
-                    html: 'HTML',
-                    css: 'CSS',
-                    bash: 'Bash',
-                  } as Record<string, string>
-                )[value],
-              }))}
-            />
-            <SelectField
-              label={tr(locale, '图片主题', 'Image theme')}
-              value={settings.theme}
-              onValueChange={(v) => update({ theme: v as 'dark' | 'light' })}
-              options={[
-                { value: 'dark', label: tr(locale, '暗色', 'Dark') },
-                { value: 'light', label: tr(locale, '亮色', 'Light') },
-              ]}
-            />
+  function change(patch: Partial<CodeImageSettings>) {
+    if (patch.background) backgroundRead.current++;
+    if (['background', 'theme', 'margin', 'style', 'radius', 'shadow', 'padding'].some(key => Object.hasOwn(patch, key))) setPreset(undefined);
+    setSettings(previous => ({ ...previous, ...patch }));
+  }
+  function changePreset(id: Preset) {
+    backgroundRead.current++;
+    setSettings(previous => ({ ...previous, ...presets[id] }));
+    setPreset(id);
+  }
+  async function importSource(file: File) {
+    const id = ++sourceRead.current;
+    try {
+      const value = await readCode(file);
+      if (sourceRead.current !== id) return;
+      setCode(value);
+      setLanguage(languageForFile(file.name));
+      setFilename(file.name);
+      setSettings(previous => ({ ...previous, title: Array.from(file.name).slice(0, 120).join('') }));
+      edit();
+    } catch (error) {
+      if (sourceRead.current === id) setActionError(errorText(error, locale));
+    }
+  }
+  async function importImage(file: File) {
+    const id = ++backgroundRead.current;
+    try {
+      const image = await readBackground(file);
+      if (backgroundRead.current === id) setBackgroundFile({ image, name: file.name });
+      else image.close();
+    } catch (error) {
+      if (backgroundRead.current === id) setActionError(errorText(error, locale));
+    }
+  }
+  function reset() {
+    sourceRead.current++;
+    backgroundRead.current++;
+    setCode(sampleCode);
+    setLanguage('typescript');
+    setSettings(defaults);
+    setPreset(defaultPreset);
+    setFilename('');
+    setBackgroundFile(undefined);
+    setScale(2);
+    setQuality(90);
+    setEditing(false);
+    setActionError('');
+    setMessage('');
+  }
+  async function toggleFullscreen() {
+    try {
+      if (document.fullscreenElement === root.current) await document.exitFullscreen();
+      else await root.current?.requestFullscreen();
+    } catch { setActionError(t('此浏览器无法进入全屏。', 'This browser could not open full screen.')); }
+  }
+
+  const emptyImage = settings.background.kind === 'image' && !backgroundFile;
+  const visualError = code.length > highlightBudget
+    ? t('源码仍可编辑和复制。请将 40 万 UTF-16 单元以内的片段用于制图。', 'You can still edit and copy the code. Use an excerpt up to 400,000 UTF-16 code units for artwork.')
+    : picture.error ? errorText(picture.error, locale)
+      : readyFont?.request === fontRequest && readyFont.error ? t('字体加载失败。请切换字体后重试。', 'The font did not load. Choose another font and try again.') : '';
+  const vectorError = scene && !scene.vectorSafe
+    ? t('SVG 需要本地内置字体与基本拉丁字符。', 'SVG requires a bundled font and basic Latin text.') : '';
+  const rasterError = dimensions.error ? errorText(dimensions.error, locale) : '';
+  const loadingText = !code ? t('输入或导入代码，开始制作图片。', 'Enter or import code to start your image.')
+    : emptyImage ? t('请选择本地背景图片。', 'Choose a local background image.')
+      : t('正在排版…', 'Preparing artwork…');
+  const artwork = emptyImage || visualError ? undefined : scene;
+  async function copyCode() {
+    try {
+      await navigator.clipboard.writeText(code);
+      setMessage(t('已复制代码。', 'Code copied.'));
+    } catch { setActionError(t('无法写入剪贴板。', 'Could not write to the clipboard.')); }
+  }
+  async function deliver(format: OutputFormat, copy = false) {
+    if (!artwork || delivering.current || (format === 'svg' ? vectorError : !dimensions.output)) return;
+    const stamp = revision.current;
+    const name = copy ? '' : makeName(settings.title, filename, format);
+    delivering.current = true;
+    setBusy(true);
+    setActionError('');
+    setMessage('');
+    try {
+      const output = (format === 'svg' ? renderSvg(artwork, settings.font)
+        : renderRaster(artwork, settings.font, scale, format, quality / 100)).then(blob => {
+        if (revision.current !== stamp) throw new Error('Artwork changed');
+        return blob;
+      });
+      if (copy) {
+        // ClipboardItem's promise preserves the original trusted click during asynchronous encoding.
+        void output.catch(() => {});
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': output })]);
+        if (revision.current === stamp) setMessage(t('已复制 PNG。', 'PNG copied.'));
+      } else {
+        const blob = await output;
+        if (revision.current === stamp) saveBlob(blob, name);
+      }
+    } catch (error) {
+      if (revision.current === stamp) setActionError(copy
+        ? t('无法复制图片，可通过导出菜单下载 PNG。', 'Could not copy the image. Download PNG from the export menu.')
+        : errorText(error, locale));
+    } finally {
+      delivering.current = false;
+      setBusy(false);
+    }
+  }
+
+  return <Frame locale={locale}>
+    <div ref={root} className={s.studio} data-code-image-studio>
+      <div className={s.toolbar} aria-label={t('创作工具栏', 'Studio toolbar')}>
+        <div className={s.toolbarGroup}>
+          <input type="file" ref={sourceInput} hidden aria-label={t('源码文件', 'Source file')} onChange={event => {
+            const file = event.currentTarget.files?.[0];
+            event.currentTarget.value = '';
+            if (file) void importSource(file);
+          }} />
+          <Button className={s.fieldButton} size="sm" variant="ghost" onClick={() => sourceInput.current?.click()}>
+            <FolderOpenIcon size={17} />{t('导入', 'Import')}
+          </Button>
+          <Button size="sm" variant="ghost" onClick={sample}>{t('示例', 'Sample')}</Button>
+          <div className={s.language}>
+            <SelectField appearance="quiet" label={t('语言', 'Language')} value={language}
+              options={Object.entries(languages).map(([value, [name]]) => ({ value, label: value === 'text' ? t('纯文本', 'Plain Text') : name }))}
+              onValueChange={value => { sourceRead.current++; setLanguage(value as Language); }} />
           </div>
-          <TextField
-            label={tr(locale, '展示标题', 'Display title')}
-            value={settings.title}
-            maxLength={100}
-            onChange={(v) => update({ title: v })}
-          />
-          <SelectField
-            label={tr(locale, '内边距', 'Padding')}
-            value={String(settings.padding)}
-            onValueChange={(v) => update({ padding: +v })}
-            options={[16, 24, 32, 48, 64].map((v) => ({
-              value: String(v),
-              label: `${v}px`,
-            }))}
-          />
-          <CheckboxField
-            label={tr(locale, '显示行号', 'Show line numbers')}
-            checked={settings.lines}
-            onCheckedChange={(v) => update({ lines: v })}
-          />
+        </div>
+        <div role="group" aria-label={t('工作区视图', 'Workspace view')} className={s.mode}>
+          <Button size="sm" variant="ghost" aria-pressed={editing} onClick={edit}><CodeIcon size={15} />{t('编辑代码', 'Edit code')}</Button>
+          <Button size="sm" variant="ghost" aria-pressed={!editing} onClick={() => setEditing(false)}><ImageSquareIcon size={15} />{t('图片预览', 'Image preview')}</Button>
+        </div>
+        <div className={s.toolbarActions}>
+          <Button size="sm" variant="ghost" onClick={reset}>{t('重置', 'Reset')}</Button>
+          <Button size="sm" variant="ghost" className={s.fieldButton} disabled={!code} onClick={() => void copyCode()}>
+            <CopySimpleIcon size={15} />{t('复制代码', 'Copy code')}
+          </Button>
+          {canCopyImage && <Button size="sm" variant="ghost" className={s.fieldButton} disabled={!artwork || !dimensions.output || busy} onClick={() => void deliver('png', true)}>
+            <CopySimpleIcon size={15} />{t('复制图片', 'Copy image')}
+          </Button>}
+          <Popover.Root>
+            <Popover.Trigger render={<Button size="sm" variant="primary" loading={busy} />}>
+              <DownloadSimpleIcon size={15} /> {t('导出', 'Export')} <CaretDownIcon size={13} />
+            </Popover.Trigger>
+            <Popover.Portal container={fullscreen ? root.current : undefined}>
+              <Popover.Positioner align="end" sideOffset={8} className={s.positioner}>
+                <Popover.Popup className={s.exportPopup} aria-label={t('导出设置', 'Export settings')}>
+                  <SelectField appearance="quiet" label={t('位图倍率', 'Raster scale')} value={String(scale)}
+                    options={scales.map(value => ({ value: String(value), label: `${value}×` }))}
+                    onValueChange={value => setScale(Number(value) as Scale)} />
+                  <SliderField label={t('JPEG / WebP 质量', 'JPEG / WebP quality')} value={quality} min={10} max={100} unit="%"
+                    onValueChange={setQuality} />
+                  <div className={s.formatGrid}>
+                    {formats.map(([format, name]) =>
+                      <Button key={format} variant={format === 'png' ? 'primary' : 'ghost'} size="sm"
+                        className={format === 'png' ? undefined : s.fieldButton} aria-label={t('下载 ', 'Download ') + name}
+                        disabled={!artwork || busy || (format === 'svg' ? !!vectorError : !dimensions.output) || (format === 'webp' && !webp)}
+                        onClick={() => void deliver(format)}>{name}</Button>)}
+                  </div>
+                  <p>{t('JPEG 的透明区域填充为白色。', 'JPEG fills transparent areas with white.')}</p>
+                  {vectorError && <p>{vectorError}</p>}
+                  {!webp && <p>{t('当前浏览器不支持 WebP 编码。', 'This browser does not support WebP encoding.')}</p>}
+                </Popover.Popup>
+              </Popover.Positioner>
+            </Popover.Portal>
+          </Popover.Root>
         </div>
       </div>
-      <ErrorText error={error ?? job.error} />
-      <canvas
-        ref={canvas}
-        aria-label={tr(locale, '代码分享图预览', 'Code image preview')}
-        className={s.canvas}
-      />
-      <p className={s.note}>{size}</p>
-      <div className={s.row}>
-        <Button
-          variant="primary"
-          loading={job.busy}
-          disabled={!size || !!error}
-          onClick={() =>
-            void job.run(async () => {
-              const target = document.createElement('canvas');
-              try {
-                drawCode(target, code, settings);
-                return await encodeCanvas(target);
-              } finally {
-                target.width = target.height = 0;
-              }
-            })
-          }
-        >
-          {tr(locale, '生成 PNG', 'Generate PNG')}
-        </Button>
-        {job.result && (
-          <Button onClick={() => saveBlob(job.result!, 'code.png')}>
-            {tr(locale, '下载 PNG', 'Download PNG')}
-          </Button>
-        )}
-        <Button
-          onClick={() => {
-            job.invalidate();
-            setCode('');
-            setSize('');
-          }}
-        >
-          {tr(locale, '清空', 'Clear')}
-        </Button>
+      <div className={s.workspace}>
+        <Stage t={t} editing={editing} scene={artwork} font={settings.font} scale={scale} size={dimensions.output} status={loadingText}
+          error={visualError} report={e => setActionError(errorText(e, locale))}
+          fullscreen={fullscreen} toggleFullscreen={() => void toggleFullscreen()} beginEdit={edit}
+          editor={<TextEditor value={code} ariaLabel={t('源码', 'Source code')} extensions={editorBindings}
+            onChange={value => { sourceRead.current++; setCode(value); }} />} />
+        <AppearancePanel t={t} settings={settings} selected={preset} thumbnails={thumbnails} imageName={backgroundFile?.name}
+          change={change} selectPreset={changePreset} importImage={file => void importImage(file)} />
       </div>
-    </Frame>
-  );
+      {(actionError || rasterError || message || (tokens?.fallback && language !== 'text')) && <div className={s.feedback}>
+        {(actionError || rasterError) && <p role="alert">{actionError || rasterError}</p>}
+        {message && <p role="status">{message}</p>}
+        {tokens?.fallback && language !== 'text' && <p role="status">{t('语法高亮不可用，已使用纯文本排版。', 'Syntax highlighting was unavailable. The artwork uses plain text.')}</p>}
+      </div>}
+      <footer className={s.legal}>
+        <a href={license} target="_blank" rel="noreferrer">{t('第三方许可', 'Third-party licenses')}</a>
+        {' · '}
+        <a href={editorLicense} target="_blank" rel="noreferrer">CodeMirror</a>
+      </footer>
+    </div>
+  </Frame>;
 }

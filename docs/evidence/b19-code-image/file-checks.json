@@ -1,0 +1,379 @@
+{
+  "verifier": "Pillow and Python ElementTree",
+  "files": {
+    "default.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128.png",
+      "bytes": 369426,
+      "sha256": "97b42ff9ab4272174dfaf02afcaf10f69baf3881ca2f237e1b027b323dcdc68d"
+    },
+    "same-millisecond.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-2.png",
+      "bytes": 369426,
+      "sha256": "97b42ff9ab4272174dfaf02afcaf10f69baf3881ca2f237e1b027b323dcdc68d"
+    },
+    "default.svg": {
+      "format": "SVG",
+      "width": 486,
+      "height": 367,
+      "textElements": 39,
+      "imageElements": 0,
+      "filename": "greet-20261126-225530-128-3.svg",
+      "bytes": 128895,
+      "sha256": "afdee62354ac014cfb6e903182e62512e8b867cb58115b5657fdf3487b78a3cd"
+    },
+    "default.jpg": {
+      "format": "JPEG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGB",
+      "filename": "greet-20261126-225530-128-4.jpg",
+      "bytes": 48360,
+      "sha256": "6386ac4a5099c8d2b1c3240ad686c7db680a246d5b22a580b5ad00183d2f47bc"
+    },
+    "default.webp": {
+      "format": "WEBP",
+      "width": 972,
+      "height": 734,
+      "mode": "RGB",
+      "filename": "greet-20261126-225530-128-5.webp",
+      "bytes": 26038,
+      "sha256": "a2066b98aa33e8e746ae35df0e3b7b8b7a39c3802aedec15f4dc396d0de4eab5"
+    },
+    "preset-Midnight.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-6.png",
+      "bytes": 395555,
+      "sha256": "451605ea20dcb05f737f3b78d3fab07f281c94fac32974d7780203fbd943637a"
+    },
+    "preset-Glacier.png": {
+      "format": "PNG",
+      "width": 952,
+      "height": 716,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-7.png",
+      "bytes": 367432,
+      "sha256": "01f30cf23e849259de10f404de675de5dc2c5c31bb2c2ba209a62478de37dabe"
+    },
+    "preset-Sunset.png": {
+      "format": "PNG",
+      "width": 956,
+      "height": 720,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-8.png",
+      "bytes": 341065,
+      "sha256": "135c463987923e9dd977d0bb3f2110b7397a32254696e1c8102d2a7579db32c3"
+    },
+    "preset-Forest.png": {
+      "format": "PNG",
+      "width": 976,
+      "height": 740,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-9.png",
+      "bytes": 416125,
+      "sha256": "796fba073f58e5cb8f44a7144592b61ed86f626b30770158c7c5733af7793f47"
+    },
+    "preset-Paper.png": {
+      "format": "PNG",
+      "width": 956,
+      "height": 674,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-10.png",
+      "bytes": 312086,
+      "sha256": "12733a745ebab5f94d8964f91cd59ec7d101faf093dd80483b15f5eeb9bea76c"
+    },
+    "preset-Aurora.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-11.png",
+      "bytes": 405225,
+      "sha256": "17db4dce4157dc34fb31b48b4238f706e4dd558d3e230e65a0349ec345a72870"
+    },
+    "preset-Monochrome.png": {
+      "format": "PNG",
+      "width": 932,
+      "height": 696,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-12.png",
+      "bytes": 317621,
+      "sha256": "139ccfb2f28a9ea7219f01ac2f3695c862089a48c303ca3d80aed796a61c5b33"
+    },
+    "preset-Lavender.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-13.png",
+      "bytes": 369426,
+      "sha256": "97b42ff9ab4272174dfaf02afcaf10f69baf3881ca2f237e1b027b323dcdc68d"
+    },
+    "theme-0.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-14.png",
+      "bytes": 369426,
+      "sha256": "97b42ff9ab4272174dfaf02afcaf10f69baf3881ca2f237e1b027b323dcdc68d"
+    },
+    "theme-1.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-15.png",
+      "bytes": 368891,
+      "sha256": "f6c7a14e0cfef72008f784b69d56ecd12fde2494f6b88329e27fa3344bbd462a"
+    },
+    "theme-2.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-16.png",
+      "bytes": 371831,
+      "sha256": "dbb8cc95d3f7839b6a0d1a63b9a295b635ac36b59772318fc2156735e8b9f78e"
+    },
+    "theme-3.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-17.png",
+      "bytes": 368930,
+      "sha256": "f0c20bc0d0770546b44a70b0b026b8f2c957bfcb3176db702592638e5b4df2ad"
+    },
+    "theme-4.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-18.png",
+      "bytes": 373762,
+      "sha256": "ca22278910ace9b55999c635da014831128998badea4a70a9341cbdfa96259e0"
+    },
+    "theme-5.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-19.png",
+      "bytes": 372289,
+      "sha256": "75ac21da2026f92c47e035806097d7b10d737311725d41f1dd42a781af481a69"
+    },
+    "theme-6.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-20.png",
+      "bytes": 374703,
+      "sha256": "f0e88956576243696c45f64fb12da8c48f30b9278d1a93b046e0e33b2a49590a"
+    },
+    "theme-7.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-21.png",
+      "bytes": 371791,
+      "sha256": "de1bfa04456fb4f354f775a0942441afb6ff69028653576eff3479796bb92ed2"
+    },
+    "theme-8.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-22.png",
+      "bytes": 368052,
+      "sha256": "8494c649bdcf066b0aa81f8f3f1444dea50d3064d4552e68e9d483b69ca703cd"
+    },
+    "theme-9.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-23.png",
+      "bytes": 367433,
+      "sha256": "2fa19da5feac8a451478b0ee7eaa1e590658adf918b1cda84435fe384ea26005"
+    },
+    "theme-10.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-24.png",
+      "bytes": 374094,
+      "sha256": "5fe726362c45cac3fe66b992dc197fcfbfcb92cb2e2e0e1d914704eb166ebcf3"
+    },
+    "theme-11.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-25.png",
+      "bytes": 369288,
+      "sha256": "90582a79e0bb46bc6f2ba7456893e8067507a70f2a8c6b836be9e052a49ffbda"
+    },
+    "window-macOS.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-26.png",
+      "bytes": 369426,
+      "sha256": "97b42ff9ab4272174dfaf02afcaf10f69baf3881ca2f237e1b027b323dcdc68d"
+    },
+    "window-Windows.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-27.png",
+      "bytes": 368815,
+      "sha256": "719640ea7b6c806ccb7ba951521d71d731c6394a631cbecc261dbceb46c43de0"
+    },
+    "window-Minimal.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 690,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-28.png",
+      "bytes": 358077,
+      "sha256": "b2445825bd65258e0e583f6045813da996e5aa980ee226f2ace2cb15e82ed5a1"
+    },
+    "transparent.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-29.png",
+      "bytes": 78391,
+      "sha256": "e4145f47d9b1c88bec2292c869605a9d447dd8a2d2ae696f1a2624c03f43fdc9"
+    },
+    "transparent.jpg": {
+      "format": "JPEG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGB",
+      "filename": "greet-20261126-225530-128-30.jpg",
+      "bytes": 47251,
+      "sha256": "848d527a380934bbfb3a2f3891d3dcc20e1a35089233f1f65a7db1612cd374fb"
+    },
+    "local-background.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-31.png",
+      "bytes": 77836,
+      "sha256": "e0bb3aeca03445521bbe0b66450d8aecabaecd571372ba9c263dccf0e918655a"
+    },
+    "local-background.svg": {
+      "format": "SVG",
+      "width": 486,
+      "height": 367,
+      "textElements": 39,
+      "imageElements": 1,
+      "filename": "greet-20261126-225530-128-32.svg",
+      "bytes": 135360,
+      "sha256": "21af1d02b07891b8ccd5f47af50d8935ee696c38b27cdeefa27d94f719e7ea4b"
+    },
+    "fira.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-33.png",
+      "bytes": 84185,
+      "sha256": "32b3fd14823e55ca632d9f784c8a21c7ce00c9ea262988a44a63790ef6b5efa5"
+    },
+    "fira.svg": {
+      "format": "SVG",
+      "width": 486,
+      "height": 367,
+      "textElements": 39,
+      "imageElements": 0,
+      "filename": "greet-20261126-225530-128-34.svg",
+      "bytes": 72126,
+      "sha256": "306acd9b810a34c75f2c133ab8413121324569e52c9ca14caf78eae80d87ab44"
+    },
+    "plex.png": {
+      "format": "PNG",
+      "width": 972,
+      "height": 734,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-35.png",
+      "bytes": 75632,
+      "sha256": "f96b1678f459e14f5f68b7ce7b892b990b0405eab127cc6a364d565908cb4449"
+    },
+    "plex.svg": {
+      "format": "SVG",
+      "width": 486,
+      "height": 367,
+      "textElements": 39,
+      "imageElements": 0,
+      "filename": "greet-20261126-225530-128-36.svg",
+      "bytes": 95052,
+      "sha256": "f1cf01a73df74691b5aed78138fa3260a5c08f5cc55033d2829b280f7c502755"
+    },
+    "custom-4x.png": {
+      "format": "PNG",
+      "width": 2560,
+      "height": 1680,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-37.png",
+      "bytes": 1337123,
+      "sha256": "2272ed2c8c4a0600d87b96cf2add60aecfb71d09805b68907eb3327c6d9dadca"
+    },
+    "40-megapixel.png": {
+      "format": "PNG",
+      "width": 8000,
+      "height": 5000,
+      "mode": "RGBA",
+      "filename": "greet-20261126-225530-128-38.png",
+      "bytes": 1477162,
+      "sha256": "3508bb36c6709d4ddd1dffd60440aed35c89a81497a489aa1d1b0be82ab666d9"
+    },
+    "unicode-lines.png": {
+      "format": "PNG",
+      "width": 1261,
+      "height": 421,
+      "mode": "RGBA",
+      "filename": "问候-20261126-225530-128-39.png",
+      "bytes": 198851,
+      "sha256": "a05db77df65e0eef1f4fef041cdb1a8118b6427161c46bf468f79b35e5066c5c"
+    },
+    "escaped.svg": {
+      "format": "SVG",
+      "width": 772,
+      "height": 232,
+      "textElements": 21,
+      "imageElements": 0,
+      "filename": "Title - - & --20261126-225530-128-40.svg",
+      "bytes": 127007,
+      "sha256": "6d572ee7af2deb3b5fe39cc79392b71ab795088374ca8a1e0ea105348e233a4c"
+    },
+    "mobile.png": {
+      "format": "PNG",
+      "width": 920,
+      "height": 464,
+      "mode": "RGBA",
+      "filename": "hello-20261127-001430-455.png",
+      "bytes": 268556,
+      "sha256": "1ba088111c9b689a9b23afb983868393fa9907cd3866b0aa7c57eedd61ce1c2c"
+    }
+  }
+}

@@ -2,11 +2,6 @@ import { describe, it, expect } from 'vitest';
 import { renderMarkdown } from '../src/tools/markdown-editor/core';
 import { convertTable } from '../src/tools/csv-json-converter/core';
 import { csvDefaults, jsonDefaults, type Delimiter } from '../src/tools/csv-json-converter/settings';
-import {
-  highlightCode,
-  codeLines,
-  languages,
-} from '../src/tools/code-image-generator/core';
 import { readSvg, svgOutputSize } from '../src/tools/svg-to-png/core';
 import { evaluateRegex } from '../src/tools/regex-tester/core';
 import { generateUuids } from '../src/tools/uuid-generator/core';
@@ -38,23 +33,6 @@ describe('second general toolbox batch', () => {
     expect((await csv(fromJson.result.preview.text, ';')).result.preview.text).toBe(fromCsv.result.preview.text);
     for (const delimiterInput of ['a,a\n1,2', 'a,b\n1', 'a,b\n"unclosed,2'])
       await expect(csv(delimiterInput, ',')).rejects.toThrow();
-  });
-  it('highlights all nine languages without interpreting code as HTML', () => {
-    for (const lang of Object.keys(languages) as (keyof typeof languages)[]) {
-      const html = highlightCode(
-        '<script>alert("你好")</script>\nconst value = 42;',
-        lang,
-      );
-      const lines = codeLines(html);
-      expect(
-        lines.map((line) => line.map((span) => span.text).join('')).join('\n'),
-      ).toBe('<script>alert("你好")</script>\nconst value = 42;');
-      expect(html).not.toContain('<script>');
-    }
-    expect(highlightCode('const value: number = 42;', 'typescript')).toContain(
-      'hljs-keyword',
-    );
-    expect(() => highlightCode('x\n'.repeat(161), 'python')).toThrow();
   });
   it('reuses the strict SVG allowlist and checks proportional output budgets', () => {
     const svg = readSvg(

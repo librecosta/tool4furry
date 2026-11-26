@@ -297,7 +297,7 @@
 | `markdown-editor` | CodeMirror 格式化与查找、分栏同步、GFM、Alerts、数学公式、本地导入与 Markdown / HTML 交付 | 超过 160,000 个 UTF-16 单元暂停自动预览，HTML 渲染有独立预算。预览可关闭远程 Markdown 图片 |
 | `video-frame-extractor` | 真实帧定位、四种提取模式、PNG/JPEG/WebP 帧画廊、联系表、流式 ZIP | 输入 2 GiB；单帧 40 MP；画廊 300 帧和 256 MiB；内存 ZIP 256 MiB；依赖浏览器解码 |
 | `csv-json-converter` | 双栏 CodeMirror、双向转换、表格分页、UTF-8 CSV/TSV/JSON、完整下载 | CSV 输入 64 MiB，JSON 输入 16 Mi UTF-16 单元及 500,000 个节点，输出 64 MiB。[B18-D1](#csv--json-converter--v08-b18-d1) |
-| `code-image-generator` | 9 种语言高亮、明暗图片主题、标题/行号/内边距、实时 Canvas 与 PNG | highlight.js 只注册所需语言；20000 字符/160 行；2× 输出最多 8192px、800 万像素，过长明确拒绝 |
+| `code-image-generator` | CodeMirror、23 种高亮语言及纯文本、12 套语法主题、8 套外观预设、PNG/SVG/JPEG/WebP | Shiki 专属 Worker、按需字体；图像预算 40 MP、单边 8192px。[B19-D1](#code-image-generator--v08-b19-d1) |
 | `svg-to-png` | 文件/源码、安全图片预览、比例联动尺寸/倍率、透明/纯色 PNG | 复用 Watermark 的 SVG 白名单和独立图像解码；256 KiB/512 节点/16 层，形状/路径/渐变/裁切；不支持文本、CSS、滤镜或外部资源；PNG 最多 800 万像素 |
 | `regex-tester` | JavaScript flags、实时高亮/数量/捕获组、替换/复制 | 局部 Worker，1500ms 超时真实 terminate；表达式 500 字符、文本 20 万字符、1000 处匹配；与其他引擎可能不同 |
 | `uuid-generator` | 安全 UUIDv4 单个/批量、大小写、逐项/全部复制、TXT | 每批 1–1000；仅使用 Crypto.getRandomValues，不提供其他 UUID 版本 |
@@ -379,3 +379,13 @@ JSON → CSV 复用 JSON Formatter 的严格源码范围解析，按源码字段
 专属 Worker 对 CSV 文件分块解码，以完整逻辑记录交由 Papa Parse 解析。JSON 输入采用有界 AST。输出分段编码为 Blob，表格按字节索引复用实际输出，支持每页 50、100、200 行以及按列分组浏览。源码预览预算为 256 Ki UTF-16 单元，超出时保留完整下载。第三方通知复用 Papa Parse、CodeMirror 和 JSON 语言扩展的完整 MIT 文本。双地区生产产物守卫检查专属入口、Worker、局部 CSS 和 Papa Parse 许可随工具按需交付。JSON 语法由本工具与 JSON Formatter 共用。
 
 下载在点击时生成 `{basename}-{yyyyMMdd-HHmmss-SSS}.{extension}`，使用浏览器本地时间。同一毫秒内后续下载依次追加 `-2`、`-3`。导入文件保留清理后的基本名称，手动输入和示例使用 `converted`。扩展名及 MIME 随实际 JSON、CSV 或 TSV 输出确定。[B18 浏览器与下载复检](evidence/b18-csv-json/README.md)
+
+## Code Image Generator — V0.8-B19-D1
+
+主画布在 CodeMirror 与实际作品预览之间切换，保留源码、选区和撤销记录。双语页面共用 `greet.ts` 英文示例。八套预设各自组合背景、语法配色及排版；背景、窗口装饰、语法主题和字体可分别修改。原始代码不会被图像换行或新增、删除行标记改写。
+
+Shiki JavaScript 正则引擎在专属 Worker 内按需加载语言和主题。排版按实际字体测量 Token、Tab 停靠点、换行及行高，Canvas 预览、位图及 SVG 使用统一场景。JetBrains Mono、Fira Code、IBM Plex Mono 由站点本地提供，另有系统等宽选项。
+
+作品支持自适应尺寸、自定义尺寸及四种常用比例。位图单边最多 8192px、最多 40 MP，可选 1–4 倍输出。PNG 与受支持的 WebP 保留透明度，JPEG 使用白底。SVG 内嵌所选编程字体，可嵌入本地图片背景。使用系统字体或包含非 ASCII 文本时提供位图导出，以保证文字排版。下载使用标题或导入文件名和本地毫秒时间戳，同毫秒继续追加序号。
+
+工具继续保持 Draft。Shiki、字体、预设缩图、独立样式、Worker 和 NOTICE 仅从该工具加载链交付，两个地区的正式构建排除这些资源。[B19 浏览器与图片复检](evidence/b19-code-image/README.md)

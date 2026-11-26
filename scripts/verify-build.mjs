@@ -1389,6 +1389,8 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
     assert(!/data-qr-artwork|data-qr-license|Could not rasterize QR SVG/.test(js), 'Draft QR tool code leaked: ' + file);
   if (!published.some(tool => tool.id === 'markdown-editor'))
     assert(!/data-markdown-workspace|KaTeX parse error|md-image-placeholder/.test(js), 'Draft Markdown tool code leaked: ' + file);
+  if (!published.some(tool => tool.id === 'code-image-generator'))
+    assert(!/data-code-image-studio|Preparing artwork…|T4F JetBrains Mono/.test(js), 'Draft code image runtime leaked: ' + file);
   if (!published.some(tool => tool.id === 'csv-json-converter'))
     assert(!/data-csv-json-converter|The converted output exceeds 64 MiB|Could not determine the CSV delimiter/.test(js),
       'Draft CSV / JSON conversion code leaked: ' + file);
@@ -1435,6 +1437,11 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
 // extracting native modules must not pull private Draft/Lab CSS into production.
 const cssFiles = files.filter(file => file.endsWith('.css'));
 const outputCSS = await Promise.all(cssFiles.map(file => readFile(resolve(root, file), 'utf8')));
+if (!published.some(tool => tool.id === 'code-image-generator')) {
+  assert(!files.some(file => /(?:^|\/)(?:CodeImageGenerator|highlight\.worker|code-image\.NOTICE|code-preset-|(?:jetbrains-mono|fira-code|ibm-plex-mono)-latin)[^/]*\.(?:js|css|woff2|png|webp|txt)$/.test(file)),
+    'Draft code image entry, syntax worker, artwork, licenses and fonts stay private');
+  assert(!outputCSS.some(source => /\._?presetArt[_-]/.test(source)), 'Draft code image studio styling stays private');
+}
 if (!published.some(tool => tool.id === 'markdown-editor')) {
   assert(!files.some(file => /(?:^|\/)(?:MarkdownEditor|math-preview|katex[.-]|KaTeX_|dependencies\.NOTICE)/i.test(file)),
     'Markdown Draft entries, KaTeX fonts and private notices stay outside the output');

@@ -69,6 +69,12 @@ QR Code Generator 在 Wide Form 中用同一预览区呈现二维成品与三维
 
 正式构建中 Text Cleaner、Text Diff、Subtitle Tools、JSON Formatter 和 URL & Base64 按需复用同一份 CodeMirror 和完整 MIT NOTICE。JSON 语言及语法依赖的 MIT 通知跟随 JSON 工具入口。JSON Formatter 与 URL & Base64 各自按需交付专属 Worker，Markdown Editor 等 Draft 的私有资源继续隔离。见 [编辑器生命周期测试](../tests/text-editor.test.tsx)、[交付边界测试](../tests/text-editor-delivery.test.ts) 和 [通用工具说明](general-toolbox-v0.8.md#url--base64--v08-b11-d2-seo-与-beta-资格)。
 
+## 代码分享图创作工作区
+
+顶栏集中导入、语言、编辑与预览切换和文件交付。桌面左侧为作品画布，尺寸、缩放与全屏控制移至画布底部；右侧依次提供艺术预设、背景、窗口和排版。窄屏设置自然移到画布下方，源码编辑器在切换视图时继续保留编辑状态。
+
+站点明暗主题适用于工作区控件。作品按自身设置绘制背景、代码窗口及语法配色，透明预览用棋盘格提示。艺术预设缩略图来自实际渲染。见 [B19 工作区与作品](evidence/b19-code-image/README.md)。
+
 ## 静态说明与 FAQ
 
 [ToolGuide](../src/components/site/ToolGuide.astro) / [ToolGuide.module.scss](../src/components/site/ToolGuide.module.scss) 的说明容器与 wide Form 共享 1400px 外框和安全起点。宽屏步骤/限制为顶部对齐 55:45，两者可独立省略；空间不足堆叠，不增加实体卡片。其他阅读正文仍使用独立 readable 宽度。

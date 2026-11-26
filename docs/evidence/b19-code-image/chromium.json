@@ -1,0 +1,129 @@
+{
+  "chromium": "156.0.8078.4",
+  "scenarios": {
+    "cn-desktop-dark": {
+      "theme": "dark",
+      "viewport": {
+        "width": 1280,
+        "height": 1000
+      },
+      "workers": [
+        "http://127.0.0.1:4321/src/tools/code-image-generator/highlight.worker.ts?worker_file&type=module"
+      ],
+      "errors": [],
+      "noHorizontalOverflow": true,
+      "dimensions": [
+        486,
+        367,
+        972,
+        734
+      ]
+    },
+    "global-mobile-light": {
+      "theme": "light",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "workers": [
+        "http://127.0.0.1:4322/src/tools/code-image-generator/highlight.worker.ts?worker_file&type=module",
+        "http://127.0.0.1:4322/src/tools/code-image-generator/highlight.worker.ts?worker_file&type=module"
+      ],
+      "errors": [],
+      "noHorizontalOverflow": true,
+      "dimensions": [
+        486,
+        367,
+        972,
+        734
+      ]
+    },
+    "cn-narrow-light": {
+      "theme": "light",
+      "viewport": {
+        "width": 920,
+        "height": 850
+      },
+      "workers": [
+        "http://127.0.0.1:4321/src/tools/code-image-generator/highlight.worker.ts?worker_file&type=module"
+      ],
+      "errors": [],
+      "noHorizontalOverflow": true,
+      "dimensions": [
+        486,
+        367,
+        972,
+        734
+      ]
+    }
+  },
+  "files": {
+    "default.png": "greet-20261126-225530-128.png",
+    "same-millisecond.png": "greet-20261126-225530-128-2.png",
+    "default.svg": "greet-20261126-225530-128-3.svg",
+    "default.jpg": "greet-20261126-225530-128-4.jpg",
+    "default.webp": "greet-20261126-225530-128-5.webp",
+    "preset-Midnight.png": "greet-20261126-225530-128-6.png",
+    "preset-Glacier.png": "greet-20261126-225530-128-7.png",
+    "preset-Sunset.png": "greet-20261126-225530-128-8.png",
+    "preset-Forest.png": "greet-20261126-225530-128-9.png",
+    "preset-Paper.png": "greet-20261126-225530-128-10.png",
+    "preset-Aurora.png": "greet-20261126-225530-128-11.png",
+    "preset-Monochrome.png": "greet-20261126-225530-128-12.png",
+    "preset-Lavender.png": "greet-20261126-225530-128-13.png",
+    "theme-0.png": "greet-20261126-225530-128-14.png",
+    "theme-1.png": "greet-20261126-225530-128-15.png",
+    "theme-2.png": "greet-20261126-225530-128-16.png",
+    "theme-3.png": "greet-20261126-225530-128-17.png",
+    "theme-4.png": "greet-20261126-225530-128-18.png",
+    "theme-5.png": "greet-20261126-225530-128-19.png",
+    "theme-6.png": "greet-20261126-225530-128-20.png",
+    "theme-7.png": "greet-20261126-225530-128-21.png",
+    "theme-8.png": "greet-20261126-225530-128-22.png",
+    "theme-9.png": "greet-20261126-225530-128-23.png",
+    "theme-10.png": "greet-20261126-225530-128-24.png",
+    "theme-11.png": "greet-20261126-225530-128-25.png",
+    "window-macOS.png": "greet-20261126-225530-128-26.png",
+    "window-Windows.png": "greet-20261126-225530-128-27.png",
+    "window-Minimal.png": "greet-20261126-225530-128-28.png",
+    "transparent.png": "greet-20261126-225530-128-29.png",
+    "transparent.jpg": "greet-20261126-225530-128-30.jpg",
+    "local-background.png": "greet-20261126-225530-128-31.png",
+    "local-background.svg": "greet-20261126-225530-128-32.svg",
+    "fira.png": "greet-20261126-225530-128-33.png",
+    "fira.svg": "greet-20261126-225530-128-34.svg",
+    "plex.png": "greet-20261126-225530-128-35.png",
+    "plex.svg": "greet-20261126-225530-128-36.svg",
+    "custom-4x.png": "greet-20261126-225530-128-37.png",
+    "40-megapixel.png": "greet-20261126-225530-128-38.png",
+    "unicode-lines.png": "问候-20261126-225530-128-39.png",
+    "escaped.svg": "Title - - & --20261126-225530-128-40.svg",
+    "mobile.png": "hello-20261127-001430-455.png"
+  },
+  "previewMatchesPngBytes": true,
+  "svgRaster": {
+    "meanAbsoluteChannelDelta": 0.1264373857660264,
+    "pixelsOver60ChannelSum": 0.0015221852188246376,
+    "width": 972,
+    "height": 734
+  },
+  "clipboardPNG": [
+    "image/png",
+    972,
+    734
+  ],
+  "codeClipboardAndUndo": true,
+  "firaSvgRaster": {
+    "meanAbsoluteChannelDelta": 0.1431919355019567,
+    "pixelsOver60ChannelSum": 0.0017240219329229321,
+    "width": 972,
+    "height": 734
+  },
+  "plexSvgRaster": {
+    "meanAbsoluteChannelDelta": 0.1290878942824144,
+    "pixelsOver60ChannelSum": 0.0015249885065204472,
+    "width": 972,
+    "height": 734
+  },
+  "untruncatedLongSource": true
+}

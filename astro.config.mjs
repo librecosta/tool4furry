@@ -117,9 +117,11 @@ export default defineConfig({
             const audioAvailable = toolDefines['import.meta.env.T4F_TOOL_AUDIO_TRIMMER_AVAILABLE'] === 'true';
             const videoAvailable = toolDefines['import.meta.env.T4F_TOOL_VIDEO_FRAME_EXTRACTOR_AVAILABLE'] === 'true';
             const markdownAvailable = toolDefines['import.meta.env.T4F_TOOL_MARKDOWN_EDITOR_AVAILABLE'] === 'true';
+            const codeImageAvailable = toolDefines['import.meta.env.T4F_TOOL_CODE_IMAGE_GENERATOR_AVAILABLE'] === 'true';
             const audioPrivate = /\/(?:src\/tools\/audio-trimmer\/(?!definition\.ts$)|node_modules\/(?:mediabunny|wavesurfer\.js|@mediabunny)\/)/;
             const qrPrivate = /\/(?:src\/tools\/qr-code-generator\/(?!definition\.ts$)|node_modules\/(?:qrcode|jsqr)\/)/;
             const markdownPrivate = /\/(?:src\/tools\/markdown-editor\/(?!definition\.ts$)|node_modules\/(?:@codemirror\/(?:lang-markdown|search)|@lezer\/markdown|dompurify|marked|katex)\/)/;
+            const codeImagePrivate = /\/(?:src\/(?:tools\/code-image-generator\/(?!definition\.ts$)|assets\/code-image-presets\/)|node_modules\/(?:@shikijs|@fontsource\/(?:jetbrains-mono|fira-code|ibm-plex-mono)|tm-grammars|oniguruma-to-es|oniguruma-parser)\/)/;
             for (const chunk of Object.values(bundle)) {
               if (chunk.type !== 'chunk') continue;
               for (const id of Object.keys(chunk.modules)) {
@@ -130,6 +132,9 @@ export default defineConfig({
                 }
                 if (!videoAvailable && /\/src\/tools\/video-frame-extractor\/(?!definition\.ts$)/.test(source)) {
                   this.error('Video Frame Extractor Draft implementation in ' + chunk.fileName + ': ' + source);
+                }
+                if (!codeImageAvailable && codeImagePrivate.test(source)) {
+                  this.error('Code Image Generator Draft module in ' + chunk.fileName + ': ' + source);
                 }
                 if (!audioAvailable && audioPrivate.test(source)) {
                   this.error('Audio Trimmer Draft implementation in ' + chunk.fileName + ': ' + source);

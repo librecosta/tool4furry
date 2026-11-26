@@ -29,6 +29,8 @@
 
 ### Changed
 
+- Code Image Generator 改为画布主导的 CodeMirror 工作区，使用按需 Shiki 语法高亮、本地编程字体与统一图像排版。支持八套外观预设、独立背景、三种窗口装饰、重点行与多格式导出，维持 Draft。[作品与验收](docs/evidence/b19-code-image/README.md)
+
 - CSV / JSON Converter 升级为双栏 CodeMirror 工作区，Worker 支持 64 MiB CSV、JSON 数字字面量保真，以及可分页的表格和完整文件下载。B18-D2 补齐双语静态 SEO，下载文件名使用本地毫秒时间戳，取得 CN/Global Published 源码资格。[正式产物验收](docs/evidence/b18-csv-json/README.md#b18-d2-正式产物验收)
 
 - Video Frame Extractor 完成双语静态 SEO，获得 CN/Global Published 源码资格。逐帧提取严格使用所选半开时间区间。[B17-D2 验收](docs/evidence/b17-video/README.md#b17-d2-正式产物验收)

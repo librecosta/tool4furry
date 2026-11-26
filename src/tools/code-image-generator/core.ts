@@ -1,180 +1,256 @@
-import hljs from 'highlight.js/lib/core';
-import typescript from 'highlight.js/lib/languages/typescript';
-import javascript from 'highlight.js/lib/languages/javascript';
-import go from 'highlight.js/lib/languages/go';
-import python from 'highlight.js/lib/languages/python';
-import rust from 'highlight.js/lib/languages/rust';
-import json from 'highlight.js/lib/languages/json';
-import xml from 'highlight.js/lib/languages/xml';
-import css from 'highlight.js/lib/languages/css';
-import bash from 'highlight.js/lib/languages/bash';
 import { fail } from '../general/bounds';
-import { canvasSize } from '../general/canvas-output';
-export const languages = {
-  typescript,
-  javascript,
-  go,
-  python,
-  rust,
-  json,
-  html: xml,
-  css,
-  bash,
+import type { Highlight, HighlightToken } from './highlight-data';
+import type { Background, CodeImageSettings, Scale } from './settings';
+
+export const maxEdge = 8192;
+export const maxPixels = 40_000_000;
+export const jpegMatte = '#ffffff';
+const autoCodeWidth = 1060;
+const ratios = { '1:1': [1, 1], '4:3': [4, 3], '16:9': [16, 9], '4:5': [4, 5] } as const;
+
+export type FontStyle = { bold: boolean; italic: boolean };
+type Metrics = { width: number; ascent: number; descent: number };
+export type Measure = (text: string, size: number, style: FontStyle) => Metrics;
+export type Box = { x: number; y: number; width: number; height: number };
+type Paint = { color: string; opacity?: number };
+export type TextPaint = Paint & FontStyle & { text: string; size: number; x: number; y: number };
+export type Shape =
+  | (Box & Paint & { kind: 'rect'; radius?: number })
+  | (Paint & { kind: 'dot'; x: number; y: number; radius: number })
+  | (Paint & { kind: 'line'; x: number; y: number; endX: number; endY: number });
+export type CodeImageScene = {
+  width: number;
+  height: number;
+  background: Background;
+  window: Box;
+  shapes: Shape[];
+  text: TextPaint[];
+  vectorSafe: boolean;
 };
-for (const [name, grammar] of Object.entries(languages))
-  hljs.registerLanguage(name, grammar);
-export type CodeSettings = {
-  language: keyof typeof languages;
-  theme: 'dark' | 'light';
-  title: string;
-  lines: boolean;
-  padding: number;
-};
-export function highlightCode(
-  code: string,
-  language: CodeSettings['language'],
-) {
-  if (
-    !Object.hasOwn(languages, language) ||
-    !code.trim() ||
-    code.length > 20000 ||
-    code.split('\n').length > 160 ||
-    code.split('\n').some((line) => line.length > 1000)
-  )
-    fail(
-      '请输入代码，最多 20000 字符、160 行，每行 1000 字符。',
-      'Enter code, up to 20,000 characters, 160 lines and 1,000 characters per line.',
-    );
-  return hljs.highlight(code.replace(/\t/g, '    '), {
-    language,
-    ignoreIllegals: true,
-  }).value;
-}
-type Span = { text: string; kind: string };
-export function codeLines(html: string): Span[][] {
-  const root = new DOMParser().parseFromString(
-    `<pre>${html}</pre>`,
-    'text/html',
-  ).body.firstElementChild!;
-  const lines: Span[][] = [[]];
-  function visit(node: Node, kind = '') {
-    if (node.nodeType === 3) {
-      const parts = (node.textContent ?? '').split('\n');
-      parts.forEach((text, i) => {
-        if (i) lines.push([]);
-        if (text) lines.at(-1)!.push({ text, kind });
-      });
-    } else if (node instanceof Element) {
-      const next = node.className || kind;
-      for (const child of node.childNodes) visit(child, next);
-    }
+
+export function outputSize(width: number, height: number, scale: Scale) {
+  width *= scale;
+  height *= scale;
+  if (!Number.isSafeInteger(width) || !Number.isSafeInteger(height) || width < 1 || height < 1 ||
+      Math.max(width, height) > maxEdge || width * height > maxPixels) {
+    fail('图片超出 8192 px 边长或 4000 万像素。请降低倍率、缩短代码或调整排版。',
+      'The image exceeds 8,192 px per side or 40 megapixels. Reduce the scale or adjust the code layout.');
   }
-  visit(root);
-  return lines;
+  return { width, height };
 }
-const themes = {
-  dark: {
-    outer: '#343244',
-    surface: '#20242D',
-    text: '#E7EAF0',
-    muted: '#929BAA',
-    keyword: '#CBA6F7',
-    string: '#A6D6A3',
-    number: '#F3BC87',
-    title: '#8EC9F0',
-    comment: '#8A95A8',
-  },
-  light: {
-    outer: '#E7E3F0',
-    surface: '#FAFAFC',
-    text: '#29303B',
-    muted: '#737C89',
-    keyword: '#8040A1',
-    string: '#347546',
-    number: '#A65B1C',
-    title: '#275F9E',
-    comment: '#697583',
-  },
-};
-export function drawCode(
-  canvas: HTMLCanvasElement,
-  code: string,
-  settings: CodeSettings,
-) {
-  if (
-    ![16, 24, 32, 48, 64].includes(settings.padding) ||
-    settings.title.length > 100
-  )
-    fail('无效内边距或标题过长。', 'Invalid padding or title too long.');
-  const html = highlightCode(code, settings.language),
-    lines = codeLines(html),
-    theme = themes[settings.theme];
-  if (!theme) throw new Error('theme');
-  const ctx = canvas.getContext('2d');
-  if (!ctx) throw new Error('canvas');
-  const font =
-    '16px ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace';
-  ctx.font = font;
-  const gutter = settings.lines
-      ? ctx.measureText(String(lines.length)).width + 24
-      : 0,
-    pad = settings.padding;
-  const logicalWidth =
-    Math.ceil(
-      Math.max(
-        320,
-        ...lines.map(
-          (line) =>
-            ctx.measureText(line.map((t) => t.text).join('')).width + gutter,
-        ),
-        ctx.measureText(settings.title).width + 36,
-      ),
-    ) +
-    pad * 2 +
-    32;
-  const logicalHeight = lines.length * 24 + pad * 2 + 76;
-  canvasSize(logicalWidth * 2, logicalHeight * 2);
-  canvas.width = logicalWidth * 2;
-  canvas.height = logicalHeight * 2;
-  ctx.scale(2, 2);
-  ctx.font = font;
-  ctx.textBaseline = 'top';
-  ctx.fillStyle = theme.outer;
-  ctx.fillRect(0, 0, logicalWidth, logicalHeight);
-  ctx.fillStyle = theme.surface;
-  ctx.beginPath();
-  ctx.roundRect(16, 16, logicalWidth - 32, logicalHeight - 32, 12);
-  ctx.fill();
-  ctx.fillStyle = theme.muted;
-  ctx.font = '13px ui-monospace, monospace';
-  ctx.fillText(settings.title || settings.language, pad + 16, pad + 16);
-  ctx.font = font;
-  lines.forEach((line, i) => {
-    const y = pad + 52 + i * 24;
-    let x = pad + 16;
-    if (settings.lines) {
-      ctx.fillStyle = theme.muted;
-      ctx.fillText(String(i + 1), x, y);
-      x += gutter;
-    }
-    for (const span of line) {
-      const kind = span.kind;
-      ctx.fillStyle = kind.includes('comment')
-        ? theme.comment
-        : kind.includes('keyword') || kind.includes('literal')
-          ? theme.keyword
-          : kind.includes('string') || kind.includes('attr')
-            ? theme.string
-            : kind.includes('number')
-              ? theme.number
-              : kind.includes('title') ||
-                  kind.includes('name') ||
-                  kind.includes('built_in')
-                ? theme.title
-                : theme.text;
-      ctx.fillText(span.text, x, y);
-      x += ctx.measureText(span.text).width;
+
+function fitError(): never {
+  return fail('指定画布放不下完整代码。请放大画布、调低字号或启用换行。',
+    'The full code does not fit this canvas. Increase its size, reduce the font size or enable wrapping.');
+}
+
+export function lineRanges(input: string) {
+  return input.split(/[,，\s]+/u).flatMap(part => {
+    const match = /^(\d+)(?:[-–](\d+))?$/.exec(part);
+    if (!match) return [];
+    const first = Number(match[1]);
+    const last = match[2] ? Number(match[2]) : first;
+    return Number.isSafeInteger(first) && Number.isSafeInteger(last) && first > 0 && last >= first
+      ? [[first, last] as const] : [];
+  });
+}
+
+type Row = { sourceLine: number; continuation: boolean; width: number; runs: (Omit<TextPaint, 'y'> & { style: number; width: number })[] };
+const regular: FontStyle = { bold: false, italic: false };
+const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
+const fromToken = (style: number): FontStyle => ({ italic: Boolean(style & 1), bold: Boolean(style & 2) });
+
+function rowsFor(lines: HighlightToken[][], settings: CodeImageSettings, measure: Measure, limit: number, rowLimit: number): Row[] {
+  const rows: Row[] = [];
+  const size = settings.fontSize;
+  const tab = measure(' ', size, regular).width * settings.tabWidth;
+
+  lines.forEach((tokens, index) => {
+    let row: Row;
+    const nextRow = (continuation: boolean) => {
+      if (rows.length >= rowLimit) fitError();
+      row = { sourceLine: index + 1, continuation, width: 0, runs: [] };
+      rows.push(row);
+    };
+    nextRow(false);
+    for (const { text, color, style } of tokens) {
+      const fontStyle = fromToken(style);
+      const parts = text.split('\t');
+      parts.forEach((part, partIndex) => {
+        if (partIndex) {
+          const target = (Math.floor(row.width / tab + 1e-7) + 1) * tab;
+          if (settings.wrap && target > limit) {
+            if (tab > limit) fitError();
+            nextRow(true);
+            row.width = tab;
+          } else row.width = target;
+        }
+        if (!part) return;
+        const add = (chunk: string, width: number) => {
+          row.runs.push({ text: chunk, color, ...fontStyle, style, size, x: row.width, width });
+          row.width += width;
+        };
+        // Measure complete spans to preserve shaping, even when their characters share a fallback font.
+        const width = measure(part, size, fontStyle).width;
+        if (row.width + width <= limit || !settings.wrap) {
+          add(part, width);
+          return;
+        }
+        let buffer = '', bufferWidth = 0;
+        for (const { segment } of segmenter.segment(part)) {
+          const proposed = buffer + segment;
+          const measured = measure(proposed, size, fontStyle).width;
+          if (row.width + measured <= limit) {
+            buffer = proposed;
+            bufferWidth = measured;
+            continue;
+          }
+          if (buffer) add(buffer, bufferWidth);
+          if (row.width) nextRow(true);
+          buffer = segment;
+          bufferWidth = measure(segment, size, fontStyle).width;
+          if (bufferWidth > limit) fitError();
+        }
+        if (buffer) add(buffer, bufferWidth);
+      });
     }
   });
-  return { width: canvas.width, height: canvas.height };
+
+  return rows;
+}
+
+export function layoutCode(highlight: Highlight, settings: CodeImageSettings, measure: Measure): CodeImageScene {
+  const { fontSize: size, margin, padding, title, background } = settings;
+  const titleSize = 12;
+  const hasTitle = settings.titleBar && settings.style !== 'minimal';
+  const titleHeight = hasTitle ? 34 : 0;
+  const topPadding = hasTitle ? Math.ceil(padding * 0.6) : padding;
+  const titleGuard = hasTitle ? measure(title, titleSize, regular).width + 164 : 0;
+  const metrics = measure('Mg', size, regular);
+  const initialRowHeight = Math.ceil(Math.max(size * settings.lineHeight, metrics.ascent + metrics.descent));
+  const markers = [
+    { ranges: lineRanges(settings.removed), color: '#e16c78', sign: '-' },
+    { ranges: lineRanges(settings.added), color: '#43bd88', sign: '+' },
+    { ranges: lineRanges(settings.emphasized), color: '#ac83e3' },
+  ].map(marker => ({ ...marker, ranges: marker.ranges.filter(([first]) => first <= highlight.lines.length) }));
+  const hasMarks = markers.some(marker => marker.ranges.length);
+  const markerGutter = markers.some(marker => marker.sign && marker.ranges.length) ? measure('+', size - 1, regular).width + 8 : 0;
+  const numberGutter = settings.lines ? measure(String(settings.firstLine + highlight.lines.length - 1), size - 1, regular).width + 20 : 0;
+  const gutter = markerGutter + numberGutter;
+  const fixed = settings.size === 'custom';
+  const horizontal = (margin + padding) * 2 + gutter + 3; // room for slanted glyphs
+  const vertical = margin * 2 + padding + topPadding + titleHeight;
+  if (fixed) outputSize(settings.width, settings.height, 1);
+  const limit = fixed ? settings.width - horizontal : autoCodeWidth;
+  const rowLimit = Math.floor(((fixed ? settings.height : maxEdge) - vertical) / initialRowHeight);
+  if (limit < 1 || rowLimit < 1) fitError();
+
+  const rows = rowsFor(highlight.lines, settings, measure, limit, rowLimit);
+  for (const row of rows) {
+    for (const run of row.runs) {
+      const sample = measure(run.text, size, run);
+      metrics.ascent = Math.max(metrics.ascent, sample.ascent);
+      metrics.descent = Math.max(metrics.descent, sample.descent);
+    }
+  }
+  const rowHeight = Math.ceil(Math.max(initialRowHeight, metrics.ascent + metrics.descent));
+  const baseline = (rowHeight + metrics.ascent - metrics.descent) / 2;
+  const widest = rows.reduce((max, row) => Math.max(max, row.width), 0);
+  const neededW = Math.ceil(Math.max(widest + horizontal, titleGuard + margin * 2));
+  const neededH = rows.length * rowHeight + vertical;
+  let width = Math.max(460, neededW), height = Math.max(190, neededH);
+  if (fixed) {
+    if (neededW > settings.width || neededH > settings.height) fitError();
+    width = settings.width;
+    height = settings.height;
+  } else if (settings.size !== 'auto' && settings.size !== 'custom') {
+    const [x, y] = ratios[settings.size];
+    const unit = Math.ceil(Math.max(width / x, height / y));
+    width = unit * x;
+    height = unit * y;
+  }
+  outputSize(width, height, 1);
+
+  const window = { x: margin, y: margin, width: width - margin * 2, height: height - margin * 2 };
+  const radius = Math.min(settings.radius, window.width / 2, window.height / 2);
+  const shapes: Shape[] = [];
+  const text: TextPaint[] = [];
+  const muted = highlight.foreground;
+  const addText = (value: string, x: number, y: number, size: number, color: string, opacity = 1) =>
+    text.push({ text: value, x, y, size, color, opacity, ...regular });
+  if (settings.shadow) {
+    for (const [offset, opacity] of [[11, 0.045], [9, 0.05], [7, 0.035], [5, 0.029]]) {
+      shapes.push({ kind: 'rect', ...window, y: window.y + offset, radius: radius + 1, color: '#141025', opacity });
+    }
+  }
+  shapes.push({ kind: 'rect', ...window, radius, color: highlight.surface });
+
+  if (hasTitle) {
+    const centerY = window.y + 19;
+    if (settings.style === 'macos') {
+      ['#ee827d', '#ecc078', '#8bbd9d'].forEach((color, index) =>
+        shapes.push({ kind: 'dot', color, x: window.x + 18 + index * 13, y: centerY, radius: 4 }));
+    } else {
+      const right = window.x + window.width - 17;
+      const stroke = (x: number, y: number, endX: number, endY: number) =>
+        shapes.push({ kind: 'line', x, y, endX, endY, color: muted, opacity: 0.73 });
+      stroke(right - 45, centerY + 2, right - 35, centerY + 2);
+      stroke(right - 26, centerY - 4, right - 18, centerY - 4);
+      stroke(right - 18, centerY - 4, right - 18, centerY + 4);
+      stroke(right - 18, centerY + 4, right - 26, centerY + 4);
+      stroke(right - 26, centerY + 4, right - 26, centerY - 4);
+      stroke(right - 6, centerY - 4, right + 2, centerY + 4);
+      stroke(right + 2, centerY - 4, right - 6, centerY + 4);
+    }
+    if (title) {
+      const x = settings.style === 'macos' ? window.x + (window.width - measure(title, titleSize, regular).width) / 2 : window.x + 16;
+      addText(title, x, centerY + 4, titleSize, muted, 0.68);
+    }
+  }
+
+  const left = window.x + padding;
+  const top = window.y + titleHeight + topPadding;
+  rows.forEach((row, index) => {
+    const y = top + index * rowHeight;
+    const marker = markers.find(item => item.ranges.some(([from, to]) => row.sourceLine >= from && row.sourceLine <= to));
+    const opacity = settings.dim && !marker && hasMarks ? 0.38 : 1;
+    if (marker) {
+      shapes.push({ kind: 'rect', x: left - 6, y, width: window.width - padding * 2 + 12, height: rowHeight, radius: 4, color: marker.color, opacity: 0.16 });
+      shapes.push({ kind: 'rect', x: left - 6, y, width: 2, height: rowHeight, color: marker.color, opacity: 0.9 });
+      if (marker.sign && !row.continuation) addText(marker.sign, left + 1, y + baseline, size - 1, marker.color);
+    }
+    if (settings.lines && !row.continuation) {
+      const number = String(row.sourceLine + settings.firstLine - 1);
+      addText(number, left + gutter - 18 - measure(number, size - 1, regular).width, y + baseline, size - 1, marker?.color ?? muted, opacity * 0.62);
+    }
+    for (const run of row.runs) {
+      const x = left + gutter + run.x;
+      text.push({ text: run.text, x, y: y + baseline, size: run.size, bold: run.bold, italic: run.italic, color: run.color, opacity });
+      const decoration = (offset: number) => shapes.push({
+        kind: 'line', x, y: y + baseline + offset, endX: x + run.width, endY: y + baseline + offset, color: run.color, opacity,
+      });
+      if (run.style & 4) decoration(2);
+      if (run.style & 8) decoration(-size * 0.3);
+    }
+  });
+
+  return {
+    width, height, window, background, shapes, text,
+    vectorSafe: settings.font !== 'system' && text.every(run => /^[ -~]*$/.test(run.text)),
+  };
+}
+
+export function gradientLine(width: number, height: number, angle: number) {
+  const radians = angle * Math.PI / 180;
+  const dx = Math.sin(radians);
+  const dy = -Math.cos(radians);
+  const distance = (Math.abs(width * dx) + Math.abs(height * dy)) / 2;
+  return [width / 2 - dx * distance, height / 2 - dy * distance,
+    width / 2 + dx * distance, height / 2 + dy * distance] as const;
+}
+
+export function cover(sourceWidth: number, sourceHeight: number, width: number, height: number): Box {
+  const scale = Math.max(width / sourceWidth, height / sourceHeight);
+  return { x: (width - sourceWidth * scale) / 2, y: (height - sourceHeight * scale) / 2,
+    width: sourceWidth * scale, height: sourceHeight * scale };
 }
