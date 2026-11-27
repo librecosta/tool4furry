@@ -37,13 +37,16 @@ export type SyntaxTheme = keyof typeof themes;
 export type WindowStyle = 'macos' | 'windows' | 'minimal';
 export type FontId = 'jetbrains' | 'fira' | 'plex' | 'system';
 export type BackgroundKind = 'solid' | 'linear' | 'radial' | 'transparent' | 'image';
+export type PhotoTarget = 'canvas' | 'window';
+export type PhotoPlacement = { fit: 'contain' | 'cover'; zoom: number; x: number; y: number };
+export const defaultPhotoPlacement: PhotoPlacement = { fit: 'contain', zoom: 100, x: 0, y: 0 };
+export const maxPhotoZoom = 300;
 
 export type Background = {
   kind: BackgroundKind;
   first: string;
   second: string;
   angle: number;
-  image?: ImageBitmap;
 };
 export type CodeImageSettings = {
   theme: SyntaxTheme;

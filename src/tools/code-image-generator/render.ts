@@ -1,7 +1,7 @@
 import { fail } from '../general/bounds';
 import { toBlob } from '../image/browser-codec';
 import { inspectImage } from '../image/inspect-image';
-import { cover, gradientLine, jpegMatte, maxEdge, maxPixels, outputSize, type CodeImageScene, type Shape } from './core';
+import { gradientLine, jpegMatte, maxEdge, maxPixels, outputSize, type Box, type CodeImageScene, type Shape } from './core';
 import { blobDataURL, canvasFont, embeddedFont, fontName } from './fonts';
 import type { FontId, OutputFormat, Scale } from './settings';
 
@@ -14,16 +14,16 @@ function frame(canvas: HTMLCanvasElement, width: number, height: number) {
 }
 
 export function paintCanvas(canvas: HTMLCanvasElement, scene: CodeImageScene, font: FontId, scaledWidth: number, scaledHeight: number, matte?: string) {
-  const { width, height, background } = scene;
+  const { width, height, background, canvasPhoto, window, windowRadius, windowOpacity, windowPhoto } = scene;
   const ctx = frame(canvas, scaledWidth, scaledHeight);
   ctx.scale(scaledWidth / width, scaledHeight / height);
   if (matte) {
     ctx.fillStyle = matte;
     ctx.fillRect(0, 0, width, height);
   }
-  if (background.kind === 'image' && background.image) {
-    const image = cover(background.image.width, background.image.height, width, height);
-    ctx.drawImage(background.image, image.x, image.y, image.width, image.height);
+  if (canvasPhoto) {
+    const { bitmap, bounds } = canvasPhoto;
+    ctx.drawImage(bitmap, bounds.x, bounds.y, bounds.width, bounds.height);
   }
   if (background.kind === 'linear' || background.kind === 'radial') {
     const gradient = background.kind === 'linear'
@@ -38,22 +38,32 @@ export function paintCanvas(canvas: HTMLCanvasElement, scene: CodeImageScene, fo
     ctx.fillStyle = background.first;
     ctx.fillRect(0, 0, width, height);
   }
-  for (const shape of scene.shapes) {
-    ctx.globalAlpha = shape.opacity ?? 1;
-    ctx.fillStyle = ctx.strokeStyle = shape.color;
+  const roundWindow = () => ctx.roundRect(window.x, window.y, window.width, window.height, windowRadius);
+  if (scene.shadows.length) {
+    ctx.save();
     ctx.beginPath();
-    if (shape.kind === 'rect') {
-      ctx.roundRect(shape.x, shape.y, shape.width, shape.height, shape.radius ?? 0);
-      ctx.fill();
-    } else if (shape.kind === 'dot') {
-      ctx.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
-      ctx.fill();
-    } else {
-      ctx.moveTo(shape.x, shape.y);
-      ctx.lineTo(shape.endX, shape.endY);
-      ctx.stroke();
-    }
+    ctx.rect(0, 0, width, height);
+    roundWindow();
+    ctx.clip('evenodd');
+    scene.shadows.forEach(shape => paintShape(ctx, shape));
+    ctx.restore();
   }
+  if (windowOpacity > 0) {
+    ctx.save();
+    ctx.globalAlpha = windowOpacity;
+    ctx.beginPath();
+    roundWindow();
+    if (windowPhoto) {
+      const { bitmap, bounds } = windowPhoto;
+      ctx.clip();
+      ctx.drawImage(bitmap, bounds.x, bounds.y, bounds.width, bounds.height);
+    } else {
+      ctx.fillStyle = scene.windowColor;
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+  scene.shapes.forEach(shape => paintShape(ctx, shape));
   ctx.direction = 'ltr';
   ctx.textBaseline = 'alphabetic';
   ctx.fontKerning = 'none';
@@ -65,14 +75,33 @@ export function paintCanvas(canvas: HTMLCanvasElement, scene: CodeImageScene, fo
   }
 }
 
+function paintShape(ctx: CanvasRenderingContext2D, shape: Shape) {
+  ctx.globalAlpha = shape.opacity ?? 1;
+  ctx.fillStyle = ctx.strokeStyle = shape.color;
+  ctx.beginPath();
+  if (shape.kind === 'rect') {
+    ctx.roundRect(shape.x, shape.y, shape.width, shape.height, shape.radius ?? 0);
+    ctx.fill();
+  } else if (shape.kind === 'dot') {
+    ctx.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
+    ctx.fill();
+  } else {
+    ctx.moveTo(shape.x, shape.y);
+    ctx.lineTo(shape.endX, shape.endY);
+    ctx.stroke();
+  }
+}
+
 const xml = (text: string) => text.replace(/[&<>"']/g, character =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[character]!);
 const n = (number: number) => String(+number.toFixed(4));
 const paint = (key: string, color: string, opacity = 1) => `${key}="${xml(color)}" opacity="${n(opacity)}"`;
+const svgBox = ({ x, y, width, height }: Box) =>
+  `x="${n(x)}" y="${n(y)}" width="${n(width)}" height="${n(height)}"`;
 
 function svgShape(shape: Shape) {
   if (shape.kind === 'rect') {
-    return `<rect x="${n(shape.x)}" y="${n(shape.y)}" width="${n(shape.width)}" height="${n(shape.height)}" rx="${n(shape.radius ?? 0)}" ${paint('fill', shape.color, shape.opacity)}/>`;
+    return `<rect ${svgBox(shape)} rx="${n(shape.radius ?? 0)}" ${paint('fill', shape.color, shape.opacity)}/>`;
   }
   if (shape.kind === 'dot') {
     return `<circle cx="${n(shape.x)}" cy="${n(shape.y)}" r="${n(shape.radius)}" ${paint('fill', shape.color, shape.opacity)}/>`;
@@ -80,7 +109,7 @@ function svgShape(shape: Shape) {
   return `<line x1="${n(shape.x)}" y1="${n(shape.y)}" x2="${n(shape.endX)}" y2="${n(shape.endY)}" ${paint('stroke', shape.color, shape.opacity)}/>`;
 }
 
-async function svgBackground({ background, width, height }: CodeImageScene) {
+async function svgBackground({ background, width, height, canvasPhoto }: CodeImageScene) {
   const whole = (fill: string) => `<rect width="${width}" height="${height}" fill="${xml(fill)}"/>`;
   if (background.kind === 'solid') return whole(background.first);
   if (background.kind === 'linear' || background.kind === 'radial') {
@@ -92,23 +121,33 @@ async function svgBackground({ background, width, height }: CodeImageScene) {
       : `<radialGradient id="background" gradientUnits="userSpaceOnUse" cx="${width / 2}" cy="${height / 2}" r="${n(Math.hypot(width, height) / 2)}">${stops}</radialGradient>`;
     return '<defs>' + gradient + '</defs>' + whole('url(#background)');
   }
-  if (background.kind === 'image' && background.image) {
-    const source = background.image;
-    const scale = Math.min(1, 4096 / Math.max(width, height));
-    const canvas = document.createElement('canvas');
-    try {
-      const w = Math.max(1, Math.round(width * scale)), h = Math.max(1, Math.round(height * scale));
-      const ctx = frame(canvas, w, h);
-      const crop = cover(source.width, source.height, width, height);
-      ctx.scale(w / width, h / height);
-      ctx.drawImage(source, crop.x, crop.y, crop.width, crop.height);
-      const data = await blobDataURL(await toBlob(canvas, 'image/png'));
-      return `<image width="${width}" height="${height}" preserveAspectRatio="none" href="${data}"/>`;
-    } finally {
-      canvas.width = canvas.height = 0;
-    }
+  return canvasPhoto ? svgPhoto(canvasPhoto) : '';
+}
+
+async function svgPhoto({ bitmap, bounds }: NonNullable<CodeImageScene['canvasPhoto']>, attributes = '') {
+  const scale = Math.min(1, 4096 / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement('canvas');
+  try {
+    const width = Math.max(1, Math.round(bitmap.width * scale));
+    const height = Math.max(1, Math.round(bitmap.height * scale));
+    frame(canvas, width, height).drawImage(bitmap, 0, 0, width, height);
+    const data = await blobDataURL(await toBlob(canvas, 'image/png'));
+    return `<image ${svgBox(bounds)} preserveAspectRatio="none" href="${data}"${attributes}/>`;
+  } finally {
+    canvas.width = canvas.height = 0;
   }
-  return '';
+}
+
+async function svgWindow({ width, height, window, windowRadius, windowColor, windowOpacity, windowPhoto, shadows }: CodeImageScene) {
+  const outline = `${svgBox(window)} rx="${n(windowRadius)}"`;
+  const shadow = !shadows.length ? '' :
+    `<defs><mask id="window-shadow" maskUnits="userSpaceOnUse" x="0" y="0" width="${width}" height="${height}">` +
+    `<rect width="${width}" height="${height}" fill="white"/><rect ${outline} fill="black"/></mask></defs>` +
+    `<g mask="url(#window-shadow)">${shadows.map(svgShape).join('')}</g>`;
+  if (windowOpacity === 0) return shadow;
+  if (!windowPhoto) return shadow + `<rect ${outline} ${paint('fill', windowColor, windowOpacity)}/>`;
+  const clip = `<defs><clipPath id="window-photo"><rect ${outline}/></clipPath></defs>`;
+  return shadow + clip + await svgPhoto(windowPhoto, ` clip-path="url(#window-photo)" opacity="${n(windowOpacity)}"`);
 }
 
 export async function renderSvg(scene: CodeImageScene, font: FontId) {
@@ -116,11 +155,11 @@ export async function renderSvg(scene: CodeImageScene, font: FontId) {
     fail('当前文字需要系统回退字体。SVG 需使用本地字体与基本拉丁字符，可改用 PNG。',
       'SVG requires a bundled font and basic Latin text. Use PNG if the artwork needs other characters or system fonts.');
   }
-  const [face, background] = await Promise.all([embeddedFont(font), svgBackground(scene)]);
+  const [face, background, window] = await Promise.all([embeddedFont(font), svgBackground(scene), svgWindow(scene)]);
   const runs = scene.text.map(run => `<text x="${n(run.x)}" y="${n(run.y)}" font-size="${run.size}" font-weight="${run.bold ? 700 : 400}" font-style="${run.italic ? 'italic' : 'normal'}" ${paint('fill', run.color, run.opacity)}>${xml(run.text)}</text>`).join('');
   return new Blob([
     `<svg xmlns="http://www.w3.org/2000/svg" width="${scene.width}" height="${scene.height}" viewBox="0 0 ${scene.width} ${scene.height}" overflow="hidden">`,
-    `<metadata>${xml(face.notice)}</metadata><style>${face.css}</style>`, background, scene.shapes.map(svgShape).join(''),
+    `<metadata>${xml(face.notice)}</metadata><style>${face.css}</style>`, background, window, scene.shapes.map(svgShape).join(''),
     `<g xml:space="preserve" font-family="${xml(fontName(font))}" direction="ltr" style="font-kerning:none;font-variant-ligatures:none;font-feature-settings:'liga' 0,'calt' 0">${runs}</g></svg>`,
   ], { type: 'image/svg+xml' });
 }

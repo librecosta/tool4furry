@@ -1,6 +1,6 @@
 import { fail } from '../general/bounds';
 import type { Highlight, HighlightToken } from './highlight-data';
-import type { Background, CodeImageSettings, Scale } from './settings';
+import type { Background, CodeImageSettings, PhotoPlacement, Scale } from './settings';
 
 export const maxEdge = 8192;
 export const maxPixels = 40_000_000;
@@ -18,14 +18,25 @@ export type Shape =
   | (Box & Paint & { kind: 'rect'; radius?: number })
   | (Paint & { kind: 'dot'; x: number; y: number; radius: number })
   | (Paint & { kind: 'line'; x: number; y: number; endX: number; endY: number });
-export type CodeImageScene = {
+type CodeImageLayout = {
   width: number;
   height: number;
-  background: Background;
   window: Box;
+  windowRadius: number;
+  windowColor: string;
+  shadows: Shape[];
   shapes: Shape[];
   text: TextPaint[];
   vectorSafe: boolean;
+};
+type PhotoSize = { width: number; height: number };
+type Photo = { bitmap: ImageBitmap; placement: PhotoPlacement };
+type PlacedPhoto = Photo & ReturnType<typeof placePhoto>;
+export type CodeImageScene = CodeImageLayout & {
+  background: Background;
+  canvasPhoto?: PlacedPhoto;
+  windowPhoto?: PlacedPhoto;
+  windowOpacity: number;
 };
 
 export function outputSize(width: number, height: number, scale: Scale) {
@@ -119,8 +130,8 @@ function rowsFor(lines: HighlightToken[][], settings: CodeImageSettings, measure
   return rows;
 }
 
-export function layoutCode(highlight: Highlight, settings: CodeImageSettings, measure: Measure): CodeImageScene {
-  const { fontSize: size, margin, padding, title, background } = settings;
+export function layoutCode(highlight: Highlight, settings: CodeImageSettings, measure: Measure, photo?: PhotoSize): CodeImageLayout {
+  const { fontSize: size, margin, padding, title } = settings;
   const titleSize = 12;
   const hasTitle = settings.titleBar && settings.style !== 'minimal';
   const titleHeight = hasTitle ? 34 : 0;
@@ -138,10 +149,13 @@ export function layoutCode(highlight: Highlight, settings: CodeImageSettings, me
   const numberGutter = settings.lines ? measure(String(settings.firstLine + highlight.lines.length - 1), size - 1, regular).width + 20 : 0;
   const gutter = markerGutter + numberGutter;
   const fixed = settings.size === 'custom';
+  const photoAspect = settings.size === 'auto' && photo;
   const horizontal = (margin + padding) * 2 + gutter + 3; // room for slanted glyphs
   const vertical = margin * 2 + padding + topPadding + titleHeight;
   if (fixed) outputSize(settings.width, settings.height, 1);
-  const limit = fixed ? settings.width - horizontal : autoCodeWidth;
+  const preferredWidth = Math.max(520, titleGuard + margin * 2, horizontal + size * 12);
+  const limit = fixed ? settings.width - horizontal : photoAspect && photoAspect.width < photoAspect.height
+    ? Math.min(autoCodeWidth, preferredWidth - horizontal) : autoCodeWidth;
   const rowLimit = Math.floor(((fixed ? settings.height : maxEdge) - vertical) / initialRowHeight);
   if (limit < 1 || rowLimit < 1) fitError();
 
@@ -163,6 +177,10 @@ export function layoutCode(highlight: Highlight, settings: CodeImageSettings, me
     if (neededW > settings.width || neededH > settings.height) fitError();
     width = settings.width;
     height = settings.height;
+  } else if (photoAspect) {
+    const scale = Math.max(width / photoAspect.width, height / photoAspect.height);
+    width = Math.round(photoAspect.width * scale);
+    height = Math.round(photoAspect.height * scale);
   } else if (settings.size !== 'auto' && settings.size !== 'custom') {
     const [x, y] = ratios[settings.size];
     const unit = Math.ceil(Math.max(width / x, height / y));
@@ -171,8 +189,11 @@ export function layoutCode(highlight: Highlight, settings: CodeImageSettings, me
   }
   outputSize(width, height, 1);
 
-  const window = { x: margin, y: margin, width: width - margin * 2, height: height - margin * 2 };
+  const window = photoAspect
+    ? { x: (width - neededW) / 2 + margin, y: (height - neededH) / 2 + margin, width: neededW - margin * 2, height: neededH - margin * 2 }
+    : { x: margin, y: margin, width: width - margin * 2, height: height - margin * 2 };
   const radius = Math.min(settings.radius, window.width / 2, window.height / 2);
+  const shadows: Shape[] = [];
   const shapes: Shape[] = [];
   const text: TextPaint[] = [];
   const muted = highlight.foreground;
@@ -180,11 +201,9 @@ export function layoutCode(highlight: Highlight, settings: CodeImageSettings, me
     text.push({ text: value, x, y, size, color, opacity, ...regular });
   if (settings.shadow) {
     for (const [offset, opacity] of [[11, 0.045], [9, 0.05], [7, 0.035], [5, 0.029]]) {
-      shapes.push({ kind: 'rect', ...window, y: window.y + offset, radius: radius + 1, color: '#141025', opacity });
+      shadows.push({ kind: 'rect', ...window, y: window.y + offset, radius: radius + 1, color: '#141025', opacity });
     }
   }
-  shapes.push({ kind: 'rect', ...window, radius, color: highlight.surface });
-
   if (hasTitle) {
     const centerY = window.y + 19;
     if (settings.style === 'macos') {
@@ -235,7 +254,7 @@ export function layoutCode(highlight: Highlight, settings: CodeImageSettings, me
   });
 
   return {
-    width, height, window, background, shapes, text,
+    width, height, window, windowRadius: radius, windowColor: highlight.surface, shadows, shapes, text,
     vectorSafe: settings.font !== 'system' && text.every(run => /^[ -~]*$/.test(run.text)),
   };
 }
@@ -249,8 +268,29 @@ export function gradientLine(width: number, height: number, angle: number) {
     width / 2 + dx * distance, height / 2 + dy * distance] as const;
 }
 
-export function cover(sourceWidth: number, sourceHeight: number, width: number, height: number): Box {
-  const scale = Math.max(width / sourceWidth, height / sourceHeight);
-  return { x: (width - sourceWidth * scale) / 2, y: (height - sourceHeight * scale) / 2,
-    width: sourceWidth * scale, height: sourceHeight * scale };
+export function placePhoto(source: PhotoSize, frame: Box, placement: PhotoPlacement) {
+  const fit = placement.fit === 'cover' ? Math.max : Math.min;
+  const scale = fit(frame.width / source.width, frame.height / source.height) * (placement.zoom / 100);
+  const width = source.width * scale;
+  const height = source.height * scale;
+  const offsetX = (frame.width - width) / 2;
+  const offsetY = (frame.height - height) / 2;
+  const travelX = Math.abs(offsetX) < 0.5 ? 0 : Math.abs(offsetX);
+  const travelY = Math.abs(offsetY) < 0.5 ? 0 : Math.abs(offsetY);
+  return {
+    bounds: {
+      x: frame.x + offsetX + travelX * placement.x / 100,
+      y: frame.y + offsetY + travelY * placement.y / 100,
+      width, height,
+    },
+    travelX, travelY,
+  };
+}
+
+export function composeScene(layout: CodeImageLayout, background: Background, canvas: Photo | undefined, window: Photo | undefined, opacity: number): CodeImageScene {
+  return {
+    ...layout, background, windowOpacity: opacity / 100,
+    canvasPhoto: canvas && { ...canvas, ...placePhoto(canvas.bitmap, { x: 0, y: 0, width: layout.width, height: layout.height }, canvas.placement) },
+    windowPhoto: window && { ...window, ...placePhoto(window.bitmap, layout.window, window.placement) },
+  };
 }

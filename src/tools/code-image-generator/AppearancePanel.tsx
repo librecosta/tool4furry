@@ -1,13 +1,13 @@
-import { useId, useRef, type ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
 import { Switch } from '@base-ui/react/switch';
-import { CaretDownIcon, ImageSquareIcon } from '@phosphor-icons/react';
-import { Button } from '../../ui/Button';
+import { CaretDownIcon } from '@phosphor-icons/react';
 import { NumberStepper } from '../../ui/NumberStepper';
 import { SliderField } from '../../ui/SliderField';
 import { TextField } from '../../ui/TextField';
 import { families } from './fonts';
 import { palettes, presets, themes, type Background, type CodeImageSettings, type FontId, type Preset, type SyntaxTheme } from './settings';
 import { StudioChoices } from './StudioChoices';
+import { PhotoControls, type PhotoControlsProps } from './PhotoControls';
 import s from './studio.module.scss';
 
 export type Translate = (zh: string, en: string) => string;
@@ -16,10 +16,14 @@ type Props = {
   settings: CodeImageSettings;
   selected?: Preset;
   thumbnails: Record<Preset, string>;
-  imageName?: string;
+  canvasPhoto: PhotoControlsProps;
+  windowPhoto: PhotoControlsProps;
+  windowBackground: 'theme' | 'image';
+  changeWindowBackground: (kind: 'theme' | 'image') => void;
+  windowOpacity: number;
+  changeWindowOpacity: (opacity: number) => void;
   change: (settings: Partial<CodeImageSettings>) => void;
   selectPreset: (preset: Preset) => void;
-  importImage: (file: File) => void;
 };
 
 export function StudioToggle({ label, checked, change }: { label: string; checked: boolean; change: (enabled: boolean) => void }) {
@@ -42,8 +46,10 @@ const swatch = (background: Background) =>
   background.kind === 'radial' ? `radial-gradient(circle, ${background.first}, ${background.second})` :
   `linear-gradient(${background.angle}deg, ${background.first}, ${background.second})`;
 
-export function AppearancePanel({ t, settings, selected, thumbnails, imageName, change, selectPreset, importImage }: Props) {
-  const imageInput = useRef<HTMLInputElement>(null);
+export function AppearancePanel({
+  t, settings, selected, thumbnails, canvasPhoto, windowPhoto, windowBackground, changeWindowBackground,
+  windowOpacity, changeWindowOpacity, change, selectPreset,
+}: Props) {
   const back = settings.background;
   const background = (patch: Partial<Background>) => change({ background: { ...back, ...patch } });
   const colors = back.kind === 'linear' || back.kind === 'radial';
@@ -52,6 +58,16 @@ export function AppearancePanel({ t, settings, selected, thumbnails, imageName, 
     <NumberStepper label={label} value={settings[key]} min={min} max={max} step={step} fractionDigits={key === 'lineHeight' ? 2 : 0}
       locale={t('zh-CN', 'en')} decreaseLabel={t('减小', 'Decrease: ') + label}
       increaseLabel={t('增大', 'Increase: ') + label} onValueChange={value => change({ [key]: value })} />;
+  const canvasSize = <>
+    <StudioChoices<CodeImageSettings['size']> label={t('画布尺寸', 'Canvas size')} value={settings.size}
+      options={[[ 'auto', back.kind === 'image' ? t('原图比例', 'Match photo') : t('适应代码', 'Fit code')],
+        ['custom', t('自定义', 'Custom')], ['1:1', '1:1'], ['4:3', '4:3'], ['16:9', '16:9'], ['4:5', '4:5']]}
+      change={size => change({ size })} />
+    {settings.size === 'custom' && <div className={s.pair}>
+      {number('width', t('宽 (px)', 'Width (px)'), 80, 8192)}
+      {number('height', t('高 (px)', 'Height (px)'), 80, 8192)}
+    </div>}
+  </>;
 
   return <aside className={s.appearance} aria-label={t('外观设置', 'Appearance')}>
     <Section title={t('艺术预设', 'Art presets')}>
@@ -86,16 +102,8 @@ export function AppearancePanel({ t, settings, selected, thumbnails, imageName, 
       {back.kind === 'linear' && <SliderField label={t('渐变方向', 'Gradient angle')} value={back.angle} min={0} max={360} unit="°"
         onValueChange={angle => background({ angle })} />}
       {back.kind === 'image' && <>
-        <input type="file" ref={imageInput} accept="image/png,image/jpeg,image/webp,image/avif" hidden
-          aria-label={t('背景图片文件', 'Background image file')} onChange={event => {
-            const file = event.currentTarget.files?.[0];
-            event.currentTarget.value = '';
-            if (file) importImage(file);
-          }} />
-        <Button size="sm" variant="ghost" className={s.fieldButton} onClick={() => imageInput.current?.click()}>
-          <ImageSquareIcon size={16} /> {t('选择背景图片', 'Choose background image')}
-        </Button>
-        {imageName && <span className={s.imageName} title={imageName}>{imageName}</span>}
+        <PhotoControls t={t} controls={canvasPhoto} outer />
+        {canvasSize}
       </>}
       <SliderField label={t('画布外边距', 'Outer padding')} value={settings.margin} min={0} max={160} unit=" px"
         onValueChange={margin => change({ margin })} />
@@ -107,6 +115,11 @@ export function AppearancePanel({ t, settings, selected, thumbnails, imageName, 
         options={themeChoices} change={theme => change({ theme })} />
       <StudioChoices<CodeImageSettings['style']> label={t('窗口样式', 'Window style')} value={settings.style}
         options={[[ 'macos', 'macOS'], ['windows', 'Windows'], ['minimal', 'Minimal']]} change={style => change({ style })} />
+      <StudioChoices<'theme' | 'image'> label={t('窗口背景', 'Window background')} value={windowBackground}
+        options={[[ 'theme', t('主题底色', 'Theme color')], ['image', t('本地图片', 'Local image')]]} change={kind => changeWindowBackground(kind)} />
+      {windowBackground === 'image' && <PhotoControls t={t} controls={windowPhoto} />}
+      <SliderField label={t('窗口背景不透明度', 'Window background opacity')} value={windowOpacity}
+        min={0} max={100} unit="%" onValueChange={changeWindowOpacity} />
       <StudioChoices label={t('字体', 'Font')} value={settings.font}
         options={fontChoices} change={font => change({ font })} />
       {number('fontSize', t('字号', 'Size'), 8, 72)}
@@ -127,13 +140,7 @@ export function AppearancePanel({ t, settings, selected, thumbnails, imageName, 
           {number('firstLine', t('起始行号', 'First line number'), 1, 999999)}
         </div>
         <StudioToggle label={t('图片自动换行', 'Wrap in artwork')} checked={settings.wrap} change={wrap => change({ wrap })} />
-        <StudioChoices<CodeImageSettings['size']> label={t('画布尺寸', 'Canvas size')} value={settings.size}
-          options={[[ 'auto', t('适应代码', 'Fit code')], ['custom', t('自定义', 'Custom')], ['1:1', '1:1'],
-            ['4:3', '4:3'], ['16:9', '16:9'], ['4:5', '4:5']]} change={size => change({ size })} />
-        {settings.size === 'custom' && <div className={s.pair}>
-          {number('width', t('宽 (px)', 'Width (px)'), 80, 8192)}
-          {number('height', t('高 (px)', 'Height (px)'), 80, 8192)}
-        </div>}
+        {back.kind !== 'image' && canvasSize}
         <div className={s.marks}>
           <h4>{t('代码行标记', 'Line marks')}</h4>
           <p>{t('按源码行号标记，例如 2, 5–8。', 'Use source line numbers, for example 2, 5–8.')}</p>

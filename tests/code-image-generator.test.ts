@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { cover, gradientLine, layoutCode, lineRanges, outputSize, type Measure } from '../src/tools/code-image-generator/core';
+import { composeScene, gradientLine, layoutCode, lineRanges, outputSize, placePhoto, type Measure } from '../src/tools/code-image-generator/core';
 import { createCodeNamer } from '../src/tools/code-image-generator/delivery';
 import { highlightCode } from '../src/tools/code-image-generator/highlight';
 import { plainHighlight } from '../src/tools/code-image-generator/highlight-data';
-import { defaults, languageForFile, presets, sampleCode, themes } from '../src/tools/code-image-generator/settings';
+import { defaultPhotoPlacement, defaults, languageForFile, presets, sampleCode, themes } from '../src/tools/code-image-generator/settings';
 
 const measure: Measure = (text, size) => ({
   width: [...text].reduce((sum, char) => sum + (/\p{Script=Han}/u.test(char) ? size : size / 2), 0),
@@ -75,7 +75,8 @@ describe('Code Image layout and delivery', () => {
   });
   it('varies window chrome and provides eight independent artwork presets', () => {
     const tokens = plainHighlight(sampleCode);
-    const results = Object.values(presets).map(preset => layoutCode(tokens, { ...defaults, ...preset }, measure));
+    const results = Object.values(presets).map(preset =>
+      composeScene(layoutCode(tokens, { ...defaults, ...preset }, measure), preset.background, undefined, undefined, 100));
     expect(new Set(results.map(scene => JSON.stringify(scene))).size).toBe(8);
     const mac = layoutCode(tokens, defaults, measure);
     const windows = layoutCode(tokens, { ...defaults, style: 'windows' }, measure);
@@ -98,8 +99,48 @@ describe('Code Image layout and delivery', () => {
     expect(() => layoutCode(plainHighlight('x\n'.repeat(1000)), defaults, measure)).toThrow();
   });
   it('uses proportional cover and consistent orientation for linear backgrounds', () => {
-    expect(cover(900, 300, 400, 400)).toEqual({ x: -400, y: 0, width: 1200, height: 400 });
+    const frame = { x: 0, y: 0, width: 400, height: 400 };
+    const photo = { width: 900, height: 300 };
+    const cover = placePhoto(photo, frame, { ...defaultPhotoPlacement, fit: 'cover' }).bounds;
+    expect(cover.x).toBeCloseTo(-400);
+    expect(cover.y).toBeCloseTo(0);
+    expect(cover.width).toBeCloseTo(1200);
+    expect(cover.height).toBeCloseTo(400);
+    const contain = placePhoto(photo, frame, { ...defaultPhotoPlacement, y: -100 });
+    expect(contain.bounds.width / contain.bounds.height).toBeCloseTo(3);
+    expect(contain.bounds.x).toBeCloseTo(0);
+    expect(contain.bounds.y).toBeCloseTo(0);
+    expect(placePhoto(photo, frame, { ...defaultPhotoPlacement, fit: 'cover', zoom: 150, x: 100, y: -100 }).bounds)
+      .toEqual({ x: 0, y: -200, width: 1800, height: 600 });
     expect(gradientLine(600, 400, 180).map(value => Math.round(value) || 0)).toEqual([300, 0, 300, 400]);
+  });
+  it.each([[1600, 900], [900, 1600]])('matches a %d × %d photo in auto mode while honoring explicit canvas sizes', (width, height) => {
+    const photo = { width, height };
+    const text = plainHighlight(sampleCode);
+    const auto = layoutCode(text, defaults, measure, photo);
+    expect(Math.abs(auto.height - auto.width * height / width)).toBeLessThan(1);
+    expect(auto.window.x * 2 + auto.window.width).toBe(auto.width);
+    expect(auto.window.y * 2 + auto.window.height).toBe(auto.height);
+    expect(auto.window.width).toBeLessThan(auto.width);
+    expect(auto.window.height).toBeLessThan(auto.height);
+    const square = layoutCode(text, { ...defaults, size: '1:1' }, measure, photo);
+    expect(square.width).toBe(square.height);
+    expect(layoutCode(text, { ...defaults, size: 'custom', width: 700, height: 500 }, measure, photo))
+      .toMatchObject({ width: 700, height: 500, window: { x: defaults.margin, y: defaults.margin } });
+  });
+  it('composes two independent photo placements without fading the code or window decorations', () => {
+    const layout = layoutCode(plainHighlight(sampleCode), defaults, measure);
+    const canvas = { bitmap: { width: 100, height: 200 } as ImageBitmap, placement: defaultPhotoPlacement };
+    const window = { bitmap: { width: 300, height: 100 } as ImageBitmap,
+      placement: { ...defaultPhotoPlacement, fit: 'cover', x: 32 } as const };
+    const scene = composeScene(layout, { ...defaults.background, kind: 'image' }, canvas, window, 35);
+    expect(scene.canvasPhoto?.bitmap).toBe(canvas.bitmap);
+    expect(scene.windowPhoto?.bitmap).toBe(window.bitmap);
+    expect(scene.canvasPhoto?.bounds).toEqual(placePhoto(canvas.bitmap, { x: 0, y: 0, width: layout.width, height: layout.height }, canvas.placement).bounds);
+    expect(scene.windowPhoto?.bounds).toEqual(placePhoto(window.bitmap, layout.window, window.placement).bounds);
+    expect(scene.windowOpacity).toBe(0.35);
+    expect(scene.text).toBe(layout.text);
+    expect(scene.shapes).toBe(layout.shapes);
   });
   it('prevents same-millisecond collisions and keeps lawful Unicode titles', () => {
     const time = new Date(2026, 10, 26, 22, 55, 30, 128);

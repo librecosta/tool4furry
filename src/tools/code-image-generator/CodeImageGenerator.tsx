@@ -22,14 +22,16 @@ import { AppearancePanel } from './AppearancePanel';
 import { Stage } from './Stage';
 import { StudioChoices } from './StudioChoices';
 import { canvasMeasure, prepareFont } from './fonts';
-import { createCodeNamer, readBackground, readCode } from './delivery';
+import { createCodeNamer, readCode } from './delivery';
 import { editorAppearance, editorHighlight } from './editor-highlight';
-import { layoutCode, outputSize } from './core';
+import { composeScene, layoutCode, outputSize } from './core';
 import { renderRaster, renderSvg, webpSupported } from './render';
 import { highlightBudget } from './highlight-data';
 import { useHighlight } from './use-highlight';
-import { defaultPreset, defaults, languageForFile, languages, presets, sampleCode, scales,
-  type CodeImageSettings, type Language, type OutputFormat, type Preset, type Scale } from './settings';
+import { useLocalPhoto } from './use-local-photo';
+import type { PhotoControlsProps } from './PhotoControls';
+import { defaultPhotoPlacement, defaultPreset, defaults, languageForFile, languages, presets, sampleCode, scales,
+  type CodeImageSettings, type Language, type OutputFormat, type PhotoPlacement, type PhotoTarget, type Preset, type Scale } from './settings';
 import license from './code-image.NOTICE.txt?url&no-inline';
 import editorLicense from '../../ui/text-editor/codemirror.NOTICE.txt?url&no-inline';
 import s from './studio.module.scss';
@@ -40,6 +42,10 @@ const thumbnails: Record<Preset, string> = {
 };
 const formats: readonly [OutputFormat, string][] = [['png', 'PNG'], ['svg', 'SVG'], ['jpeg', 'JPEG'], ['webp', 'WebP']];
 const scaleChoices = scales.map(value => [value, `${value}×`] as const);
+const photoDefaults: Record<PhotoTarget, PhotoPlacement> = {
+  canvas: defaultPhotoPlacement,
+  window: { ...defaultPhotoPlacement, fit: 'cover' },
+};
 
 export default function CodeImageGenerator({ locale }: ToolProps) {
   const t = (zh: string, en: string) => tr(locale, zh, en);
@@ -49,7 +55,12 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
   const [preset, setPreset] = useState<Preset | undefined>(defaultPreset);
   const [editing, setEditing] = useState(false);
   const [filename, setFilename] = useState('');
-  const [backgroundFile, setBackgroundFile] = useState<{ image: ImageBitmap; name: string }>();
+  const [placements, setPlacements] = useState(photoDefaults);
+  const [windowBackground, setWindowBackground] = useState<'theme' | 'image'>('theme');
+  const [windowOpacity, setWindowOpacity] = useState(100);
+  const [dragTarget, setDragTarget] = useState<PhotoTarget>();
+  const canvasInput = useLocalPhoto(locale, () => resetPlacement('canvas'));
+  const windowInput = useLocalPhoto(locale, () => resetPlacement('window'));
   const [scale, setScale] = useState<Scale>(2);
   const [format, setFormat] = useState<OutputFormat>('png');
   const [quality, setQuality] = useState(90);
@@ -63,7 +74,6 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
   const root = useRef<HTMLDivElement>(null);
   const sourceInput = useRef<HTMLInputElement>(null);
   const sourceRead = useRef(0);
-  const backgroundRead = useRef(0);
   const revision = useRef(0);
   const delivering = useRef(false);
   const editFocus = useRef(false);
@@ -93,38 +103,41 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
     document.addEventListener('fullscreenchange', synchronize);
     return () => document.removeEventListener('fullscreenchange', synchronize);
   }, []);
-  useEffect(() => () => backgroundFile?.image.close(), [backgroundFile]);
-  useEffect(() => () => { sourceRead.current++; backgroundRead.current++; revision.current++; }, []);
+  useEffect(() => () => { sourceRead.current++; revision.current++; }, []);
 
+  const canvasBitmap = settings.background.kind === 'image' ? canvasInput.photo?.bitmap : undefined;
+  const windowBitmap = windowBackground === 'image' ? windowInput.photo?.bitmap : undefined;
   const picture = useMemo(() => {
-    if (!tokens || readyFont?.request !== fontRequest || readyFont.error) return {};
+    if (!tokens || readyFont?.request !== fontRequest || readyFont.error || (settings.background.kind === 'image' && !canvasBitmap)) return {};
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = 1;
     try {
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('Canvas 2D is unavailable');
-      const actual = settings.background.kind === 'image'
-        ? { ...settings, background: { ...settings.background, image: backgroundFile?.image } } : settings;
-      return { scene: layoutCode(tokens, actual, canvasMeasure(ctx, settings.font)) };
+      return { layout: layoutCode(tokens, settings, canvasMeasure(ctx, settings.font), canvasBitmap) };
     } catch (error) {
       return { error };
     } finally {
       canvas.width = canvas.height = 0;
     }
-  }, [fontRequest, readyFont, tokens, settings, backgroundFile]);
+  }, [fontRequest, readyFont, tokens, settings, canvasBitmap]);
 
-  const scene = picture.scene;
+  const scene = useMemo(() => picture.layout && composeScene(
+    picture.layout, settings.background,
+    canvasBitmap && { bitmap: canvasBitmap, placement: placements.canvas },
+    windowBitmap && { bitmap: windowBitmap, placement: placements.window }, windowOpacity,
+  ), [picture.layout, settings.background, canvasBitmap, windowBitmap, placements, windowOpacity]);
   const dimensions = useMemo(() => {
-    if (!scene) return {};
-    try { return { output: outputSize(scene.width, scene.height, scale) }; }
+    if (!picture.layout) return {};
+    try { return { output: outputSize(picture.layout.width, picture.layout.height, scale) }; }
     catch (error) { return { error }; }
-  }, [scene, scale]);
+  }, [picture.layout, scale]);
 
   useLayoutEffect(() => {
     revision.current++;
     setMessage('');
     setActionError('');
-  }, [code, language, settings, backgroundFile, scale, quality]);
+  }, [code, language, settings, canvasBitmap, windowBitmap, placements, windowOpacity, scale, quality]);
   useLayoutEffect(() => {
     if (editing && editFocus.current) {
       editFocus.current = false;
@@ -135,7 +148,7 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
     EditorState.tabSize.of(settings.tabWidth), keymap.of([indentWithTab]),
     editorAppearance(surface, foreground), editorResult ? editorHighlight(editorResult.source, editorResult.result) : [],
   ], [settings.tabWidth, surface, foreground, editorResult]);
-  const edit = () => { editFocus.current = true; setEditing(true); };
+  const edit = () => { setDragTarget(undefined); editFocus.current = true; setEditing(true); };
   const sample = () => {
     sourceRead.current++;
     setCode(sampleCode);
@@ -144,13 +157,17 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
     setSettings(previous => ({ ...previous, title: 'greet.ts' }));
   };
   function change(patch: Partial<CodeImageSettings>) {
-    if (patch.background) backgroundRead.current++;
+    if (patch.background && patch.background.kind !== 'image') {
+      setDragTarget(target => target === 'canvas' ? undefined : target);
+    }
     if (['background', 'theme', 'margin', 'style', 'radius', 'shadow', 'padding'].some(key => Object.hasOwn(patch, key))) setPreset(undefined);
     setSettings(previous => ({ ...previous, ...patch }));
   }
   function changePreset(id: Preset) {
-    backgroundRead.current++;
     setSettings(previous => ({ ...previous, ...presets[id] }));
+    setWindowBackground('theme');
+    setWindowOpacity(100);
+    setDragTarget(undefined);
     setPreset(id);
   }
   async function importSource(file: File) {
@@ -167,25 +184,50 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
       if (sourceRead.current === id) setActionError(errorText(error, locale));
     }
   }
-  async function importImage(file: File) {
-    const id = ++backgroundRead.current;
-    try {
-      const image = await readBackground(file);
-      if (backgroundRead.current === id) setBackgroundFile({ image, name: file.name });
-      else image.close();
-    } catch (error) {
-      if (backgroundRead.current === id) setActionError(errorText(error, locale));
-    }
+  function changePlacement(target: PhotoTarget, patch: Partial<PhotoPlacement>) {
+    setPlacements(previous => {
+      const existing = previous[target];
+      if (Object.entries(patch).every(([key, value]) => existing[key as keyof PhotoPlacement] === value)) return previous;
+      return { ...previous, [target]: { ...existing, ...patch } };
+    });
+  }
+  function resetPlacement(target: PhotoTarget) {
+    changePlacement(target, photoDefaults[target]);
+    setDragTarget(active => active === target ? undefined : active);
+  }
+  function photoControls(target: PhotoTarget): PhotoControlsProps {
+    const input = target === 'canvas' ? canvasInput : windowInput;
+    const photo = target === 'canvas' ? scene?.canvasPhoto : scene?.windowPhoto;
+    const onCanvas = target === 'canvas' || windowOpacity > 0;
+    return {
+      ...input,
+      placement: placements[target],
+      change: patch => changePlacement(target, patch),
+      reset: () => resetPlacement(target),
+      dragging: dragTarget === target,
+      drag: () => {
+        if (dragTarget === target) { setDragTarget(undefined); return; }
+        setEditing(false);
+        setDragTarget(target);
+        root.current?.querySelector('[data-code-stage]')?.scrollIntoView({ block: 'nearest' });
+      },
+      panX: onCanvas && !!photo && photo.travelX > 0.01,
+      panY: onCanvas && !!photo && photo.travelY > 0.01,
+    };
   }
   function reset() {
     sourceRead.current++;
-    backgroundRead.current++;
     setCode(sampleCode);
     setLanguage('typescript');
     setSettings(defaults);
     setPreset(defaultPreset);
     setFilename('');
-    setBackgroundFile(undefined);
+    canvasInput.clear();
+    windowInput.clear();
+    setPlacements(photoDefaults);
+    setWindowBackground('theme');
+    setWindowOpacity(100);
+    setDragTarget(undefined);
     setScale(2);
     setFormat('png');
     setQuality(90);
@@ -200,7 +242,7 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
     } catch { setActionError(t('此浏览器无法进入全屏。', 'This browser could not open full screen.')); }
   }
 
-  const emptyImage = settings.background.kind === 'image' && !backgroundFile;
+  const emptyImage = settings.background.kind === 'image' && !canvasBitmap;
   const visualError = code.length > highlightBudget
     ? t('源码仍可编辑和复制。请将 40 万 UTF-16 单元以内的片段用于制图。', 'You can still edit and copy the code. Use an excerpt up to 400,000 UTF-16 code units for artwork.')
     : picture.error ? errorText(picture.error, locale)
@@ -209,8 +251,7 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
     ? t('SVG 需要本地内置字体与基本拉丁字符。', 'SVG requires a bundled font and basic Latin text.') : '';
   const rasterError = dimensions.error ? errorText(dimensions.error, locale) : '';
   const loadingText = !code ? t('输入或导入代码，开始制作图片。', 'Enter or import code to start your image.')
-    : emptyImage ? t('请选择本地背景图片。', 'Choose a local background image.')
-      : t('正在排版…', 'Preparing artwork…');
+    : t('正在排版…', 'Preparing artwork…');
   const artwork = emptyImage || visualError ? undefined : scene;
   const exportDisabled = !artwork || (format === 'svg' ? !!vectorError : !dimensions.output) || (format === 'webp' && !webp);
   async function copyCode() {
@@ -256,6 +297,14 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
     <link rel="license" href={license} />
     <link rel="license" href={editorLicense} />
     <div ref={root} className={s.studio} data-code-image-studio>
+      {([['canvas', canvasInput, t('背景图片文件', 'Background image file')],
+        ['window', windowInput, t('窗口背景图片文件', 'Window background image file')]] as const).map(([target, input, label]) =>
+        <input key={target} type="file" ref={input.input} accept="image/png,image/jpeg,image/webp,image/avif" hidden
+          aria-label={label} onChange={event => {
+            const file = event.currentTarget.files?.[0];
+            event.currentTarget.value = '';
+            if (file) void input.load(file);
+          }} />)}
       <div className={s.toolbar} aria-label={t('创作工具栏', 'Studio toolbar')}>
         <div className={s.toolbarGroup}>
           <input type="file" ref={sourceInput} hidden aria-label={t('源码文件', 'Source file')} onChange={event => {
@@ -312,12 +361,25 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
       <div className={s.workspace}>
         <Stage t={t} editing={editing} scene={artwork} font={settings.font} scale={format === 'svg' ? 1 : scale}
           size={artwork && (format === 'svg' ? artwork : dimensions.output)} status={loadingText}
+          photoPrompt={emptyImage ? canvasInput : undefined}
+          dragTarget={windowOpacity === 0 && dragTarget === 'window' ? undefined : dragTarget}
+          movePhoto={(target, position) => changePlacement(target, position)}
           error={visualError} report={e => setActionError(errorText(e, locale))}
           fullscreen={fullscreen} toggleFullscreen={() => void toggleFullscreen()} beginEdit={edit}
           editor={<TextEditor value={code} ariaLabel={t('源码', 'Source code')} extensions={editorBindings}
             onChange={value => { sourceRead.current++; setCode(value); }} />} />
-        <AppearancePanel t={t} settings={settings} selected={preset} thumbnails={thumbnails} imageName={backgroundFile?.name}
-          change={change} selectPreset={changePreset} importImage={file => void importImage(file)} />
+        <AppearancePanel t={t} settings={settings} selected={preset} thumbnails={thumbnails} canvasPhoto={photoControls('canvas')}
+          windowPhoto={photoControls('window')} windowBackground={windowBackground} windowOpacity={windowOpacity}
+          changeWindowBackground={kind => {
+            if (kind === 'theme') setDragTarget(target => target === 'window' ? undefined : target);
+            setWindowBackground(kind);
+            setPreset(undefined);
+          }}
+          changeWindowOpacity={opacity => {
+            if (opacity === 0) setDragTarget(target => target === 'window' ? undefined : target);
+            setWindowOpacity(opacity);
+            setPreset(undefined);
+          }} change={change} selectPreset={changePreset} />
       </div>
       {(actionError || rasterError || message || (tokens?.fallback && language !== 'text')) && <div className={s.feedback}>
         {(actionError || rasterError) && <p role="alert">{actionError || rasterError}</p>}

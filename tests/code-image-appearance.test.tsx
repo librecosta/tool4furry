@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect, it, vi } from 'vitest';
 import { AppearancePanel } from '../src/tools/code-image-generator/AppearancePanel';
-import { defaults, palettes, type Preset } from '../src/tools/code-image-generator/settings';
+import { defaultPhotoPlacement, defaults, palettes, type Preset } from '../src/tools/code-image-generator/settings';
 
 it('exposes rendered presets and keeps background, syntax theme and window controls independent', async () => {
   const user = userEvent.setup();
@@ -11,8 +11,13 @@ it('exposes rendered presets and keeps background, syntax theme and window contr
     Midnight: '/midnight.webp', Glacier: '/glacier.webp', Sunset: '/sunset.webp', Forest: '/forest.webp',
     Paper: '/paper.webp', Aurora: '/aurora.webp', Monochrome: '/monochrome.webp', Lavender: '/lavender.webp',
   } satisfies Record<Preset, string>;
+  const photo = { choose: vi.fn(), placement: defaultPhotoPlacement, change: vi.fn(), reset: vi.fn(),
+    dragging: false, drag: vi.fn(), panX: false, panY: false };
+  const changeWindowBackground = vi.fn();
   render(<AppearancePanel t={(_zh, en) => en} settings={defaults} selected="Lavender"
-    thumbnails={thumbnails} change={change} selectPreset={selectPreset} importImage={vi.fn()} />);
+    thumbnails={thumbnails} change={change} selectPreset={selectPreset} canvasPhoto={photo}
+    windowPhoto={photo} windowBackground="theme" changeWindowBackground={changeWindowBackground}
+    windowOpacity={100} changeWindowOpacity={vi.fn()} />);
 
   const lavender = screen.getByRole('button', { name: 'Lavender' });
   expect(lavender.getAttribute('aria-pressed')).toBe('true');
@@ -28,5 +33,9 @@ it('exposes rendered presets and keeps background, syntax theme and window contr
   expect(change).toHaveBeenLastCalledWith({ theme: 'nord' });
   const windowStyle = within(screen.getByRole('radiogroup', { name: 'Window style' }));
   await user.click(windowStyle.getByRole('radio', { name: 'Windows' }));
+  expect(change).toHaveBeenLastCalledWith({ style: 'windows' });
+  const windowBackground = within(screen.getByRole('radiogroup', { name: 'Window background' }));
+  await user.click(windowBackground.getByRole('radio', { name: 'Local image' }));
+  expect(changeWindowBackground).toHaveBeenCalledExactlyOnceWith('image');
   expect(change).toHaveBeenLastCalledWith({ style: 'windows' });
 });
