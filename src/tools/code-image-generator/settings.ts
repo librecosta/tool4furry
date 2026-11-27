@@ -49,6 +49,8 @@ export type WindowLayers = {
   photoOpacity: number;
 };
 export const defaultWindowLayers: WindowLayers = { baseVisible: true, baseOpacity: 100, photoVisible: false, photoOpacity: 40 };
+export const defaultShadowOffset = { shadowX: 0, shadowY: 11 };
+export const maxShadowOffset = 64;
 
 export type Background = {
   kind: BackgroundKind;
@@ -64,6 +66,8 @@ export type CodeImageSettings = {
   title: string;
   titleBar: boolean;
   shadow: boolean;
+  shadowX: number;
+  shadowY: number;
   radius: number;
   padding: number;
   lines: boolean;
@@ -105,7 +109,7 @@ export const presets = {
 export type Preset = keyof typeof presets;
 export const defaultPreset: Preset = 'Lavender';
 export const defaults: CodeImageSettings = {
-  ...presets[defaultPreset], title: 'greet.ts', titleBar: true,
+  ...presets[defaultPreset], ...defaultShadowOffset, title: 'greet.ts', titleBar: true,
   lines: true, firstLine: 1, font: 'jetbrains', fontSize: 16,
   lineHeight: 1.65, tabWidth: 4, wrap: true, emphasized: '3', added: '', removed: '', dim: false,
   size: 'auto', width: 960, height: 600,

@@ -87,6 +87,18 @@ describe('Code Image layout and delivery', () => {
     expect(mac.text.some(run => run.text === 'greet.ts')).toBe(true);
     expect(layoutCode(tokens, { ...defaults, background: { ...defaults.background, kind: 'transparent' } }, measure).text).toEqual(mac.text);
   });
+  it('moves every shadow layer along the chosen direction without moving the window or resizing the canvas', () => {
+    const tokens = plainHighlight(sampleCode);
+    const original = layoutCode(tokens, defaults, measure);
+    const moved = layoutCode(tokens, { ...defaults, shadowX: 22, shadowY: -11 }, measure);
+    const offsets = original.shadows.map(shape => shape.y - original.window.y);
+    expect(offsets).toEqual([11, 9, 7, 5]);
+    expect(moved.shadows).toEqual(original.shadows.map((shape, index) => ({
+      ...shape, x: original.window.x + 2 * offsets[index], y: original.window.y - offsets[index],
+    })));
+    expect({ ...moved, shadows: original.shadows }).toEqual(original);
+    expect(layoutCode(tokens, { ...defaults, shadow: false, shadowX: 22, shadowY: -11 }, measure).shadows).toEqual([]);
+  });
   it('enforces logical and raster dimensions without clipping the original code', () => {
     const text = plainHighlight(sampleCode);
     const scene = layoutCode(text, { ...defaults, size: '4:5' }, measure);

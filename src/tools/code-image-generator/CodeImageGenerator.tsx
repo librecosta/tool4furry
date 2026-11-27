@@ -31,7 +31,7 @@ import { highlightBudget } from './highlight-data';
 import { useHighlight } from './use-highlight';
 import { useLocalPhoto } from './use-local-photo';
 import type { PhotoControlsProps } from './PhotoControls';
-import { defaultPhotoPlacement, defaultPreset, defaults, defaultWindowLayers, languageForFile, languages, presets, sampleCode, scales,
+import { defaultPhotoPlacement, defaultPreset, defaults, defaultShadowOffset, defaultWindowLayers, languageForFile, languages, presets, sampleCode, scales,
   type CodeImageSettings, type Language, type OutputFormat, type PhotoPlacement, type PhotoTarget, type Preset, type Scale,
   type WindowLayers } from './settings';
 import license from './code-image.NOTICE.txt?url&no-inline';
@@ -178,13 +178,13 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
       canvasInput.cancel();
       setDragTarget(target => target === 'canvas' ? undefined : target);
     }
-    if (['background', 'theme', 'margin', 'style', 'radius', 'shadow', 'padding'].some(key => Object.hasOwn(patch, key))) setPreset(undefined);
+    if (['background', 'theme', 'margin', 'style', 'radius', 'shadow', 'shadowX', 'shadowY', 'padding'].some(key => Object.hasOwn(patch, key))) setPreset(undefined);
     setSettings(previous => ({ ...previous, ...patch }));
   }
   function changePreset(id: Preset) {
     canvasInput.cancel();
     windowInput.cancel();
-    setSettings(previous => ({ ...previous, ...presets[id] }));
+    setSettings(previous => ({ ...previous, ...presets[id], ...defaultShadowOffset }));
     setWindowLayers(defaultWindowLayers);
     setDragTarget(undefined);
     setPreset(id);

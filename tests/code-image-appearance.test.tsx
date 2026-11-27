@@ -39,4 +39,8 @@ it('exposes rendered presets and keeps background, syntax theme and window contr
   await user.click(screen.getByRole('button', { name: 'Choose window image' }));
   expect(photo.choose).toHaveBeenCalledTimes(1);
   expect(change).toHaveBeenLastCalledWith({ style: 'windows' });
+  await user.click(screen.getByRole('button', { name: 'Decrease: Shadow X (px)' }));
+  expect(change).toHaveBeenLastCalledWith({ shadowX: -1 });
+  await user.click(screen.getByRole('button', { name: 'Increase: Shadow Y (px)' }));
+  expect(change).toHaveBeenLastCalledWith({ shadowY: 12 });
 });

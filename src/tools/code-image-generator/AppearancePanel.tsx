@@ -5,7 +5,7 @@ import { NumberStepper } from '../../ui/NumberStepper';
 import { SliderField } from '../../ui/SliderField';
 import { TextField } from '../../ui/TextField';
 import { families } from './fonts';
-import { palettes, presets, themes, type Background, type CodeImageSettings, type FontId, type Preset,
+import { maxShadowOffset, palettes, presets, themes, type Background, type CodeImageSettings, type FontId, type Preset,
   type SyntaxTheme, type WindowLayers } from './settings';
 import { StudioChoices } from './StudioChoices';
 import { PhotoControls, type PhotoControlsProps } from './PhotoControls';
@@ -51,7 +51,7 @@ export function AppearancePanel({
   const back = settings.background;
   const background = (patch: Partial<Background>) => change({ background: { ...back, ...patch } });
   const colors = back.kind === 'linear' || back.kind === 'radial';
-  const number = (key: 'fontSize' | 'radius' | 'padding' | 'lineHeight' | 'tabWidth' | 'firstLine' | 'width' | 'height',
+  const number = (key: 'fontSize' | 'radius' | 'padding' | 'lineHeight' | 'tabWidth' | 'firstLine' | 'width' | 'height' | 'shadowX' | 'shadowY',
     label: string, min: number, max: number, step = 1) =>
     <NumberStepper label={label} value={settings[key]} min={min} max={max} step={step} fractionDigits={key === 'lineHeight' ? 2 : 0}
       locale={t('zh-CN', 'en')} decreaseLabel={t('减小', 'Decrease: ') + label}
@@ -131,6 +131,10 @@ export function AppearancePanel({
         <StudioToggle label={t('显示行号', 'Line numbers')} checked={settings.lines} change={lines => change({ lines })} />
         <StudioToggle label={t('窗口阴影', 'Window shadow')} checked={settings.shadow} change={shadow => change({ shadow })} />
       </div>
+      {settings.shadow && <div className={s.pair}>
+        {number('shadowX', t('阴影横向 (px)', 'Shadow X (px)'), -maxShadowOffset, maxShadowOffset)}
+        {number('shadowY', t('阴影纵向 (px)', 'Shadow Y (px)'), -maxShadowOffset, maxShadowOffset)}
+      </div>}
     </Section>
     <details className={s.more}>
       <summary>{t('更多排版设置', 'More layout settings')} <CaretDownIcon size={14} /></summary>

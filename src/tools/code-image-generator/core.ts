@@ -200,8 +200,9 @@ export function layoutCode(highlight: Highlight, settings: CodeImageSettings, me
   const addText = (value: string, x: number, y: number, size: number, color: string, opacity = 1) =>
     text.push({ text: value, x, y, size, color, opacity, ...regular });
   if (settings.shadow) {
-    for (const [offset, opacity] of [[11, 0.045], [9, 0.05], [7, 0.035], [5, 0.029]]) {
-      shadows.push({ kind: 'rect', ...window, y: window.y + offset, radius: radius + 1, color: '#141025', opacity });
+    for (const [reach, opacity] of [[1, 0.045], [9 / 11, 0.05], [7 / 11, 0.035], [5 / 11, 0.029]]) {
+      shadows.push({ kind: 'rect', ...window, x: window.x + settings.shadowX * reach, y: window.y + settings.shadowY * reach,
+        radius: radius + 1, color: '#141025', opacity });
     }
   }
   if (hasTitle) {

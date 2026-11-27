@@ -58,11 +58,15 @@
     cursor: pointer;
   }
   .filter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     min-block-size: 36px;
     padding: 3px 10px;
     border-radius: var(--t4f-radius-sm);
     color: var(--t4f-text-secondary);
     font-size: 0.8rem;
+    line-height: 1.25;
   }
   .filter[data-checked] {
     color: var(--t4f-accent);
