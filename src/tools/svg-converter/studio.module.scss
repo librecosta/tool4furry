@@ -246,12 +246,27 @@
     align-items: end;
     flex-wrap: wrap;
     > :last-child { margin-inline-start: auto; }
-    > :has(input[role='slider']) { min-width: 140px; }
-    input:not([type='color']) { border-color: transparent; }
+    .setting { gap: var(--t4f-space-8); }
+
+    .setting > label, .scaleCustom label, .dimensionPair label, .quality :has(> [id$='-label']) {
+      color: var(--t4f-text-secondary);
+      font-size: 12px;
+      line-height: 1.5;
+    }
   }
   .setting { display: grid; align-content: center; gap: 5px; min-width: 0; }
   .setting > label { font-size: 12px; color: var(--t4f-text-secondary); }
   .scaleCustom { width: 105px; }
+  .quality {
+    flex: 0 1 128px;
+    min-width: 100px;
+    :has(> [id$='-label']) { margin-block-end: var(--t4f-space-8); }
+  }
+  .scaleCustom input, .dimensionPair input {
+    border: 0;
+    box-shadow: none;
+    &:focus { background-color: color-mix(in srgb, var(--t4f-accent) 20%, var(--t4f-input-surface)); }
+  }
   .dimensionPair {
     display: flex;
     align-items: end;
@@ -316,9 +331,7 @@
     .split { grid-template-columns: minmax(0, 1fr); }
     .divider, .split[data-view='source'] .previewPane, .split[data-view='preview'] .sourcePane { display: none; }
     .stage { height: 260px; }
-    .output { align-items: stretch; }
-    .output > :last-child { margin-inline-start: 0; }
-    .output .dimensionPair { max-width: none; }
+    .output .dimensionPair { flex-basis: 100%; max-width: none; }
     .panelHead, .paneFoot, .previewTail { padding-inline: 8px; }
   }
 }

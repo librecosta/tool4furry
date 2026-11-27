@@ -17,18 +17,6 @@ export type IconSize = (typeof icoSizes)[number];
 const icoMime = 'image/x-icon';
 export const imageAccept = '.png,.jpg,.jpeg,.webp,.avif,image/png,image/jpeg,image/webp,image/avif';
 export const svgMime = 'image/svg+xml';
-export const svgSample = [
-  '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">',
-  '  <title>Ribbon study</title>',
-  '  <defs>',
-  '    <linearGradient id="ribbon" x2="100%" y2="100%">',
-  '      <stop stop-color="#a397d2"/>',
-  '      <stop offset="1" stop-color="#80c6b7"/>',
-  '    </linearGradient>',
-  '  </defs>',
-  '  <path d="M62 145C31 114 49 58 94 46c55-15 117 13 125 72 7 51-31 91-80 91-38 0-62-25-56-59 5-28 32-56 61-51 28 5 38 35 18 57-10 11-23 14-35 12" fill="none" stroke="url(#ribbon)" stroke-width="30" stroke-linecap="round"/>',
-  '</svg>',
-].join('\n');
 
 export function outputSize(width: number, height: number, pixelLimit = rasterLimits.pixels, edge = rasterLimits.edge): Size {
   if (!Number.isSafeInteger(width) || !Number.isSafeInteger(height) || width < 1 || height < 1 ||

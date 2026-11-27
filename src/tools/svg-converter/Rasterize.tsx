@@ -19,11 +19,13 @@ import { ImageResources } from '../image/resources';
 import type { AvifEncoder } from '../image/avif-encoder';
 import type { Locale } from '../../i18n/locale';
 import { validateSvg, formatSvg, sourceEditorLimit, type StaticSvg } from './policy';
-import { createSvgNamer, icoSizes, outputSize, previewSize, readSvgFile, renderIco, renderRaster, sizedSvg, svgSample, type IconSize, type RasterFormat, type Size } from './core';
+import { createSvgNamer, icoSizes, outputSize, previewSize, readSvgFile, renderIco, renderRaster, sizedSvg, type IconSize, type RasterFormat, type Size } from './core';
 import { BackgroundChoice, Choice, Preview, type Backdrop, type Translate } from './Preview';
+import svgSample from './librecosta-black-white.svg?raw';
 import s from './studio.module.scss';
 
 type Source = { text: string; name: string; verified?: StaticSvg };
+const sample: Source = { text: svgSample, name: 'librecosta-black-white.svg' };
 const aspect = (svg?: StaticSvg) => svg?.width && svg?.height ? svg.width / svg.height : undefined;
 const formatLabels: RasterFormat[] = ['png', 'jpeg', 'webp', 'avif', 'ico'];
 const editorLabel = (t: Translate) => t('SVG 源码', 'SVG source');
@@ -38,7 +40,7 @@ const xmlHighlight = HighlightStyle.define([
 export function Rasterize({ locale, t, imageLimits, nameOutput }: {
   locale: Locale; t: Translate; imageLimits: ImageLimits; nameOutput: ReturnType<typeof createSvgNamer>;
 }) {
-  const [source, setSource] = useState<Source>({ text: svgSample, name: 'ribbon.svg' });
+  const [source, setSource] = useState<Source>(sample);
   const [checked, setChecked] = useState<{ source: Source; svg: StaticSvg }>();
   const [issue, setIssue] = useState<{ source: Source; message: string }>();
   const [failedPreview, setFailedPreview] = useState<Blob>();
@@ -114,12 +116,12 @@ export function Rasterize({ locale, t, imageLimits, nameOutput }: {
   const currentError = js.error ?? imported.error ?? (issue?.source === source ? issue.message : undefined);
   const clipboardImage = typeof ClipboardItem !== 'undefined' && !!navigator.clipboard?.write;
   const canExport = valid && raw && (format === 'ico' ? icons.length > 0 && !!preview : size && (format === 'png' || capabilities?.[format].supported));
-  const onChange = (text: string) => {
+  const onChange = (text: string, name?: string) => {
     js.invalidate();
     imported.invalidate();
     setFeedback('');
     setEditorLimit(false);
-    setSource(previous => ({ text, name: previous.name }));
+    setSource(previous => ({ text, name: name ?? previous.name }));
   };
   const editorExtensions = useMemo(() => [
     xml(), search({ top: true }), foldGutter(), syntaxHighlighting(xmlHighlight),
@@ -194,7 +196,7 @@ export function Rasterize({ locale, t, imageLimits, nameOutput }: {
           <div className={s.compactActions}>
             <input ref={input} type="file" accept=".svg,image/svg+xml" hidden onChange={event => { selectFile(event.currentTarget.files?.[0]); event.currentTarget.value = ''; }} />
             <Button size="sm" variant="ghost" onClick={() => input.current?.click()} disabled={imported.busy}><FileArrowUpIcon size={16}/>{t('导入', 'Import')}</Button>
-            <Button size="sm" variant="ghost" onClick={() => { onChange(svgSample); setSource({ text: svgSample, name: 'ribbon.svg' }); }}>{t('示例', 'Sample')}</Button>
+            <Button size="sm" variant="ghost" onClick={() => onChange(sample.text, sample.name)}>{t('示例', 'Sample')}</Button>
             <Button size="sm" variant="ghost" disabled={!valid || isLarge} onClick={() => {
               const view = getEditor();
               if (!view || !raw) return;
@@ -247,25 +249,26 @@ export function Rasterize({ locale, t, imageLimits, nameOutput }: {
         <Choice value={format} label={t('输出格式', 'Output format')} onChange={updateFormat}
           items={formatLabels.map(value => ({ value, label: value.toUpperCase(), disabled: value !== 'png' && value !== 'ico' && !capabilities?.[value].supported }))}/>
       </div>
-      {format === 'ico' ? <div className={s.setting}>
-        <label>{t('图标尺寸', 'Icon sizes')}</label>
-        <div role="group" aria-label={t('图标尺寸', 'Icon sizes')} className={s.choice}>
-          {icoSizes.map(icon => <Button key={icon} variant="ghost" size="sm" aria-pressed={icons.includes(icon)}
-            onClick={() => { js.invalidate(); setIcons(previous => previous.includes(icon) ? previous.filter(size => size !== icon) : [...previous, icon]); }}>{icon}</Button>)}
+      {format === 'ico' ? <>
+        <div className={s.setting}>
+          <label>{t('图标尺寸', 'Icon sizes')}</label>
+          <div role="group" aria-label={t('图标尺寸', 'Icon sizes')} className={s.choice}>
+            {icoSizes.map(icon => <Button key={icon} variant="ghost" size="sm" aria-pressed={icons.includes(icon)}
+              onClick={() => { js.invalidate(); setIcons(previous => previous.includes(icon) ? previous.filter(size => size !== icon) : [...previous, icon]); }}>{icon}</Button>)}
+          </div>
         </div>
         {!ratio && <div className={s.dimensionPair}>
           <TextField label={t('视口宽度', 'Viewport width')} inputMode="numeric" value={width} onChange={value => dimension(value, 'width')}/>
           <TextField label={t('视口高度', 'Viewport height')} inputMode="numeric" value={height} onChange={value => dimension(value, 'height')}/>
         </div>}
-      </div> : <>
+      </> : <>
         <div className={s.setting}>
           <label>{t('倍率', 'Scale')}</label>
-          <div className={s.compactActions}>
-            <Choice value={scale} onChange={setMultiplier} label={t('预设倍率', 'Scale presets')}
-              items={['1', '2', '4', '8'].map(value => ({ value, label: value + '×', disabled: !ratio }))}/>
-            <div className={s.scaleCustom}><TextField label={t('自定义倍率', 'Custom scale')} value={scale}
-              inputMode="decimal" disabled={!ratio} onChange={setMultiplier}/></div>
-          </div>
+          <Choice value={scale} onChange={setMultiplier} label={t('预设倍率', 'Scale presets')}
+            items={['1', '2', '4', '8'].map(value => ({ value, label: value + '×', disabled: !ratio }))}/>
+        </div>
+        <div className={s.scaleCustom}>
+          <TextField label={t('自定义倍率', 'Custom scale')} value={scale} inputMode="decimal" disabled={!ratio} onChange={setMultiplier}/>
         </div>
         <div className={s.dimensionPair}>
           <TextField label={t('宽度 (px)', 'Width (px)')} inputMode="numeric" value={width} onChange={value => dimension(value, 'width')}/>
@@ -279,8 +282,10 @@ export function Rasterize({ locale, t, imageLimits, nameOutput }: {
           {!transparent && <input aria-label={t('自定义背景颜色', 'Custom background color')} type="color" value={color}
             onChange={event => { js.invalidate(); setColor(event.target.value); }}/>}
         </div>
-        {format !== 'png' && <SliderField label={t('质量', 'Quality')} value={quality} min={1} max={100} unit="%"
-          onValueChange={value => { js.invalidate(); setQuality(value); }}/>}
+        {format !== 'png' && <div className={s.quality}>
+          <SliderField label={t('质量', 'Quality')} value={quality} min={1} max={100} unit="%"
+            onValueChange={value => { js.invalidate(); setQuality(value); }}/>
+        </div>}
       </>}
       <div className={s.compactActions}>
         {format !== 'ico' && <Button variant="ghost" className={s.fieldButton} size="sm" disabled={!valid || !size || !clipboardImage || js.busy} onClick={() => deliver(true)}>

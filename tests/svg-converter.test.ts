@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { validateSvg, formatSvg } from '../src/tools/svg-converter/policy';
-import { outputSize, packIco, sizedSvg, svgSample, createSvgNamer, embedSvg } from '../src/tools/svg-converter/core';
+import { outputSize, packIco, sizedSvg, createSvgNamer, embedSvg } from '../src/tools/svg-converter/core';
+import svgSample from '../src/tools/svg-converter/librecosta-black-white.svg?raw';
 import { mergePixelRegions, tracePixelArt, tracingSize, tracePresets } from '../src/tools/svg-converter/vector';
 import { traceColor } from '../src/tools/svg-converter/color-trace';
 import { getAvailableTools, tools } from '../src/tools/registry';
@@ -22,7 +23,9 @@ describe('SVG Converter static SVG policy', () => {
     expect(doc).toMatchObject({ width: 80, height: 40, viewBox: [-8, -4, 80, 40], hasEffects: true });
     expect(parsed(formatSvg(doc)).querySelector('text')?.textContent).toBe('A  B C');
     expect(parsed(formatSvg(doc)).querySelector('style')?.textContent).toBe('.paper { fill: url(#paint); stroke-width: 1px; }');
-    await expect(validateSvg(svgSample)).resolves.toMatchObject({ width: 256, height: 256 });
+    await expect(validateSvg(svgSample)).resolves.toMatchObject({
+      width: 831.113, height: 847.343, viewBox: [3.781, 3.124, 831.113, 847.343],
+    });
   });
   it.each([
     '<script/>', '<rect onclick="noop()"/>', '<foreignObject/>', '<animate/>',
