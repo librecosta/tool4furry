@@ -49,7 +49,7 @@ export type WindowLayers = {
   photoOpacity: number;
 };
 export const defaultWindowLayers: WindowLayers = { baseVisible: true, baseOpacity: 100, photoVisible: false, photoOpacity: 40 };
-export const defaultShadowOffset = { shadowX: 0, shadowY: 11 };
+export const defaultShadowOffset = { shadowX: 0, shadowY: 5 };
 export const maxShadowOffset = 64;
 
 export type Background = {

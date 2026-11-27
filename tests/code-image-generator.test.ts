@@ -91,10 +91,9 @@ describe('Code Image layout and delivery', () => {
     const tokens = plainHighlight(sampleCode);
     const original = layoutCode(tokens, defaults, measure);
     const moved = layoutCode(tokens, { ...defaults, shadowX: 22, shadowY: -11 }, measure);
-    const offsets = original.shadows.map(shape => shape.y - original.window.y);
-    expect(offsets).toEqual([11, 9, 7, 5]);
-    expect(moved.shadows).toEqual(original.shadows.map((shape, index) => ({
-      ...shape, x: original.window.x + 2 * offsets[index], y: original.window.y - offsets[index],
+    expect(original.shadows[0]).toMatchObject({ x: original.window.x, y: original.window.y + 5 });
+    expect(moved.shadows).toEqual([11, 9, 7, 5].map((offset, index) => ({
+      ...original.shadows[index], x: original.window.x + 2 * offset, y: original.window.y - offset,
     })));
     expect({ ...moved, shadows: original.shadows }).toEqual(original);
     expect(layoutCode(tokens, { ...defaults, shadow: false, shadowX: 22, shadowY: -11 }, measure).shadows).toEqual([]);
