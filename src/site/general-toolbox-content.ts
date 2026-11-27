@@ -970,4 +970,58 @@ export const generalToolboxContent = {
       ],
     },
   },
+  'code-image-generator': {
+    zh: {
+      title: '在线代码分享图生成器 - 精美代码截图与语法高亮 | Tool4Furry',
+      description: '将代码转换为精美的分享图片，支持多语言语法高亮、艺术预设、编程字体、渐变与图片背景、窗口装饰及重点行标记，可导出 PNG、JPEG、WebP 或 SVG。',
+      h1: '代码分享图',
+      intro: '为代码赋予更丰富的视觉表现。通过艺术预设、语法主题、编程字体和背景素材自由设计代码分享图，适用于技术博客、开发笔记、项目介绍及社交媒体分享。',
+      steps: [
+        '**输入代码：** 粘贴、编写或导入本地源码文件，选择对应的编程语言。',
+        '**设计外观：** 选择艺术预设，调整语法主题、字体、窗口装饰、背景与留白。',
+        '**完善构图：** 使用内置素材或本地图片设置画布及窗口背景，按需调整画布尺寸、重点行和排版。',
+        '**保存作品：** 查看最终图片，选择输出格式及倍率，复制图片或下载作品。',
+      ],
+      limitations: [
+        '支持 TypeScript、JavaScript、Go、Rust、Python、C++ 等 23 种语言的语法高亮，以及纯文本模式。工具不会执行输入的代码。',
+        '提供 8 套艺术预设、12 套语法主题、多种编程字体及窗口装饰，背景、字体和排版可独立调整。',
+        '提供 23 张内置创意背景素材，也支持导入 PNG、JPEG、WebP 和 AVIF 本地图片。单张本地背景图片上限为 24 MiB、2400 万像素。',
+        '支持 PNG、JPEG、WebP 及符合条件的 SVG 导出。位图支持 1× 至 4× 输出，最大边长为 8192px，最多 4000 万像素。WebP 编码与图片复制取决于浏览器能力。',
+        'SVG 使用内置字体及基本拉丁字符，图片背景以位图形式内嵌。包含中文、Emoji 或系统回退字体的作品建议使用 PNG 等位图格式。',
+        '源码文件导入上限为 12 MiB，语法高亮及图片生成具有独立资源预算。代码和本地图片均在浏览器内处理，不上传或持久保存。内置素材按需加载。',
+      ],
+      faq: [
+        { question: '代码分享图支持哪些编程语言？', answer: '支持 TypeScript、JavaScript、Go、Rust、Python、Java、C、C++、SQL、HTML、CSS 等常见语言，以及 JSON、YAML、Markdown 和纯文本。' },
+        { question: '可以使用自己的背景图片吗？', answer: '可以。画布背景与代码窗口背景均支持内置素材或本地图片，并可以独立调整图片适应方式、缩放和位置。窗口图片还支持独立透明度设置。' },
+        { question: '如何生成高清代码截图？', answer: '选择合适的画布尺寸、字体与排版，并在导出时使用 2×、3× 或 4× 位图倍率。提高倍率可以增加输出像素数量，但仍受图片尺寸及设备资源限制。' },
+        { question: '生成的代码图片会上传服务器吗？', answer: '不会。语法高亮、图片构图、渲染和导出均在浏览器内完成。选择内置素材时，浏览器仅加载相应的站点静态图片，不上传用户代码或本地图片。' },
+      ],
+    },
+    en: {
+      title: 'Online Code Image Generator - Beautiful Code Screenshots | Tool4Furry',
+      description: 'Create beautiful code screenshots with syntax highlighting, art presets, coding fonts, custom backgrounds, window styles and line highlights. Export PNG, JPEG, WebP or SVG.',
+      h1: 'Code Image Generator',
+      intro: 'Give your code a more expressive visual presentation. Create customizable code images with art presets, syntax themes, coding fonts and creative backgrounds for technical blogs, developer notes, project introductions and social sharing.',
+      steps: [
+        '**Enter your code:** Paste, write or import a local source file and select its programming language.',
+        '**Customize the appearance:** Choose an art preset and adjust syntax themes, fonts, window styles, backgrounds and spacing.',
+        '**Refine the composition:** Use built-in assets or local images for the canvas and code window backgrounds. Adjust canvas dimensions, line highlights and typography as needed.',
+        '**Save your artwork:** Review the final image, choose an export format and scale, then copy or download your artwork.',
+      ],
+      limitations: [
+        'Supports syntax highlighting for 23 languages, including TypeScript, JavaScript, Go, Rust, Python and C++, along with plain text. Submitted code is never executed.',
+        'Includes eight art presets, twelve syntax themes, multiple coding fonts and window styles. Backgrounds, typography and layout can be customized independently.',
+        'Includes 23 creative background assets and supports local PNG, JPEG, WebP and AVIF images. Each imported background is limited to 24 MiB and 24 megapixels.',
+        'Supports PNG, JPEG, WebP and eligible SVG exports. Raster exports support 1× to 4× scaling, with a maximum edge length of 8192 pixels and a 40-megapixel budget. WebP encoding and image clipboard access depend on browser capabilities.',
+        'SVG exports require bundled fonts and basic Latin characters. Image backgrounds are embedded as raster content. PNG or other raster formats are recommended for artwork containing Chinese characters, emoji or system fallback fonts.',
+        'Source file imports are limited to 12 MiB. Syntax highlighting and image rendering have separate resource budgets. Code and local images are processed in your browser without uploads or persistent storage. Built-in assets are loaded on demand.',
+      ],
+      faq: [
+        { question: 'Which programming languages are supported?', answer: 'The generator supports common languages such as TypeScript, JavaScript, Go, Rust, Python, Java, C, C++, SQL, HTML and CSS, along with JSON, YAML, Markdown and plain text.' },
+        { question: 'Can I use my own background images?', answer: 'Yes. Both the canvas and code window support built-in assets or local images, with independent image fitting, scaling and positioning. Window images also have adjustable opacity.' },
+        { question: 'How can I create high-resolution code screenshots?', answer: 'Choose suitable canvas dimensions, fonts and typography, then select a 2×, 3× or 4× raster export scale. Higher scales increase output resolution, subject to image size and device resource limits.' },
+        { question: 'Are my code images uploaded to a server?', answer: 'No. Syntax highlighting, composition, rendering and exporting take place locally in your browser. Selecting a built-in asset loads the corresponding static image without uploading your code or local images.' },
+      ],
+    },
+  },
 } satisfies ToolContentMap;

@@ -44,7 +44,7 @@ Astro 工具路由 + 静态 Intro / Guide
 ## 共享创意素材
 
 - `src/assets/creative/catalog.json` 保存维护者提供的稳定 ID、分类、双语名称、尺寸、用途、来源及校验数据。`index.ts` 组合现有分类与查询，并通过 `?url&no-inline` 为目录指向的 AVIF 与 WebP 取得构建 URL。两地区共享同一份源文件。
-- `src/ui/creative-assets/CreativeAssetPicker.tsx` 在使用它的工具打开选择器时加载。它管理临时选中项和分类，使用浏览器懒加载 WebP。确认后将条目交给工具。工具负责高清请求、图片解码、取消、位图释放及预览状态。
+- `src/ui/creative-assets/CreativeAssetPicker.tsx` 和同名样式在消费工具打开选择器时加载。静态页面首屏不链接选择器样式。选择器管理临时选中项和分类，使用浏览器懒加载 WebP。确认后将条目交给工具。工具负责高清请求、图片解码、取消、位图释放及预览状态。
 - 正式构建从实际客户端产物反查素材和选择器的导入者，并依据 Registry 检查本地区 Published 消费方。Code Image Generator 当前为唯一消费者且处于 Draft，两地区正式构建均排除该收藏。
 
 ## 文本编辑基础

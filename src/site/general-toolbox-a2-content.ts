@@ -1,40 +1,6 @@
 import type { ToolContentMap } from './tool-content';
 // Static Astro content only; never imported by the client or registry.
 export const generalToolboxA2Content = {
-  'code-image-generator': {
-    zh: {
-      title: '代码分享图 | Tool4Furry',
-      description: '将高亮代码与标题保存为 PNG 分享图。',
-      h1: '代码分享图',
-      intro: '为代码选择语法主题和背景，在画布中排版并导出分享图。',
-      steps: [
-        '导入或粘贴源码，选择编程语言。',
-        '从艺术预设开始，按需调整背景、代码窗口和重点行。',
-        '在画布中查看作品，通过导出菜单下载所需格式。',
-      ],
-      limitations: [
-        '制图支持最多 40 万 UTF-16 源码单元，图片最长边 8192 px、最多 4000 万像素。超过制图预算时，源码仍可继续编辑和复制。',
-        'PNG 支持透明背景，JPEG 使用白色填充透明区域。WebP 取决于浏览器，SVG 支持内置字体和基本拉丁字符。',
-        '所有文件与文本仅在当前浏览器本地处理，不上传、不持久保存。',
-      ],
-    },
-    en: {
-      title: 'Code Image Generator | Tool4Furry',
-      description: 'Turn highlighted code and a title into a PNG share image.',
-      h1: 'Code Image Generator',
-      intro: 'Choose a syntax theme and background, compose your code on the canvas and export a shareable image.',
-      steps: [
-        'Import or paste source code and choose its language.',
-        'Choose an art preset and adjust the background, code window and line marks.',
-        'Review your artwork on the canvas and download a format from the export menu.',
-      ],
-      limitations: [
-        'Artwork supports up to 400,000 UTF-16 code units, 8,192 px per side and 40 megapixels. You can still edit and copy source beyond the artwork budget.',
-        'PNG supports transparency. JPEG fills transparent areas with white. WebP depends on browser support. SVG requires a bundled font and basic Latin characters.',
-        'Files and text stay in your browser, without uploads or persistent storage.',
-      ],
-    },
-  },
   'svg-to-png': {
     zh: {
       title: 'SVG 转 PNG | Tool4Furry',

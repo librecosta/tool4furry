@@ -18,6 +18,7 @@ import { definition as colorContrast } from '../src/tools/color-contrast/definit
 import { definition as audioTrimmer } from '../src/tools/audio-trimmer/definition';
 import { definition as markdownEditor } from '../src/tools/markdown-editor/definition';
 import { definition as csv } from '../src/tools/csv-json-converter/definition';
+import { definition as codeImage } from '../src/tools/code-image-generator/definition';
 
 const content = {
   title: 'Test — Tool4Furry',
@@ -29,6 +30,30 @@ const map: ToolContentMap = {
   one: { zh: content, en: { ...content, h1: 'English heading' } },
 };
 describe('Astro-only content boundary', () => {
+  it('prepares bilingual Code Image SEO without changing the Draft publication gate', () => {
+    expect(codeImage).toMatchObject({
+      id: 'code-image-generator', slug: 'code-image-generator', category: 'creative', group: 'design-utilities',
+      roles: ['developer', 'operations'], mode: 'form', regions: ['cn', 'global'],
+      copy: {
+        zh: { title: '代码分享图', description: '使用语法高亮、艺术预设和创意背景生成精美代码图片。', summary: '自由设计代码分享图，支持多格式高清导出。' },
+        en: { title: 'Code Image Generator', description: 'Create beautiful code images with syntax highlighting, art presets and creative backgrounds.', summary: 'Design and export customizable, high-resolution code screenshots.' },
+      },
+    });
+    for (const region of codeImage.regions) for (const locale of ['zh', 'en'] as const) {
+      const page = getToolPageContent(codeImage, region, toolPageContents, true, locale);
+      expect(page.title).toBe(locale === 'zh'
+        ? '在线代码分享图生成器 - 精美代码截图与语法高亮 | Tool4Furry'
+        : 'Online Code Image Generator - Beautiful Code Screenshots | Tool4Furry');
+      expect(page.h1).toBe(codeImage.copy[locale].title);
+      expect(page.steps).toHaveLength(4);
+      expect(page.limitations).toHaveLength(6);
+      expect(page.faq).toHaveLength(4);
+      expect(page.limitations?.[2]).toMatch(/23.*24 MiB/);
+      expect(page.limitations?.[4]).toMatch(/SVG.*(?:内置字体.*位图|bundled fonts.*raster)/);
+      expect(() => getToolPageContent(codeImage, region, toolPageContents, false, locale)).toThrow(/Unpublished tool content/);
+    }
+    expect(() => assertPublishedContent([{ ...codeImage, status: 'published' }])).not.toThrow();
+  });
   it('publishes bilingual CSV / JSON SEO describing the actual reverse-conversion workflow', () => {
     expect(csv).toMatchObject({
       id: 'csv-json-converter', slug: 'csv-json-converter', category: 'development', group: 'developer-utilities',

@@ -80,7 +80,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64'], generalToolboxContent['timestamp-converter'], generalToolboxContent['color-contrast'], generalToolboxContent['audio-trimmer'], generalToolboxContent['markdown-editor'], generalToolboxContent['csv-json-converter']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64'], generalToolboxContent['timestamp-converter'], generalToolboxContent['color-contrast'], generalToolboxContent['audio-trimmer'], generalToolboxContent['markdown-editor'], generalToolboxContent['csv-json-converter'], generalToolboxContent['code-image-generator']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -848,7 +848,7 @@ for (const page of htmlFiles) {
   );
   const dom = new JSDOM(content).window.document;
   const scopedToolStyles = [...dom.head.querySelectorAll('link[rel="stylesheet"]')]
-    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|MarkdownEditor|VideoFrameExtractor|CsvJsonConverter|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
+    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|MarkdownEditor|VideoFrameExtractor|CsvJsonConverter|CodeImageGenerator|CreativeAssetPicker|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
   const toolId = dom.querySelector('main[data-tool-id]')?.dataset.toolId;
   const expectedToolStyles = [];
   if (toolId === 'subtitle-tools') expectedToolStyles.push('SubtitleTools');
@@ -860,9 +860,10 @@ for (const page of htmlFiles) {
   if (toolId === 'markdown-editor') expectedToolStyles.push('MarkdownEditor');
   if (toolId === 'video-frame-extractor') expectedToolStyles.push('VideoFrameExtractor');
   if (toolId === 'csv-json-converter') expectedToolStyles.push('CsvJsonConverter');
+  if (toolId === 'code-image-generator') expectedToolStyles.push('CodeImageGenerator');
   if (['color-contrast', 'image-watermark', 'palette-extractor'].includes(toolId) && files.some(file => /\/react-colorful\.[\w-]+\.css$/.test(file)))
     expectedToolStyles.push('react-colorful');
-  if (['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64', 'csv-json-converter'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
+  if (['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64', 'csv-json-converter', 'code-image-generator'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
     expectedToolStyles.push('TextEditor');
   if (['json-formatter', 'text-cleaner', 'text-diff', 'url-base64', 'csv-json-converter'].includes(toolId) && files.some(file => /\/TextWorkbench\.[\w-]+\.css$/.test(file)))
     expectedToolStyles.push('TextWorkbench');
@@ -985,6 +986,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/markdown-editor/index.html') assertToolContent(dom, locale, generalToolboxContent['markdown-editor'], 4, 4, 6);
     if (page === 'tools/video-frame-extractor/index.html') assertToolContent(dom, locale, generalToolboxContent['video-frame-extractor'], 4, 4, 6);
     if (page === 'tools/csv-json-converter/index.html') assertToolContent(dom, locale, generalToolboxContent['csv-json-converter'], 4, 4, 6);
+    if (page === 'tools/code-image-generator/index.html') assertToolContent(dom, locale, generalToolboxContent['code-image-generator'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1583,6 +1585,7 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     ['json-formatter', 'JsonFormatter'],
     ['url-base64', 'UrlBase64'],
     ['csv-json-converter', 'CsvJsonConverter'],
+    ['code-image-generator', 'CodeImageGenerator'],
   ].filter(([id]) => published.some(tool => tool.id === id));
   const scripts = new Map(await Promise.all(files.filter(file => file.endsWith('.js'))
     .map(async file => [file, await readFile(resolve(root, file), 'utf8')])));
@@ -1621,11 +1624,15 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     const [entry, ...extraEntries] = findAsset(stem, '.js');
     assert(entry && !extraEntries.length, 'One lazy tool entry: ' + id);
     entries.set(id, entry);
-    const marker = id === 'json-formatter' ? 'data-json-language-license' : 'data-' + id;
+    const marker = { 'json-formatter': 'data-json-language-license', 'code-image-generator': 'data-code-image-studio' }[id] ?? 'data-' + id;
     assert(scripts.get(entry).includes(marker), 'Real editor tool implementation: ' + id);
     const [loader, ...extraLoaders] = importsOf(entry, true);
     assert(loader && loader.includes('ToolRuntime') && !extraLoaders.length, 'Only ToolRuntime dynamically imports ' + id);
-    assert.deepEqual(importsOf(entry, false), [], 'No static import of ' + id);
+    // Rolldown currently places shared Base UI radio primitives in the tool
+    // chunk. Its lazy picker can read them after the workspace is loaded.
+    const staticImporters = importsOf(entry, false).filter(file =>
+      id !== 'code-image-generator' || file !== findAsset('CreativeAssetPicker', '.js')[0]);
+    assert.deepEqual(staticImporters, [], 'No eager static import of ' + id);
     const [style, ...extraStyles] = findAsset(stem, '.css');
     assert(style && !extraStyles.length, 'One stylesheet owned by ' + id);
     assert(scripts.get(loader).includes(style), 'ToolRuntime references the tool stylesheet: ' + id);
@@ -1644,6 +1651,42 @@ if (!published.some(tool => tool.id === 'file-hash')) {
   const jsonEntry = entries.get('json-formatter');
   const jsonWorkers = files.filter(file => /(?:^|\/)json\.worker[.-][\w-]+\.js$/.test(file));
   const jsOwners = matches => [...scripts].filter(([, source]) => matches(source)).map(([file]) => file);
+  const linksNotice = (entry, asset) => jsOwners(source => source.includes(basenameOf(asset)))
+    .some(file => file === entry || importsOf(file, false).includes(entry));
+  const codeImageEntry = entries.get('code-image-generator');
+  const [pickerEntry, ...otherPickers] = findAsset('CreativeAssetPicker', '.js');
+  const [pickerStyle, ...otherPickerStyles] = findAsset('CreativeAssetPicker', '.css');
+  if (codeImageEntry) {
+    const [worker, ...otherWorkers] = files.filter(file => /\/highlight\.worker-[\w-]+\.js$/.test(file));
+    const [noticeAsset, ...otherNotices] = findAsset('code-image.NOTICE', '.txt');
+    assert(worker && !otherWorkers.length && noticeAsset && !otherNotices.length, 'Code Image owns a local worker and notice');
+    assert(pickerEntry, 'Code Image delivers the shared creative picker');
+    assert(importsOf(pickerEntry, true).includes(codeImageEntry), 'Code Image loads the picker on demand');
+    assert.deepEqual(jsOwners(source => source.includes(basenameOf(worker))), [codeImageEntry], 'Only Code Image starts its syntax Worker');
+    assert.deepEqual(jsOwners(source => source.includes(basenameOf(noticeAsset))), [codeImageEntry], 'Only Code Image references its notice');
+    assert((await readFile(resolve(root, noticeAsset))).equals(await readFile('src/tools/code-image-generator/code-image.NOTICE.txt')),
+      'Code Image ships the complete NOTICE');
+    assert(notices.length === 1 && linksNotice(codeImageEntry, notices[0]), 'Code Image links the shared CodeMirror notice');
+  }
+  if (pickerEntry) {
+    assert(!otherPickers.length && pickerStyle && !otherPickerStyles.length, 'One shared picker and stylesheet');
+    assert(importsOf(pickerEntry, true).length && !importsOf(pickerEntry, false).length, 'The picker has only lazy consumers');
+    assert.deepEqual(jsOwners(source => source.includes('data-creative-asset-picker')), [pickerEntry]);
+  }
+  const creativeRoot = 'src/assets/creative';
+  const creativeCatalog = JSON.parse(await readFile(resolve(creativeRoot, 'catalog.json'), 'utf8'));
+  for (const asset of creativeCatalog) {
+    for (const [key, extension] of [['image', '.avif'], ['thumbnail', '.webp']]) {
+      const source = resolve(creativeRoot, asset[key]);
+      const emitted = findAsset(basenameOf(asset[key]).slice(0, -extension.length), extension);
+      if (pickerEntry) assert.equal(emitted.length, 1, 'The shared picker delivers its entire catalog: ' + asset[key]);
+      for (const file of emitted) {
+        const bytes = await readFile(source);
+        assert((await readFile(resolve(root, file))).equals(bytes), 'Creative images ship as separate, unchanged files: ' + asset[key]);
+        assert(jsOwners(text => text.includes(basenameOf(file))).length, 'Creative image has a client URL: ' + asset[key]);
+      }
+    }
+  }
   const csvEntry = entries.get('csv-json-converter');
   const csvWorkers = files.filter(file => /\/tabular-conversion\.worker[.-][\w-]+\.js$/.test(file));
   assert.equal(csvWorkers.length, Number(Boolean(csvEntry)), 'CSV / JSON Worker follows publication');
@@ -1675,7 +1718,7 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     const [style, ...extraStyles] = findAsset('MarkdownEditor', '.css');
     const [preview, ...extraPreviews] = findAsset('math-preview', '.js');
     const [katex, ...extraKatex] = findAsset('katex', '.js');
-    const [highlight, ...extraHighlights] = findAsset('highlight', '.js');
+    const [highlight, ...extraHighlights] = files.filter(file => /\/highlight\.(?!worker-)[\w-]+\.js$/.test(file));
     assert(entry && !extraEntries.length && style && !extraStyles.length &&
       preview && !extraPreviews.length && katex && !extraKatex.length &&
       highlight && !extraHighlights.length, 'Markdown owns one editor entry, style, math preview and highlighter adapter');
@@ -1704,7 +1747,7 @@ if (!published.some(tool => tool.id === 'file-hash')) {
       ['codemirror.NOTICE', 'src/ui/text-editor/codemirror.NOTICE.txt'],
     ]) {
       const [asset, ...extraAssets] = findAsset(stem, '.txt');
-      assert(asset && !extraAssets.length && scripts.get(entry).includes(basenameOf(asset)), 'Markdown links its full notice: ' + stem);
+      assert(asset && !extraAssets.length && linksNotice(entry, asset), 'Markdown links its full notice: ' + stem);
       assert((await readFile(resolve(root, asset))).equals(await readFile(path)), 'Markdown notice preserves the full source: ' + stem);
     }
   }
@@ -1886,16 +1929,17 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     const codeMirrorCore = jsOwners(source => source.includes('cm-content') && source.includes('cm-lineNumbers') && source.includes('cm-editor'));
     assert.equal(codeMirrorCore.length, 1, 'Only one implementation of the CodeMirror core');
     assert.deepEqual(jsOwners(source => editorSelectors.test(source)).sort(),
-      [...new Set([editor, ...codeMirrorCore, ...jsonLanguageOwners, ...[markdownEntry].filter(Boolean)])].sort(),
+      [...new Set([editor, ...codeMirrorCore, ...jsonLanguageOwners, ...[markdownEntry, codeImageEntry].filter(Boolean)])].sort(),
       'Only CodeMirror and private editor themes contain editor selectors');
     if (markdownEntry) {
       const [core] = codeMirrorCore;
       const directUsers = importsOf(core, false);
-      const support = directUsers.filter(file => ![editor, markdownEntry, ...jsonConsumers].includes(file));
+      const privateEditors = [markdownEntry, codeImageEntry].filter(Boolean);
+      const support = directUsers.filter(file => ![editor, ...privateEditors, ...jsonConsumers].includes(file));
       assert(directUsers.includes(markdownEntry) && directUsers.includes(editor), 'Markdown and the shared editor use the same CodeMirror core');
       for (const file of support) {
-        assert(importsOf(file, false).every(owner => [...jsonConsumers, ...jsonLanguageOwners, markdownEntry].includes(owner)) &&
-          !importsOf(file, true).length, 'Only the lazy Markdown and JSON editors consume the editor core support chunk');
+        assert(importsOf(file, false).every(owner => [...jsonConsumers, ...jsonLanguageOwners, ...privateEditors].includes(owner)) &&
+          !importsOf(file, true).length, 'Only lazy editors consume the editor core support chunk');
       }
       assert.deepEqual(importsOf(core, true), [], 'No independent dynamic import of the CodeMirror core');
     }
@@ -1915,7 +1959,7 @@ if (!published.some(tool => tool.id === 'file-hash')) {
       assert(scripts.get(loader).includes(styles[0]), 'ToolRuntime references ' + stem + ' CSS');
     }
     await assertEditorStyle(shared ? (subtitleEntry ? 'TextEditor' : 'TextWorkbench') : editorTools[0][1]);
-    const workbenchEntries = [...entries].filter(([id]) => id !== 'subtitle-tools').map(([, entry]) => entry);
+    const workbenchEntries = [...entries.values()].filter(entry => entry !== subtitleEntry && entry !== codeImageEntry);
     if (subtitleEntry && workbenchEntries.length > 1) {
       const [workbench] = workbenchOwners;
       assert.equal(workbenchOwners.length, 1, 'One separate dual-editor workbench');
@@ -1928,8 +1972,14 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     }
     assert.equal(notices.length, 1, 'One complete CodeMirror runtime license resource');
     assert((await readFile(resolve(root, notices[0]))).equals(notice), 'The emitted editor license matches the complete MIT notices');
+    const noticeConsumers = [markdownEntry, codeImageEntry].filter(Boolean);
+    const [noticeChunk, ...extraNoticeChunks] = findAsset('codemirror.NOTICE', '.js');
+    if (noticeChunk) {
+      assert(!extraNoticeChunks.length && !importsOf(noticeChunk, true).length, 'One static CodeMirror notice module');
+      assert.deepEqual(importsOf(noticeChunk, false).sort(), noticeConsumers.sort(), 'Only private editors use the CodeMirror notice module');
+    }
     assert.deepEqual(jsOwners(text => text.includes(basenameOf(notices[0]))).sort(),
-      [editor, ...findAsset('MarkdownEditor', '.js')].sort(), 'Only the editor runtime and Markdown link to the MIT notice');
+      [editor, ...(noticeChunk ? [noticeChunk] : noticeConsumers)].sort(), 'Only editors link to the MIT notice');
   }
 
   const diffEntry = entries.get('text-diff');

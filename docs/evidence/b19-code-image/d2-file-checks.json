@@ -1,0 +1,158 @@
+{
+  "formats": {
+    "zh": {
+      "png": {
+        "format": "PNG",
+        "size": [
+          1304,
+          734
+        ],
+        "mode": "RGBA",
+        "sha256": "b7efe1648c892631bc8db6e2e2722d47f70e95ad482f5cf301aa6894cdf759f1"
+      },
+      "jpg": {
+        "format": "JPEG",
+        "size": [
+          1304,
+          734
+        ],
+        "mode": "RGB",
+        "sha256": "eccb82e3191b32748f64893440c93764d08c7bb6242f371bfc7f8fbb68d48988"
+      },
+      "webp": {
+        "format": "WEBP",
+        "size": [
+          1304,
+          734
+        ],
+        "mode": "RGB",
+        "sha256": "f7e1b520cdd7b5c8baace2201a4d236c45c1e2afac1f89425e2eaec14ff478be"
+      },
+      "svg": {
+        "size": [
+          652,
+          367
+        ],
+        "embeddedWindows": 2,
+        "embeddedFonts": 4,
+        "sha256": "cf6a51f0b0547ace991ad441997cea411ebcf73d94412bbd0690a2bbc85fb258"
+      }
+    },
+    "en": {
+      "png": {
+        "format": "PNG",
+        "size": [
+          1304,
+          734
+        ],
+        "mode": "RGBA",
+        "sha256": "b7efe1648c892631bc8db6e2e2722d47f70e95ad482f5cf301aa6894cdf759f1"
+      },
+      "jpg": {
+        "format": "JPEG",
+        "size": [
+          1304,
+          734
+        ],
+        "mode": "RGB",
+        "sha256": "eccb82e3191b32748f64893440c93764d08c7bb6242f371bfc7f8fbb68d48988"
+      },
+      "webp": {
+        "format": "WEBP",
+        "size": [
+          1304,
+          734
+        ],
+        "mode": "RGB",
+        "sha256": "f7e1b520cdd7b5c8baace2201a4d236c45c1e2afac1f89425e2eaec14ff478be"
+      },
+      "svg": {
+        "size": [
+          652,
+          367
+        ],
+        "embeddedWindows": 2,
+        "embeddedFonts": 4,
+        "sha256": "cf6a51f0b0547ace991ad441997cea411ebcf73d94412bbd0690a2bbc85fb258"
+      }
+    }
+  },
+  "builds": {
+    "cn-official": {
+      "image": {
+        "count": 0,
+        "bytes": 0,
+        "maxFile": null
+      },
+      "thumbnail": {
+        "count": 0,
+        "bytes": 0,
+        "maxFile": null
+      },
+      "details": 48,
+      "allFiles": 692,
+      "allBytes": 27816471,
+      "largestStaticFileBytes": 3485872
+    },
+    "cn-candidate": {
+      "image": {
+        "count": 23,
+        "bytes": 8765275,
+        "maxFile": {
+          "name": "golden-clouds.CJ85EmCe.avif",
+          "bytes": 833513
+        }
+      },
+      "thumbnail": {
+        "count": 23,
+        "bytes": 400410,
+        "maxFile": {
+          "name": "slate-marble.Cxy6-i7B.webp",
+          "bytes": 52768
+        }
+      },
+      "details": 50,
+      "allFiles": 834,
+      "allBytes": 40476048,
+      "largestStaticFileBytes": 3485872
+    },
+    "global-official": {
+      "image": {
+        "count": 0,
+        "bytes": 0,
+        "maxFile": null
+      },
+      "thumbnail": {
+        "count": 0,
+        "bytes": 0,
+        "maxFile": null
+      },
+      "details": 48,
+      "allFiles": 692,
+      "allBytes": 27796894,
+      "largestStaticFileBytes": 3485872
+    },
+    "global-candidate": {
+      "image": {
+        "count": 23,
+        "bytes": 8765275,
+        "maxFile": {
+          "name": "golden-clouds.CJ85EmCe.avif",
+          "bytes": 833513
+        }
+      },
+      "thumbnail": {
+        "count": 23,
+        "bytes": 400410,
+        "maxFile": {
+          "name": "slate-marble.Cxy6-i7B.webp",
+          "bytes": 52768
+        }
+      },
+      "details": 50,
+      "allFiles": 834,
+      "allBytes": 40455777,
+      "largestStaticFileBytes": 3485872
+    }
+  }
+}
