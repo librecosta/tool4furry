@@ -20,16 +20,18 @@ import paper from '../../assets/code-image-presets/code-preset-paper.webp?url';
 import sunset from '../../assets/code-image-presets/code-preset-sunset.webp?url';
 import { AppearancePanel } from './AppearancePanel';
 import { Stage } from './Stage';
+import { StudioChoices } from './StudioChoices';
 import { canvasMeasure, prepareFont } from './fonts';
 import { createCodeNamer, readBackground, readCode } from './delivery';
+import { editorAppearance, editorHighlight } from './editor-highlight';
 import { layoutCode, outputSize } from './core';
 import { renderRaster, renderSvg, webpSupported } from './render';
 import { highlightBudget } from './highlight-data';
 import { useHighlight } from './use-highlight';
 import { defaultPreset, defaults, languageForFile, languages, presets, sampleCode, scales,
   type CodeImageSettings, type Language, type OutputFormat, type Preset, type Scale } from './settings';
-import license from './code-image.NOTICE.txt?url';
-import editorLicense from '../../ui/text-editor/codemirror.NOTICE.txt?url';
+import license from './code-image.NOTICE.txt?url&no-inline';
+import editorLicense from '../../ui/text-editor/codemirror.NOTICE.txt?url&no-inline';
 import s from './studio.module.scss';
 
 const thumbnails: Record<Preset, string> = {
@@ -37,6 +39,7 @@ const thumbnails: Record<Preset, string> = {
   Paper: paper, Aurora: aurora, Monochrome: monochrome, Lavender: lavender,
 };
 const formats: readonly [OutputFormat, string][] = [['png', 'PNG'], ['svg', 'SVG'], ['jpeg', 'JPEG'], ['webp', 'WebP']];
+const scaleChoices = scales.map(value => [value, `${value}×`] as const);
 
 export default function CodeImageGenerator({ locale }: ToolProps) {
   const t = (zh: string, en: string) => tr(locale, zh, en);
@@ -48,6 +51,7 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
   const [filename, setFilename] = useState('');
   const [backgroundFile, setBackgroundFile] = useState<{ image: ImageBitmap; name: string }>();
   const [scale, setScale] = useState<Scale>(2);
+  const [format, setFormat] = useState<OutputFormat>('png');
   const [quality, setQuality] = useState(90);
   const [fullscreen, setFullscreen] = useState(false);
   const [webp, setWebp] = useState(false);
@@ -64,7 +68,7 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
   const delivering = useRef(false);
   const editFocus = useRef(false);
 
-  const tokens = useHighlight(code, language, settings.theme);
+  const { tokens, editorResult, surface, foreground } = useHighlight(code, language, settings.theme);
   const fontRequest = useMemo(() => ({ font: settings.font, text: code + settings.title }), [settings.font, code, settings.title]);
   const [readyFont, setReadyFont] = useState<{ request: typeof fontRequest; error?: unknown }>();
   useEffect(() => {
@@ -127,7 +131,10 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
       root.current?.querySelector<HTMLElement>('.cm-content')?.focus();
     }
   }, [editing]);
-  const editorBindings = useMemo(() => [EditorState.tabSize.of(settings.tabWidth), keymap.of([indentWithTab])], [settings.tabWidth]);
+  const editorBindings = useMemo(() => [
+    EditorState.tabSize.of(settings.tabWidth), keymap.of([indentWithTab]),
+    editorAppearance(surface, foreground), editorResult ? editorHighlight(editorResult.source, editorResult.result) : [],
+  ], [settings.tabWidth, surface, foreground, editorResult]);
   const edit = () => { editFocus.current = true; setEditing(true); };
   const sample = () => {
     sourceRead.current++;
@@ -180,6 +187,7 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
     setFilename('');
     setBackgroundFile(undefined);
     setScale(2);
+    setFormat('png');
     setQuality(90);
     setEditing(false);
     setActionError('');
@@ -204,6 +212,7 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
     : emptyImage ? t('请选择本地背景图片。', 'Choose a local background image.')
       : t('正在排版…', 'Preparing artwork…');
   const artwork = emptyImage || visualError ? undefined : scene;
+  const exportDisabled = !artwork || (format === 'svg' ? !!vectorError : !dimensions.output) || (format === 'webp' && !webp);
   async function copyCode() {
     try {
       await navigator.clipboard.writeText(code);
@@ -244,6 +253,8 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
   }
 
   return <Frame locale={locale}>
+    <link rel="license" href={license} />
+    <link rel="license" href={editorLicense} />
     <div ref={root} className={s.studio} data-code-image-studio>
       <div className={s.toolbar} aria-label={t('创作工具栏', 'Studio toolbar')}>
         <div className={s.toolbarGroup}>
@@ -281,21 +292,17 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
             <Popover.Portal container={fullscreen ? root.current : undefined}>
               <Popover.Positioner align="end" sideOffset={8} className={s.positioner}>
                 <Popover.Popup className={s.exportPopup} aria-label={t('导出设置', 'Export settings')}>
-                  <SelectField appearance="quiet" label={t('位图倍率', 'Raster scale')} value={String(scale)}
-                    options={scales.map(value => ({ value: String(value), label: `${value}×` }))}
-                    onValueChange={value => setScale(Number(value) as Scale)} />
-                  <SliderField label={t('JPEG / WebP 质量', 'JPEG / WebP quality')} value={quality} min={10} max={100} unit="%"
-                    onValueChange={setQuality} />
-                  <div className={s.formatGrid}>
-                    {formats.map(([format, name]) =>
-                      <Button key={format} variant={format === 'png' ? 'primary' : 'ghost'} size="sm"
-                        className={format === 'png' ? undefined : s.fieldButton} aria-label={t('下载 ', 'Download ') + name}
-                        disabled={!artwork || busy || (format === 'svg' ? !!vectorError : !dimensions.output) || (format === 'webp' && !webp)}
-                        onClick={() => void deliver(format)}>{name}</Button>)}
-                  </div>
-                  <p>{t('JPEG 的透明区域填充为白色。', 'JPEG fills transparent areas with white.')}</p>
-                  {vectorError && <p>{vectorError}</p>}
+                  <StudioChoices label={t('图片格式', 'Image format')} value={format} options={formats} change={setFormat}
+                    disabled={value => value === 'webp' && !webp} />
+                  {format !== 'svg' && <StudioChoices label={t('位图倍率', 'Raster scale')} value={scale}
+                    options={scaleChoices} change={setScale} />}
+                  {(format === 'jpeg' || format === 'webp') && <SliderField label={t('图片质量', 'Image quality')}
+                    value={quality} min={10} max={100} unit="%" onValueChange={setQuality} />}
+                  {format === 'jpeg' && <p>{t('透明区域填充为白色。', 'Transparent areas are filled with white.')}</p>}
+                  {format === 'svg' && vectorError && <p>{vectorError}</p>}
                   {!webp && <p>{t('当前浏览器不支持 WebP 编码。', 'This browser does not support WebP encoding.')}</p>}
+                  <Button variant="primary" size="sm" disabled={exportDisabled} loading={busy}
+                    onClick={() => void deliver(format)}><DownloadSimpleIcon size={16} />{t('导出图片', 'Export image')}</Button>
                 </Popover.Popup>
               </Popover.Positioner>
             </Popover.Portal>
@@ -303,7 +310,8 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
         </div>
       </div>
       <div className={s.workspace}>
-        <Stage t={t} editing={editing} scene={artwork} font={settings.font} scale={scale} size={dimensions.output} status={loadingText}
+        <Stage t={t} editing={editing} scene={artwork} font={settings.font} scale={format === 'svg' ? 1 : scale}
+          size={artwork && (format === 'svg' ? artwork : dimensions.output)} status={loadingText}
           error={visualError} report={e => setActionError(errorText(e, locale))}
           fullscreen={fullscreen} toggleFullscreen={() => void toggleFullscreen()} beginEdit={edit}
           editor={<TextEditor value={code} ariaLabel={t('源码', 'Source code')} extensions={editorBindings}
@@ -316,11 +324,6 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
         {message && <p role="status">{message}</p>}
         {tokens?.fallback && language !== 'text' && <p role="status">{t('语法高亮不可用，已使用纯文本排版。', 'Syntax highlighting was unavailable. The artwork uses plain text.')}</p>}
       </div>}
-      <footer className={s.legal}>
-        <a href={license} target="_blank" rel="noreferrer">{t('第三方许可', 'Third-party licenses')}</a>
-        {' · '}
-        <a href={editorLicense} target="_blank" rel="noreferrer">CodeMirror</a>
-      </footer>
     </div>
   </Frame>;
 }

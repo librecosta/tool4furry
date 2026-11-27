@@ -1,0 +1,43 @@
+@layer t4f-ui {
+  .field { display: grid; gap: 3px; min-width: 0; }
+  .label { color: var(--t4f-text-primary); font-size: 0.78rem; font-weight: 500; }
+  .group {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) 30px;
+    align-items: center;
+    gap: 3px;
+    width: 100%;
+    max-width: 10rem;
+  }
+
+  .input, .step { border: 0; background: transparent; color: inherit; font: inherit; }
+  .input {
+    width: 100%;
+    min-width: 0;
+    padding: 3px 0;
+    border-bottom: 1px solid var(--t4f-border);
+    border-radius: 0;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .input:focus { outline: none; border-bottom-color: var(--t4f-accent); }
+  .input:focus-visible { box-shadow: 0 1px var(--t4f-accent); }
+
+  .step {
+    display: grid;
+    place-items: center;
+    min-height: 32px;
+    padding: 0;
+    border-radius: var(--t4f-radius-sm);
+    color: var(--t4f-text-secondary);
+    cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+  .step:hover:not(:disabled), .step:focus-visible { background: var(--t4f-surface-hover); color: var(--t4f-accent); }
+  .step:focus-visible { outline: 2px solid var(--t4f-accent); outline-offset: -2px; }
+  .step:disabled, .input:disabled { opacity: 0.45; cursor: default; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .step { transition: none; }
+  }
+}

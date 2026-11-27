@@ -221,23 +221,53 @@
   .preset[aria-pressed="true"] { color: var(--t4f-accent); font-weight: 700; }
   .preset:focus-visible, .swatch:focus-visible, .more summary:focus-visible { outline: 2px solid var(--t4f-accent); outline-offset: 2px; }
 
-  .pair, .fontRow {
+  .pair {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start;
     gap: 7px;
   }
 
-  .fontRow { grid-template-columns: minmax(0, 1fr) 78px; }
   .appearance label, .exportPopup label { font-size: 0.78rem; font-weight: 500; }
-  .appearance [role="combobox"], .language [role="combobox"], .exportPopup [role="combobox"] {
+  .language [role="combobox"] {
     min-height: 33px;
     padding-inline: 8px;
     background: var(--t4f-input-surface);
     font-size: 0.79rem;
   }
 
-  .textField, .number input {
+  .choiceField {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+  }
+  .choiceLabel { font-size: 0.78rem; font-weight: 500; }
+  .choices { display: flex; flex-wrap: wrap; gap: 4px; }
+  .choice {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    padding: 4px 8px;
+    border: 0;
+    border-radius: var(--t4f-radius-sm);
+    background: color-mix(in srgb, var(--t4f-text-primary) 5%, transparent);
+    color: var(--t4f-text-secondary);
+    font: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+  .choice:hover:not([data-disabled], [data-checked]) { background: var(--t4f-surface-hover); }
+  .choice[data-checked] {
+    background: color-mix(in srgb, var(--t4f-accent) 17%, var(--t4f-input-surface));
+    color: var(--t4f-accent);
+    font-weight: 650;
+  }
+  .choice:focus-visible { outline: 2px solid var(--t4f-accent); outline-offset: -2px; }
+  .choice[data-disabled] { opacity: 0.5; cursor: default; }
+
+  .textField {
     width: 100%;
     min-height: 32px;
     padding: 5px 8px;
@@ -248,17 +278,14 @@
     color: var(--t4f-text-primary);
   }
 
-  .textField:focus, .number input:focus {
+  .textField:focus {
     background: var(--t4f-surface-hover);
     outline: none;
   }
 
-  .textField:focus-visible, .number input:focus-visible {
+  .textField:focus-visible {
     box-shadow: inset 0 -2px var(--t4f-accent);
   }
-
-  .number { display: grid; gap: 4px; min-width: 0; }
-  .number input { min-width: 0; font-variant-numeric: tabular-nums; }
 
   .colorRow {
     display: flex;
@@ -335,21 +362,18 @@
     box-shadow: 0 12px 30px rgba(13, 17, 23, 0.18);
   }
 
-  .exportPopup p, .feedback p, .legal {
+  .exportPopup p, .feedback p {
     margin: 0;
     color: var(--t4f-text-secondary);
     font-size: 0.78rem;
   }
 
-  .formatGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .exportPopup .choice { flex: 1; }
   .feedback { display: flex; flex-wrap: wrap; gap: 3px 12px; }
   .feedback [role="alert"] { color: var(--t4f-danger); }
-  .legal { text-align: end; }
-  .legal a { color: inherit; }
-
   .studio:fullscreen { background: var(--t4f-workspace); padding: 10px; }
   .studio:fullscreen .toolbar, .studio:fullscreen .appearance,
-  .studio:fullscreen .legal, .studio:fullscreen .feedback { display: none; }
+  .studio:fullscreen .feedback { display: none; }
   .studio:fullscreen .workspace { display: block; }
   .studio:fullscreen .stage { height: calc(100vh - 20px); inset-block-start: 0; }
 
@@ -372,6 +396,6 @@
     .presetGrid { gap: 8px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .switch, .thumb { transition: none; }
+    .switch, .thumb, .choice { transition: none; }
   }
 }

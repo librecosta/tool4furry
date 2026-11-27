@@ -53,5 +53,12 @@ export function useHighlight(source: string, language: Language, theme: SyntaxTh
       worker.current = null;
     };
   }, [source, language, theme]);
-  return resolved?.source === source && resolved.language === language && resolved.theme === theme ? resolved.result : undefined;
+  const currentTheme = resolved?.theme === theme ? resolved : undefined;
+  const editorResult = source && source.length <= highlightBudget && currentTheme?.language === language ? currentTheme : undefined;
+  return {
+    tokens: editorResult?.source === source ? editorResult.result : undefined,
+    editorResult,
+    surface: currentTheme?.result.surface,
+    foreground: currentTheme?.result.foreground,
+  };
 }

@@ -89,7 +89,7 @@ export function Stage({ t, editing, scene, font, scale, size, status, error, rep
       </div>
     </div>
     <div className={s.stageFooter}>
-      <output aria-live="polite">{size ? `${size.width} × ${size.height} px · ${scale}×` : '—'}</output>
+      <output aria-live="polite">{size ? `${size.width} × ${size.height} px` : '—'}</output>
       <div className={s.zoomControls} aria-label={t('画布视图控制', 'Canvas view controls')}>
         <Tooltip borderless content={t('缩小', 'Zoom out')}>
           <IconButton variant="ghost" size="sm" label={t('缩小', 'Zoom out')} disabled={editing || !scene} onClick={() => adjust(-0.15)}><MinusIcon size={15} /></IconButton>

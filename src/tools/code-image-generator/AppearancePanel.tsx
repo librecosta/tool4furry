@@ -2,11 +2,12 @@ import { useId, useRef, type ReactNode } from 'react';
 import { Switch } from '@base-ui/react/switch';
 import { CaretDownIcon, ImageSquareIcon } from '@phosphor-icons/react';
 import { Button } from '../../ui/Button';
-import { SelectField } from '../../ui/SelectField';
+import { NumberStepper } from '../../ui/NumberStepper';
 import { SliderField } from '../../ui/SliderField';
 import { TextField } from '../../ui/TextField';
 import { families } from './fonts';
-import { palettes, presets, themes, type Background, type CodeImageSettings, type Preset } from './settings';
+import { palettes, presets, themes, type Background, type CodeImageSettings, type FontId, type Preset, type SyntaxTheme } from './settings';
+import { StudioChoices } from './StudioChoices';
 import s from './studio.module.scss';
 
 export type Translate = (zh: string, en: string) => string;
@@ -31,30 +32,12 @@ export function StudioToggle({ label, checked, change }: { label: string; checke
   </div>;
 }
 
-function StudioNumber({ label, value, min, max, step = 1, change }: {
-  label: string; value: number; min: number; max: number; step?: number; change: (number: number) => void;
-}) {
-  return <label className={s.number}>
-    <span>{label}</span>
-    <input key={value} type="number" min={min} max={max} step={step} defaultValue={value}
-      onKeyDown={event => { if (event.key === 'Enter') event.currentTarget.blur(); }}
-      onBlur={event => {
-        const input = event.currentTarget;
-        const parsed = input.valueAsNumber;
-        if (!Number.isFinite(parsed)) { input.value = String(value); return; }
-        const adjusted = Math.max(min, Math.min(max, parsed));
-        const next = step < 1 ? +adjusted.toFixed(2) : Math.round(adjusted);
-        input.value = String(next);
-        if (next !== value) change(next);
-      }} />
-  </label>;
-}
-
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return <section className={s.section}><h3>{title}</h3>{children}</section>;
 }
 
-const options = (entries: [string, string][]) => entries.map(([value, label]) => ({ value, label }));
+const themeChoices = (Object.keys(themes) as SyntaxTheme[]).map(id => [id, themes[id]] as const);
+const fontChoices = (Object.keys(families) as FontId[]).map(id => [id, families[id]] as const);
 const swatch = (background: Background) =>
   background.kind === 'radial' ? `radial-gradient(circle, ${background.first}, ${background.second})` :
   `linear-gradient(${background.angle}deg, ${background.first}, ${background.second})`;
@@ -65,8 +48,10 @@ export function AppearancePanel({ t, settings, selected, thumbnails, imageName, 
   const background = (patch: Partial<Background>) => change({ background: { ...back, ...patch } });
   const colors = back.kind === 'linear' || back.kind === 'radial';
   const number = (key: 'fontSize' | 'radius' | 'padding' | 'lineHeight' | 'tabWidth' | 'firstLine' | 'width' | 'height',
-    label: string, min: number, max: number, step?: number) =>
-    <StudioNumber label={label} value={settings[key]} min={min} max={max} step={step} change={value => change({ [key]: value })} />;
+    label: string, min: number, max: number, step = 1) =>
+    <NumberStepper label={label} value={settings[key]} min={min} max={max} step={step} fractionDigits={key === 'lineHeight' ? 2 : 0}
+      locale={t('zh-CN', 'en')} decreaseLabel={t('减小', 'Decrease: ') + label}
+      increaseLabel={t('增大', 'Increase: ') + label} onValueChange={value => change({ [key]: value })} />;
 
   return <aside className={s.appearance} aria-label={t('外观设置', 'Appearance')}>
     <Section title={t('艺术预设', 'Art presets')}>
@@ -81,9 +66,10 @@ export function AppearancePanel({ t, settings, selected, thumbnails, imageName, 
       </div>
     </Section>
     <Section title={t('背景', 'Background')}>
-      <SelectField appearance="quiet" label={t('背景类型', 'Background type')} value={back.kind}
-        options={options([['solid', t('纯色', 'Solid')], ['linear', t('线性渐变', 'Linear gradient')], ['radial', t('径向渐变', 'Radial gradient')], ['transparent', t('透明', 'Transparent')], ['image', t('本地图片', 'Local image')]])}
-        onValueChange={kind => background({ kind: kind as Background['kind'] })} />
+      <StudioChoices<Background['kind']> label={t('背景类型', 'Background type')} value={back.kind}
+        options={[[ 'solid', t('纯色', 'Solid')], ['linear', t('线性渐变', 'Linear gradient')],
+          ['radial', t('径向渐变', 'Radial gradient')], ['transparent', t('透明', 'Transparent')], ['image', t('本地图片', 'Local image')]]}
+        change={kind => background({ kind })} />
       {(colors || back.kind === 'solid') && <div className={s.colorRow}>
         <label title={t('起始颜色', 'Start color')}>
           <input aria-label={t('起始颜色', 'Start color')} type="color" value={back.first} onChange={e => background({ first: e.target.value })} />
@@ -117,18 +103,13 @@ export function AppearancePanel({ t, settings, selected, thumbnails, imageName, 
     <Section title={t('代码窗口', 'Code window')}>
       <TextField className={s.textField} label={t('展示标题', 'Display title')} maxLength={120}
         value={settings.title} onChange={title => change({ title })} />
-      <div className={s.pair}>
-        <SelectField appearance="quiet" label={t('语法主题', 'Syntax theme')} value={settings.theme}
-          options={options(Object.entries(themes))} onValueChange={theme => change({ theme: theme as CodeImageSettings['theme'] })} />
-        <SelectField appearance="quiet" label={t('窗口样式', 'Window style')} value={settings.style}
-          options={options([['macos', 'macOS'], ['windows', 'Windows'], ['minimal', 'Minimal']])}
-          onValueChange={style => change({ style: style as CodeImageSettings['style'] })} />
-      </div>
-      <div className={s.fontRow}>
-        <SelectField appearance="quiet" label={t('字体', 'Font')} value={settings.font}
-          options={options(Object.entries(families))} onValueChange={font => change({ font: font as CodeImageSettings['font'] })} />
-        {number('fontSize', t('字号', 'Size'), 8, 72)}
-      </div>
+      <StudioChoices label={t('语法主题', 'Syntax theme')} value={settings.theme}
+        options={themeChoices} change={theme => change({ theme })} />
+      <StudioChoices<CodeImageSettings['style']> label={t('窗口样式', 'Window style')} value={settings.style}
+        options={[[ 'macos', 'macOS'], ['windows', 'Windows'], ['minimal', 'Minimal']]} change={style => change({ style })} />
+      <StudioChoices label={t('字体', 'Font')} value={settings.font}
+        options={fontChoices} change={font => change({ font })} />
+      {number('fontSize', t('字号', 'Size'), 8, 72)}
       <div className={s.toggles}>
         <StudioToggle label={t('标题栏', 'Title bar')} checked={settings.titleBar} change={titleBar => change({ titleBar })} />
         <StudioToggle label={t('显示行号', 'Line numbers')} checked={settings.lines} change={lines => change({ lines })} />
@@ -146,9 +127,9 @@ export function AppearancePanel({ t, settings, selected, thumbnails, imageName, 
           {number('firstLine', t('起始行号', 'First line number'), 1, 999999)}
         </div>
         <StudioToggle label={t('图片自动换行', 'Wrap in artwork')} checked={settings.wrap} change={wrap => change({ wrap })} />
-        <SelectField appearance="quiet" label={t('画布尺寸', 'Canvas size')} value={settings.size}
-          options={options([['auto', t('适应代码', 'Fit code')], ['custom', t('自定义', 'Custom')], ['1:1', '1:1'],
-            ['4:3', '4:3'], ['16:9', '16:9'], ['4:5', '4:5']])} onValueChange={size => change({ size: size as CodeImageSettings['size'] })} />
+        <StudioChoices<CodeImageSettings['size']> label={t('画布尺寸', 'Canvas size')} value={settings.size}
+          options={[[ 'auto', t('适应代码', 'Fit code')], ['custom', t('自定义', 'Custom')], ['1:1', '1:1'],
+            ['4:3', '4:3'], ['16:9', '16:9'], ['4:5', '4:5']]} change={size => change({ size })} />
         {settings.size === 'custom' && <div className={s.pair}>
           {number('width', t('宽 (px)', 'Width (px)'), 80, 8192)}
           {number('height', t('高 (px)', 'Height (px)'), 80, 8192)}

@@ -13,6 +13,7 @@
 | `Button.tsx` / `Button` | 原生 button 属性和 ref；`variant`: primary/secondary/ghost/danger，`size`: sm/md；默认 type=button；disabled/loading 禁止操作，loading 保留文字占位与宽度 |
 | `Button.tsx` / `IconButton` | 同上，必须提供 `label` 作为 aria-label，children 放图标 |
 | `TextField.tsx` / `TextField`, `TextAreaField` | `value: string`、`onChange(value: string)`、label/hint/error/disabled/required；保留适用的原生输入属性 |
+| `NumberStepper.tsx` / `NumberStepper` | 下划线数字输入及左右步进图标。受控 `value` / `onValueChange`，提供标签和加减按钮的可访问名称，可设置 min/max、步长、小数位和 locale。支持直接输入、方向键调整及 Enter 确认 |
 | `SelectField.tsx` / `SelectField` | `value: string`、`onValueChange(string)`、`options: {value,label,disabled?}[]`、placeholder；空字符串表示未选；选项应使用非空唯一 value。触发器、菜单和选项统一无边框，悬停、键盘焦点及选中态由底色与选中勾区分。触发器和选项使用快速过渡，菜单使用短暂淡入淡出，遵循减少动态效果偏好。`appearance="quiet"` 使用面板底色 |
 | `CheckboxField.tsx` / `CheckboxField` | `checked: boolean`、`onCheckedChange(boolean)`、label/hint/error/disabled/required |
 | `SliderField.tsx` / `SliderField` | 单值 `value: number`、`onValueChange(number)`、min/max/step、label/hint/error/disabled、可选 unit/name；默认 0–100、步长 1 |

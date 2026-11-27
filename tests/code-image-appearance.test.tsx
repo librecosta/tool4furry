@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect, it, vi } from 'vitest';
 import { AppearancePanel } from '../src/tools/code-image-generator/AppearancePanel';
@@ -22,10 +22,11 @@ it('exposes rendered presets and keeps background, syntax theme and window contr
 
   await user.click(screen.getByRole('button', { name: 'Glacier blue' }));
   expect(change).toHaveBeenLastCalledWith({ background: palettes[3].colors });
-  await user.click(screen.getByRole('combobox', { name: 'Syntax theme' }));
-  await user.click(await screen.findByRole('option', { name: 'Nord' }));
+  const theme = within(screen.getByRole('radiogroup', { name: 'Syntax theme' }));
+  expect(theme.getByRole('radio', { name: 'GitHub Dark', checked: true })).toBeTruthy();
+  await user.click(theme.getByRole('radio', { name: 'Nord' }));
   expect(change).toHaveBeenLastCalledWith({ theme: 'nord' });
-  await user.click(screen.getByRole('combobox', { name: 'Window style' }));
-  await user.click(await screen.findByRole('option', { name: 'Windows' }));
+  const windowStyle = within(screen.getByRole('radiogroup', { name: 'Window style' }));
+  await user.click(windowStyle.getByRole('radio', { name: 'Windows' }));
   expect(change).toHaveBeenLastCalledWith({ style: 'windows' });
 });
