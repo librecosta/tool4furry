@@ -1,4 +1,5 @@
 import { ArrowsOutCardinalIcon, ImageSquareIcon } from '@phosphor-icons/react';
+import type { ReactNode } from 'react';
 import { Button } from '../../ui/Button';
 import { NumberStepper } from '../../ui/NumberStepper';
 import { SliderField } from '../../ui/SliderField';
@@ -19,9 +20,13 @@ export type PhotoControlsProps = PhotoInputState & {
   panY: boolean;
 };
 
-export function PhotoControls({ t, controls, outer = false }: { t: Translate; controls: PhotoControlsProps; outer?: boolean }) {
+export function PhotoControls({ t, controls, outer = false, children }: {
+  t: Translate; controls: PhotoControlsProps; outer?: boolean; children?: ReactNode;
+}) {
   const { photo, pending, error, choose, placement, change, reset, dragging, drag, panX, panY } = controls;
-  const title = photo ? t('更换图片', 'Replace image') : t('导入图片', 'Import image');
+  const title = outer
+    ? photo ? t('更换图片', 'Replace image') : t('导入图片', 'Import image')
+    : photo ? t('更换窗口图片', 'Replace window image') : t('导入窗口图片', 'Import window image');
   const label = outer ? t('画布背景图片', 'Canvas background image') : t('窗口背景图片', 'Window background image');
   const position = (axis: 'x' | 'y', label: string, available: boolean) =>
     <NumberStepper label={label} decreaseLabel={t('减小', 'Decrease ') + label} increaseLabel={t('增大', 'Increase ') + label}
@@ -39,6 +44,7 @@ export function PhotoControls({ t, controls, outer = false }: { t: Translate; co
         <span className={s.imageName} title={photo.name}>{photo.name}</span>
         <span>{photo.bitmap.width} × {photo.bitmap.height}</span>
       </div>
+      {children}
       <StudioChoices<PhotoPlacement['fit']> label={t('图片适应方式', 'Image fit')} value={placement.fit}
         options={[[ 'contain', t('完整显示', 'Contain')], ['cover', t('铺满裁切', 'Cover')]]} change={fit => change({ fit })} />
       <SliderField label={t('图片缩放', 'Image zoom')} value={placement.zoom} min={100} max={maxPhotoZoom} unit="%"

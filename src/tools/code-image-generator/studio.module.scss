@@ -166,7 +166,8 @@
     gap: 8px;
     background: transparent;
   }
-  .stagePhotoPrompt button span { gap: 7px; }
+  .stageImport { border: 0; }
+  .stageImport span { gap: 7px; }
 
   .zoomControls { background: var(--t4f-input-surface); gap: 0; }
   .zoomControls button { min-width: 32px; padding-inline: 7px; }

@@ -5,7 +5,8 @@ import { NumberStepper } from '../../ui/NumberStepper';
 import { SliderField } from '../../ui/SliderField';
 import { TextField } from '../../ui/TextField';
 import { families } from './fonts';
-import { palettes, presets, themes, type Background, type CodeImageSettings, type FontId, type Preset, type SyntaxTheme } from './settings';
+import { palettes, presets, themes, type Background, type CodeImageSettings, type FontId, type Preset,
+  type SyntaxTheme, type WindowLayers } from './settings';
 import { StudioChoices } from './StudioChoices';
 import { PhotoControls, type PhotoControlsProps } from './PhotoControls';
 import s from './studio.module.scss';
@@ -18,10 +19,8 @@ type Props = {
   thumbnails: Record<Preset, string>;
   canvasPhoto: PhotoControlsProps;
   windowPhoto: PhotoControlsProps;
-  windowBackground: 'theme' | 'image';
-  changeWindowBackground: (kind: 'theme' | 'image') => void;
-  windowOpacity: number;
-  changeWindowOpacity: (opacity: number) => void;
+  windowLayers: WindowLayers;
+  changeWindowLayers: (patch: Partial<WindowLayers>) => void;
   change: (settings: Partial<CodeImageSettings>) => void;
   selectPreset: (preset: Preset) => void;
 };
@@ -30,7 +29,7 @@ export function StudioToggle({ label, checked, change }: { label: string; checke
   const id = useId();
   return <div className={s.toggleRow}>
     <label htmlFor={id}>{label}</label>
-    <Switch.Root id={id} className={s.switch} checked={checked} onCheckedChange={change}>
+    <Switch.Root id={id} aria-label={label} className={s.switch} checked={checked} onCheckedChange={change}>
       <Switch.Thumb className={s.thumb} />
     </Switch.Root>
   </div>;
@@ -47,8 +46,7 @@ const swatch = (background: Background) =>
   `linear-gradient(${background.angle}deg, ${background.first}, ${background.second})`;
 
 export function AppearancePanel({
-  t, settings, selected, thumbnails, canvasPhoto, windowPhoto, windowBackground, changeWindowBackground,
-  windowOpacity, changeWindowOpacity, change, selectPreset,
+  t, settings, selected, thumbnails, canvasPhoto, windowPhoto, windowLayers, changeWindowLayers, change, selectPreset,
 }: Props) {
   const back = settings.background;
   const background = (patch: Partial<Background>) => change({ background: { ...back, ...patch } });
@@ -115,11 +113,16 @@ export function AppearancePanel({
         options={themeChoices} change={theme => change({ theme })} />
       <StudioChoices<CodeImageSettings['style']> label={t('窗口样式', 'Window style')} value={settings.style}
         options={[[ 'macos', 'macOS'], ['windows', 'Windows'], ['minimal', 'Minimal']]} change={style => change({ style })} />
-      <StudioChoices<'theme' | 'image'> label={t('窗口背景', 'Window background')} value={windowBackground}
-        options={[[ 'theme', t('主题底色', 'Theme color')], ['image', t('本地图片', 'Local image')]]} change={kind => changeWindowBackground(kind)} />
-      {windowBackground === 'image' && <PhotoControls t={t} controls={windowPhoto} />}
-      <SliderField label={t('窗口背景不透明度', 'Window background opacity')} value={windowOpacity}
-        min={0} max={100} unit="%" onValueChange={changeWindowOpacity} />
+      <StudioToggle label={t('窗口底色', 'Window base color')} checked={windowLayers.baseVisible}
+        change={baseVisible => changeWindowLayers({ baseVisible })} />
+      {windowLayers.baseVisible && <SliderField label={t('底色不透明度', 'Base color opacity')} value={windowLayers.baseOpacity}
+        min={0} max={100} unit="%" onValueChange={baseOpacity => changeWindowLayers({ baseOpacity })} />}
+      <PhotoControls t={t} controls={windowPhoto}>
+        <StudioToggle label={t('显示窗口图片', 'Show window image')} checked={windowLayers.photoVisible}
+          change={photoVisible => changeWindowLayers({ photoVisible })} />
+        {windowLayers.photoVisible && <SliderField label={t('图片不透明度', 'Image opacity')} value={windowLayers.photoOpacity}
+          min={0} max={100} unit="%" onValueChange={photoOpacity => changeWindowLayers({ photoOpacity })} />}
+      </PhotoControls>
       <StudioChoices label={t('字体', 'Font')} value={settings.font}
         options={fontChoices} change={font => change({ font })} />
       {number('fontSize', t('字号', 'Size'), 8, 72)}

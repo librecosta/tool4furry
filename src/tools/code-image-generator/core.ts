@@ -1,6 +1,6 @@
 import { fail } from '../general/bounds';
 import type { Highlight, HighlightToken } from './highlight-data';
-import type { Background, CodeImageSettings, PhotoPlacement, Scale } from './settings';
+import type { Background, CodeImageSettings, PhotoPlacement, Scale, WindowLayers } from './settings';
 
 export const maxEdge = 8192;
 export const maxPixels = 40_000_000;
@@ -35,8 +35,8 @@ type PlacedPhoto = Photo & ReturnType<typeof placePhoto>;
 export type CodeImageScene = CodeImageLayout & {
   background: Background;
   canvasPhoto?: PlacedPhoto;
-  windowPhoto?: PlacedPhoto;
-  windowOpacity: number;
+  windowPhoto?: PlacedPhoto & { opacity: number };
+  windowBaseOpacity: number;
 };
 
 export function outputSize(width: number, height: number, scale: Scale) {
@@ -287,10 +287,12 @@ export function placePhoto(source: PhotoSize, frame: Box, placement: PhotoPlacem
   };
 }
 
-export function composeScene(layout: CodeImageLayout, background: Background, canvas: Photo | undefined, window: Photo | undefined, opacity: number): CodeImageScene {
+export function composeScene(layout: CodeImageLayout, background: Background, canvas: Photo | undefined, window: Photo | undefined, layers: WindowLayers): CodeImageScene {
   return {
-    ...layout, background, windowOpacity: opacity / 100,
+    ...layout, background, windowBaseOpacity: layers.baseVisible ? layers.baseOpacity / 100 : 0,
     canvasPhoto: canvas && { ...canvas, ...placePhoto(canvas.bitmap, { x: 0, y: 0, width: layout.width, height: layout.height }, canvas.placement) },
-    windowPhoto: window && { ...window, ...placePhoto(window.bitmap, layout.window, window.placement) },
+    windowPhoto: window && layers.photoVisible && layers.photoOpacity > 0
+      ? { ...window, ...placePhoto(window.bitmap, layout.window, window.placement), opacity: layers.photoOpacity / 100 }
+      : undefined,
   };
 }

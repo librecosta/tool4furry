@@ -42,6 +42,14 @@ export type PhotoPlacement = { fit: 'contain' | 'cover'; zoom: number; x: number
 export const defaultPhotoPlacement: PhotoPlacement = { fit: 'contain', zoom: 100, x: 0, y: 0 };
 export const maxPhotoZoom = 300;
 
+export type WindowLayers = {
+  baseVisible: boolean;
+  baseOpacity: number;
+  photoVisible: boolean;
+  photoOpacity: number;
+};
+export const defaultWindowLayers: WindowLayers = { baseVisible: true, baseOpacity: 100, photoVisible: false, photoOpacity: 40 };
+
 export type Background = {
   kind: BackgroundKind;
   first: string;

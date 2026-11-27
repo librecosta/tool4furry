@@ -138,7 +138,7 @@ export function Stage({ t, editing, scene, font, scale, size, status, error, pho
           {photoPrompt.error && <span role="alert" className={s.photoError}>{photoPrompt.error}</span>}
           {photoPrompt.pending
             ? <span role="status">{t('正在读取背景图片…', 'Reading background image…')}</span>
-            : <Button variant="primary" onClick={photoPrompt.choose}>
+            : <Button className={s.stageImport} variant="primary" onClick={photoPrompt.choose}>
               <ImageSquareIcon size={18} aria-hidden="true" /> {t('导入背景图片', 'Import background image')}
             </Button>}
         </div> : (!scene || error) && <div role={error ? 'alert' : 'status'} className={s.stageNotice}>{error || status}</div>}

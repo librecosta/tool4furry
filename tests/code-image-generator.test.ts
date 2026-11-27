@@ -3,7 +3,7 @@ import { composeScene, gradientLine, layoutCode, lineRanges, outputSize, placePh
 import { createCodeNamer } from '../src/tools/code-image-generator/delivery';
 import { highlightCode } from '../src/tools/code-image-generator/highlight';
 import { plainHighlight } from '../src/tools/code-image-generator/highlight-data';
-import { defaultPhotoPlacement, defaults, languageForFile, presets, sampleCode, themes } from '../src/tools/code-image-generator/settings';
+import { defaultPhotoPlacement, defaults, defaultWindowLayers, languageForFile, presets, sampleCode, themes } from '../src/tools/code-image-generator/settings';
 
 const measure: Measure = (text, size) => ({
   width: [...text].reduce((sum, char) => sum + (/\p{Script=Han}/u.test(char) ? size : size / 2), 0),
@@ -76,7 +76,7 @@ describe('Code Image layout and delivery', () => {
   it('varies window chrome and provides eight independent artwork presets', () => {
     const tokens = plainHighlight(sampleCode);
     const results = Object.values(presets).map(preset =>
-      composeScene(layoutCode(tokens, { ...defaults, ...preset }, measure), preset.background, undefined, undefined, 100));
+      composeScene(layoutCode(tokens, { ...defaults, ...preset }, measure), preset.background, undefined, undefined, defaultWindowLayers));
     expect(new Set(results.map(scene => JSON.stringify(scene))).size).toBe(8);
     const mac = layoutCode(tokens, defaults, measure);
     const windows = layoutCode(tokens, { ...defaults, style: 'windows' }, measure);
@@ -133,14 +133,23 @@ describe('Code Image layout and delivery', () => {
     const canvas = { bitmap: { width: 100, height: 200 } as ImageBitmap, placement: defaultPhotoPlacement };
     const window = { bitmap: { width: 300, height: 100 } as ImageBitmap,
       placement: { ...defaultPhotoPlacement, fit: 'cover', x: 32 } as const };
-    const scene = composeScene(layout, { ...defaults.background, kind: 'image' }, canvas, window, 35);
+    const background = { ...defaults.background, kind: 'image' } as const;
+    const layers = { ...defaultWindowLayers, photoVisible: true, photoOpacity: 35, baseOpacity: 72 };
+    const scene = composeScene(layout, background, canvas, window, layers);
     expect(scene.canvasPhoto?.bitmap).toBe(canvas.bitmap);
     expect(scene.windowPhoto?.bitmap).toBe(window.bitmap);
     expect(scene.canvasPhoto?.bounds).toEqual(placePhoto(canvas.bitmap, { x: 0, y: 0, width: layout.width, height: layout.height }, canvas.placement).bounds);
     expect(scene.windowPhoto?.bounds).toEqual(placePhoto(window.bitmap, layout.window, window.placement).bounds);
-    expect(scene.windowOpacity).toBe(0.35);
+    expect(scene.windowPhoto?.opacity).toBe(0.35);
+    expect(scene.windowBaseOpacity).toBe(0.72);
     expect(scene.text).toBe(layout.text);
     expect(scene.shapes).toBe(layout.shapes);
+    expect(composeScene(layout, background, canvas, window, { ...layers, baseVisible: false }))
+      .toMatchObject({ windowBaseOpacity: 0, windowPhoto: { opacity: 0.35 } });
+    expect(composeScene(layout, background, canvas, window, { ...layers, photoVisible: false }))
+      .toMatchObject({ windowBaseOpacity: 0.72, windowPhoto: undefined });
+    expect(composeScene(layout, background, canvas, window, { ...layers, photoOpacity: 0 }))
+      .toMatchObject({ windowBaseOpacity: 0.72, windowPhoto: undefined });
   });
   it('prevents same-millisecond collisions and keeps lawful Unicode titles', () => {
     const time = new Date(2026, 10, 26, 22, 55, 30, 128);

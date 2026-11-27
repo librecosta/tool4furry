@@ -14,7 +14,7 @@ function frame(canvas: HTMLCanvasElement, width: number, height: number) {
 }
 
 export function paintCanvas(canvas: HTMLCanvasElement, scene: CodeImageScene, font: FontId, scaledWidth: number, scaledHeight: number, matte?: string) {
-  const { width, height, background, canvasPhoto, window, windowRadius, windowOpacity, windowPhoto } = scene;
+  const { width, height, background, canvasPhoto, window, windowRadius, windowBaseOpacity, windowPhoto } = scene;
   const ctx = frame(canvas, scaledWidth, scaledHeight);
   ctx.scale(scaledWidth / width, scaledHeight / height);
   if (matte) {
@@ -48,18 +48,20 @@ export function paintCanvas(canvas: HTMLCanvasElement, scene: CodeImageScene, fo
     scene.shadows.forEach(shape => paintShape(ctx, shape));
     ctx.restore();
   }
-  if (windowOpacity > 0) {
+  if (windowBaseOpacity > 0 || windowPhoto) {
     ctx.save();
-    ctx.globalAlpha = windowOpacity;
     ctx.beginPath();
     roundWindow();
-    if (windowPhoto) {
-      const { bitmap, bounds } = windowPhoto;
-      ctx.clip();
-      ctx.drawImage(bitmap, bounds.x, bounds.y, bounds.width, bounds.height);
-    } else {
+    if (windowBaseOpacity > 0) {
+      ctx.globalAlpha = windowBaseOpacity;
       ctx.fillStyle = scene.windowColor;
       ctx.fill();
+    }
+    if (windowPhoto) {
+      const { bitmap, bounds } = windowPhoto;
+      ctx.globalAlpha = windowPhoto.opacity;
+      ctx.clip();
+      ctx.drawImage(bitmap, bounds.x, bounds.y, bounds.width, bounds.height);
     }
     ctx.restore();
   }
@@ -138,16 +140,17 @@ async function svgPhoto({ bitmap, bounds }: NonNullable<CodeImageScene['canvasPh
   }
 }
 
-async function svgWindow({ width, height, window, windowRadius, windowColor, windowOpacity, windowPhoto, shadows }: CodeImageScene) {
+async function svgWindow({ width, height, window, windowRadius, windowColor, windowBaseOpacity, windowPhoto, shadows }: CodeImageScene) {
   const outline = `${svgBox(window)} rx="${n(windowRadius)}"`;
   const shadow = !shadows.length ? '' :
     `<defs><mask id="window-shadow" maskUnits="userSpaceOnUse" x="0" y="0" width="${width}" height="${height}">` +
     `<rect width="${width}" height="${height}" fill="white"/><rect ${outline} fill="black"/></mask></defs>` +
     `<g mask="url(#window-shadow)">${shadows.map(svgShape).join('')}</g>`;
-  if (windowOpacity === 0) return shadow;
-  if (!windowPhoto) return shadow + `<rect ${outline} ${paint('fill', windowColor, windowOpacity)}/>`;
+  const base = windowBaseOpacity > 0 ? `<rect ${outline} ${paint('fill', windowColor, windowBaseOpacity)}/>` : '';
+  if (!windowPhoto) return shadow + base;
   const clip = `<defs><clipPath id="window-photo"><rect ${outline}/></clipPath></defs>`;
-  return shadow + clip + await svgPhoto(windowPhoto, ` clip-path="url(#window-photo)" opacity="${n(windowOpacity)}"`);
+  const photo = await svgPhoto(windowPhoto, ` opacity="${n(windowPhoto.opacity)}"`);
+  return shadow + base + clip + `<g clip-path="url(#window-photo)">${photo}</g>`;
 }
 
 export async function renderSvg(scene: CodeImageScene, font: FontId) {

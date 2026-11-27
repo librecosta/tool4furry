@@ -30,8 +30,9 @@ import { highlightBudget } from './highlight-data';
 import { useHighlight } from './use-highlight';
 import { useLocalPhoto } from './use-local-photo';
 import type { PhotoControlsProps } from './PhotoControls';
-import { defaultPhotoPlacement, defaultPreset, defaults, languageForFile, languages, presets, sampleCode, scales,
-  type CodeImageSettings, type Language, type OutputFormat, type PhotoPlacement, type PhotoTarget, type Preset, type Scale } from './settings';
+import { defaultPhotoPlacement, defaultPreset, defaults, defaultWindowLayers, languageForFile, languages, presets, sampleCode, scales,
+  type CodeImageSettings, type Language, type OutputFormat, type PhotoPlacement, type PhotoTarget, type Preset, type Scale,
+  type WindowLayers } from './settings';
 import license from './code-image.NOTICE.txt?url&no-inline';
 import editorLicense from '../../ui/text-editor/codemirror.NOTICE.txt?url&no-inline';
 import s from './studio.module.scss';
@@ -56,11 +57,13 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
   const [editing, setEditing] = useState(false);
   const [filename, setFilename] = useState('');
   const [placements, setPlacements] = useState(photoDefaults);
-  const [windowBackground, setWindowBackground] = useState<'theme' | 'image'>('theme');
-  const [windowOpacity, setWindowOpacity] = useState(100);
+  const [windowLayers, setWindowLayers] = useState(defaultWindowLayers);
   const [dragTarget, setDragTarget] = useState<PhotoTarget>();
   const canvasInput = useLocalPhoto(locale, () => resetPlacement('canvas'));
-  const windowInput = useLocalPhoto(locale, () => resetPlacement('window'));
+  const windowInput = useLocalPhoto(locale, () => {
+    resetPlacement('window');
+    changeWindowLayers({ photoVisible: true });
+  });
   const [scale, setScale] = useState<Scale>(2);
   const [format, setFormat] = useState<OutputFormat>('png');
   const [quality, setQuality] = useState(90);
@@ -106,7 +109,7 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
   useEffect(() => () => { sourceRead.current++; revision.current++; }, []);
 
   const canvasBitmap = settings.background.kind === 'image' ? canvasInput.photo?.bitmap : undefined;
-  const windowBitmap = windowBackground === 'image' ? windowInput.photo?.bitmap : undefined;
+  const windowBitmap = windowInput.photo?.bitmap;
   const picture = useMemo(() => {
     if (!tokens || readyFont?.request !== fontRequest || readyFont.error || (settings.background.kind === 'image' && !canvasBitmap)) return {};
     const canvas = document.createElement('canvas');
@@ -125,8 +128,8 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
   const scene = useMemo(() => picture.layout && composeScene(
     picture.layout, settings.background,
     canvasBitmap && { bitmap: canvasBitmap, placement: placements.canvas },
-    windowBitmap && { bitmap: windowBitmap, placement: placements.window }, windowOpacity,
-  ), [picture.layout, settings.background, canvasBitmap, windowBitmap, placements, windowOpacity]);
+    windowBitmap && { bitmap: windowBitmap, placement: placements.window }, windowLayers,
+  ), [picture.layout, settings.background, canvasBitmap, windowBitmap, placements, windowLayers]);
   const dimensions = useMemo(() => {
     if (!picture.layout) return {};
     try { return { output: outputSize(picture.layout.width, picture.layout.height, scale) }; }
@@ -137,7 +140,7 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
     revision.current++;
     setMessage('');
     setActionError('');
-  }, [code, language, settings, canvasBitmap, windowBitmap, placements, windowOpacity, scale, quality]);
+  }, [code, language, settings, canvasBitmap, windowBitmap, placements, windowLayers, scale, quality]);
   useLayoutEffect(() => {
     if (editing && editFocus.current) {
       editFocus.current = false;
@@ -165,8 +168,7 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
   }
   function changePreset(id: Preset) {
     setSettings(previous => ({ ...previous, ...presets[id] }));
-    setWindowBackground('theme');
-    setWindowOpacity(100);
+    setWindowLayers(defaultWindowLayers);
     setDragTarget(undefined);
     setPreset(id);
   }
@@ -195,10 +197,16 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
     changePlacement(target, photoDefaults[target]);
     setDragTarget(active => active === target ? undefined : active);
   }
+  function changeWindowLayers(patch: Partial<WindowLayers>) {
+    if (patch.photoVisible === false || patch.photoOpacity === 0) {
+      setDragTarget(target => target === 'window' ? undefined : target);
+    }
+    setWindowLayers(previous => ({ ...previous, ...patch }));
+    setPreset(undefined);
+  }
   function photoControls(target: PhotoTarget): PhotoControlsProps {
     const input = target === 'canvas' ? canvasInput : windowInput;
     const photo = target === 'canvas' ? scene?.canvasPhoto : scene?.windowPhoto;
-    const onCanvas = target === 'canvas' || windowOpacity > 0;
     return {
       ...input,
       placement: placements[target],
@@ -211,8 +219,8 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
         setDragTarget(target);
         root.current?.querySelector('[data-code-stage]')?.scrollIntoView({ block: 'nearest' });
       },
-      panX: onCanvas && !!photo && photo.travelX > 0.01,
-      panY: onCanvas && !!photo && photo.travelY > 0.01,
+      panX: !!photo && photo.travelX > 0.01,
+      panY: !!photo && photo.travelY > 0.01,
     };
   }
   function reset() {
@@ -225,8 +233,7 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
     canvasInput.clear();
     windowInput.clear();
     setPlacements(photoDefaults);
-    setWindowBackground('theme');
-    setWindowOpacity(100);
+    setWindowLayers(defaultWindowLayers);
     setDragTarget(undefined);
     setScale(2);
     setFormat('png');
@@ -362,24 +369,15 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
         <Stage t={t} editing={editing} scene={artwork} font={settings.font} scale={format === 'svg' ? 1 : scale}
           size={artwork && (format === 'svg' ? artwork : dimensions.output)} status={loadingText}
           photoPrompt={emptyImage ? canvasInput : undefined}
-          dragTarget={windowOpacity === 0 && dragTarget === 'window' ? undefined : dragTarget}
+          dragTarget={dragTarget}
           movePhoto={(target, position) => changePlacement(target, position)}
           error={visualError} report={e => setActionError(errorText(e, locale))}
           fullscreen={fullscreen} toggleFullscreen={() => void toggleFullscreen()} beginEdit={edit}
           editor={<TextEditor value={code} ariaLabel={t('源码', 'Source code')} extensions={editorBindings}
             onChange={value => { sourceRead.current++; setCode(value); }} />} />
         <AppearancePanel t={t} settings={settings} selected={preset} thumbnails={thumbnails} canvasPhoto={photoControls('canvas')}
-          windowPhoto={photoControls('window')} windowBackground={windowBackground} windowOpacity={windowOpacity}
-          changeWindowBackground={kind => {
-            if (kind === 'theme') setDragTarget(target => target === 'window' ? undefined : target);
-            setWindowBackground(kind);
-            setPreset(undefined);
-          }}
-          changeWindowOpacity={opacity => {
-            if (opacity === 0) setDragTarget(target => target === 'window' ? undefined : target);
-            setWindowOpacity(opacity);
-            setPreset(undefined);
-          }} change={change} selectPreset={changePreset} />
+          windowPhoto={photoControls('window')} windowLayers={windowLayers} changeWindowLayers={changeWindowLayers}
+          change={change} selectPreset={changePreset} />
       </div>
       {(actionError || rasterError || message || (tokens?.fallback && language !== 'text')) && <div className={s.feedback}>
         {(actionError || rasterError) && <p role="alert">{actionError || rasterError}</p>}
