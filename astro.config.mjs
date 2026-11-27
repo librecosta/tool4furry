@@ -122,6 +122,7 @@ export default defineConfig({
             const markdownAvailable = toolDefines['import.meta.env.T4F_TOOL_MARKDOWN_EDITOR_AVAILABLE'] === 'true';
             const codeImageAvailable = toolDefines['import.meta.env.T4F_TOOL_CODE_IMAGE_GENERATOR_AVAILABLE'] === 'true';
             const svgConverterAvailable = toolDefines['import.meta.env.T4F_TOOL_SVG_CONVERTER_AVAILABLE'] === 'true';
+            const regexAvailable = toolDefines['import.meta.env.T4F_TOOL_REGEX_TESTER_AVAILABLE'] === 'true';
             const audioPrivate = /\/(?:src\/tools\/audio-trimmer\/(?!definition\.ts$)|node_modules\/(?:mediabunny|wavesurfer\.js|@mediabunny)\/)/;
             const qrPrivate = /\/(?:src\/tools\/qr-code-generator\/(?!definition\.ts$)|node_modules\/(?:qrcode|jsqr)\/)/;
             const markdownPrivate = /\/(?:src\/tools\/markdown-editor\/(?!definition\.ts$)|node_modules\/(?:@codemirror\/lang-markdown|@lezer\/markdown|dompurify|marked|katex)\/)/;
@@ -166,6 +167,9 @@ export default defineConfig({
                 }
                 if (!svgConverterAvailable && svgConverterPrivate.test(source)) {
                   this.error('SVG Converter Draft module in ' + chunk.fileName + ': ' + source);
+                }
+                if (!regexAvailable && /\/(?:src\/tools\/regex-tester\/(?!definition\.ts$)|node_modules\/@eslint-community\/regexpp\/)/.test(source)) {
+                  this.error('Regex Tester Draft module in ' + chunk.fileName + ': ' + source);
                 }
                 if (!audioAvailable && audioPrivate.test(source)) {
                   this.error('Audio Trimmer Draft implementation in ' + chunk.fileName + ': ' + source);

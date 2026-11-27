@@ -1,10 +1,10 @@
-import { StrictMode, useState } from 'react';
+import { createRef, StrictMode, useState } from 'react';
 import { act, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { EditorView, ViewPlugin } from '@codemirror/view';
 import { EditorState } from '@codemirror/state';
 import { undo, redo, insertNewline } from '@codemirror/commands';
-import { TextEditor } from '../src/ui/text-editor/TextEditor';
+import { TextEditor, type TextEditorHandle } from '../src/ui/text-editor/TextEditor';
 import { editorDOM } from './fixtures/editor-dom';
 
 const view = (label = 'Editor') =>
@@ -120,4 +120,16 @@ it('maps external changes without change callbacks or rebuilding the view; updat
   expect(editor.state.doc.length).toBe(0);
   expect(changed).not.toHaveBeenCalled();
   expect(editor.state.facet(EditorState.readOnly)).toBe(false);
+});
+
+it('can locate a UTF-16 range and replace the selection with an undoable insertion', () => {
+  const editorRef = createRef<TextEditorHandle>();
+  render(<TextEditor ariaLabel="Editor" value="a🦊b" editorRef={editorRef} />);
+  const editor = view();
+  act(() => editorRef.current!.focusAt(1, 3));
+  expect(editor.state.sliceDoc(editor.state.selection.main.from, editor.state.selection.main.to)).toBe('🦊');
+  act(() => editorRef.current!.insert('中'));
+  expect(editor.state.doc.toString()).toBe('a中b');
+  act(() => undo(editor));
+  expect(editor.state.doc.toString()).toBe('a🦊b');
 });

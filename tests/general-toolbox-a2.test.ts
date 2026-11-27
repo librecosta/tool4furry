@@ -62,7 +62,7 @@ describe('second general toolbox batch', () => {
         text: 'abc',
         replacement: 'x',
       }),
-    ).toEqual({ matches: [], replaced: 'abc' });
+    ).toMatchObject({ matches: [], count: 0, replaced: 'abc' });
     expect(() =>
       evaluateRegex({ pattern: '[', flags: 'g', text: 'a', replacement: '' }),
     ).toThrow();

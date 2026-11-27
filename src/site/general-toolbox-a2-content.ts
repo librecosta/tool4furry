@@ -13,7 +13,7 @@ export const generalToolboxA2Content = {
         '查看高亮、捕获组并复制替换结果。',
       ],
       limitations: [
-        '使用 JavaScript RegExp，可能与其他引擎不同。表达式最多 500 字符、文本 20 万字符、1000 处匹配；Worker 超时会终止，过于复杂的表达式须简化。',
+        '使用浏览器原生 JavaScript RegExp。表达式最多 16 Ki、测试文本最多 2 Mi UTF-16 单元。匹配记录和捕获数据达到预算后标记为部分结果，超时任务会终止。',
         '所有文件与文本仅在当前浏览器本地处理，不上传、不持久保存。',
       ],
     },
@@ -29,7 +29,7 @@ export const generalToolboxA2Content = {
         'review highlights and capture groups, then copy the replacement result.',
       ],
       limitations: [
-        'Uses JavaScript RegExp semantics, which may differ from other engines. Limits: 500 pattern characters, 200,000 text characters and 1,000 matches. Timed-out workers are terminated; simplify complex expressions.',
+        'Uses the browser’s native JavaScript RegExp. Expressions and test text are limited to 16 Ki and 2 Mi UTF-16 code units. Match or capture limits produce marked partial results. Timed-out tasks are terminated.',
         'Files and text stay in your browser, without uploads or persistent storage.',
       ],
     },

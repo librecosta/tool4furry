@@ -1401,6 +1401,9 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
   if (!published.some(tool => tool.id === 'svg-converter'))
     assert(!/data-svg-converter-studio|imagedataToTracedata|Cyclic or excessively nested SVG references/.test(js),
       'Draft SVG Converter code leaked: ' + file);
+  if (!published.some(tool => tool.id === 'regex-tester'))
+    assert(!/data-regex-workbench|data-regex-railroad|t4f-regex/.test(js),
+      'Draft Regex Tester code leaked: ' + file);
   assert(!/@stylexjs|virtual:stylex|stylex-dev-css/.test(js), `Retired styling runtime leaked: ${file}`);
   for (const id of ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'])
     if (!files.includes(`tools/${id}/index.html`)) assert(!js.includes(`data-${id}`), `Draft ${id} implementation leaked: ${file}`);
@@ -1444,6 +1447,11 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
 // extracting native modules must not pull private Draft/Lab CSS into production.
 const cssFiles = files.filter(file => file.endsWith('.css'));
 const outputCSS = await Promise.all(cssFiles.map(file => readFile(resolve(root, file), 'utf8')));
+if (!published.some(tool => tool.id === 'regex-tester')) {
+  assert(!files.some(file => /(?:^|\/)(?:RegexTester|regex\.worker|regexpp\.NOTICE)[.-]/.test(file)),
+    'Draft Regex Tester entries, Worker and notices stay private');
+  assert(!outputCSS.some(source => source.includes('.rx-capture-token')), 'Draft Regex Tester styles stay private');
+}
 if (!published.some(tool => tool.id === 'svg-converter')) {
   assert(!files.some(file => /(?:^|\/)(?:SvgConverter|BitmapStudio|vectorize\.worker|svg-converter\.NOTICE)[.-]/.test(file)),
     'Draft SVG Converter entries, Worker and notices stay private');

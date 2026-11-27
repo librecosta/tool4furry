@@ -42,3 +42,12 @@ it('hard-stops a hung expression rather than blocking the page', async () => {
   await rejected;
   expect(FakeWorker.all[0].terminate).toHaveBeenCalledOnce();
 });
+it('rejects unavailable workers, prior cancellation and oversized payloads without running a fallback', async () => {
+  vi.stubGlobal('Worker', undefined);
+  await expect(runRegex(request, new AbortController().signal)).rejects.toMatchObject({ issue: { code: 'worker' } });
+  vi.stubGlobal('Worker', FakeWorker);
+  await expect(runRegex(request, AbortSignal.abort())).rejects.toMatchObject({ issue: { code: 'cancelled' } });
+  await expect(runRegex({ ...request, pattern: 'x'.repeat(16 * 1024 + 1) }, new AbortController().signal))
+    .rejects.toMatchObject({ issue: { code: 'pattern-limit' } });
+  expect(FakeWorker.all).toHaveLength(0);
+});

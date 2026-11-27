@@ -18,7 +18,8 @@ import notice from './codemirror.NOTICE.txt?url';
 import s from './TextEditor.module.scss';
 
 export interface TextEditorHandle {
-  focusAt(offset: number): void;
+  focusAt(offset: number, end?: number): void;
+  insert(text: string): void;
 }
 
 export interface TextEditorProps {
@@ -96,14 +97,21 @@ export function TextEditor({
   const callback = useRef(onChange),
     lastValue = useRef(value);
   useImperativeHandle(editorRef, () => ({
-    focusAt(offset) {
+    focusAt(offset, end = offset) {
       const editor = view.current;
-      if (!editor || !Number.isFinite(offset)) return;
-      const anchor = Math.max(0, Math.min(editor.state.doc.length, Math.trunc(offset)));
+      if (!editor || !Number.isFinite(offset) || !Number.isFinite(end)) return;
+      const clamp = (position: number) => Math.max(0, Math.min(editor.state.doc.length, Math.trunc(position)));
+      const anchor = clamp(offset);
       editor.dispatch({
-        selection: { anchor },
+        selection: { anchor, head: clamp(end) },
         effects: EditorView.scrollIntoView(anchor, { y: 'center' }),
       });
+      editor.focus();
+    },
+    insert(text) {
+      const editor = view.current;
+      if (!editor || editor.state.readOnly) return;
+      editor.dispatch(editor.state.replaceSelection(text), { scrollIntoView: true, userEvent: 'input' });
       editor.focus();
     },
   }), []);

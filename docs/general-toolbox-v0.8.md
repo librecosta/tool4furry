@@ -299,7 +299,7 @@
 | `csv-json-converter` | 双栏 CodeMirror、双向转换、表格分页、UTF-8 CSV/TSV/JSON、完整下载 | CSV 输入 64 MiB，JSON 输入 16 Mi UTF-16 单元及 500,000 个节点，输出 64 MiB。[B18-D1](#csv--json-converter--v08-b18-d1) |
 | `code-image-generator` | CodeMirror、23 种高亮语言及纯文本、12 套语法主题、8 套外观预设、PNG/SVG/JPEG/WebP | Shiki 专属 Worker、按需字体；图像预算 40 MP、单边 8192px。[B19-D1](#code-image-generator--v08-b19-d1) |
 | `svg-converter` | SVG 栅格化、位图矢量化、图片封装 | 独立静态 SVG 校验；PNG、JPEG、WebP、AVIF、多尺寸 ICO 及两种 SVG 输出。[B20-D1](#svg-converter--v08-b20-d1) |
-| `regex-tester` | JavaScript flags、实时高亮/数量/捕获组、替换/复制 | 局部 Worker，1500ms 超时真实 terminate；表达式 500 字符、文本 20 万字符、1000 处匹配；与其他引擎可能不同 |
+| `regex-tester` | 匹配、替换、提取、测试用例、AST 解释及结构图 | 原生 JavaScript Worker、精确 UTF-16 索引及有界输出。[B21-D1](#regex-tester--v08-b21-d1) |
 | `uuid-generator` | 安全 UUIDv4 单个/批量、大小写、逐项/全部复制、TXT | 每批 1–1000；仅使用 Crypto.getRandomValues，不提供其他 UUID 版本 |
 
 文件和文本均不上传、不持久保存。PDF/原文件归档不承诺清理来源元数据。删除、清空或改变参数会作废结果；有界异步操作取消后仍等实际结束才释放当前执行槽。下载 URL 延时撤销，预览 URL 在失效/卸载时释放。
@@ -417,3 +417,13 @@ SVG 文件预算为 32 MiB。超过 512 Ki UTF-16 单元的文件可验证、预
 SVG 转换获得 CN/Global Published 源码资格。两地区每区生成 52 个工具详情页，SVG 转换的中英文页面各有专属像素图标、四项使用步骤、六项限制及四组 FAQ。公开目录、相关推荐、Sitemap 和 llms.txt 使用 `svg-converter`。
 
 CodeMirror 查找扩展由 SVG 转换和 Markdown 编辑器按需共用。BitmapStudio 只在打开位图模式时载入，描摹 Worker 仅在开始矢量化时启动，ImageTracerJS 仅在执行普通描摹时请求。AVIF 保留共享编码链的设备资格与独立限制。[双地区浏览器、实际文件输出及 L3 范围](evidence/b20-svg-converter/README.md#b20-d2-正式产物验收)
+
+## Regex Tester — V0.8-B21-D1
+
+表达式与测试文本使用 CodeMirror。匹配区、表达式和详情共用捕获组配色。位置使用左闭右开的 UTF-16 索引。零宽匹配使用编辑器标记，捕获范围可位于完整匹配之外。浏览器支持时，内部使用 `d` 获取精确范围。
+
+匹配、替换、提取与测试用例共享表达式和 Flags。替换按 JavaScript 字符串替换规则逐段检查预算，差异有独立预算。提取支持 TXT、JSON 和 CSV。TXT 将空字符串和未参与的捕获都写为空字段，JSON 用 `""` 和 `null` 分别表示，CSV 用 `matched` 和 `absent` 状态列区分。
+
+regexpp 4.12.3（MIT）提供 ECMAScript AST，驱动双语解释及 SVG 结构图。编译与执行结果以浏览器原生 RegExp 为准。默认 240 ms 防抖，Worker 默认时限 1500 ms，手动最长 5000 ms，取消和超时均终止当前 Worker。输入变动后即时禁止交付旧结果。
+
+源码继续保持 CN/Global Draft。两地区正式构建排除专属工作区、Worker、regexpp、结构图、示例库、样式和许可证。[B21 预算、浏览器与文件复检](evidence/b21-regex-tester/README.md)

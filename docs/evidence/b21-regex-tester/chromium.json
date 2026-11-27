@@ -1,0 +1,49 @@
+{
+  "chromium": "156.0.8078.4",
+  "cn": {
+    "defaultStatus": "完成 · 4 处匹配 · 0.50 ms",
+    "width": {
+      "width": 1280,
+      "scroll": 1280
+    },
+    "groupColors": [
+      "color(srgb 0.482353 0.827451 0.737255 / 0.23)",
+      "color(srgb 0.619608 0.74902 0.956863 / 0.23)"
+    ]
+  },
+  "replaceName": "regex-replace-20261127-205911-986.txt",
+  "extractNames": {
+    "txt": "样本-20261127-205913-868.txt",
+    "json": "样本-20261127-205914-837.json",
+    "csv": "样本-20261127-205915-402.csv"
+  },
+  "timeout": {
+    "status": "执行超时",
+    "wallMs": 1814,
+    "recovery": "完成 · 1 处匹配 · 0.20 ms",
+    "cancel": "已取消",
+    "workers": {
+      "open": 14,
+      "closed": 13
+    }
+  },
+  "large": {
+    "utf16Units": 2097152,
+    "status": "完成 · 1 处匹配 · 0.20 ms",
+    "clickToResultMs": 108,
+    "expansion": {
+      "status": "部分结果 · 9 条已保留 · 0.80 ms",
+      "notice": "超出输出预算（16 Mi UTF-16 单元或构建操作上限）。"
+    },
+    "partial": "部分结果 · 10000 条已保留 · 5.30 ms",
+    "ast": "native syntax valid; diagram and AST pools capped"
+  },
+  "global": {
+    "width": {
+      "width": 390,
+      "scroll": 390
+    },
+    "status": "Tests complete · 0.30 ms",
+    "emulatedView": true
+  }
+}
