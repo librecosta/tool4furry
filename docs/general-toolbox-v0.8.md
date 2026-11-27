@@ -1,6 +1,6 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast / Audio Trimmer / Markdown Editor / Video Frame Extractor / CSV / JSON Converter 已获得 CN/Global Published 源码资格，其余 5 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（24 Published / 5 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast / Audio Trimmer / Markdown Editor / Video Frame Extractor / CSV / JSON Converter / Code Image Generator 已获得 CN/Global Published 源码资格，其余 4 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（25 Published / 4 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
 ## Video Frame Extractor — V0.8-B17-D1
 
@@ -392,10 +392,10 @@ Shiki JavaScript 正则引擎在专属 Worker 内按需加载语言和主题。�
 
 B19-D1-P1 接入 Creative Collection · Vol. 01。画布和窗口可分别选择 23 张内置素材或本地文件。窗口选择器优先排列 Catalog 推荐项，并保留全部六类素材。打开选择器加载 WebP 缩略图，确认内置素材后请求对应同源 AVIF。两种来源共用校验、解码、构图及导出。资料来源按 Catalog 保留，素材包说明中的署名及许可独立核验尚未完成。[素材库与验收](evidence/b19-code-image/README.md#共享创意素材库)
 
-工具继续保持 Draft。Shiki、字体、预设缩图、独立样式、Worker 和 NOTICE 仅从该工具加载链交付，两个地区的正式构建排除这些资源。[B19 浏览器与图片复检](evidence/b19-code-image/README.md)
+Shiki、字体、预设缩图、独立样式、Worker 和 NOTICE 仅从该工具加载链交付。[B19 浏览器与图片复检](evidence/b19-code-image/README.md)
 
 ### B19-D2 双语 SEO 与发布复核
 
 静态页面与 Registry 已更新双语文案，涵盖四项步骤、六项限制和四组 FAQ。窗口阴影默认纵向偏移为 5 px，可分别调整两轴。预览和导出共用场景。
 
-Creative Collection · Vol. 01 的当前素材包未提供独立 AVIF 和 WebP 再分发所需的授权证明。保留原 Catalog 和素材，代码分享图维持 CN/Global Draft，两地区正式产物各有 48 个工具详情页。[来源与候选构建验收](evidence/b19-code-image/README.md#b19-d2-发布复核)
+维护者确认按现有素材交付，并明确批准提升代码分享图的 CN/Global 源码资格。两地区正式产物各有 50 个工具详情页，Creative Collection · Vol. 01 随工具按需交付。[来源记录与构建验收](evidence/b19-code-image/README.md#b19-d2-发布复核)

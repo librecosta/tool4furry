@@ -72,23 +72,25 @@ Chromium 156 的两个验收视口均确认首页、图片格式转换和代码�
 
 维护者确认素材按 Pixabay 通用许可取得。原 ZIP 和 Catalog 保留 23 项原始文件名、尺寸、哈希与处理记录，未附逐图源页、再分发许可或额外授权。两个素材 `pastel-spectrum` 和 `apricot-gradient` 的文件名无法定位原始作品。可由文件名追溯的示例 `winter-wolf` 对应 colfelly 的 Pixabay 作品 1992716，官方页面显示 2017 年 1 月 19 日发布。单一作品的发布记录不能作为整套素材的授权依据。[Pixabay 作品页](https://pixabay.com/photos/wolf-howling-animal-wild-nature-1992716/)
 
-Pixabay 第 4 节说明 2019 年 1 月 9 日之前发布的内容适用 CC0 规则，第 5 节的通用许可限制独立分发基本保持原样的内容，并把仅缩放或裁切列为独立使用。作品内的合成使用与分发独立素材文件分别适用条款中的条件。首批素材的 AVIF 和 WebP 以基本相同的构图单独交付，格式转换和缩略图缩放不足以确认整套素材的再分发权限。Registry 仍为 Draft。Catalog、素材字节及历史保持原样，未补写许可证标签。[Pixabay 完整条款](https://pixabay.com/service/terms/)
+Pixabay 第 4 节说明 2019 年 1 月 9 日之前发布的内容适用 CC0 规则，第 5 节的通用许可限制独立分发基本保持原样的内容，并把仅缩放或裁切列为独立使用。作品内的合成使用与分发独立素材文件分别适用条款中的条件。格式转换和缩略图缩放不足以独立确认首批素材的再分发权限。维护者随后明确批准按现有素材推进源码发布。Catalog、素材字节及历史保持原样，未补写许可证标签。[Pixabay 完整条款](https://pixabay.com/service/terms/)
 
 ### 构建与浏览器验收
 
-以工作区当前 Registry 构建的 CN、Global 正式产物各有 48 个工具详情页，创意图片、选择器和代码分享图路由均为 0。另外在 Git 忽略目录中复制源码，仅将代码分享图设为 Published，生成两地区供本机验收的候选产物。两地区各有 50 个工具详情页。四个候选页面核对静态 Title、Description、唯一 H1、像素图标、四项步骤、六项限制及四组 FAQ，并验证 Canonical、hreflang、OG/Twitter、Sitemap、llms.txt、目录与相关推荐。
+提升源码资格前，CN、Global 正式产物各有 48 个工具详情页，创意图片、选择器和代码分享图路由均为 0。另在 Git 忽略目录中复制源码，仅将代码分享图设为 Published，生成两地区供本机验收的候选产物。两地区各有 50 个工具详情页。四个候选页面核对静态 Title、Description、唯一 H1、像素图标、四项步骤、六项限制及四组 FAQ，并验证 Canonical、hreflang、OG/Twitter、Sitemap、llms.txt、目录与相关推荐。
 
 | 产物 | 工具详情页 | 静态文件数 | 静态文件总字节 |
 | --- | ---: | ---: | ---: |
-| CN 正式 | 48 | 692 | 27,816,471 |
-| Global 正式 | 48 | 692 | 27,796,894 |
+| CN 提升前正式 | 48 | 692 | 27,816,471 |
+| Global 提升前正式 | 48 | 692 | 27,796,894 |
 | CN 本地候选 | 50 | 834 | 40,476,048 |
 | Global 本地候选 | 50 | 834 | 40,455,777 |
+| CN Published 正式 | 50 | 834 | 40,476,046 |
+| Global Published 正式 | 50 | 834 | 40,455,779 |
 
-每个本地候选均输出 23 张 AVIF（8,765,275 B）和 23 张 WebP（400,410 B），均与 Catalog 对应的仓库文件逐字节相同。最大素材为 `golden-clouds` AVIF（833,513 B）。全站最大单文件为既有 3,485,872 B WASM。文件数和最大单文件低于 Cloudflare Workers Static Assets 与 EdgeOne Makers 公布的限额。两地区实际 CDN 响应头、缓存与线上分发留待部署验证。[Cloudflare 限额](https://developers.cloudflare.com/workers/platform/limits/) · [EdgeOne 限额](https://edgeone.ai/document/211893332490612736)
+每地区候选和 Published 正式产物均输出 23 张 AVIF（8,765,275 B）和 23 张 WebP（400,410 B），均与 Catalog 对应的仓库文件逐字节相同。最大素材为 `golden-clouds` AVIF（833,513 B）。全站最大单文件为既有 3,485,872 B WASM。文件数和最大单文件低于 Cloudflare Workers Static Assets 与 EdgeOne Makers 公布的限额。两地区实际 CDN 响应头、缓存与线上分发留待部署验证。[Cloudflare 限额](https://developers.cloudflare.com/workers/platform/limits/) · [EdgeOne 限额](https://edgeone.ai/document/211893332490612736)
 
-Chromium 156 在 CN 中文 Dark 1280px 桌面及 Global 英文 Light 390px 模拟视口操作候选产物。覆盖英文示例、源码导入和编辑、语言、主题、预设、Fira Code 字体、重点行和窗口样式、全屏、阴影两轴偏移、两层内置图片、本地文件替换及窗口图片透明度。样本在两个视口都通过真实源码及 PNG 剪贴板读取。首页、图片格式转换和代码分享图初始状态均为 0 个创意图片请求。打开选择器后加载 WebP，筛选与待选均无 AVIF 请求。首次确认仅请求翡翠极光 AVIF。桌面延迟请求被取消，加载失败保留已生效图片。[Chromium 验收与网络记录](d2-browser.json)
+Chromium 156 在 CN 中文 Dark 1280px 桌面及 Global 英文 Light 390px 模拟视口复测 Published 正式产物。覆盖英文示例、源码导入和编辑、语言、主题、预设、Fira Code 字体、重点行和窗口样式、全屏、阴影两轴偏移、两层内置图片、本地文件替换及窗口图片透明度。样本在两个视口都通过真实源码及 PNG 剪贴板读取。首页、图片格式转换和代码分享图初始状态均为 0 个创意图片请求。打开选择器后加载 WebP，筛选与待选均无 AVIF 请求。首次确认仅请求翡翠极光 AVIF。桌面延迟请求被取消，加载失败保留已生效图片。[Chromium 验收与网络记录](d2-browser.json)
 
 两个视口实际下载 PNG、JPEG、WebP 和 SVG。Pillow 独立解码三种 1304 × 734 位图，复检 PNG 透明通道。ElementTree 解析 652 × 367 SVG，核对两张内嵌 PNG、四个 WOFF2 字体和随附 OFL，无脚本或事件属性。离线 Chromium 打开 SVG 无图片或字体请求。两个视口在同一毫秒各导出两次，第二个文件名带 `-2`。D1 的 JPEG 白底、Unicode、Tab、自动换行、渲染预算以及八套预设和十二套主题证据仍适用。已核对工具 NOTICE 中 Shiki 核心 MIT 和三套 Fontsource OFL 对应包的完整许可。[独立文件及构建复检](d2-file-checks.json)
 
-`pnpm check`（603 文件，0 诊断）、161 项定向测试及两地区正式构建通过。L3 尚未验证 Firefox、Safari、移动真机以及低内存设备的最大输出预算。
+提升后 `pnpm check`（603 文件，0 诊断）、237 项定向测试及两地区正式构建通过。四个正式页面通过静态 SEO、目录、推荐、Sitemap 和 llms.txt 检查。QR、其余三款 Draft、Lab 和 Fixture 继续隔离。两地区复测的四种格式输出与候选阶段的 SHA-256 一致。L3 尚未验证 Firefox、Safari、移动真机以及低内存设备的最大输出预算。

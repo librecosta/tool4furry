@@ -153,6 +153,50 @@
       "allFiles": 834,
       "allBytes": 40455777,
       "largestStaticFileBytes": 3485872
+    },
+    "cn-published": {
+      "image": {
+        "count": 23,
+        "bytes": 8765275,
+        "maxFile": {
+          "name": "golden-clouds.CJ85EmCe.avif",
+          "bytes": 833513
+        }
+      },
+      "thumbnail": {
+        "count": 23,
+        "bytes": 400410,
+        "maxFile": {
+          "name": "slate-marble.Cxy6-i7B.webp",
+          "bytes": 52768
+        }
+      },
+      "details": 50,
+      "allFiles": 834,
+      "allBytes": 40476046,
+      "largestStaticFileBytes": 3485872
+    },
+    "global-published": {
+      "image": {
+        "count": 23,
+        "bytes": 8765275,
+        "maxFile": {
+          "name": "golden-clouds.CJ85EmCe.avif",
+          "bytes": 833513
+        }
+      },
+      "thumbnail": {
+        "count": 23,
+        "bytes": 400410,
+        "maxFile": {
+          "name": "slate-marble.Cxy6-i7B.webp",
+          "bytes": 52768
+        }
+      },
+      "details": 50,
+      "allFiles": 834,
+      "allBytes": 40455779,
+      "largestStaticFileBytes": 3485872
     }
   }
 }

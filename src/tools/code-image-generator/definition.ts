@@ -6,7 +6,7 @@ export const definition = {
   group: 'design-utilities',
   roles: ['developer', 'operations'],
   mode: 'form',
-  status: 'draft',
+  status: 'published',
   regions: ['cn', 'global'],
   copy: {
     zh: {
