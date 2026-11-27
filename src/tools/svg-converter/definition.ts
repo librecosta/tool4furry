@@ -6,18 +6,18 @@ export const definition = {
   group: 'design-utilities',
   roles: ['painter', 'developer', 'animator'],
   mode: 'form',
-  status: 'draft',
+  status: 'published',
   regions: ['cn', 'global'],
   copy: {
     zh: {
       title: 'SVG 转换',
-      summary: '在 SVG 与位图之间转换，或将图片封装进 SVG。',
-      description: '栅格化静态 SVG、描摹位图轮廓或生成内嵌图片的 SVG。',
+      summary: '在 SVG 与常见图片格式之间自由转换。',
+      description: '转换 SVG 与位图，支持高清栅格化、矢量化、ICO 图标生成及图片封装。',
     },
     en: {
       title: 'SVG Converter',
-      summary: 'Convert between SVG and raster images, or embed an image in SVG.',
-      description: 'Rasterize static SVGs, trace bitmap outlines or create an SVG with an embedded image.',
+      summary: 'Convert between SVG and common image formats.',
+      description: 'Convert between SVG and raster images with high-resolution rasterization, vectorization, ICO generation and image embedding.',
     },
   },
 } satisfies ToolDefinition;

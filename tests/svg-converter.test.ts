@@ -132,12 +132,13 @@ it('keeps Embed separate and avoids timestamp collisions', () => {
   expect(name('示例.svg', 'png', at)).toBe('示例-20260102-030405-006-2.png');
 });
 
-it('replaces the single Draft entry in the registry', () => {
+it('publishes a single SVG Converter entry in both regions', () => {
   const tool = tools.find(item => item.id === 'svg-converter');
-  expect(tool).toMatchObject({ status: 'draft', slug: 'svg-converter', regions: ['cn', 'global'], copy: { zh: { title: 'SVG 转换' }, en: { title: 'SVG Converter' } } });
+  expect(tool).toMatchObject({ status: 'published', slug: 'svg-converter', regions: ['cn', 'global'], copy: { zh: { title: 'SVG 转换' }, en: { title: 'SVG Converter' } } });
   expect(tools).toHaveLength(29);
   for (const region of ['cn', 'global'] as const) {
-    expect(getAvailableTools(region, false)).toHaveLength(25);
-    expect(getAvailableTools(region, false)).not.toContain(tool);
+    expect(getAvailableTools(region, false)).toHaveLength(26);
+    expect(getAvailableTools(region, false)).toContain(tool);
+    expect(getAvailableTools(region, true).some(item => item.slug === 'svg-to-png')).toBe(false);
   }
 });

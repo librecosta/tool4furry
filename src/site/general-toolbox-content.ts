@@ -1024,4 +1024,58 @@ export const generalToolboxContent = {
       ],
     },
   },
+  'svg-converter': {
+    zh: {
+      title: '在线 SVG 转换工具 - SVG 转图片与位图矢量化 | Tool4Furry',
+      description: '在线转换 SVG 与 PNG、JPEG、WebP、AVIF 图片，支持高清栅格化、多尺寸 ICO 图标生成、彩色及黑白位图矢量化、像素艺术转换与 SVG 图片封装。无需上传文件。',
+      h1: 'SVG 转换',
+      intro: '在矢量图形与位图之间自由转换。通过 SVG 栅格化、位图矢量化和图片封装三种模式，生成高清图片、网站图标或可编辑的 SVG 图形，适用于设计素材、插画、Logo、线稿及像素艺术。',
+      steps: [
+        '**选择转换模式：** 根据需要选择 SVG 栅格化、位图矢量化或图片封装。',
+        '**导入文件：** 打开 SVG 或受支持的位图文件，也可以直接粘贴并编辑 SVG 源码。',
+        '**调整转换设置：** 设置输出格式、分辨率、背景、矢量化预设或图片适应方式，并查看预览效果。',
+        '**保存结果：** 确认转换结果后下载图片、ICO 或 SVG 文件，也可以使用浏览器支持的剪贴板功能。',
+      ],
+      limitations: [
+        'SVG 栅格化支持 PNG、JPEG、WebP、AVIF 和 ICO。PNG 等普通位图输出最大边长为 16384px、最多 4000 万像素；复杂效果、AVIF 编码及设备能力具有独立限制。',
+        'SVG 文件最大为 32 MiB。较大的源码采用受限的大文件展示模式。支持常见静态形状、路径、文字、渐变、蒙版、裁切及受支持的 CSS，不保证兼容所有 SVG 文档。',
+        '位图矢量化支持 PNG、JPEG、WebP 和 AVIF，提供彩色、黑白及像素艺术转换。常规描摹工作分辨率最多约 400 万像素，高分辨率图片可能需要降采样处理。',
+        '矢量化属于图形重建过程，复杂照片、渐变和细微纹理可能产生简化。Pixel Art 模式以保留像素结构为目标，半透明颜色精度可能受浏览器解码方式影响。',
+        '图片封装生成包含内嵌位图的自包含 SVG，不会将原图转换为真正的矢量路径。ICO 支持 16、32、48、64、128 和 256px 尺寸。',
+        '不支持脚本、外部资源、不受支持的动画及超出安全预算的 SVG。所有文件读取、转换和导出均在浏览器内完成，不上传或持久保存用户文件。',
+      ],
+      faq: [
+        { question: 'SVG 可以转换成哪些图片格式？', answer: '支持将静态 SVG 转换为 PNG、JPEG、WebP、AVIF 和 ICO。可以调整输出尺寸、倍率及背景，其中支持透明通道的格式能够保留图形透明区域。' },
+        { question: '如何将 PNG 或 JPG 图片转换为真正的 SVG？', answer: '选择位图矢量化模式，导入图片并选择合适的描摹预设。工具会根据颜色和轮廓生成矢量路径，而不是简单地将原始图片嵌入 SVG 文件。' },
+        { question: '位图矢量化与图片封装有什么区别？', answer: '位图矢量化会重新构建可缩放的矢量图形，外观可能有所变化。图片封装则保留位图内容，将其放入 SVG 文档，不会获得真正的无限缩放能力。' },
+        { question: '可以使用 SVG 生成网站 favicon 图标吗？', answer: '可以。选择 ICO 输出格式，并选取所需图标尺寸。工具支持在一个 ICO 文件中包含多个尺寸，适用于网站图标及其他支持 ICO 的使用场景。' },
+      ],
+    },
+    en: {
+      title: 'Online SVG Converter - SVG to Images & Image Vectorization | Tool4Furry',
+      description: 'Convert SVG to PNG, JPEG, WebP, AVIF or ICO. Turn raster images into vector paths, preserve pixel art or embed images in SVG. Process files locally in your browser.',
+      h1: 'SVG Converter',
+      intro: 'Convert between vector graphics and raster images with three dedicated modes: SVG rasterization, bitmap vectorization and image embedding. Create high-resolution images, website icons and editable SVG graphics from logos, illustrations, line art and pixel art.',
+      steps: [
+        '**Choose a conversion mode:** Select SVG rasterization, bitmap vectorization or image embedding.',
+        '**Import your file:** Open an SVG or supported raster image, or paste and edit SVG source code directly.',
+        '**Adjust conversion settings:** Configure output formats, dimensions, backgrounds, vectorization presets or image fitting, and review the preview.',
+        '**Save the result:** Download the converted image, ICO or SVG file, or use supported clipboard features.',
+      ],
+      limitations: [
+        'SVG rasterization supports PNG, JPEG, WebP, AVIF and ICO. Standard raster exports support a maximum edge of 16,384 pixels and a 40-megapixel budget. Complex effects, AVIF encoding and device capabilities have separate limits.',
+        'SVG files are limited to 32 MiB. Large source documents use a restricted display mode. Common static shapes, paths, text, gradients, masks, clipping and supported CSS are accepted, but compatibility with every SVG document is not guaranteed.',
+        'Bitmap vectorization accepts PNG, JPEG, WebP and AVIF, with color, black-and-white and pixel art modes. Standard tracing uses a working resolution of up to approximately four megapixels. Larger images may require downsampling.',
+        "Vectorization reconstructs graphics and may simplify complex photographs, gradients and fine textures. Pixel Art mode aims to preserve pixel structure, while semi-transparent color precision can depend on the browser's decoding method.",
+        'Image embedding creates a self-contained SVG containing raster image data rather than reconstructed vector paths. ICO exports support 16, 32, 48, 64, 128 and 256-pixel sizes.',
+        'Scripts, external resources, unsupported animations and SVG documents exceeding safety budgets are not supported. Files are read, converted and exported locally in your browser without uploads or persistent storage.',
+      ],
+      faq: [
+        { question: 'Which formats can I convert SVG files to?', answer: 'Static SVG files can be converted to PNG, JPEG, WebP, AVIF and ICO. You can adjust output dimensions, scaling and backgrounds, while compatible formats can preserve transparency.' },
+        { question: 'How can I convert a PNG or JPG into a real SVG?', answer: 'Choose bitmap vectorization, import your image and select a suitable tracing preset. The converter reconstructs vector paths from image colors and contours instead of simply embedding the original bitmap.' },
+        { question: 'What is the difference between vectorization and image embedding?', answer: 'Vectorization reconstructs scalable vector graphics and may change their appearance. Image embedding preserves raster content inside an SVG document without making it infinitely scalable.' },
+        { question: 'Can I generate a website favicon from an SVG?', answer: 'Yes. Select ICO as the output format and choose the required icon sizes. A single ICO file can contain multiple resolutions for website icons and other compatible applications.' },
+      ],
+    },
+  },
 } satisfies ToolContentMap;

@@ -1,0 +1,271 @@
+{
+  "images": {
+    "cn-code-bundled.png": {
+      "format": "PNG",
+      "width": 486,
+      "height": 367,
+      "alpha": [
+        255,
+        255
+      ],
+      "bytes": 118110,
+      "embedded_images": 0,
+      "embedded_font": true
+    },
+    "cn-code-dual.png": {
+      "format": "PNG",
+      "width": 652,
+      "height": 367,
+      "alpha": [
+        224,
+        255
+      ],
+      "bytes": 367314,
+      "embedded_images": 2,
+      "embedded_font": true
+    },
+    "cn-code-local.png": {
+      "format": "PNG",
+      "width": 486,
+      "height": 367,
+      "alpha": [
+        255,
+        255
+      ],
+      "bytes": 32724,
+      "embedded_images": 1,
+      "embedded_font": true
+    },
+    "cn-complex.png": {
+      "format": "PNG",
+      "width": 256,
+      "height": 192,
+      "alpha": [
+        0,
+        255
+      ],
+      "bytes": 38360
+    },
+    "cn-embed-roundtrip.png": {
+      "format": "PNG",
+      "width": 400,
+      "height": 320,
+      "alpha": [
+        0,
+        255
+      ],
+      "bytes": 7046
+    },
+    "cn-high.png": {
+      "format": "PNG",
+      "width": 3324,
+      "height": 3389,
+      "alpha": [
+        0,
+        255
+      ],
+      "bytes": 400012
+    },
+    "cn-librecosta.avif": {
+      "format": "AVIF",
+      "width": 1662,
+      "height": 1695,
+      "alpha": [
+        0,
+        255
+      ],
+      "bytes": 44158
+    },
+    "cn-librecosta.jpg": {
+      "format": "JPEG",
+      "width": 3324,
+      "height": 3389,
+      "alpha": [
+        255,
+        255
+      ],
+      "bytes": 201593
+    },
+    "cn-librecosta.webp": {
+      "format": "WEBP",
+      "width": 3324,
+      "height": 3389,
+      "alpha": [
+        0,
+        255
+      ],
+      "bytes": 78834
+    },
+    "cn-pixel-roundtrip.png": {
+      "format": "PNG",
+      "width": 32,
+      "height": 32,
+      "alpha": [
+        0,
+        255
+      ],
+      "bytes": 534
+    },
+    "global-complex.png": {
+      "format": "PNG",
+      "width": 512,
+      "height": 384,
+      "alpha": [
+        0,
+        255
+      ],
+      "bytes": 137866
+    },
+    "global-embed-roundtrip.png": {
+      "format": "PNG",
+      "width": 400,
+      "height": 320,
+      "alpha": [
+        0,
+        255
+      ],
+      "bytes": 7046
+    }
+  },
+  "ico": [
+    {
+      "size": 16,
+      "offset": 102,
+      "bytes": 597
+    },
+    {
+      "size": 32,
+      "offset": 699,
+      "bytes": 1327
+    },
+    {
+      "size": 48,
+      "offset": 2026,
+      "bytes": 2013
+    },
+    {
+      "size": 64,
+      "offset": 4039,
+      "bytes": 2699
+    },
+    {
+      "size": 128,
+      "offset": 6738,
+      "bytes": 5813
+    },
+    {
+      "size": 256,
+      "offset": 12551,
+      "bytes": 13137
+    }
+  ],
+  "vector": {
+    "cn-vector-illustration.svg": {
+      "paths": 5,
+      "bytes": 1219,
+      "dimensions": "0 0 400 320"
+    },
+    "cn-vector-line.svg": {
+      "paths": 2,
+      "bytes": 852,
+      "dimensions": "0 0 240 240"
+    },
+    "cn-vector-logo-mono.svg": {
+      "paths": 2,
+      "bytes": 1389,
+      "dimensions": "0 0 256 256"
+    },
+    "cn-vector-logo.svg": {
+      "paths": 3,
+      "bytes": 1418,
+      "dimensions": "0 0 256 256"
+    },
+    "cn-vector-photo.svg": {
+      "paths": 445,
+      "bytes": 184140,
+      "dimensions": "0 0 768 512"
+    },
+    "cn-vector-pixel.svg": {
+      "paths": 8,
+      "bytes": 1756,
+      "dimensions": "0 0 32 32"
+    },
+    "global-vector-logo-mono.svg": {
+      "paths": 2,
+      "bytes": 1389,
+      "dimensions": "0 0 256 256"
+    },
+    "global-vector-logo.svg": {
+      "paths": 3,
+      "bytes": 1418,
+      "dimensions": "0 0 256 256"
+    }
+  },
+  "embed": {
+    "cn-cover.svg": {
+      "inner": "PNG",
+      "size": [
+        400,
+        320
+      ],
+      "fit": "xMidYMid slice"
+    },
+    "cn-embed-avif.svg": {
+      "inner": "PNG",
+      "size": [
+        400,
+        320
+      ],
+      "fit": "xMidYMid meet"
+    },
+    "cn-embed-jpg.svg": {
+      "inner": "JPEG",
+      "size": [
+        400,
+        320
+      ],
+      "fit": "xMidYMid meet"
+    },
+    "cn-embed-png.svg": {
+      "inner": "PNG",
+      "size": [
+        400,
+        320
+      ],
+      "fit": "xMidYMid meet"
+    },
+    "cn-embed-webp.svg": {
+      "inner": "PNG",
+      "size": [
+        400,
+        320
+      ],
+      "fit": "xMidYMid meet"
+    },
+    "global-cover.svg": {
+      "inner": "PNG",
+      "size": [
+        400,
+        320
+      ],
+      "fit": "xMidYMid slice"
+    },
+    "global-embed-png.svg": {
+      "inner": "PNG",
+      "size": [
+        400,
+        320
+      ],
+      "fit": "xMidYMid meet"
+    }
+  },
+  "pixel_art": {
+    "pixels": 1024,
+    "diff": 0,
+    "source": "src/assets/tool-icons/svg-converter-32.png"
+  },
+  "embed_roundtrip": {
+    "pixels": 128000,
+    "diff": 0
+  }
+}

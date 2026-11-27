@@ -1,6 +1,6 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast / Audio Trimmer / Markdown Editor / Video Frame Extractor / CSV / JSON Converter / Code Image Generator 已获得 CN/Global Published 源码资格，其余 4 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（25 Published / 4 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast / Audio Trimmer / Markdown Editor / Video Frame Extractor / CSV / JSON Converter / Code Image Generator / SVG Converter 已获得 CN/Global Published 源码资格，其余 3 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（26 Published / 3 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
 ## Video Frame Extractor — V0.8-B17-D1
 
@@ -402,12 +402,18 @@ Shiki、字体、预设缩图、独立样式、Worker 和 NOTICE 仅从该工具
 
 ## SVG Converter — V0.8-B20-D1
 
-SVG 转换沿用旧工具的分类、角色和 CN/Global Draft 资格，ID、路由及专属图标统一为 `svg-converter`。双语工作区包含栅格化、矢量化及图片封装，切换后保留各自输入和设置。
+SVG 转换在 D1 沿用旧工具的分类、角色和 CN/Global Draft 资格，ID、路由及专属图标统一为 `svg-converter`。双语工作区包含栅格化、矢量化及图片封装，切换后保留各自输入和设置。
 
-- **栅格化**支持 XML 源码编辑、实时隔离预览和按最终尺寸重新绘制。普通位图预算为 40 MP、单边 16,384 px。带滤镜、蒙版或图案的输出最多 16 MP。AVIF 沿用现有设备资格、4,194,304 像素和单边 4096 px 预算。ICO 可独立绘制 16 至 256 px 六种尺寸并打包为单一容器。JPEG 默认填白底。
-- **矢量化**支持 PNG、JPEG、WebP 与 AVIF 输入。ImageTracerJS 在专属 Worker 中生成彩色或黑白轮廓，配合调色板、细节和拟合参数。普通描摹工作预算为 4 MP，界面显示实际工作分辨率。Pixel Art 只在原始像素网格上合并同色区域，保留透明度。输出通过几何数量和大小预算检查。
+- **栅格化**支持 XML 源码编辑、实时隔离预览和按最终尺寸重新绘制。普通位图预算为 40 MP、单边 16,384 px。带滤镜、蒙版或图案的输出最多 16 MP。AVIF 沿用现有设备资格、4,194,304 像素和单边 4096 px 预算。ICO 可独立绘制 16 至 256 px 六种尺寸并打包为单一容器。JPEG 默认填白底。普通位图单次编码输出上限为 256 MiB。
+- **矢量化**支持 PNG、JPEG、WebP 与 AVIF 输入。ImageTracerJS 在专属 Worker 中生成彩色或黑白轮廓，配合调色板、细节和拟合参数。普通描摹工作预算为 4 MP、单边 4096 px，界面显示实际工作分辨率。Pixel Art 只在原始像素网格上合并同色区域，保留透明度。输出通过几何数量和大小预算检查。
 - **图片封装**支持相同四种图片输入。方向适合的 PNG/JPEG 可经检查后保留现有编码，其他来源按需重新编码为 PNG 或 JPEG。SVG 自包含图片、背景与适应设置，保留位图的分辨率边界。
 
 SVG 文件预算为 32 MiB。超过 512 Ki UTF-16 单元的文件可验证、预览和栅格化，源码编辑区保留轻量模式。静态政策支持常用形状、渐变、文字、蒙版、裁切、图案、标记、滤镜、内部引用，以及受控 CSS、位图和 WOFF/WOFF2 字体。XML 与 CSS 分别解析，只有经过校验的静态文档会被加载为图片。资源引用、嵌套、几何复杂度和内嵌解码各有预算。Image Watermark 继续使用自己的静态子集。
 
 专属模块、XML 语法、描摹依赖、Worker、样式及 NOTICE 受两地区正式构建守卫约束。AVIF 继续复用现有图片工具的编码链。[B20 工作区、输出与兼容性实测](evidence/b20-svg-converter/README.md)
+
+### B20-D2 双语 SEO 与发布复核
+
+SVG 转换获得 CN/Global Published 源码资格。两地区每区生成 52 个工具详情页，SVG 转换的中英文页面各有专属像素图标、四项使用步骤、六项限制及四组 FAQ。公开目录、相关推荐、Sitemap 和 llms.txt 使用 `svg-converter`。
+
+CodeMirror 查找扩展由 SVG 转换和 Markdown 编辑器按需共用。BitmapStudio 只在打开位图模式时载入，描摹 Worker 仅在开始矢量化时启动，ImageTracerJS 仅在执行普通描摹时请求。AVIF 保留共享编码链的设备资格与独立限制。[双地区浏览器、实际文件输出及 L3 范围](evidence/b20-svg-converter/README.md#b20-d2-正式产物验收)

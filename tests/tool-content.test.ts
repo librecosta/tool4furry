@@ -50,7 +50,7 @@ describe('Astro-only content boundary', () => {
       expect(page.faq).toHaveLength(4);
       expect(page.limitations?.[2]).toMatch(/23.*24 MiB/);
       expect(page.limitations?.[4]).toMatch(/SVG.*(?:内置字体.*位图|bundled fonts.*raster)/);
-      expect(getRelatedTools(codeImage, region).map(tool => tool.id)).toEqual(['color-contrast', 'video-frame-extractor']);
+      expect(getRelatedTools(codeImage, region).map(tool => tool.id)).toEqual(['color-contrast', 'video-frame-extractor', 'svg-converter']);
     }
     expect(() => assertPublishedContent([codeImage])).not.toThrow();
   });
@@ -156,7 +156,7 @@ describe('Astro-only content boundary', () => {
       expect(page.faq).toHaveLength(4);
       expect(page.faq![1].answer).toMatch(/4\.5:1.*7:1.*3:1.*4\.5:1/);
       expect(page.faq![2].answer).toMatch(/3:1.*4\.5:1.*7:1/);
-      expect(getRelatedTools(colorContrast, region).map(tool => tool.id)).toEqual(['video-frame-extractor', 'code-image-generator']);
+      expect(getRelatedTools(colorContrast, region).map(tool => tool.id)).toEqual(['video-frame-extractor', 'code-image-generator', 'svg-converter']);
       expect(getRelatedTools(colorContrast, region, undefined, true).map(tool => tool.id))
         .toEqual(['qr-code-generator', 'video-frame-extractor', 'code-image-generator']);
       if (locale === 'en') expect(JSON.stringify(page)).not.toMatch(/\p{Script=Han}/u);

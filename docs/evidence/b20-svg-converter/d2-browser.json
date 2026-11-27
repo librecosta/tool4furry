@@ -1,0 +1,296 @@
+{
+  "browser": "156.0.8078.4",
+  "profiles": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 1000
+      },
+      "theme": "dark",
+      "downloads": [
+        {
+          "file": "high.png",
+          "bytes": 400012,
+          "suggested": "librecosta-black-white-20261127-201845-836.png"
+        },
+        {
+          "file": "librecosta.jpg",
+          "bytes": 201593,
+          "suggested": "librecosta-black-white-20261127-201846-688.jpg"
+        },
+        {
+          "file": "librecosta.webp",
+          "bytes": 78834,
+          "suggested": "librecosta-black-white-20261127-201848-639.webp"
+        },
+        {
+          "file": "librecosta.avif",
+          "bytes": 44158,
+          "suggested": "librecosta-black-white-20261127-201853-183.avif"
+        },
+        {
+          "file": "librecosta.ico",
+          "bytes": 25688,
+          "suggested": "librecosta-black-white-20261127-201853-654.ico"
+        },
+        {
+          "file": "complex.png",
+          "bytes": 38360,
+          "suggested": "librecosta-black-white-20261127-201858-124.png"
+        },
+        {
+          "file": "code-bundled.png",
+          "bytes": 118110,
+          "suggested": "greet-20261127-201858-638.png"
+        },
+        {
+          "file": "code-local.png",
+          "bytes": 32724,
+          "suggested": "local-background-20261127-201859-073.png"
+        },
+        {
+          "file": "code-dual.png",
+          "bytes": 367314,
+          "suggested": "zh-creative-20261127-201902-203.png"
+        },
+        {
+          "file": "vector-pixel.svg",
+          "bytes": 1756,
+          "suggested": "pixels-20261127-201903-204.svg"
+        },
+        {
+          "file": "vector-logo.svg",
+          "bytes": 1418,
+          "suggested": "logo-20261127-201903-858.svg"
+        },
+        {
+          "file": "vector-logo-mono.svg",
+          "bytes": 1389,
+          "suggested": "logo-20261127-201905-036.svg"
+        },
+        {
+          "file": "vector-illustration.svg",
+          "bytes": 1219,
+          "suggested": "illustration-20261127-201905-743.svg"
+        },
+        {
+          "file": "vector-photo.svg",
+          "bytes": 184140,
+          "suggested": "photo-20261127-201908-082.svg"
+        },
+        {
+          "file": "vector-line.svg",
+          "bytes": 852,
+          "suggested": "line-20261127-201909-612.svg"
+        },
+        {
+          "file": "pixel-roundtrip.png",
+          "bytes": 534,
+          "suggested": "cn-vector-pixel-20261127-201913-830.png"
+        },
+        {
+          "file": "embed-png.svg",
+          "bytes": 4872,
+          "suggested": "illustration-20261127-201914-612.svg"
+        },
+        {
+          "file": "embed-jpg.svg",
+          "bytes": 11205,
+          "suggested": "illustration-20261127-201915-051.svg"
+        },
+        {
+          "file": "embed-webp.svg",
+          "bytes": 58052,
+          "suggested": "illustration-20261127-201915-596.svg"
+        },
+        {
+          "file": "embed-avif.svg",
+          "bytes": 29040,
+          "suggested": "illustration-20261127-201916-156.svg"
+        },
+        {
+          "file": "cover.svg",
+          "bytes": 29041,
+          "suggested": "illustration-20261127-201916-503.svg"
+        },
+        {
+          "file": "embed-roundtrip.png",
+          "bytes": 7046,
+          "suggested": "cn-embed-png-20261127-201917-635.png"
+        }
+      ],
+      "vectors": [
+        {
+          "key": "pixel",
+          "info": "原图 结果 8 个路径 · 1.7 KiB · 32 × 32 · 1 ms 适应 100%",
+          "count": 8
+        },
+        {
+          "key": "logo",
+          "info": "原图 结果 3 个路径 · 1.4 KiB · 256 × 256 · 64 ms 适应 100%",
+          "count": 3
+        },
+        {
+          "key": "illustration",
+          "info": "原图 结果 5 个路径 · 1.2 KiB · 400 × 320 · 97 ms 适应 100%",
+          "count": 5
+        },
+        {
+          "key": "photo",
+          "info": "原图 结果 445 个路径 · 179.8 KiB · 768 × 512 · 465 ms 适应 100%",
+          "count": 445
+        },
+        {
+          "key": "line",
+          "info": "原图 结果 2 个路径 · 852 B · 240 × 240 · 62 ms 适应 100%",
+          "count": 2
+        }
+      ],
+      "remote": [],
+      "errors": [],
+      "workers": [
+        {
+          "name": "avif.worker-WNfQIGa5.js",
+          "closed": true
+        },
+        {
+          "name": "vectorize.worker-D8HfCARo.js",
+          "closed": true
+        },
+        {
+          "name": "vectorize.worker-D8HfCARo.js",
+          "closed": true
+        },
+        {
+          "name": "vectorize.worker-D8HfCARo.js",
+          "closed": true
+        },
+        {
+          "name": "vectorize.worker-D8HfCARo.js",
+          "closed": true
+        },
+        {
+          "name": "vectorize.worker-D8HfCARo.js",
+          "closed": true
+        },
+        {
+          "name": "vectorize.worker-D8HfCARo.js",
+          "closed": true
+        },
+        {
+          "name": "vectorize.worker-D8HfCARo.js",
+          "closed": true
+        }
+      ],
+      "crossTool": [
+        "bundled",
+        "local",
+        "dual"
+      ],
+      "cancelled": true,
+      "lazy": {
+        "/": 0,
+        "/tools/image-watermark/": 0,
+        "rasterize": 0,
+        "embed": 0,
+        "vectorize idle": 0,
+        "pixel art": 0,
+        "ordinary tracing": 1
+      },
+      "divider": {
+        "dragged": 55,
+        "keyboard": 58
+      },
+      "rejected": [
+        "image",
+        "css",
+        "font",
+        "use",
+        "badData",
+        "event",
+        "script",
+        "dtd",
+        "cycle"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "light",
+      "downloads": [
+        {
+          "file": "complex.png",
+          "bytes": 137866,
+          "suggested": "librecosta-black-white-20261127-202118-162.png"
+        },
+        {
+          "file": "vector-logo.svg",
+          "bytes": 1418,
+          "suggested": "logo-20261127-202119-183.svg"
+        },
+        {
+          "file": "vector-logo-mono.svg",
+          "bytes": 1389,
+          "suggested": "logo-20261127-202119-902.svg"
+        },
+        {
+          "file": "embed-png.svg",
+          "bytes": 4872,
+          "suggested": "illustration-20261127-202120-111.svg"
+        },
+        {
+          "file": "cover.svg",
+          "bytes": 4873,
+          "suggested": "illustration-20261127-202120-244.svg"
+        },
+        {
+          "file": "embed-roundtrip.png",
+          "bytes": 7046,
+          "suggested": "global-embed-png-20261127-202120-642.png"
+        }
+      ],
+      "vectors": [
+        {
+          "key": "logo",
+          "info": "Original Result 3 paths · 1.4 KiB · 256 × 256 · 54 ms Fit 100%",
+          "count": 3
+        }
+      ],
+      "remote": [],
+      "errors": [],
+      "workers": [
+        {
+          "name": "vectorize.worker-D8HfCARo.js",
+          "closed": true
+        },
+        {
+          "name": "vectorize.worker-D8HfCARo.js",
+          "closed": true
+        }
+      ],
+      "crossTool": [],
+      "cancelled": false,
+      "lazy": {
+        "/": 0,
+        "/tools/image-watermark/": 0,
+        "rasterize": 0,
+        "embed": 0,
+        "vectorize idle": 0,
+        "ordinary tracing": 1
+      },
+      "rejected": [
+        "image",
+        "css",
+        "font",
+        "use",
+        "badData",
+        "event",
+        "script",
+        "dtd",
+        "cycle"
+      ]
+    }
+  ]
+}

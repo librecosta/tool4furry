@@ -41,7 +41,7 @@ describe('static tool discovery', () => {
   });
 
   it.each(['cn', 'global'] as const)(
-    'discovers twenty-five Published and four Draft tools in DEV %s',
+    'discovers twenty-six Published and three Draft tools in DEV %s',
     (region) => {
       const entries = getCatalogEntries(region, undefined, true);
       expect(entries.map((entry) => [entry.id, entry.href, entry.title])).toEqual([
@@ -69,12 +69,12 @@ describe('static tool discovery', () => {
       expect(getHomepageEntries(region)).toEqual(published.slice(0, 9)); // Homepage projection keeps its existing nine-entry cap.
       // Catalog category order places the creative tools before text.
       expect(getCatalogSections(region).flatMap(section => section.groups.flatMap(group => group.entries))).toEqual([
-        ...published.slice(0, 7), published[19], published[22], published[24], published[20], ...published.slice(13, 15), published[21], published[15], ...published.slice(7, 10), ...published.slice(16, 19), published[23], ...published.slice(10, 13),
+        ...published.slice(0, 7), published[19], published[22], published[24], published[25], published[20], ...published.slice(13, 15), published[21], published[15], ...published.slice(7, 10), ...published.slice(16, 19), published[23], ...published.slice(10, 13),
       ]);
       expect(imageConverterDefinition.status).toBe('published');
       expect(imageResizeCropDefinition.status).toBe('published');
       expect(paletteExtractorDefinition.status).toBe('published');
-      expect(published.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash', 'text-cleaner', 'text-diff', 'subtitle-tools', 'json-formatter', 'url-base64', 'timestamp-converter', 'color-contrast', 'audio-trimmer', 'markdown-editor', 'video-frame-extractor', 'csv-json-converter', 'code-image-generator']);
+      expect(published.map(entry => entry.id)).toEqual(['image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata', 'pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash', 'text-cleaner', 'text-diff', 'subtitle-tools', 'json-formatter', 'url-base64', 'timestamp-converter', 'color-contrast', 'audio-trimmer', 'markdown-editor', 'video-frame-extractor', 'csv-json-converter', 'code-image-generator', 'svg-converter']);
     },
   );
 

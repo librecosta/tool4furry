@@ -9,7 +9,7 @@
 | 正式构建 | 生成可独立托管的静态页面与所需资源，不执行上传或上线 |
 | 实际部署 | 将产物发布到托管环境的独立操作，需要明确授权 |
 
-Registry 当前有 29 款工具，25 款取得 CN/Global Published 源码资格，4 款处于 Draft。**两个地区均未部署**。
+Registry 当前有 29 款工具，26 款取得 CN/Global Published 源码资格，3 款处于 Draft。**两个地区均未部署**。
 
 Image Resize & Crop (`image-resize-crop`) 已通过 A1-D2 L2 审计，并依据维护者本任务授权提升源码资格。两地区正式构建包含其双语页面、按需实现、局部裁剪 CSS 和完整 ISC 许可声明；其他 Draft、Lab 和 Fixture 继续隔离。审计证据与 L3 边界见 [模块说明](../docs/image-resize-crop-implementation.md#a1-d2-beta-资格审计2026-10-31)。
 
@@ -70,6 +70,8 @@ Video Frame Extractor（`video-frame-extractor`）依据 V0.8-B17-D2 授权取�
 CSV / JSON Converter（`csv-json-converter`）依据 V0.8-B18-D2 授权取得 CN/Global Published 源码资格。全站 29 款（24 Published / 5 Draft），每地区 48 个双语工具详情页。转换工作区、专属样式、同源 Worker 和完整 Papa Parse MIT 通知按需交付。CodeMirror JSON 语言与 JSON Formatter 共享。[正式产物、剪贴板及实际下载验收](../docs/evidence/b18-csv-json/README.md#b18-d2-正式产物验收)
 
 Code Image Generator（`code-image-generator`）完成 B19-D2 双语 SEO 和输出复核，依据维护者明确授权取得 CN/Global Published 源码资格，每地区正式构建有 50 个双语工具详情页。共享选择器及样式在打开时按需加载 WebP 缩略图，确认后请求单张同源 AVIF。正式构建按当前地区的实际 Published 消费链验证归属。[B19-D2 发布复核](../docs/evidence/b19-code-image/README.md#b19-d2-发布复核)
+
+SVG Converter（`svg-converter`）依据 V0.8-B20-D2 授权取得 CN/Global Published 源码资格。全站 29 款（26 Published / 3 Draft），每地区 52 个双语工具详情页。XML 工作区、专属样式和完整 NOTICE 随工具加载。普通矢量化由按需 Worker 加载 ImageTracerJS，像素艺术使用独立的同色区域合并。静态 SVG 安全策略和 Image Watermark 的独立限制继续适用。[正式产物与实际输出验收](../docs/evidence/b20-svg-converter/README.md#b20-d2-正式产物验收)
 
 如托管启用 CSP，请允许文档和媒体 Worker 通过 `worker-src 'self'` 创建同源 Worker，并在媒体 Worker 及两个编码 Worker 的响应策略中使用 `script-src 'self' 'wasm-unsafe-eval'`。媒体 Worker 用 WASM SIMD 编译探测能力，在禁用时保留 WAV 及可用的原生编码。页面脚本可使用自身行内脚本的哈希。以上策略已在两地区本地正式产物验证，实际托管响应头仍需在部署阶段单独复核。
 

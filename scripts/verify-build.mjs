@@ -80,7 +80,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64'], generalToolboxContent['timestamp-converter'], generalToolboxContent['color-contrast'], generalToolboxContent['audio-trimmer'], generalToolboxContent['markdown-editor'], generalToolboxContent['csv-json-converter'], generalToolboxContent['code-image-generator']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64'], generalToolboxContent['timestamp-converter'], generalToolboxContent['color-contrast'], generalToolboxContent['audio-trimmer'], generalToolboxContent['markdown-editor'], generalToolboxContent['csv-json-converter'], generalToolboxContent['code-image-generator'], generalToolboxContent['svg-converter']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -848,7 +848,7 @@ for (const page of htmlFiles) {
   );
   const dom = new JSDOM(content).window.document;
   const scopedToolStyles = [...dom.head.querySelectorAll('link[rel="stylesheet"]')]
-    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|MarkdownEditor|VideoFrameExtractor|CsvJsonConverter|CodeImageGenerator|CreativeAssetPicker|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
+    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|MarkdownEditor|VideoFrameExtractor|CsvJsonConverter|CodeImageGenerator|SvgConverter|CreativeAssetPicker|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
   const toolId = dom.querySelector('main[data-tool-id]')?.dataset.toolId;
   const expectedToolStyles = [];
   if (toolId === 'subtitle-tools') expectedToolStyles.push('SubtitleTools');
@@ -861,9 +861,10 @@ for (const page of htmlFiles) {
   if (toolId === 'video-frame-extractor') expectedToolStyles.push('VideoFrameExtractor');
   if (toolId === 'csv-json-converter') expectedToolStyles.push('CsvJsonConverter');
   if (toolId === 'code-image-generator') expectedToolStyles.push('CodeImageGenerator');
+  if (toolId === 'svg-converter') expectedToolStyles.push('SvgConverter');
   if (['color-contrast', 'image-watermark', 'palette-extractor'].includes(toolId) && files.some(file => /\/react-colorful\.[\w-]+\.css$/.test(file)))
     expectedToolStyles.push('react-colorful');
-  if (['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64', 'csv-json-converter', 'code-image-generator'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
+  if (['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64', 'csv-json-converter', 'code-image-generator', 'svg-converter'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
     expectedToolStyles.push('TextEditor');
   if (['json-formatter', 'text-cleaner', 'text-diff', 'url-base64', 'csv-json-converter'].includes(toolId) && files.some(file => /\/TextWorkbench\.[\w-]+\.css$/.test(file)))
     expectedToolStyles.push('TextWorkbench');
@@ -987,6 +988,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/video-frame-extractor/index.html') assertToolContent(dom, locale, generalToolboxContent['video-frame-extractor'], 4, 4, 6);
     if (page === 'tools/csv-json-converter/index.html') assertToolContent(dom, locale, generalToolboxContent['csv-json-converter'], 4, 4, 6);
     if (page === 'tools/code-image-generator/index.html') assertToolContent(dom, locale, generalToolboxContent['code-image-generator'], 4, 4, 6);
+    if (page === 'tools/svg-converter/index.html') assertToolContent(dom, locale, generalToolboxContent['svg-converter'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1594,6 +1596,7 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     ['url-base64', 'UrlBase64'],
     ['csv-json-converter', 'CsvJsonConverter'],
     ['code-image-generator', 'CodeImageGenerator'],
+    ['svg-converter', 'SvgConverter'],
   ].filter(([id]) => published.some(tool => tool.id === id));
   const scripts = new Map(await Promise.all(files.filter(file => file.endsWith('.js'))
     .map(async file => [file, await readFile(resolve(root, file), 'utf8')])));
@@ -1628,18 +1631,19 @@ if (!published.some(tool => tool.id === 'file-hash')) {
   const runtimeOwners = [...scripts].filter(([, text]) => runtimeMarkers.test(text)).map(([file]) => file);
   const workbenchOwners = [...scripts].filter(([, text]) => text.includes('data-text-workbench')).map(([file]) => file);
   const entries = new Map();
+  const bitmapStudio = findAsset('BitmapStudio', '.js')[0];
   for (const [id, stem] of editorTools) {
     const [entry, ...extraEntries] = findAsset(stem, '.js');
     assert(entry && !extraEntries.length, 'One lazy tool entry: ' + id);
     entries.set(id, entry);
-    const marker = { 'json-formatter': 'data-json-language-license', 'code-image-generator': 'data-code-image-studio' }[id] ?? 'data-' + id;
+    const marker = { 'json-formatter': 'data-json-language-license', 'code-image-generator': 'data-code-image-studio', 'svg-converter': 'data-svg-converter-studio' }[id] ?? 'data-' + id;
     assert(scripts.get(entry).includes(marker), 'Real editor tool implementation: ' + id);
     const [loader, ...extraLoaders] = importsOf(entry, true);
     assert(loader && loader.includes('ToolRuntime') && !extraLoaders.length, 'Only ToolRuntime dynamically imports ' + id);
     // Rolldown currently places shared Base UI radio primitives in the tool
     // chunk. Its lazy picker can read them after the workspace is loaded.
-    const staticImporters = importsOf(entry, false).filter(file =>
-      id !== 'code-image-generator' || file !== findAsset('CreativeAssetPicker', '.js')[0]);
+    const lazyChild = { 'code-image-generator': findAsset('CreativeAssetPicker', '.js')[0], 'svg-converter': bitmapStudio }[id];
+    const staticImporters = importsOf(entry, false).filter(file => file !== lazyChild);
     assert.deepEqual(staticImporters, [], 'No eager static import of ' + id);
     const [style, ...extraStyles] = findAsset(stem, '.css');
     assert(style && !extraStyles.length, 'One stylesheet owned by ' + id);
@@ -1661,6 +1665,32 @@ if (!published.some(tool => tool.id === 'file-hash')) {
   const jsOwners = matches => [...scripts].filter(([, source]) => matches(source)).map(([file]) => file);
   const linksNotice = (entry, asset) => jsOwners(source => source.includes(basenameOf(asset)))
     .some(file => file === entry || importsOf(file, false).includes(entry));
+  const svgEntry = entries.get('svg-converter');
+  const searchConsumers = [markdownEntry, svgEntry].filter(Boolean);
+  for (const search of jsOwners(source => source.includes('cm-searchMatch-selected'))) {
+    if (searchConsumers.includes(search)) continue;
+    assert.deepEqual(importsOf(search, false).sort(), searchConsumers.sort(), 'Only Markdown and SVG load CodeMirror search');
+    assert.deepEqual(importsOf(search, true), [], 'CodeMirror search has no independent lazy entry');
+  }
+  if (svgEntry) {
+    const [traceClient, ...extraClients] = findAsset('trace-client', '.js');
+    const [worker, ...extraWorkers] = files.filter(file => /\/vectorize\.worker[.-][\w-]+\.js$/.test(file));
+    const [engine, ...extraEngines] = jsOwners(source => source.includes('imagedataToTracedata'));
+    const [svgNotice, ...extraNotices] = findAsset('svg-converter.NOTICE', '.txt');
+    assert(bitmapStudio && traceClient && worker && engine && svgNotice, 'SVG ships its bitmap workspace, Worker, tracing engine and NOTICE');
+    assert(!extraClients.length && !extraWorkers.length && !extraEngines.length && !extraNotices.length);
+    assert.deepEqual(importsOf(bitmapStudio, true), [svgEntry], 'The SVG tool lazily opens the bitmap workspace');
+    assert.deepEqual(importsOf(bitmapStudio, false), [], 'No eager bitmap workspace import');
+    assert.deepEqual(importsOf(traceClient, true), [bitmapStudio], 'The bitmap workspace starts tracing on demand');
+    assert.deepEqual(importsOf(traceClient, false), [], 'No eager tracing client import');
+    assert.deepEqual(jsOwners(source => source.includes(basenameOf(worker))).sort(), [traceClient, engine].sort(),
+      'Only tracing launches the local worker and its engine shares its geometry code');
+    assert.deepEqual(importsOf(engine, true), [worker], 'The tracing Worker dynamically loads ImageTracerJS');
+    assert.deepEqual(importsOf(engine, false), [], 'No eager ImageTracerJS import');
+    assert.deepEqual(jsOwners(source => source.includes(basenameOf(svgNotice))), [svgEntry]);
+    assert((await readFile(resolve(root, svgNotice))).equals(await readFile('src/tools/svg-converter/svg-converter.NOTICE.txt')),
+      'SVG delivers its complete NOTICE');
+  }
   const codeImageEntry = entries.get('code-image-generator');
   const [pickerEntry, ...otherPickers] = findAsset('CreativeAssetPicker', '.js');
   const [pickerStyle, ...otherPickerStyles] = findAsset('CreativeAssetPicker', '.css');
@@ -1937,12 +1967,12 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     const codeMirrorCore = jsOwners(source => source.includes('cm-content') && source.includes('cm-lineNumbers') && source.includes('cm-editor'));
     assert.equal(codeMirrorCore.length, 1, 'Only one implementation of the CodeMirror core');
     assert.deepEqual(jsOwners(source => editorSelectors.test(source)).sort(),
-      [...new Set([editor, ...codeMirrorCore, ...jsonLanguageOwners, ...[markdownEntry, codeImageEntry].filter(Boolean)])].sort(),
+      [...new Set([editor, ...codeMirrorCore, ...jsonLanguageOwners, ...[markdownEntry, codeImageEntry, svgEntry].filter(Boolean)])].sort(),
       'Only CodeMirror and private editor themes contain editor selectors');
     if (markdownEntry) {
       const [core] = codeMirrorCore;
       const directUsers = importsOf(core, false);
-      const privateEditors = [markdownEntry, codeImageEntry].filter(Boolean);
+      const privateEditors = [markdownEntry, codeImageEntry, svgEntry].filter(Boolean);
       const support = directUsers.filter(file => ![editor, ...privateEditors, ...jsonConsumers].includes(file));
       assert(directUsers.includes(markdownEntry) && directUsers.includes(editor), 'Markdown and the shared editor use the same CodeMirror core');
       for (const file of support) {
@@ -1967,7 +1997,7 @@ if (!published.some(tool => tool.id === 'file-hash')) {
       assert(scripts.get(loader).includes(styles[0]), 'ToolRuntime references ' + stem + ' CSS');
     }
     await assertEditorStyle(shared ? (subtitleEntry ? 'TextEditor' : 'TextWorkbench') : editorTools[0][1]);
-    const workbenchEntries = [...entries.values()].filter(entry => entry !== subtitleEntry && entry !== codeImageEntry);
+    const workbenchEntries = [...entries.values()].filter(entry => ![subtitleEntry, codeImageEntry, svgEntry].includes(entry));
     if (subtitleEntry && workbenchEntries.length > 1) {
       const [workbench] = workbenchOwners;
       assert.equal(workbenchOwners.length, 1, 'One separate dual-editor workbench');

@@ -21,9 +21,10 @@ const toolStyleOwners = {
   VideoFrameExtractor: ['video-frame-extractor'],
   CsvJsonConverter: ['csv-json-converter'],
   CodeImageGenerator: ['code-image-generator'],
+  SvgConverter: ['svg-converter'],
   CreativeAssetPicker: [], // Vite loads this stylesheet when a consumer opens the picker.
   'react-colorful': ['color-contrast', 'image-watermark', 'palette-extractor'],
-  TextEditor: ['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64', 'csv-json-converter', 'code-image-generator'],
+  TextEditor: ['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64', 'csv-json-converter', 'code-image-generator', 'svg-converter'],
   TextWorkbench: ['json-formatter', 'text-cleaner', 'text-diff', 'url-base64', 'csv-json-converter'],
 };
 const scopeToolStyles = {
@@ -41,7 +42,7 @@ const scopeToolStyles = {
         const headEnd = html.indexOf('</head>');
         const head = html.slice(0, headEnd);
         const scoped = head.replace(
-          /<link rel="stylesheet" href="\/_astro\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|MarkdownEditor|VideoFrameExtractor|CsvJsonConverter|CodeImageGenerator|CreativeAssetPicker|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css">/g,
+          /<link rel="stylesheet" href="\/_astro\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|MarkdownEditor|VideoFrameExtractor|CsvJsonConverter|CodeImageGenerator|SvgConverter|CreativeAssetPicker|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css">/g,
           (link, stem) => toolStyleOwners[stem].includes(tool.id) ? link : '',
         );
         if (scoped !== head) await writeFile(destination, scoped + html.slice(headEnd));
@@ -123,7 +124,7 @@ export default defineConfig({
             const svgConverterAvailable = toolDefines['import.meta.env.T4F_TOOL_SVG_CONVERTER_AVAILABLE'] === 'true';
             const audioPrivate = /\/(?:src\/tools\/audio-trimmer\/(?!definition\.ts$)|node_modules\/(?:mediabunny|wavesurfer\.js|@mediabunny)\/)/;
             const qrPrivate = /\/(?:src\/tools\/qr-code-generator\/(?!definition\.ts$)|node_modules\/(?:qrcode|jsqr)\/)/;
-            const markdownPrivate = /\/(?:src\/tools\/markdown-editor\/(?!definition\.ts$)|node_modules\/(?:@codemirror\/(?:lang-markdown|search)|@lezer\/markdown|dompurify|marked|katex)\/)/;
+            const markdownPrivate = /\/(?:src\/tools\/markdown-editor\/(?!definition\.ts$)|node_modules\/(?:@codemirror\/lang-markdown|@lezer\/markdown|dompurify|marked|katex)\/)/;
             const codeImagePrivate = /\/(?:src\/(?:tools\/code-image-generator\/(?!definition\.ts$)|assets\/code-image-presets\/)|node_modules\/(?:@shikijs|@fontsource\/(?:jetbrains-mono|fira-code|ibm-plex-mono)|tm-grammars|oniguruma-to-es|oniguruma-parser)\/)/;
             const svgConverterPrivate = /\/(?:src\/tools\/svg-converter\/(?!definition\.ts$)|node_modules\/(?:imagetracerjs|css-tree|@codemirror\/lang-xml|@lezer\/xml)\/)/;
             const sourcePath = id => id.replaceAll('\\', '/').split('?')[0];
@@ -153,6 +154,9 @@ export default defineConfig({
                 if (markdownPrivate.test(source) &&
                     (!markdownAvailable || !/(?:^|\/)(?:MarkdownEditor|math-preview|katex|highlight)\.[\w-]+\.js$/.test(chunk.fileName))) {
                   this.error('Markdown private module in ' + chunk.fileName + ': ' + source);
+                }
+                if (!markdownAvailable && !svgConverterAvailable && source.includes('/node_modules/@codemirror/search/')) {
+                  this.error('CodeMirror search module without an available consumer: ' + source);
                 }
                 if (!videoAvailable && /\/src\/tools\/video-frame-extractor\/(?!definition\.ts$)/.test(source)) {
                   this.error('Video Frame Extractor Draft implementation in ' + chunk.fileName + ': ' + source);

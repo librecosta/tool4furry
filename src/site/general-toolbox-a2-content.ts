@@ -1,38 +1,6 @@
 import type { ToolContentMap } from './tool-content';
 // Static Astro content only; never imported by the client or registry.
 export const generalToolboxA2Content = {
-  'svg-converter': {
-    zh: {
-      title: 'SVG 转换 | Tool4Furry',
-      description: '栅格化静态 SVG、描摹位图轮廓，或将位图封装进 SVG。',
-      h1: 'SVG 转换',
-      intro: '编辑并预览静态 SVG，在矢量和位图之间转换，或将图片嵌入 SVG。',
-      steps: [
-        '选择栅格化、位图矢量化或图片封装。',
-        '导入图片或输入 SVG 源码。',
-        '检查预览，调整转换参数并下载。',
-      ],
-      limitations: [
-        '静态 SVG 支持受控样式、内嵌资源和常用滤镜。脚本、动画与外部资源会被拒绝。转换能力取决于文件复杂度和浏览器。',
-        '所有文件与文本仅在当前浏览器本地处理，不上传、不持久保存。',
-      ],
-    },
-    en: {
-      title: 'SVG Converter | Tool4Furry',
-      description: 'Rasterize static SVGs, trace bitmap outlines or embed images in SVG.',
-      h1: 'SVG Converter',
-      intro: 'Edit and preview static SVG, convert between vector and raster images, or embed an image in SVG.',
-      steps: [
-        'Choose Rasterize, Vectorize or Embed.',
-        'Import an image or enter SVG source.',
-        'Review the preview, adjust the settings and download.',
-      ],
-      limitations: [
-        'Static SVG supports controlled styling, embedded resources and common filters. Scripts, animation and external resources are rejected. Conversion depends on file complexity and browser capabilities.',
-        'Files and text stay in your browser, without uploads or persistent storage.',
-      ],
-    },
-  },
   'regex-tester': {
     zh: {
       title: '正则测试 | Tool4Furry',
