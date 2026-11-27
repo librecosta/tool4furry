@@ -1,0 +1,1032 @@
+{
+  "browser": "156.0.8078.4",
+  "profiles": [
+    {
+      "locale": "zh",
+      "viewport": {
+        "width": 1280,
+        "height": 1000
+      },
+      "theme": "dark",
+      "checkpoints": [
+        {
+          "name": "home",
+          "thumbnailCount": 0,
+          "avifs": []
+        },
+        {
+          "name": "image-converter",
+          "thumbnailCount": 0,
+          "avifs": []
+        },
+        {
+          "name": "code-image",
+          "thumbnailCount": 0,
+          "avifs": []
+        },
+        {
+          "name": "picker open",
+          "thumbnailCount": 23,
+          "avifs": []
+        },
+        {
+          "name": "filter and stage selection",
+          "thumbnailCount": 23,
+          "avifs": []
+        },
+        {
+          "name": "first confirmation",
+          "thumbnailCount": 23,
+          "avifs": [
+            "emerald-aurora.avif"
+          ]
+        },
+        {
+          "name": "dual sources and local switch",
+          "thumbnailCount": 46,
+          "avifs": [
+            "emerald-aurora.avif",
+            "amber-bokeh.avif",
+            "winter-wolf.avif",
+            "crimson-aurora.avif",
+            "apricot-gradient.avif",
+            "emerald-aurora.avif",
+            "amber-bokeh.avif"
+          ]
+        },
+        {
+          "name": "exports finish without new creative requests",
+          "thumbnailCount": 46,
+          "avifs": [
+            "emerald-aurora.avif",
+            "amber-bokeh.avif",
+            "winter-wolf.avif",
+            "crimson-aurora.avif",
+            "apricot-gradient.avif",
+            "emerald-aurora.avif",
+            "amber-bokeh.avif"
+          ]
+        }
+      ],
+      "requests": [
+        {
+          "type": "thumbnails",
+          "file": "twilight-bokeh.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "crimson-aurora.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "emerald-aurora.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "winter-wolf.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "golden-clouds.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "coral-gradient.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "verdant-sky.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "woven-curtain.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "pastel-spectrum.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "azure-weave.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "forest-sprout.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "rose-clouds.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "turquoise-shore.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "apricot-gradient.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "ivory-marble.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "slate-marble.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "midnight-surf.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "concrete-passage.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "amber-bokeh.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "rocky-coast.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "violet-watercolor.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "underwater-bubbles.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "coral-azure-watercolor.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "backgrounds",
+          "file": "emerald-aurora.avif",
+          "method": "GET",
+          "resourceType": "fetch"
+        },
+        {
+          "type": "backgrounds",
+          "file": "amber-bokeh.avif",
+          "method": "GET",
+          "resourceType": "fetch"
+        },
+        {
+          "type": "thumbnails",
+          "file": "twilight-bokeh.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "crimson-aurora.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "emerald-aurora.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "winter-wolf.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "golden-clouds.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "coral-gradient.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "verdant-sky.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "woven-curtain.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "pastel-spectrum.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "azure-weave.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "forest-sprout.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "rose-clouds.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "turquoise-shore.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "apricot-gradient.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "ivory-marble.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "slate-marble.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "midnight-surf.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "concrete-passage.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "amber-bokeh.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "rocky-coast.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "violet-watercolor.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "underwater-bubbles.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "coral-azure-watercolor.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "backgrounds",
+          "file": "winter-wolf.avif",
+          "method": "GET",
+          "resourceType": "fetch"
+        },
+        {
+          "type": "backgrounds",
+          "file": "crimson-aurora.avif",
+          "method": "GET",
+          "resourceType": "fetch"
+        },
+        {
+          "type": "backgrounds",
+          "file": "apricot-gradient.avif",
+          "method": "GET",
+          "resourceType": "fetch"
+        },
+        {
+          "type": "backgrounds",
+          "file": "emerald-aurora.avif",
+          "method": "GET",
+          "resourceType": "fetch"
+        },
+        {
+          "type": "backgrounds",
+          "file": "amber-bokeh.avif",
+          "method": "GET",
+          "resourceType": "fetch"
+        }
+      ],
+      "urlModules": [
+        {
+          "type": "thumbnails",
+          "file": "amber-bokeh.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "apricot-gradient.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "azure-weave.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "concrete-passage.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "coral-azure-watercolor.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "coral-gradient.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "crimson-aurora.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "emerald-aurora.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "forest-sprout.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "golden-clouds.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "ivory-marble.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "midnight-surf.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "pastel-spectrum.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "rocky-coast.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "rose-clouds.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "slate-marble.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "turquoise-shore.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "twilight-bokeh.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "underwater-bubbles.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "verdant-sky.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "violet-watercolor.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "winter-wolf.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "woven-curtain.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "backgrounds",
+          "file": "emerald-aurora.avif",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "backgrounds",
+          "file": "amber-bokeh.avif",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "backgrounds",
+          "file": "winter-wolf.avif",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "backgrounds",
+          "file": "crimson-aurora.avif",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "backgrounds",
+          "file": "apricot-gradient.avif",
+          "method": "GET",
+          "resourceType": "script"
+        }
+      ],
+      "failures": [
+        {
+          "file": "crimson-aurora.avif",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "outputs": [
+        {
+          "mime": "image/png",
+          "name": "greet-20261127-175500-544.png",
+          "bytes": 1275591,
+          "width": 1304,
+          "height": 734,
+          "maximumChannelDelta": 0
+        },
+        {
+          "mime": "image/svg+xml",
+          "name": "greet-20261127-175501-078.svg",
+          "bytes": 6553325,
+          "width": 652,
+          "height": 367,
+          "maximumChannelDelta": 5
+        },
+        {
+          "mime": "image/jpeg",
+          "name": "greet-20261127-175502-112.jpg",
+          "bytes": 223658,
+          "width": 1304,
+          "height": 734,
+          "maximumChannelDelta": 8
+        },
+        {
+          "mime": "image/webp",
+          "name": "greet-20261127-175502-394.webp",
+          "bytes": 151002,
+          "width": 1304,
+          "height": 734,
+          "maximumChannelDelta": 9
+        }
+      ],
+      "clipboard": {
+        "mime": "image/png",
+        "bytes": 1115639,
+        "width": 1304,
+        "height": 734
+      },
+      "transparentPng": {
+        "width": 486,
+        "height": 367,
+        "pixels": [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            214,
+            212,
+            211,
+            255
+          ]
+        ]
+      }
+    },
+    {
+      "locale": "en",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "light",
+      "checkpoints": [
+        {
+          "name": "home",
+          "thumbnailCount": 0,
+          "avifs": []
+        },
+        {
+          "name": "image-converter",
+          "thumbnailCount": 0,
+          "avifs": []
+        },
+        {
+          "name": "code-image",
+          "thumbnailCount": 0,
+          "avifs": []
+        },
+        {
+          "name": "picker open",
+          "thumbnailCount": 23,
+          "avifs": []
+        },
+        {
+          "name": "filter and stage selection",
+          "thumbnailCount": 23,
+          "avifs": []
+        },
+        {
+          "name": "first confirmation",
+          "thumbnailCount": 23,
+          "avifs": [
+            "emerald-aurora.avif"
+          ]
+        },
+        {
+          "name": "dual sources and local switch",
+          "thumbnailCount": 23,
+          "avifs": [
+            "emerald-aurora.avif",
+            "amber-bokeh.avif",
+            "amber-bokeh.avif"
+          ]
+        },
+        {
+          "name": "exports finish without new creative requests",
+          "thumbnailCount": 23,
+          "avifs": [
+            "emerald-aurora.avif",
+            "amber-bokeh.avif",
+            "amber-bokeh.avif"
+          ]
+        }
+      ],
+      "requests": [
+        {
+          "type": "thumbnails",
+          "file": "twilight-bokeh.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "crimson-aurora.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "emerald-aurora.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "winter-wolf.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "golden-clouds.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "coral-gradient.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "verdant-sky.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "woven-curtain.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "pastel-spectrum.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "azure-weave.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "forest-sprout.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "rose-clouds.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "turquoise-shore.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "apricot-gradient.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "ivory-marble.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "slate-marble.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "midnight-surf.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "concrete-passage.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "amber-bokeh.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "rocky-coast.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "violet-watercolor.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "underwater-bubbles.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "thumbnails",
+          "file": "coral-azure-watercolor.webp",
+          "method": "GET",
+          "resourceType": "image"
+        },
+        {
+          "type": "backgrounds",
+          "file": "emerald-aurora.avif",
+          "method": "GET",
+          "resourceType": "fetch"
+        },
+        {
+          "type": "backgrounds",
+          "file": "amber-bokeh.avif",
+          "method": "GET",
+          "resourceType": "fetch"
+        },
+        {
+          "type": "backgrounds",
+          "file": "amber-bokeh.avif",
+          "method": "GET",
+          "resourceType": "fetch"
+        }
+      ],
+      "urlModules": [
+        {
+          "type": "thumbnails",
+          "file": "amber-bokeh.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "apricot-gradient.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "azure-weave.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "concrete-passage.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "coral-azure-watercolor.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "coral-gradient.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "crimson-aurora.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "emerald-aurora.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "forest-sprout.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "golden-clouds.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "ivory-marble.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "midnight-surf.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "pastel-spectrum.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "rocky-coast.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "rose-clouds.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "slate-marble.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "turquoise-shore.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "twilight-bokeh.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "underwater-bubbles.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "verdant-sky.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "violet-watercolor.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "winter-wolf.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "thumbnails",
+          "file": "woven-curtain.webp",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "backgrounds",
+          "file": "emerald-aurora.avif",
+          "method": "GET",
+          "resourceType": "script"
+        },
+        {
+          "type": "backgrounds",
+          "file": "amber-bokeh.avif",
+          "method": "GET",
+          "resourceType": "script"
+        }
+      ],
+      "failures": [],
+      "outputs": [
+        {
+          "mime": "image/png",
+          "name": "greet-20261127-175525-660.png",
+          "bytes": 1275591,
+          "width": 1304,
+          "height": 734,
+          "maximumChannelDelta": 0
+        }
+      ],
+      "clipboard": {
+        "mime": "image/png",
+        "bytes": 1115639,
+        "width": 1304,
+        "height": 734
+      },
+      "transparentPng": {
+        "width": 486,
+        "height": 367,
+        "pixels": [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            214,
+            212,
+            211,
+            255
+          ]
+        ]
+      }
+    }
+  ]
+}

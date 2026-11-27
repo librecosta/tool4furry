@@ -41,7 +41,7 @@ export async function readCode(file: File) {
   }
 }
 
-export async function readBackground(file: File) {
+export async function readBackground(file: Blob) {
   try {
     const info = await inspectImage(file, backgroundLimits.bytes, backgroundLimits);
     const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });

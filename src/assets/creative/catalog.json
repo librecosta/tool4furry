@@ -1,0 +1,738 @@
+[
+  {
+    "id": "twilight-bokeh",
+    "title": {
+      "zh": "暮色光斑",
+      "en": "Twilight Bokeh"
+    },
+    "category": "abstract",
+    "recommendedUse": "outer",
+    "tone": "dark",
+    "revision": 1,
+    "image": "backgrounds/twilight-bokeh.avif",
+    "thumbnail": "thumbnails/twilight-bokeh.webp",
+    "width": 1582,
+    "height": 1920,
+    "bytes": 78056,
+    "thumbnailWidth": 396,
+    "thumbnailHeight": 480,
+    "thumbnailBytes": 8764,
+    "source": {
+      "filename": "astoko-light-4507218_1920.jpg",
+      "width": 1582,
+      "height": 1920,
+      "bytes": 192068,
+      "sha256": "03e5cb9615f9203de5d6e8bd5c6e16f61f5c29adeecbe330f55b1e80125d9e92"
+    },
+    "processing": {
+      "avifQuality": 78,
+      "rgbPsnrDb": 46.31,
+      "colorSpace": "sRGB",
+      "sha256": "b7a524f4d72af215f2f1253b17c1be245b38f6975e2a38f10880ad38d2d327bb"
+    }
+  },
+  {
+    "id": "crimson-aurora",
+    "title": {
+      "zh": "赤色极光",
+      "en": "Crimson Aurora"
+    },
+    "category": "landscapes",
+    "recommendedUse": "both",
+    "tone": "dark",
+    "revision": 1,
+    "image": "backgrounds/crimson-aurora.avif",
+    "thumbnail": "thumbnails/crimson-aurora.webp",
+    "width": 1920,
+    "height": 1080,
+    "bytes": 371656,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 270,
+    "thumbnailBytes": 14882,
+    "source": {
+      "filename": "charlvera-polar-lights-5858654_1920.jpg",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 634888,
+      "sha256": "3399c0d6fab4b628da5ab45ce82fd32541d311956cdf2daebdc754fb951689f6"
+    },
+    "processing": {
+      "avifQuality": 78,
+      "rgbPsnrDb": 41.23,
+      "colorSpace": "sRGB",
+      "sha256": "ba4044dfe874b6305bff4e0f3715e6104c75a0238424c64de1da275dcc348911"
+    }
+  },
+  {
+    "id": "emerald-aurora",
+    "title": {
+      "zh": "翡翠极光",
+      "en": "Emerald Aurora"
+    },
+    "category": "landscapes",
+    "recommendedUse": "both",
+    "tone": "dark",
+    "revision": 1,
+    "image": "backgrounds/emerald-aurora.avif",
+    "thumbnail": "thumbnails/emerald-aurora.webp",
+    "width": 1920,
+    "height": 1080,
+    "bytes": 396007,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 270,
+    "thumbnailBytes": 15138,
+    "source": {
+      "filename": "charlvera-polar-lights-5858656_1920.jpg",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 666411,
+      "sha256": "15fe413129adb89a90f2a3264c89b3f7578ac1f2c0bbe06e6d214e5c3709ee35"
+    },
+    "processing": {
+      "avifQuality": 78,
+      "rgbPsnrDb": 41.03,
+      "colorSpace": "sRGB",
+      "sha256": "495856dfa1aade209de9272cac9a8c2a8c5301b1389b9694d354692f6bed10e7"
+    }
+  },
+  {
+    "id": "winter-wolf",
+    "title": {
+      "zh": "冬日之狼",
+      "en": "Winter Wolf"
+    },
+    "category": "landscapes",
+    "recommendedUse": "outer",
+    "tone": "neutral",
+    "revision": 1,
+    "image": "backgrounds/winter-wolf.avif",
+    "thumbnail": "thumbnails/winter-wolf.webp",
+    "width": 1920,
+    "height": 1280,
+    "bytes": 414668,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 320,
+    "thumbnailBytes": 27100,
+    "source": {
+      "filename": "colfelly-wolf-1992716_1920.jpg",
+      "width": 1920,
+      "height": 1280,
+      "bytes": 641502,
+      "sha256": "95cd35ee0ede6ecda7ebbf9bf864727b05c601b26552c868037ea86b39a0434d"
+    },
+    "processing": {
+      "avifQuality": 78,
+      "rgbPsnrDb": 42.26,
+      "colorSpace": "sRGB",
+      "sha256": "0c31cc22552a8411fb08ceb202f4497fdc57a12cab5e618fcc9965a14b92aa85"
+    }
+  },
+  {
+    "id": "golden-clouds",
+    "title": {
+      "zh": "金色云层",
+      "en": "Golden Clouds"
+    },
+    "category": "landscapes",
+    "recommendedUse": "both",
+    "tone": "colorful",
+    "revision": 1,
+    "image": "backgrounds/golden-clouds.avif",
+    "thumbnail": "thumbnails/golden-clouds.webp",
+    "width": 3840,
+    "height": 2560,
+    "bytes": 833513,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 320,
+    "thumbnailBytes": 6676,
+    "source": {
+      "filename": "elg21-clouds-8409879.jpg",
+      "width": 5568,
+      "height": 3712,
+      "bytes": 5992385,
+      "sha256": "b2a169529841b37acfcb6e9672780e5e91ed8eee2ef16adee504f2995a8ee51e"
+    },
+    "processing": {
+      "avifQuality": 70,
+      "rgbPsnrDb": 38.77,
+      "colorSpace": "sRGB",
+      "sha256": "49a772e1187955a09a4bd53c702e7f12c00ccd064bb3905c09dd736d18f0fd9d"
+    }
+  },
+  {
+    "id": "coral-gradient",
+    "title": {
+      "zh": "珊瑚柔光",
+      "en": "Coral Gradient"
+    },
+    "category": "gradients",
+    "recommendedUse": "both",
+    "tone": "colorful",
+    "revision": 1,
+    "image": "backgrounds/coral-gradient.avif",
+    "thumbnail": "thumbnails/coral-gradient.webp",
+    "width": 1920,
+    "height": 1281,
+    "bytes": 207220,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 320,
+    "thumbnailBytes": 2554,
+    "source": {
+      "filename": "engin_akyurt-pink-3727880_1920.jpg",
+      "width": 1920,
+      "height": 1281,
+      "bytes": 358684,
+      "sha256": "a39f52b0dedf2b3df443d9be363f0991ce54dec5e81dcf0202c462b95c101619"
+    },
+    "processing": {
+      "avifQuality": 82,
+      "rgbPsnrDb": 45.48,
+      "colorSpace": "sRGB",
+      "sha256": "d72081d40bc227b95013199549dd9ffb897abe4c136e57364c87b27982672e47"
+    }
+  },
+  {
+    "id": "verdant-sky",
+    "title": {
+      "zh": "青绿色天空",
+      "en": "Verdant Sky"
+    },
+    "category": "landscapes",
+    "recommendedUse": "both",
+    "tone": "colorful",
+    "revision": 1,
+    "image": "backgrounds/verdant-sky.avif",
+    "thumbnail": "thumbnails/verdant-sky.webp",
+    "width": 3840,
+    "height": 2881,
+    "bytes": 376188,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 360,
+    "thumbnailBytes": 6976,
+    "source": {
+      "filename": "flutie8211-sky-7294754.jpg",
+      "width": 4766,
+      "height": 3576,
+      "bytes": 1527246,
+      "sha256": "54e85a0866c8ed748416dfffea0d9c66a30d34ff3137a982ec8168f6e2af1844"
+    },
+    "processing": {
+      "avifQuality": 78,
+      "rgbPsnrDb": 45.1,
+      "colorSpace": "sRGB",
+      "sha256": "96ae649f7a2206d1f43f55d00097fa3a0d3ea73748289cf91ea0b641e5750902"
+    }
+  },
+  {
+    "id": "woven-curtain",
+    "title": {
+      "zh": "彩色织物",
+      "en": "Woven Curtain"
+    },
+    "category": "textures",
+    "recommendedUse": "both",
+    "tone": "colorful",
+    "revision": 1,
+    "image": "backgrounds/woven-curtain.avif",
+    "thumbnail": "thumbnails/woven-curtain.webp",
+    "width": 1440,
+    "height": 1920,
+    "bytes": 470544,
+    "thumbnailWidth": 360,
+    "thumbnailHeight": 480,
+    "thumbnailBytes": 8558,
+    "source": {
+      "filename": "hans-curtain-56008_1920.jpg",
+      "width": 1440,
+      "height": 1920,
+      "bytes": 716546,
+      "sha256": "d495192ab18a083f7348e9e33f8c2078772375519e5acdc468bf39dc3fa8328d"
+    },
+    "processing": {
+      "avifQuality": 78,
+      "rgbPsnrDb": 41.79,
+      "colorSpace": "sRGB",
+      "sha256": "72bc37b07829b150059f552e28d6aee3674b84c01141b80d18d265b1d4a91279"
+    }
+  },
+  {
+    "id": "pastel-spectrum",
+    "title": {
+      "zh": "粉彩光谱",
+      "en": "Pastel Spectrum"
+    },
+    "category": "gradients",
+    "recommendedUse": "both",
+    "tone": "light",
+    "revision": 1,
+    "image": "backgrounds/pastel-spectrum.avif",
+    "thumbnail": "thumbnails/pastel-spectrum.webp",
+    "width": 2400,
+    "height": 2400,
+    "bytes": 28263,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 480,
+    "thumbnailBytes": 1900,
+    "source": {
+      "filename": "kaKtl_InMSyTpdF26O4YKEtA9-mD4PBC8r_JAMM9b-fp3DDVZuAGkPIxMYRELFGu9ry17Um66On_pkaisdstS9CkVNbN7MNc93rIDc-PW2kKpsg-2pMUJOsalJGzfPl6v6XrOoq2vekSoQslkyrjI30OXyab25zRddvinat9FziS2uBykzZWZSi2zEQv_QCb.jpg",
+      "width": 2400,
+      "height": 2400,
+      "bytes": 46143,
+      "sha256": "ae22c68d750ce86f9a09636811eb4ce30bf822f268acb8884fb8383f62be2efa"
+    },
+    "processing": {
+      "avifQuality": 82,
+      "rgbPsnrDb": 46.98,
+      "colorSpace": "sRGB",
+      "sha256": "92b435c14731543024a3604bde1481956bdbfcc087aa5a6285e9a4e40b24ede3"
+    }
+  },
+  {
+    "id": "azure-weave",
+    "title": {
+      "zh": "蔚蓝织纹",
+      "en": "Azure Weave"
+    },
+    "category": "textures",
+    "recommendedUse": "both",
+    "tone": "colorful",
+    "revision": 1,
+    "image": "backgrounds/azure-weave.avif",
+    "thumbnail": "thumbnails/azure-weave.webp",
+    "width": 1920,
+    "height": 1080,
+    "bytes": 242888,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 270,
+    "thumbnailBytes": 18066,
+    "source": {
+      "filename": "kaneb-blue-1254774_1920.jpg",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 411445,
+      "sha256": "5e932d28deafa93d7f9879867dea8908a259ee10c7b2f12c8485e0e22d9c98ec"
+    },
+    "processing": {
+      "avifQuality": 78,
+      "rgbPsnrDb": 42.11,
+      "colorSpace": "sRGB",
+      "sha256": "ac765aee148834299e9afa2d5c490d986114f08b168854759c4c631d884deab5"
+    }
+  },
+  {
+    "id": "forest-sprout",
+    "title": {
+      "zh": "林间新芽",
+      "en": "Forest Sprout"
+    },
+    "category": "landscapes",
+    "recommendedUse": "outer",
+    "tone": "dark",
+    "revision": 1,
+    "image": "backgrounds/forest-sprout.avif",
+    "thumbnail": "thumbnails/forest-sprout.webp",
+    "width": 1920,
+    "height": 1307,
+    "bytes": 119898,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 327,
+    "thumbnailBytes": 14188,
+    "source": {
+      "filename": "kodl68-forest-10394495_1920.jpg",
+      "width": 1920,
+      "height": 1307,
+      "bytes": 145391,
+      "sha256": "6165490f395e05326666c75dcbac96e16b5b6054fd8744b2d85a02b4ba584533"
+    },
+    "processing": {
+      "avifQuality": 78,
+      "rgbPsnrDb": 46.01,
+      "colorSpace": "sRGB",
+      "sha256": "54fcf87a92ab979ff5a8d0f8cc7b0ed3295e55f29488054d7cf90bd7ec6d25ea"
+    }
+  },
+  {
+    "id": "rose-clouds",
+    "title": {
+      "zh": "玫瑰暮云",
+      "en": "Rose Clouds"
+    },
+    "category": "landscapes",
+    "recommendedUse": "both",
+    "tone": "light",
+    "revision": 1,
+    "image": "backgrounds/rose-clouds.avif",
+    "thumbnail": "thumbnails/rose-clouds.webp",
+    "width": 3840,
+    "height": 2553,
+    "bytes": 829128,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 319,
+    "thumbnailBytes": 8224,
+    "source": {
+      "filename": "levanevsky-sunset-4086848.jpg",
+      "width": 6000,
+      "height": 3989,
+      "bytes": 2999314,
+      "sha256": "68cd569ea6d81458c13d1a687c2fdf5f0a9eae59c31352ce2307847209f67739"
+    },
+    "processing": {
+      "avifQuality": 70,
+      "rgbPsnrDb": 41.1,
+      "colorSpace": "sRGB",
+      "sha256": "521dec103fcc4476d89a328728ca3845396acd0c6628a9f83236db156a97e36a"
+    }
+  },
+  {
+    "id": "turquoise-shore",
+    "title": {
+      "zh": "碧绿海岸",
+      "en": "Turquoise Shore"
+    },
+    "category": "water",
+    "recommendedUse": "outer",
+    "tone": "colorful",
+    "revision": 1,
+    "image": "backgrounds/turquoise-shore.avif",
+    "thumbnail": "thumbnails/turquoise-shore.webp",
+    "width": 1920,
+    "height": 1079,
+    "bytes": 421691,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 270,
+    "thumbnailBytes": 21016,
+    "source": {
+      "filename": "michasager-sea-2755858_1920.jpg",
+      "width": 1920,
+      "height": 1079,
+      "bytes": 636423,
+      "sha256": "652b0cbd80ac5db60249e533d45b167a124f93b190a0d30dac254560da78f3b9"
+    },
+    "processing": {
+      "avifQuality": 78,
+      "rgbPsnrDb": 40.86,
+      "colorSpace": "sRGB",
+      "sha256": "30cd78388aec5fe04ce9ac5e818843e0de72a84d31e94096604140d377da025d"
+    }
+  },
+  {
+    "id": "apricot-gradient",
+    "title": {
+      "zh": "杏色柔光",
+      "en": "Apricot Gradient"
+    },
+    "category": "gradients",
+    "recommendedUse": "both",
+    "tone": "light",
+    "revision": 1,
+    "image": "backgrounds/apricot-gradient.avif",
+    "thumbnail": "thumbnails/apricot-gradient.webp",
+    "width": 1376,
+    "height": 768,
+    "bytes": 40106,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 268,
+    "thumbnailBytes": 2172,
+    "source": {
+      "filename": "Nd7Sr3kJvYzYnWZxbeS8bck8sQd-AoUuaI6uP-mngQEmQ2C9IEawBXDMLAk5Jb5NjlMe5tTQSa0X3wu5CVr2WoVfjY5V05l40jkoeGaqTNvuDTUKGifbVKuAFBZfF3vje5CEK8luKTUEvD3H9TkCSUwv5oR5uigJVudZXN9YpAZZl13Bn4hambPZVRzB0ktJ.jpg",
+      "width": 1376,
+      "height": 768,
+      "bytes": 20642,
+      "sha256": "90e84caa7732beb523e6f510dc24e122bf6317a997bfeeb83a8b6364e62fb136"
+    },
+    "processing": {
+      "avifQuality": 82,
+      "rgbPsnrDb": 47.18,
+      "colorSpace": "sRGB",
+      "sha256": "2339b6d24c60730eb9906b0f39b32e11b5d958ccdf0edad8bd476bcdb75c081f"
+    }
+  },
+  {
+    "id": "ivory-marble",
+    "title": {
+      "zh": "象牙石纹",
+      "en": "Ivory Marble"
+    },
+    "category": "textures",
+    "recommendedUse": "both",
+    "tone": "light",
+    "revision": 1,
+    "image": "backgrounds/ivory-marble.avif",
+    "thumbnail": "thumbnails/ivory-marble.webp",
+    "width": 1920,
+    "height": 1285,
+    "bytes": 307374,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 321,
+    "thumbnailBytes": 15722,
+    "source": {
+      "filename": "north_studio-marble-2362262_1920.jpg",
+      "width": 1920,
+      "height": 1285,
+      "bytes": 492105,
+      "sha256": "1978a4c5dbaa780ef801441daf908de1594c3106f845c0828b73475637cd2a02"
+    },
+    "processing": {
+      "avifQuality": 78,
+      "rgbPsnrDb": 43.48,
+      "colorSpace": "sRGB",
+      "sha256": "867810883627890f7934590a6b8a69ac66ad5bb59c3dd0d66a3d143edfb65b59"
+    }
+  },
+  {
+    "id": "slate-marble",
+    "title": {
+      "zh": "青灰石纹",
+      "en": "Slate Marble"
+    },
+    "category": "textures",
+    "recommendedUse": "both",
+    "tone": "dark",
+    "revision": 1,
+    "image": "backgrounds/slate-marble.avif",
+    "thumbnail": "thumbnails/slate-marble.webp",
+    "width": 1920,
+    "height": 1285,
+    "bytes": 649543,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 321,
+    "thumbnailBytes": 52768,
+    "source": {
+      "filename": "north_studio-marble-2362266_1920.jpg",
+      "width": 1920,
+      "height": 1285,
+      "bytes": 1080307,
+      "sha256": "75d9b0bc888509e82c9c48d5c91c527ec5d031cc613eecde06cd401fe99465ae"
+    },
+    "processing": {
+      "avifQuality": 70,
+      "rgbPsnrDb": 38.43,
+      "colorSpace": "sRGB",
+      "sha256": "7d1703fe92c2761e8d2caa49d9ec752867869192b7cb96a53435a7f5fc886e15"
+    }
+  },
+  {
+    "id": "midnight-surf",
+    "title": {
+      "zh": "深蓝浪潮",
+      "en": "Midnight Surf"
+    },
+    "category": "water",
+    "recommendedUse": "both",
+    "tone": "dark",
+    "revision": 1,
+    "image": "backgrounds/midnight-surf.avif",
+    "thumbnail": "thumbnails/midnight-surf.webp",
+    "width": 1920,
+    "height": 1280,
+    "bytes": 536786,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 320,
+    "thumbnailBytes": 36256,
+    "source": {
+      "filename": "pexels-ocean-1838340_1920.jpg",
+      "width": 1920,
+      "height": 1280,
+      "bytes": 790345,
+      "sha256": "c004a9c40ccf3bf729e65e354cb809ca9a14056e401ff24d9e91857a869703b2"
+    },
+    "processing": {
+      "avifQuality": 78,
+      "rgbPsnrDb": 41.23,
+      "colorSpace": "sRGB",
+      "sha256": "604ed325f39cf483ea9926ea1cecb1ed7c4239d420dd8584394b0f8e89fa8358"
+    }
+  },
+  {
+    "id": "concrete-passage",
+    "title": {
+      "zh": "混凝土长廊",
+      "en": "Concrete Passage"
+    },
+    "category": "architecture",
+    "recommendedUse": "outer",
+    "tone": "neutral",
+    "revision": 1,
+    "image": "backgrounds/concrete-passage.avif",
+    "thumbnail": "thumbnails/concrete-passage.webp",
+    "width": 1920,
+    "height": 1002,
+    "bytes": 187008,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 251,
+    "thumbnailBytes": 10414,
+    "source": {
+      "filename": "piro4d-tunnel-2033982_1920.jpg",
+      "width": 1920,
+      "height": 1002,
+      "bytes": 333429,
+      "sha256": "e36c11afd412a8a7b9d3ea65258baa5ee80cc5dfa20bfdc62629721b49895b6a"
+    },
+    "processing": {
+      "avifQuality": 78,
+      "rgbPsnrDb": 44.58,
+      "colorSpace": "sRGB",
+      "sha256": "e0c87627c5f81f90614e951567a68fa59d9f7b8e5876275f1b3922cd1f132cc0"
+    }
+  },
+  {
+    "id": "amber-bokeh",
+    "title": {
+      "zh": "琥珀光斑",
+      "en": "Amber Bokeh"
+    },
+    "category": "abstract",
+    "recommendedUse": "both",
+    "tone": "colorful",
+    "revision": 1,
+    "image": "backgrounds/amber-bokeh.avif",
+    "thumbnail": "thumbnails/amber-bokeh.webp",
+    "width": 1920,
+    "height": 1280,
+    "bytes": 50561,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 320,
+    "thumbnailBytes": 4846,
+    "source": {
+      "filename": "publicdomainpictures-abstract-19772_1920.jpg",
+      "width": 1920,
+      "height": 1280,
+      "bytes": 135938,
+      "sha256": "8bb37e29ad1b03084f587ab571966425cc29680ceda5ef7fae5ee8c867b16f86"
+    },
+    "processing": {
+      "avifQuality": 78,
+      "rgbPsnrDb": 48.38,
+      "colorSpace": "sRGB",
+      "sha256": "382cd680bc3939d5f316bb63e400d4cf9baead878af94f9a7df842e385326510"
+    }
+  },
+  {
+    "id": "rocky-coast",
+    "title": {
+      "zh": "礁石海岸",
+      "en": "Rocky Coast"
+    },
+    "category": "water",
+    "recommendedUse": "outer",
+    "tone": "dark",
+    "revision": 1,
+    "image": "backgrounds/rocky-coast.avif",
+    "thumbnail": "thumbnails/rocky-coast.webp",
+    "width": 1920,
+    "height": 1080,
+    "bytes": 617504,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 270,
+    "thumbnailBytes": 38764,
+    "source": {
+      "filename": "romain_huet-ocean-7890172_1920.jpg",
+      "width": 1920,
+      "height": 1080,
+      "bytes": 1013433,
+      "sha256": "be545ba685e6513451051b4392836a76ffaaf45769c81621563c663dfa6e2190"
+    },
+    "processing": {
+      "avifQuality": 70,
+      "rgbPsnrDb": 35.93,
+      "colorSpace": "sRGB",
+      "sha256": "d24bc866aab3721e927a1817c468e161dcf9d2fe46229f158acab4d4694d2946"
+    }
+  },
+  {
+    "id": "violet-watercolor",
+    "title": {
+      "zh": "紫色水彩",
+      "en": "Violet Watercolor"
+    },
+    "category": "abstract",
+    "recommendedUse": "both",
+    "tone": "light",
+    "revision": 1,
+    "image": "backgrounds/violet-watercolor.avif",
+    "thumbnail": "thumbnails/violet-watercolor.webp",
+    "width": 1920,
+    "height": 1849,
+    "bytes": 340217,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 462,
+    "thumbnailBytes": 12062,
+    "source": {
+      "filename": "smdesigns-watercolors-413270_1920.jpg",
+      "width": 1920,
+      "height": 1849,
+      "bytes": 582414,
+      "sha256": "c3a073694935c31987c9390e9c41c58cd181899d6b9f50b7b26dca3135f5369d"
+    },
+    "processing": {
+      "avifQuality": 78,
+      "rgbPsnrDb": 43.84,
+      "colorSpace": "sRGB",
+      "sha256": "49509ff81047000768ba5d311d6b93ae3341fa76b4deaba6c4712d898191c28e"
+    }
+  },
+  {
+    "id": "underwater-bubbles",
+    "title": {
+      "zh": "水下气泡",
+      "en": "Underwater Bubbles"
+    },
+    "category": "water",
+    "recommendedUse": "both",
+    "tone": "colorful",
+    "revision": 1,
+    "image": "backgrounds/underwater-bubbles.avif",
+    "thumbnail": "thumbnails/underwater-bubbles.webp",
+    "width": 1920,
+    "height": 1280,
+    "bytes": 486685,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 320,
+    "thumbnailBytes": 33684,
+    "source": {
+      "filename": "stocksnap-bubbles-2595227_1920.jpg",
+      "width": 1920,
+      "height": 1280,
+      "bytes": 720495,
+      "sha256": "4a1fd2a4f2d15c2f6edada6347838c98bc40dc5f0bc058816ee525313a45eb96"
+    },
+    "processing": {
+      "avifQuality": 78,
+      "rgbPsnrDb": 40.82,
+      "colorSpace": "sRGB",
+      "sha256": "3dc4f3489f8fe5725eb3f4ed0684e78661648bbd39b7b3d8f5a082880154339e"
+    }
+  },
+  {
+    "id": "coral-azure-watercolor",
+    "title": {
+      "zh": "珊瑚与蔚蓝水彩",
+      "en": "Coral & Azure Watercolor"
+    },
+    "category": "abstract",
+    "recommendedUse": "both",
+    "tone": "light",
+    "revision": 1,
+    "image": "backgrounds/coral-azure-watercolor.avif",
+    "thumbnail": "thumbnails/coral-azure-watercolor.webp",
+    "width": 1920,
+    "height": 1280,
+    "bytes": 759771,
+    "thumbnailWidth": 480,
+    "thumbnailHeight": 320,
+    "thumbnailBytes": 39680,
+    "source": {
+      "filename": "stux-watercolor-1734410_1920.jpg",
+      "width": 1920,
+      "height": 1280,
+      "bytes": 1180001,
+      "sha256": "bfbf7e0637c74d8242ee09f12dea2d42b8454fbdf9d7bdae8d0f9264d8a6cdf8"
+    },
+    "processing": {
+      "avifQuality": 70,
+      "rgbPsnrDb": 37.44,
+      "colorSpace": "sRGB",
+      "sha256": "bef76f71f0cb3706ea86675169581b1b19398385c3013242f3861a2f79992643"
+    }
+  }
+]

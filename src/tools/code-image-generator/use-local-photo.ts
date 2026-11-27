@@ -1,35 +1,72 @@
-import { useEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
+import type { CreativeAsset } from '../../assets/creative';
+import { creativeImageUrl } from '../../assets/creative/image-urls';
 import type { Locale } from '../../i18n/locale';
 import { errorText } from '../general/ui';
 import { readBackground } from './delivery';
 
-export type LocalPhoto = { bitmap: ImageBitmap; name: string };
-export type PhotoInputState = { photo?: LocalPhoto; pending?: boolean; error?: string };
+type Photo = { bitmap: ImageBitmap; name: string; assetId?: string };
+export type PhotoInputState = { photo?: Photo; pending?: boolean; error?: string };
 
 export function useLocalPhoto(locale: Locale, onLoaded: () => void) {
   const [state, setState] = useState<PhotoInputState>({});
-  const sequence = useRef(0);
-  const input = useRef<HTMLInputElement>(null);
-  const { photo } = state;
-  useEffect(() => () => { sequence.current++; }, []);
-  useEffect(() => () => photo?.bitmap.close(), [photo]);
+  const request = useRef<AbortController>(undefined);
+  const owned = useRef(new Set<ImageBitmap>());
+  useLayoutEffect(() => () => {
+    request.current?.abort();
+    owned.current.forEach(bitmap => bitmap.close());
+    owned.current.clear();
+  }, []);
+  useLayoutEffect(() => {
+    for (const bitmap of owned.current) {
+      if (bitmap === state.photo?.bitmap) continue;
+      bitmap.close();
+      owned.current.delete(bitmap);
+    }
+  }, [state.photo]);
 
-  async function load(file: File) {
-    const id = ++sequence.current;
+  async function load(source: { file: File } | { asset: CreativeAsset }) {
+    request.current?.abort();
+    const controller = new AbortController();
+    request.current = controller;
     setState(previous => ({ photo: previous.photo, pending: true }));
     try {
-      const bitmap = await readBackground(file);
-      if (id !== sequence.current) { bitmap.close(); return; }
-      setState({ photo: { bitmap, name: file.name } });
+      let blob: Blob, name: string, assetId: string | undefined;
+      if ('asset' in source) {
+        const { asset } = source;
+        const url = await creativeImageUrl(asset);
+        if (controller.signal.aborted) return;
+        if (!url) throw new Error('Missing creative asset');
+        const response = await fetch(url, { signal: controller.signal, credentials: 'same-origin' });
+        if (!response.ok) throw new Error('Creative asset request failed');
+        blob = await response.blob();
+        name = asset.title[locale];
+        assetId = asset.id;
+      } else {
+        blob = source.file;
+        name = source.file.name;
+      }
+      if (controller.signal.aborted) return;
+      const bitmap = await readBackground(blob);
+      if (controller.signal.aborted) { bitmap.close(); return; }
+      if ('asset' in source && (bitmap.width !== source.asset.width || bitmap.height !== source.asset.height)) {
+        bitmap.close();
+        throw new Error('Creative asset dimensions do not match the catalog');
+      }
+      owned.current.add(bitmap);
+      setState({ photo: { bitmap, name, assetId } });
       onLoaded();
     } catch (error) {
-      if (id === sequence.current) setState(previous => ({ photo: previous.photo, error: errorText(error, locale) }));
+      if (controller.signal.aborted) return;
+      const message = 'file' in source ? errorText(error, locale) : locale === 'zh'
+        ? '无法加载素材。请重试或选择其他图片。' : 'Could not load the asset. Try again or choose another image.';
+      setState(previous => ({ photo: previous.photo, error: message }));
     }
   }
 
   return {
-    ...state, input, load,
-    choose: () => input.current?.click(),
-    clear: () => { sequence.current++; setState({}); },
+    ...state, load,
+    cancel: () => { request.current?.abort(); setState(previous => ({ photo: previous.photo })); },
+    clear: () => { request.current?.abort(); setState({}); },
   };
 }

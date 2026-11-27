@@ -36,7 +36,7 @@ it('exposes rendered presets and keeps background, syntax theme and window contr
   const baseColor = screen.getByRole('switch', { name: 'Window base color', checked: true });
   await user.click(baseColor);
   expect(changeWindowLayers).toHaveBeenCalledExactlyOnceWith({ baseVisible: false });
-  await user.click(screen.getByRole('button', { name: 'Import window image' }));
+  await user.click(screen.getByRole('button', { name: 'Choose window image' }));
   expect(photo.choose).toHaveBeenCalledTimes(1);
   expect(change).toHaveBeenLastCalledWith({ style: 'windows' });
 });

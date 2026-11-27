@@ -122,6 +122,26 @@ export default defineConfig({
             const qrPrivate = /\/(?:src\/tools\/qr-code-generator\/(?!definition\.ts$)|node_modules\/(?:qrcode|jsqr)\/)/;
             const markdownPrivate = /\/(?:src\/tools\/markdown-editor\/(?!definition\.ts$)|node_modules\/(?:@codemirror\/(?:lang-markdown|search)|@lezer\/markdown|dompurify|marked|katex)\/)/;
             const codeImagePrivate = /\/(?:src\/(?:tools\/code-image-generator\/(?!definition\.ts$)|assets\/code-image-presets\/)|node_modules\/(?:@shikijs|@fontsource\/(?:jetbrains-mono|fira-code|ibm-plex-mono)|tm-grammars|oniguruma-to-es|oniguruma-parser)\/)/;
+            const sourcePath = id => id.replaceAll('\\', '/').split('?')[0];
+            const creativePath = /(?:^|\/)src\/(?:assets\/creative|ui\/creative-assets)\//;
+            const emitted = new Set(Object.values(bundle).flatMap(item => item.type === 'chunk' ? Object.keys(item.modules) : []));
+            const publishedOwners = new Set(tools.filter(tool => tool.status === 'published' && tool.regions.includes(region)).map(tool => tool.id));
+            const creativeModules = [...emitted].filter(id => creativePath.test(sourcePath(id)));
+            const hasPublishedOwner = (id, seen) => {
+              if (seen.has(id)) return false;
+              seen.add(id);
+              const owner = sourcePath(id).match(/\/src\/tools\/([^/]+)\//)?.[1];
+              if (owner && publishedOwners.has(owner)) return true;
+              const module = this.getModuleInfo(id);
+              return [...(module?.importers ?? []), ...(module?.dynamicImporters ?? [])]
+                .some(parent => emitted.has(parent) && hasPublishedOwner(parent, seen));
+            };
+            for (const id of creativeModules)
+              if (!hasPublishedOwner(id, new Set()))
+                this.error('Creative collection module without a published consumer: ' + id);
+            for (const item of Object.values(bundle))
+              if (item.type === 'asset' && item.originalFileNames?.some(path => creativePath.test(sourcePath(path))) && !creativeModules.length)
+                this.error('Creative collection asset without a published consumer: ' + item.fileName);
             for (const chunk of Object.values(bundle)) {
               if (chunk.type !== 'chunk') continue;
               for (const id of Object.keys(chunk.modules)) {

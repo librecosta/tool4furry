@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { EditorState } from '@codemirror/state';
 import { indentWithTab } from '@codemirror/commands';
 import { keymap } from '@codemirror/view';
@@ -10,6 +10,7 @@ import { SliderField } from '../../ui/SliderField';
 import { TextEditor } from '../../ui/text-editor/TextEditor';
 import { Frame, errorText, saveBlob, tr } from '../general/ui';
 import type { ToolProps } from '../types';
+import type { CreativeAsset } from '../../assets/creative';
 import aurora from '../../assets/code-image-presets/code-preset-aurora.webp?url';
 import forest from '../../assets/code-image-presets/code-preset-forest.webp?url';
 import glacier from '../../assets/code-image-presets/code-preset-glacier.webp?url';
@@ -43,6 +44,7 @@ const thumbnails: Record<Preset, string> = {
 };
 const formats: readonly [OutputFormat, string][] = [['png', 'PNG'], ['svg', 'SVG'], ['jpeg', 'JPEG'], ['webp', 'WebP']];
 const scaleChoices = scales.map(value => [value, `${value}×`] as const);
+const CreativeAssetPicker = lazy(() => import('../../ui/creative-assets/CreativeAssetPicker'));
 const photoDefaults: Record<PhotoTarget, PhotoPlacement> = {
   canvas: defaultPhotoPlacement,
   window: { ...defaultPhotoPlacement, fit: 'cover' },
@@ -59,7 +61,14 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
   const [placements, setPlacements] = useState(photoDefaults);
   const [windowLayers, setWindowLayers] = useState(defaultWindowLayers);
   const [dragTarget, setDragTarget] = useState<PhotoTarget>();
-  const canvasInput = useLocalPhoto(locale, () => resetPlacement('canvas'));
+  const [picker, setPicker] = useState<{ target: PhotoTarget; open: boolean; session: number }>();
+  const pickerOpener = useRef<HTMLButtonElement>(null);
+  const focusCanvasAfterImport = useRef(false);
+  const canvasInput = useLocalPhoto(locale, () => {
+    const opener = pickerOpener.current;
+    focusCanvasAfterImport.current = !!opener?.closest('[data-code-stage]') && document.activeElement === opener;
+    resetPlacement('canvas');
+  });
   const windowInput = useLocalPhoto(locale, () => {
     resetPlacement('window');
     changeWindowLayers({ photoVisible: true });
@@ -110,6 +119,11 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
 
   const canvasBitmap = settings.background.kind === 'image' ? canvasInput.photo?.bitmap : undefined;
   const windowBitmap = windowInput.photo?.bitmap;
+  useLayoutEffect(() => {
+    if (!canvasBitmap || !focusCanvasAfterImport.current) return;
+    focusCanvasAfterImport.current = false;
+    root.current?.querySelector<HTMLElement>('[data-code-stage]')?.focus({ preventScroll: true });
+  }, [canvasBitmap]);
   const picture = useMemo(() => {
     if (!tokens || readyFont?.request !== fontRequest || readyFont.error || (settings.background.kind === 'image' && !canvasBitmap)) return {};
     const canvas = document.createElement('canvas');
@@ -161,12 +175,15 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
   };
   function change(patch: Partial<CodeImageSettings>) {
     if (patch.background && patch.background.kind !== 'image') {
+      canvasInput.cancel();
       setDragTarget(target => target === 'canvas' ? undefined : target);
     }
     if (['background', 'theme', 'margin', 'style', 'radius', 'shadow', 'padding'].some(key => Object.hasOwn(patch, key))) setPreset(undefined);
     setSettings(previous => ({ ...previous, ...patch }));
   }
   function changePreset(id: Preset) {
+    canvasInput.cancel();
+    windowInput.cancel();
     setSettings(previous => ({ ...previous, ...presets[id] }));
     setWindowLayers(defaultWindowLayers);
     setDragTarget(undefined);
@@ -204,11 +221,25 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
     setWindowLayers(previous => ({ ...previous, ...patch }));
     setPreset(undefined);
   }
+  function choosePhoto(target: PhotoTarget, opener: HTMLButtonElement) {
+    pickerOpener.current = opener;
+    setPicker(previous => ({ target, open: true, session: (previous?.session ?? 0) + 1 }));
+  }
+  function applyCreativeAsset(target: PhotoTarget, asset: CreativeAsset) {
+    const input = target === 'canvas' ? canvasInput : windowInput;
+    if (input.photo?.assetId === asset.id) {
+      input.cancel();
+      if (target === 'window' && !windowLayers.photoVisible) changeWindowLayers({ photoVisible: true });
+      return;
+    }
+    void input.load({ asset });
+  }
   function photoControls(target: PhotoTarget): PhotoControlsProps {
     const input = target === 'canvas' ? canvasInput : windowInput;
     const photo = target === 'canvas' ? scene?.canvasPhoto : scene?.windowPhoto;
     return {
       ...input,
+      choose: opener => choosePhoto(target, opener),
       placement: placements[target],
       change: patch => changePlacement(target, patch),
       reset: () => resetPlacement(target),
@@ -232,6 +263,7 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
     setFilename('');
     canvasInput.clear();
     windowInput.clear();
+    setPicker(undefined);
     setPlacements(photoDefaults);
     setWindowLayers(defaultWindowLayers);
     setDragTarget(undefined);
@@ -304,14 +336,6 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
     <link rel="license" href={license} />
     <link rel="license" href={editorLicense} />
     <div ref={root} className={s.studio} data-code-image-studio>
-      {([['canvas', canvasInput, t('背景图片文件', 'Background image file')],
-        ['window', windowInput, t('窗口背景图片文件', 'Window background image file')]] as const).map(([target, input, label]) =>
-        <input key={target} type="file" ref={input.input} accept="image/png,image/jpeg,image/webp,image/avif" hidden
-          aria-label={label} onChange={event => {
-            const file = event.currentTarget.files?.[0];
-            event.currentTarget.value = '';
-            if (file) void input.load(file);
-          }} />)}
       <div className={s.toolbar} aria-label={t('创作工具栏', 'Studio toolbar')}>
         <div className={s.toolbarGroup}>
           <input type="file" ref={sourceInput} hidden aria-label={t('源码文件', 'Source file')} onChange={event => {
@@ -368,7 +392,7 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
       <div className={s.workspace}>
         <Stage t={t} editing={editing} scene={artwork} font={settings.font} scale={format === 'svg' ? 1 : scale}
           size={artwork && (format === 'svg' ? artwork : dimensions.output)} status={loadingText}
-          photoPrompt={emptyImage ? canvasInput : undefined}
+          photoPrompt={emptyImage ? { pending: canvasInput.pending, error: canvasInput.error, choose: opener => choosePhoto('canvas', opener) } : undefined}
           dragTarget={dragTarget}
           movePhoto={(target, position) => changePlacement(target, position)}
           error={visualError} report={e => setActionError(errorText(e, locale))}
@@ -379,6 +403,16 @@ export default function CodeImageGenerator({ locale }: ToolProps) {
           windowPhoto={photoControls('window')} windowLayers={windowLayers} changeWindowLayers={changeWindowLayers}
           change={change} selectPreset={changePreset} />
       </div>
+      {picker && <Suspense fallback={<span role="status">{t('正在加载素材…', 'Loading assets…')}</span>}>
+        <CreativeAssetPicker key={picker.session} locale={locale} target={picker.target} open={picker.open}
+          currentId={(picker.target === 'canvas' ? canvasInput : windowInput).photo?.assetId}
+          onOpenChange={open => setPicker(previous => previous && { ...previous, open })}
+          onSelect={asset => applyCreativeAsset(picker.target, asset)}
+          onImport={file => { void (picker.target === 'canvas' ? canvasInput : windowInput).load({ file }); }}
+          accept="image/png,image/jpeg,image/webp,image/avif" container={fullscreen ? root.current : undefined}
+          finalFocus={() => pickerOpener.current?.isConnected ? pickerOpener.current :
+            root.current?.querySelector<HTMLElement>('[data-code-stage]') ?? null} />
+      </Suspense>}
       {(actionError || rasterError || message || (tokens?.fallback && language !== 'text')) && <div className={s.feedback}>
         {(actionError || rasterError) && <p role="alert">{actionError || rasterError}</p>}
         {message && <p role="status">{message}</p>}

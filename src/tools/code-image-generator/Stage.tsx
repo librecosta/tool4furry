@@ -18,7 +18,7 @@ type Props = {
   size?: { width: number; height: number };
   status?: string;
   error?: string;
-  photoPrompt?: Pick<PhotoInputState, 'pending' | 'error'> & { choose: () => void };
+  photoPrompt?: Pick<PhotoInputState, 'pending' | 'error'> & { choose: (opener: HTMLButtonElement) => void };
   dragTarget?: PhotoTarget;
   movePhoto: (target: PhotoTarget, position: Pick<PhotoPlacement, 'x' | 'y'>) => void;
   report: (error: unknown) => void;
@@ -107,7 +107,7 @@ export function Stage({ t, editing, scene, font, scale, size, status, error, pho
     if (drag.current?.id === event.pointerId) drag.current = undefined;
   }
 
-  return <section className={s.stage} aria-label={t('画布', 'Canvas')} data-code-stage>
+  return <section className={s.stage} aria-label={t('画布', 'Canvas')} data-code-stage tabIndex={-1}>
     <div className={s.stageHeader}>
       <span>{editing ? t('代码编辑器', 'Code editor') : t('画布', 'Canvas')}</span>
       <span>{!editing && (repositioning
@@ -136,11 +136,10 @@ export function Stage({ t, editing, scene, font, scale, size, status, error, pho
         </div>
         {photoPrompt ? <div className={`${s.stageNotice} ${s.stagePhotoPrompt}`}>
           {photoPrompt.error && <span role="alert" className={s.photoError}>{photoPrompt.error}</span>}
-          {photoPrompt.pending
-            ? <span role="status">{t('正在读取背景图片…', 'Reading background image…')}</span>
-            : <Button className={s.stageImport} variant="primary" onClick={photoPrompt.choose}>
-              <ImageSquareIcon size={18} aria-hidden="true" /> {t('导入背景图片', 'Import background image')}
-            </Button>}
+          {photoPrompt.pending && <span role="status">{t('正在读取背景图片…', 'Reading background image…')}</span>}
+          <Button className={s.stageImport} variant="primary" aria-haspopup="dialog" onClick={event => photoPrompt.choose(event.currentTarget)}>
+            <ImageSquareIcon size={18} aria-hidden="true" /> {t('选择背景图片', 'Choose background image')}
+          </Button>
         </div> : (!scene || error) && <div role={error ? 'alert' : 'status'} className={s.stageNotice}>{error || status}</div>}
       </div>
     </div>

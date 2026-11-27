@@ -82,7 +82,7 @@ export function AppearancePanel({
     <Section title={t('背景', 'Background')}>
       <StudioChoices<Background['kind']> label={t('背景类型', 'Background type')} value={back.kind}
         options={[[ 'solid', t('纯色', 'Solid')], ['linear', t('线性渐变', 'Linear gradient')],
-          ['radial', t('径向渐变', 'Radial gradient')], ['transparent', t('透明', 'Transparent')], ['image', t('本地图片', 'Local image')]]}
+          ['radial', t('径向渐变', 'Radial gradient')], ['transparent', t('透明', 'Transparent')], ['image', t('图片背景', 'Image background')]]}
         change={kind => background({ kind })} />
       {(colors || back.kind === 'solid') && <div className={s.colorRow}>
         <label title={t('起始颜色', 'Start color')}>

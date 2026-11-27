@@ -10,7 +10,7 @@ import type { PhotoInputState } from './use-local-photo';
 import s from './studio.module.scss';
 
 export type PhotoControlsProps = PhotoInputState & {
-  choose: () => void;
+  choose: (opener: HTMLButtonElement) => void;
   placement: PhotoPlacement;
   change: (patch: Partial<PhotoPlacement>) => void;
   reset: () => void;
@@ -25,16 +25,16 @@ export function PhotoControls({ t, controls, outer = false, children }: {
 }) {
   const { photo, pending, error, choose, placement, change, reset, dragging, drag, panX, panY } = controls;
   const title = outer
-    ? photo ? t('更换图片', 'Replace image') : t('导入图片', 'Import image')
-    : photo ? t('更换窗口图片', 'Replace window image') : t('导入窗口图片', 'Import window image');
+    ? photo ? t('更换图片', 'Replace image') : t('选择背景图片', 'Choose background image')
+    : photo ? t('更换窗口图片', 'Replace window image') : t('选择窗口图片', 'Choose window image');
   const label = outer ? t('画布背景图片', 'Canvas background image') : t('窗口背景图片', 'Window background image');
   const position = (axis: 'x' | 'y', label: string, available: boolean) =>
     <NumberStepper label={label} decreaseLabel={t('减小', 'Decrease ') + label} increaseLabel={t('增大', 'Increase ') + label}
       value={placement[axis]} min={-100} max={100} disabled={!available} locale={t('zh-CN', 'en')}
       onValueChange={value => change({ [axis]: value })} />;
 
-  return <div className={s.photoControls} role="group" aria-label={label}>
-    <Button size="sm" variant="ghost" className={s.fieldButton} onClick={choose} disabled={pending}>
+  return <div className={s.photoControls} role="group" aria-label={label} data-photo-target={outer ? 'canvas' : 'window'}>
+    <Button size="sm" variant="ghost" className={s.fieldButton} onClick={event => choose(event.currentTarget)} aria-haspopup="dialog">
       <ImageSquareIcon size={16} aria-hidden="true" /> {title}
     </Button>
     {pending && <span role="status" className={s.photoMeta}>{t('正在读取图片…', 'Reading image…')}</span>}
@@ -44,6 +44,7 @@ export function PhotoControls({ t, controls, outer = false, children }: {
         <span className={s.imageName} title={photo.name}>{photo.name}</span>
         <span>{photo.bitmap.width} × {photo.bitmap.height}</span>
       </div>
+      <span className={s.photoMeta}>{photo.assetId ? t('内置素材', 'Built-in asset') : t('本地图片', 'Local image')}</span>
       {children}
       <StudioChoices<PhotoPlacement['fit']> label={t('图片适应方式', 'Image fit')} value={placement.fit}
         options={[[ 'contain', t('完整显示', 'Contain')], ['cover', t('铺满裁切', 'Cover')]]} change={fit => change({ fit })} />

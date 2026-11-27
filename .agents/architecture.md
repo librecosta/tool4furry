@@ -41,6 +41,12 @@ Astro 工具路由 + 静态 Intro / Guide
 - `art/render.ts` 消费已构建的矩阵和作品风格，生成像素对齐、自包含的规范 SVG。`art/export.ts` 在本地把 SVG 光栅化为 PNG，按需加载 jsQR，比较文本与 UTF-8 字节，失败时用同一矩阵验证标准输出。使用 `renderQrSvg()` 可取得独立于地貌的 2D 构图。[A1 实现及验证](../docs/general-toolbox-v0.8.md#qr-code-generator--v08-b13-a1-艺术二维码)
 - `graphics/diorama-terrain.ts` 根据配方的地貌 ID、修订号及种子生成封闭高度场网格。`diorama-qr.ts` 直接从共享矩阵生成深色模块位置及几何参数，保留完整四模块静区。`DioramaScene.tsx` 由实际工具按需导入，接受有效配方、同次编码的矩阵及可反转的视角指令，回传可用状态、正视扫码与截图函数。世界与二维码切换共用一个 WebGL2 Canvas；截图读取当前帧，二维文件仍走 `art/export.ts`。正式构建检查实际 client chunk 库和 JS/CSS 产物。[图形实现及资源边界](../docs/general-toolbox-v0.8.md#qr-code-generator--v08-b13-b0-地貌沙盘与双状态工作区)
 
+## 共享创意素材
+
+- `src/assets/creative/catalog.json` 保存维护者提供的稳定 ID、分类、双语名称、尺寸、用途、来源及校验数据。`index.ts` 组合现有分类与查询，并通过 `?url&no-inline` 为目录指向的 AVIF 与 WebP 取得构建 URL。两地区共享同一份源文件。
+- `src/ui/creative-assets/CreativeAssetPicker.tsx` 在使用它的工具打开选择器时加载。它管理临时选中项和分类，使用浏览器懒加载 WebP。确认后将条目交给工具。工具负责高清请求、图片解码、取消、位图释放及预览状态。
+- 正式构建从实际客户端产物反查素材和选择器的导入者，并依据 Registry 检查本地区 Published 消费方。Code Image Generator 当前为唯一消费者且处于 Draft，两地区正式构建均排除该收藏。
+
 ## 文本编辑基础
 
 - 大段文本、结构化文本和代码编辑默认复用 `src/ui/text-editor/TextEditor.tsx` 与 TextEditorPane；短字段和简单备注继续使用原有输入原语。Text Cleaner 和 Text Diff 共用此编辑基础；JSON Formatter、Subtitle Tools、Markdown Editor 与旧 TextWorkspace 保持各自实现。
