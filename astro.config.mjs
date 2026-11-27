@@ -66,7 +66,7 @@ export default defineConfig({
     optimizeDeps: {
       include: ['hash-wasm', '@codemirror/state', '@codemirror/view', '@codemirror/commands', 'diff',
         'mediabunny', 'wavesurfer.js', 'wavesurfer.js/dist/plugins/regions.js', 'wavesurfer.js/dist/plugins/timeline.js',
-        '@mediabunny/mp3-encoder', '@mediabunny/flac-encoder'],
+        '@mediabunny/mp3-encoder', '@mediabunny/flac-encoder', 'imagetracerjs'],
       exclude: ['@jsquash/avif/codec/enc/avif_enc.js', '@jsquash/avif/meta.js'],
     },
     // Vite discovers dynamic imports before cross-module status checks fold away.
@@ -120,10 +120,12 @@ export default defineConfig({
             const videoAvailable = toolDefines['import.meta.env.T4F_TOOL_VIDEO_FRAME_EXTRACTOR_AVAILABLE'] === 'true';
             const markdownAvailable = toolDefines['import.meta.env.T4F_TOOL_MARKDOWN_EDITOR_AVAILABLE'] === 'true';
             const codeImageAvailable = toolDefines['import.meta.env.T4F_TOOL_CODE_IMAGE_GENERATOR_AVAILABLE'] === 'true';
+            const svgConverterAvailable = toolDefines['import.meta.env.T4F_TOOL_SVG_CONVERTER_AVAILABLE'] === 'true';
             const audioPrivate = /\/(?:src\/tools\/audio-trimmer\/(?!definition\.ts$)|node_modules\/(?:mediabunny|wavesurfer\.js|@mediabunny)\/)/;
             const qrPrivate = /\/(?:src\/tools\/qr-code-generator\/(?!definition\.ts$)|node_modules\/(?:qrcode|jsqr)\/)/;
             const markdownPrivate = /\/(?:src\/tools\/markdown-editor\/(?!definition\.ts$)|node_modules\/(?:@codemirror\/(?:lang-markdown|search)|@lezer\/markdown|dompurify|marked|katex)\/)/;
             const codeImagePrivate = /\/(?:src\/(?:tools\/code-image-generator\/(?!definition\.ts$)|assets\/code-image-presets\/)|node_modules\/(?:@shikijs|@fontsource\/(?:jetbrains-mono|fira-code|ibm-plex-mono)|tm-grammars|oniguruma-to-es|oniguruma-parser)\/)/;
+            const svgConverterPrivate = /\/(?:src\/tools\/svg-converter\/(?!definition\.ts$)|node_modules\/(?:imagetracerjs|css-tree|@codemirror\/lang-xml|@lezer\/xml)\/)/;
             const sourcePath = id => id.replaceAll('\\', '/').split('?')[0];
             const creativePath = /(?:^|\/)src\/(?:assets\/creative|ui\/creative-assets)\//;
             const emitted = new Set(Object.values(bundle).flatMap(item => item.type === 'chunk' ? Object.keys(item.modules) : []));
@@ -157,6 +159,9 @@ export default defineConfig({
                 }
                 if (!codeImageAvailable && codeImagePrivate.test(source)) {
                   this.error('Code Image Generator Draft module in ' + chunk.fileName + ': ' + source);
+                }
+                if (!svgConverterAvailable && svgConverterPrivate.test(source)) {
+                  this.error('SVG Converter Draft module in ' + chunk.fileName + ': ' + source);
                 }
                 if (!audioAvailable && audioPrivate.test(source)) {
                   this.error('Audio Trimmer Draft implementation in ' + chunk.fileName + ': ' + source);

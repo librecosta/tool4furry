@@ -17,6 +17,7 @@
 
 - CSV / JSON Converter 完成 B18-D2 双语静态 SEO 与正式产物验收，取得 CN/Global Published 源码资格。专属 Worker 分块读取 CSV 并保留 JSON 数字字面量。下载使用浏览器本地毫秒时间戳，同毫秒重复点击时追加序号。工作区、Worker 和局部样式按需交付。[转换与验收](docs/general-toolbox-v0.8.md#csv--json-converter--v08-b18-d1)
 - Code Image Generator 完成 B19-D2 双语静态 SEO、Registry 文案和实际输出复核。维护者明确批准 CN/Global Published。专属 Worker、字体、预设缩图、选择器及 Creative Collection · Vol. 01 随当前地区合格消费者按需交付。[发布复核与证据](docs/evidence/b19-code-image/README.md#b19-d2-发布复核)
+- B20-D1 将 SVG to PNG 迁移为 SVG Converter（`svg-converter`），支持 SVG 栅格化、专属 Worker 位图矢量化及自包含 SVG 图片封装。独立静态 SVG 策略用于验证源码及内嵌资源，预览和导出均使用隔离图片上下文。工具保持 Draft，其专属代码、语言扩展、矢量化引擎和 NOTICE 继续排除于正式产物。[转换契约与实测](docs/general-toolbox-v0.8.md#svg-converter--v08-b20-d1)
 
 - JSON Formatter 完成 B10-D2 双语 SEO 与输出复核，具备 CN/Global Published 源码资格。复用 CodeMirror 双编辑器，支持严格保真的格式化与压缩、行列定位、分页只读树和完整 JSON 下载。专属同源 Worker、按需 JSON 语言包及 MIT 通知受正式产物守卫约束。验证和实际资源边界见 [通用工具说明](docs/general-toolbox-v0.8.md#json-formatter--v08-b10-d2-seo-与-beta-资格)。
 

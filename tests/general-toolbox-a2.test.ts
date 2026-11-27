@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import { renderMarkdown } from '../src/tools/markdown-editor/core';
 import { convertTable } from '../src/tools/csv-json-converter/core';
 import { csvDefaults, jsonDefaults, type Delimiter } from '../src/tools/csv-json-converter/settings';
-import { readSvg, svgOutputSize } from '../src/tools/svg-to-png/core';
 import { evaluateRegex } from '../src/tools/regex-tester/core';
 import { generateUuids } from '../src/tools/uuid-generator/core';
 describe('second general toolbox batch', () => {
@@ -33,37 +32,6 @@ describe('second general toolbox batch', () => {
     expect((await csv(fromJson.result.preview.text, ';')).result.preview.text).toBe(fromCsv.result.preview.text);
     for (const delimiterInput of ['a,a\n1,2', 'a,b\n1', 'a,b\n"unclosed,2'])
       await expect(csv(delimiterInput, ',')).rejects.toThrow();
-  });
-  it('reuses the strict SVG allowlist and checks proportional output budgets', () => {
-    const svg = readSvg(
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 40"><rect width="20" height="20" fill="#ff0000"/></svg>',
-    );
-    expect(svg).toMatchObject({ width: 80, height: 40, viewBox: '0 0 80 40' });
-    expect(svgOutputSize(svg, '160', '80')).toEqual({ width: 160, height: 80 });
-    for (const [w, h] of [
-      ['0', '0'],
-      ['160', '100'],
-      ['10000', '5000'],
-      ['1px', '1'],
-    ])
-      expect(() => svgOutputSize(svg, w, h)).toThrow();
-    for (const body of [
-      '<script>alert(1)</script>',
-      '<image href="https://evil.invalid/a.png"/>',
-      '<rect onclick="alert(1)"/>',
-      '<foreignObject/>',
-      '<animate/>',
-    ])
-      expect(() =>
-        readSvg(
-          `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="40">${body}</svg>`,
-        ),
-      ).toThrow();
-    expect(() =>
-      readSvg(
-        '<!DOCTYPE svg [<!ENTITY x SYSTEM "https://evil.invalid/">]><svg/>',
-      ),
-    ).toThrow();
   });
   it('handles regex capture groups, substitutions, no match and Unicode zero-width matches', () => {
     const result = evaluateRegex({

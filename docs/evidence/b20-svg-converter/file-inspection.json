@@ -1,0 +1,264 @@
+{
+  "images": {
+    "cn-code-bundled.png": {
+      "format": "PNG",
+      "width": 486,
+      "height": 367,
+      "alpha": [
+        255,
+        255
+      ],
+      "bytes": 118110,
+      "embedded_images": 0,
+      "embedded_font": true
+    },
+    "cn-code-dual.png": {
+      "format": "PNG",
+      "width": 652,
+      "height": 367,
+      "alpha": [
+        224,
+        255
+      ],
+      "bytes": 367314,
+      "embedded_images": 2,
+      "embedded_font": true
+    },
+    "cn-code-local.png": {
+      "format": "PNG",
+      "width": 486,
+      "height": 367,
+      "alpha": [
+        255,
+        255
+      ],
+      "bytes": 32724,
+      "embedded_images": 1,
+      "embedded_font": true
+    },
+    "cn-complex.png": {
+      "format": "PNG",
+      "width": 1024,
+      "height": 768,
+      "alpha": [
+        0,
+        255
+      ],
+      "bytes": 503241
+    },
+    "cn-embed-roundtrip.png": {
+      "format": "PNG",
+      "width": 400,
+      "height": 320,
+      "alpha": [
+        0,
+        255
+      ],
+      "bytes": 7046
+    },
+    "cn-high.png": {
+      "format": "PNG",
+      "width": 2048,
+      "height": 2048,
+      "alpha": [
+        0,
+        255
+      ],
+      "bytes": 1469547
+    },
+    "cn-max-edge.png": {
+      "format": "PNG",
+      "width": 16384,
+      "height": 1024,
+      "alpha": [
+        255,
+        255
+      ],
+      "bytes": 313539
+    },
+    "cn-max-pixels.png": {
+      "format": "PNG",
+      "width": 8000,
+      "height": 5000,
+      "alpha": [
+        255,
+        255
+      ],
+      "bytes": 761901
+    },
+    "cn-pixel-roundtrip.png": {
+      "format": "PNG",
+      "width": 32,
+      "height": 32,
+      "alpha": [
+        0,
+        255
+      ],
+      "bytes": 534
+    },
+    "cn-ribbon.avif": {
+      "format": "AVIF",
+      "width": 2048,
+      "height": 2048,
+      "alpha": [
+        0,
+        255
+      ],
+      "bytes": 73040
+    },
+    "cn-ribbon.jpg": {
+      "format": "JPEG",
+      "width": 2048,
+      "height": 2048,
+      "alpha": [
+        255,
+        255
+      ],
+      "bytes": 81829
+    },
+    "cn-ribbon.webp": {
+      "format": "WEBP",
+      "width": 2048,
+      "height": 2048,
+      "alpha": [
+        0,
+        255
+      ],
+      "bytes": 60158
+    },
+    "global-complex.png": {
+      "format": "PNG",
+      "width": 512,
+      "height": 384,
+      "alpha": [
+        0,
+        255
+      ],
+      "bytes": 137866
+    },
+    "global-embed-roundtrip.png": {
+      "format": "PNG",
+      "width": 400,
+      "height": 320,
+      "alpha": [
+        0,
+        255
+      ],
+      "bytes": 7046
+    }
+  },
+  "ico": [
+    {
+      "size": 16,
+      "offset": 102,
+      "bytes": 704
+    },
+    {
+      "size": 32,
+      "offset": 806,
+      "bytes": 1768
+    },
+    {
+      "size": 48,
+      "offset": 2574,
+      "bytes": 2885
+    },
+    {
+      "size": 64,
+      "offset": 5459,
+      "bytes": 4200
+    },
+    {
+      "size": 128,
+      "offset": 9659,
+      "bytes": 12714
+    },
+    {
+      "size": 256,
+      "offset": 22373,
+      "bytes": 40741
+    }
+  ],
+  "vector": {
+    "cn-vector-illustration.svg": {
+      "paths": 5,
+      "bytes": 1219,
+      "dimensions": "0 0 400 320"
+    },
+    "cn-vector-line.svg": {
+      "paths": 2,
+      "bytes": 852,
+      "dimensions": "0 0 240 240"
+    },
+    "cn-vector-logo.svg": {
+      "paths": 3,
+      "bytes": 1418,
+      "dimensions": "0 0 256 256"
+    },
+    "cn-vector-photo.svg": {
+      "paths": 445,
+      "bytes": 184140,
+      "dimensions": "0 0 768 512"
+    },
+    "cn-vector-pixel.svg": {
+      "paths": 8,
+      "bytes": 1756,
+      "dimensions": "0 0 32 32"
+    },
+    "global-vector-logo.svg": {
+      "paths": 3,
+      "bytes": 1418,
+      "dimensions": "0 0 256 256"
+    }
+  },
+  "embed": {
+    "cn-embed-avif.svg": {
+      "inner": "PNG",
+      "size": [
+        400,
+        320
+      ],
+      "fit": "xMidYMid meet"
+    },
+    "cn-embed-jpg.svg": {
+      "inner": "JPEG",
+      "size": [
+        400,
+        320
+      ],
+      "fit": "xMidYMid meet"
+    },
+    "cn-embed-png.svg": {
+      "inner": "PNG",
+      "size": [
+        400,
+        320
+      ],
+      "fit": "xMidYMid meet"
+    },
+    "cn-embed-webp.svg": {
+      "inner": "PNG",
+      "size": [
+        400,
+        320
+      ],
+      "fit": "xMidYMid meet"
+    },
+    "global-embed-png.svg": {
+      "inner": "PNG",
+      "size": [
+        400,
+        320
+      ],
+      "fit": "xMidYMid meet"
+    }
+  },
+  "pixel_art": {
+    "pixels": 1024,
+    "diff": 0
+  },
+  "embed_roundtrip": {
+    "pixels": 128000,
+    "diff": 0
+  }
+}

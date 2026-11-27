@@ -56,8 +56,8 @@ export const toolLoaders: Readonly<Partial<Record<string, ToolLoader>>> = {
     ? () => import('./csv-json-converter/CsvJsonConverter') : undefined,
   'code-image-generator': import.meta.env.DEV || import.meta.env.T4F_TOOL_CODE_IMAGE_GENERATOR_AVAILABLE
     ? () => import('./code-image-generator/CodeImageGenerator') : undefined,
-  'svg-to-png': import.meta.env.DEV || import.meta.env.T4F_TOOL_SVG_TO_PNG_AVAILABLE
-    ? () => import('./svg-to-png/SvgToPng') : undefined,
+  'svg-converter': import.meta.env.DEV || import.meta.env.T4F_TOOL_SVG_CONVERTER_AVAILABLE
+    ? () => import('./svg-converter/SvgConverter') : undefined,
   'regex-tester': import.meta.env.DEV || import.meta.env.T4F_TOOL_REGEX_TESTER_AVAILABLE
     ? () => import('./regex-tester/RegexTester') : undefined,
   'uuid-generator': import.meta.env.DEV || import.meta.env.T4F_TOOL_UUID_GENERATOR_AVAILABLE

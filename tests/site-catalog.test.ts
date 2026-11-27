@@ -56,7 +56,7 @@ describe('static tool discovery', () => {
       ).map(entry => entry.id)).toEqual([
         'image-converter', 'image-resize-crop', 'palette-extractor', 'image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata',
         'qr-code-generator', 'color-contrast',
-        'video-frame-extractor', 'code-image-generator', 'svg-to-png',
+        'video-frame-extractor', 'code-image-generator', 'svg-converter',
         'audio-trimmer',
         'text-cleaner', 'text-diff', 'markdown-editor', 'subtitle-tools',
         'pdf-merge', 'pdf-split', 'images-to-pdf',

@@ -3,7 +3,7 @@ import { definition as markdownEditorDefinition } from './markdown-editor/defini
 import { definition as videoFrameExtractorDefinition } from './video-frame-extractor/definition';
 import { definition as csvJsonConverterDefinition } from './csv-json-converter/definition';
 import { definition as codeImageGeneratorDefinition } from './code-image-generator/definition';
-import { definition as svgToPngDefinition } from './svg-to-png/definition';
+import { definition as svgConverterDefinition } from './svg-converter/definition';
 import { definition as regexTesterDefinition } from './regex-tester/definition';
 import { definition as uuidGeneratorDefinition } from './uuid-generator/definition';
 import { definition as pdfSplitDefinition } from './pdf-split/definition';
@@ -33,7 +33,7 @@ import { exifMetadataDefinition } from './exif-metadata/definition';
 export const tools: readonly ToolDefinition[] = [imageConverterDefinition, imageResizeCropDefinition, paletteExtractorDefinition,
   imageCompressorDefinition, comicPageOrganizerDefinition, imageWatermarkDefinition, exifMetadataDefinition,
   pdfMergeDefinition, pdfSplitDefinition, imagesToPdfDefinition, zipManagerDefinition, batchFileRenamerDefinition, fileHashDefinition, textCleanerDefinition, textDiffDefinition, subtitleToolsDefinition, jsonFormatterDefinition, urlBase64Definition, timestampConverterDefinition, qrCodeGeneratorDefinition, colorContrastDefinition, audioTrimmerDefinition,
-  markdownEditorDefinition, videoFrameExtractorDefinition, csvJsonConverterDefinition, codeImageGeneratorDefinition, svgToPngDefinition, regexTesterDefinition, uuidGeneratorDefinition];
+  markdownEditorDefinition, videoFrameExtractorDefinition, csvJsonConverterDefinition, codeImageGeneratorDefinition, svgConverterDefinition, regexTesterDefinition, uuidGeneratorDefinition];
 export function getPublishedTools(region: Region, registry = tools) {
   return getAvailableTools(region, false, registry);
 }

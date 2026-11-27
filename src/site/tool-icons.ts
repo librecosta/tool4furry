@@ -41,8 +41,8 @@ import regex_tester32 from '../assets/tool-icons/regex-tester-32.png?url&no-inli
 import regex_tester128 from '../assets/tool-icons/regex-tester-128.png?url&no-inline';
 import subtitle_tools32 from '../assets/tool-icons/subtitle-tools-32.png?url&no-inline';
 import subtitle_tools128 from '../assets/tool-icons/subtitle-tools-128.png?url&no-inline';
-import svg_to_png32 from '../assets/tool-icons/svg-to-png-32.png?url&no-inline';
-import svg_to_png128 from '../assets/tool-icons/svg-to-png-128.png?url&no-inline';
+import svg_converter32 from '../assets/tool-icons/svg-converter-32.png?url&no-inline';
+import svg_converter128 from '../assets/tool-icons/svg-converter-128.png?url&no-inline';
 import text_cleaner32 from '../assets/tool-icons/text-cleaner-32.png?url&no-inline';
 import text_cleaner128 from '../assets/tool-icons/text-cleaner-128.png?url&no-inline';
 import text_diff32 from '../assets/tool-icons/text-diff-32.png?url&no-inline';
@@ -81,7 +81,7 @@ export const toolIcons = {
   'qr-code-generator': { 32: qr_code_generator32, 128: qr_code_generator128 },
   'regex-tester': { 32: regex_tester32, 128: regex_tester128 },
   'subtitle-tools': { 32: subtitle_tools32, 128: subtitle_tools128 },
-  'svg-to-png': { 32: svg_to_png32, 128: svg_to_png128 },
+  'svg-converter': { 32: svg_converter32, 128: svg_converter128 },
   'text-cleaner': { 32: text_cleaner32, 128: text_cleaner128 },
   'text-diff': { 32: text_diff32, 128: text_diff128 },
   'timestamp-converter': { 32: timestamp_converter32, 128: timestamp_converter128 },

@@ -298,7 +298,7 @@
 | `video-frame-extractor` | 真实帧定位、四种提取模式、PNG/JPEG/WebP 帧画廊、联系表、流式 ZIP | 输入 2 GiB；单帧 40 MP；画廊 300 帧和 256 MiB；内存 ZIP 256 MiB；依赖浏览器解码 |
 | `csv-json-converter` | 双栏 CodeMirror、双向转换、表格分页、UTF-8 CSV/TSV/JSON、完整下载 | CSV 输入 64 MiB，JSON 输入 16 Mi UTF-16 单元及 500,000 个节点，输出 64 MiB。[B18-D1](#csv--json-converter--v08-b18-d1) |
 | `code-image-generator` | CodeMirror、23 种高亮语言及纯文本、12 套语法主题、8 套外观预设、PNG/SVG/JPEG/WebP | Shiki 专属 Worker、按需字体；图像预算 40 MP、单边 8192px。[B19-D1](#code-image-generator--v08-b19-d1) |
-| `svg-to-png` | 文件/源码、安全图片预览、比例联动尺寸/倍率、透明/纯色 PNG | 复用 Watermark 的 SVG 白名单和独立图像解码；256 KiB/512 节点/16 层，形状/路径/渐变/裁切；不支持文本、CSS、滤镜或外部资源；PNG 最多 800 万像素 |
+| `svg-converter` | SVG 栅格化、位图矢量化、图片封装 | 独立静态 SVG 校验；PNG、JPEG、WebP、AVIF、多尺寸 ICO 及两种 SVG 输出。[B20-D1](#svg-converter--v08-b20-d1) |
 | `regex-tester` | JavaScript flags、实时高亮/数量/捕获组、替换/复制 | 局部 Worker，1500ms 超时真实 terminate；表达式 500 字符、文本 20 万字符、1000 处匹配；与其他引擎可能不同 |
 | `uuid-generator` | 安全 UUIDv4 单个/批量、大小写、逐项/全部复制、TXT | 每批 1–1000；仅使用 Crypto.getRandomValues，不提供其他 UUID 版本 |
 
@@ -399,3 +399,15 @@ Shiki、字体、预设缩图、独立样式、Worker 和 NOTICE 仅从该工具
 静态页面与 Registry 已更新双语文案，涵盖四项步骤、六项限制和四组 FAQ。窗口阴影默认纵向偏移为 5 px，可分别调整两轴。预览和导出共用场景。
 
 维护者确认按现有素材交付，并明确批准提升代码分享图的 CN/Global 源码资格。两地区正式产物各有 50 个工具详情页，Creative Collection · Vol. 01 随工具按需交付。[来源记录与构建验收](evidence/b19-code-image/README.md#b19-d2-发布复核)
+
+## SVG Converter — V0.8-B20-D1
+
+SVG 转换沿用旧工具的分类、角色和 CN/Global Draft 资格，ID、路由及专属图标统一为 `svg-converter`。双语工作区包含栅格化、矢量化及图片封装，切换后保留各自输入和设置。
+
+- **栅格化**支持 XML 源码编辑、实时隔离预览和按最终尺寸重新绘制。普通位图预算为 40 MP、单边 16,384 px。带滤镜、蒙版或图案的输出最多 16 MP。AVIF 沿用现有设备资格、4,194,304 像素和单边 4096 px 预算。ICO 可独立绘制 16 至 256 px 六种尺寸并打包为单一容器。JPEG 默认填白底。
+- **矢量化**支持 PNG、JPEG、WebP 与 AVIF 输入。ImageTracerJS 在专属 Worker 中生成彩色或黑白轮廓，配合调色板、细节和拟合参数。普通描摹工作预算为 4 MP，界面显示实际工作分辨率。Pixel Art 只在原始像素网格上合并同色区域，保留透明度。输出通过几何数量和大小预算检查。
+- **图片封装**支持相同四种图片输入。方向适合的 PNG/JPEG 可经检查后保留现有编码，其他来源按需重新编码为 PNG 或 JPEG。SVG 自包含图片、背景与适应设置，保留位图的分辨率边界。
+
+SVG 文件预算为 32 MiB。超过 512 Ki UTF-16 单元的文件可验证、预览和栅格化，源码编辑区保留轻量模式。静态政策支持常用形状、渐变、文字、蒙版、裁切、图案、标记、滤镜、内部引用，以及受控 CSS、位图和 WOFF/WOFF2 字体。XML 与 CSS 分别解析，只有经过校验的静态文档会被加载为图片。资源引用、嵌套、几何复杂度和内嵌解码各有预算。Image Watermark 继续使用自己的静态子集。
+
+专属模块、XML 语法、描摹依赖、Worker、样式及 NOTICE 受两地区正式构建守卫约束。AVIF 继续复用现有图片工具的编码链。[B20 工作区、输出与兼容性实测](evidence/b20-svg-converter/README.md)

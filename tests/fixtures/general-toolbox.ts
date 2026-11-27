@@ -20,7 +20,7 @@ export const secondBatchIds = [
   'video-frame-extractor',
   'csv-json-converter',
   'code-image-generator',
-  'svg-to-png',
+  'svg-converter',
   'regex-tester',
   'uuid-generator',
 ];

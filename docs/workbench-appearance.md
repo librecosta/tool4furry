@@ -77,6 +77,10 @@ QR Code Generator 在 Wide Form 中用同一预览区呈现二维成品与三维
 
 站点明暗主题适用于工作区控件。作品按自身设置绘制背景、代码窗口及语法配色，透明预览用棋盘格提示。艺术预设缩略图来自实际渲染。见 [B19 工作区与作品](evidence/b19-code-image/README.md)。
 
+## SVG 转换工作区
+
+顶部切换栅格化、矢量化及封装并保留各模式状态。栅格化使用连续源码与预览双栏，可拖动或用键盘调整分隔线。手机视口在源码和预览之间切换，输出设置保留在底部。透明、白色和深色预览背景专用于查看作品。位图模式在图片信息下方并列布置共享预览和设置，窄屏自然堆叠。矢量化支持拖动对比、并排、原图和结果等查看方式，两侧共用缩放和平移。[桌面与窄屏截图](evidence/b20-svg-converter/README.md)
+
 ## 静态说明与 FAQ
 
 [ToolGuide](../src/components/site/ToolGuide.astro) / [ToolGuide.module.scss](../src/components/site/ToolGuide.module.scss) 的说明容器与 wide Form 共享 1400px 外框和安全起点。宽屏步骤/限制为顶部对齐 55:45，两者可独立省略；空间不足堆叠，不增加实体卡片。其他阅读正文仍使用独立 readable 宽度。

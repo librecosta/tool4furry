@@ -1,0 +1,235 @@
+{
+  "browser": "156.0.8078.4",
+  "profiles": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 1000
+      },
+      "theme": "dark",
+      "downloads": [
+        {
+          "file": "high.png",
+          "bytes": 1469547,
+          "suggested": "ribbon-20261127-193802-165.png"
+        },
+        {
+          "file": "ribbon.jpg",
+          "bytes": 81829,
+          "suggested": "ribbon-20261127-193802-538.jpg"
+        },
+        {
+          "file": "ribbon.webp",
+          "bytes": 60158,
+          "suggested": "ribbon-20261127-193803-183.webp"
+        },
+        {
+          "file": "ribbon.avif",
+          "bytes": 73040,
+          "suggested": "ribbon-20261127-193807-517.avif"
+        },
+        {
+          "file": "ribbon.ico",
+          "bytes": 63114,
+          "suggested": "ribbon-20261127-193807-903.ico"
+        },
+        {
+          "file": "complex.png",
+          "bytes": 503241,
+          "suggested": "ribbon-20261127-193809-789.png"
+        },
+        {
+          "file": "code-bundled.png",
+          "bytes": 118110,
+          "suggested": "greet-20261127-193810-168.png"
+        },
+        {
+          "file": "code-local.png",
+          "bytes": 32724,
+          "suggested": "local-background-20261127-193810-516.png"
+        },
+        {
+          "file": "code-dual.png",
+          "bytes": 367314,
+          "suggested": "zh-creative-20261127-193812-458.png"
+        },
+        {
+          "file": "max-pixels.png",
+          "bytes": 761901,
+          "suggested": "limits-20261127-193813-204.png"
+        },
+        {
+          "file": "max-edge.png",
+          "bytes": 313539,
+          "suggested": "wide-20261127-193813-669.png"
+        },
+        {
+          "file": "vector-logo.svg",
+          "bytes": 1418,
+          "suggested": "logo-20261127-193814-414.svg"
+        },
+        {
+          "file": "vector-illustration.svg",
+          "bytes": 1219,
+          "suggested": "illustration-20261127-193815-315.svg"
+        },
+        {
+          "file": "vector-photo.svg",
+          "bytes": 184140,
+          "suggested": "photo-20261127-193816-097.svg"
+        },
+        {
+          "file": "vector-line.svg",
+          "bytes": 852,
+          "suggested": "line-20261127-193816-664.svg"
+        },
+        {
+          "file": "vector-pixel.svg",
+          "bytes": 1756,
+          "suggested": "pixels-20261127-193817-165.svg"
+        },
+        {
+          "file": "pixel-roundtrip.png",
+          "bytes": 534,
+          "suggested": "cn-vector-pixel-20261127-193818-028.png"
+        },
+        {
+          "file": "embed-png.svg",
+          "bytes": 4872,
+          "suggested": "illustration-20261127-193818-247.svg"
+        },
+        {
+          "file": "embed-jpg.svg",
+          "bytes": 11205,
+          "suggested": "illustration-20261127-193818-414.svg"
+        },
+        {
+          "file": "embed-webp.svg",
+          "bytes": 58052,
+          "suggested": "illustration-20261127-193818-598.svg"
+        },
+        {
+          "file": "embed-avif.svg",
+          "bytes": 29040,
+          "suggested": "illustration-20261127-193818-780.svg"
+        },
+        {
+          "file": "embed-roundtrip.png",
+          "bytes": 7046,
+          "suggested": "cn-embed-png-20261127-193819-264.png"
+        }
+      ],
+      "vectors": [
+        {
+          "key": "logo",
+          "info": "原图 结果 3 个路径 · 1.4 KiB · 256 × 256 · 46 ms 适应 100%",
+          "count": 3
+        },
+        {
+          "key": "illustration",
+          "info": "原图 结果 5 个路径 · 1.2 KiB · 400 × 320 · 57 ms 适应 100%",
+          "count": 5
+        },
+        {
+          "key": "photo",
+          "info": "原图 结果 445 个路径 · 179.8 KiB · 768 × 512 · 226 ms 适应 100%",
+          "count": 445
+        },
+        {
+          "key": "line",
+          "info": "原图 结果 2 个路径 · 852 B · 240 × 240 · 36 ms 适应 100%",
+          "count": 2
+        },
+        {
+          "key": "pixel",
+          "info": "原图 结果 8 个路径 · 1.7 KiB · 32 × 32 · 1 ms 适应 100%",
+          "count": 8
+        }
+      ],
+      "remote": [],
+      "errors": [],
+      "workers": [
+        {
+          "name": "avif.worker.ts",
+          "closed": true
+        },
+        {
+          "name": "vectorize.worker.ts",
+          "closed": true
+        },
+        {
+          "name": "vectorize.worker.ts",
+          "closed": true
+        },
+        {
+          "name": "vectorize.worker.ts",
+          "closed": true
+        },
+        {
+          "name": "vectorize.worker.ts",
+          "closed": true
+        },
+        {
+          "name": "vectorize.worker.ts",
+          "closed": true
+        },
+        {
+          "name": "vectorize.worker.ts",
+          "closed": true
+        }
+      ],
+      "crossTool": [
+        "bundled",
+        "local",
+        "dual"
+      ],
+      "cancelled": true
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "light",
+      "downloads": [
+        {
+          "file": "complex.png",
+          "bytes": 137866,
+          "suggested": "ribbon-20261127-193823-907.png"
+        },
+        {
+          "file": "vector-logo.svg",
+          "bytes": 1418,
+          "suggested": "logo-20261127-193824-713.svg"
+        },
+        {
+          "file": "embed-png.svg",
+          "bytes": 4872,
+          "suggested": "illustration-20261127-193825-316.svg"
+        },
+        {
+          "file": "embed-roundtrip.png",
+          "bytes": 7046,
+          "suggested": "global-embed-png-20261127-193825-847.png"
+        }
+      ],
+      "vectors": [
+        {
+          "key": "logo",
+          "info": "Original Result 3 paths · 1.4 KiB · 256 × 256 · 46 ms Fit 100%",
+          "count": 3
+        }
+      ],
+      "remote": [],
+      "errors": [],
+      "workers": [
+        {
+          "name": "vectorize.worker.ts",
+          "closed": true
+        }
+      ],
+      "crossTool": [],
+      "cancelled": false
+    }
+  ]
+}

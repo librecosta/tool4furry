@@ -1396,6 +1396,9 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
   if (!published.some(tool => tool.id === 'csv-json-converter'))
     assert(!/data-csv-json-converter|The converted output exceeds 64 MiB|Could not determine the CSV delimiter/.test(js),
       'Draft CSV / JSON conversion code leaked: ' + file);
+  if (!published.some(tool => tool.id === 'svg-converter'))
+    assert(!/data-svg-converter-studio|imagedataToTracedata|Cyclic or excessively nested SVG references/.test(js),
+      'Draft SVG Converter code leaked: ' + file);
   assert(!/@stylexjs|virtual:stylex|stylex-dev-css/.test(js), `Retired styling runtime leaked: ${file}`);
   for (const id of ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'])
     if (!files.includes(`tools/${id}/index.html`)) assert(!js.includes(`data-${id}`), `Draft ${id} implementation leaked: ${file}`);
@@ -1439,6 +1442,11 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
 // extracting native modules must not pull private Draft/Lab CSS into production.
 const cssFiles = files.filter(file => file.endsWith('.css'));
 const outputCSS = await Promise.all(cssFiles.map(file => readFile(resolve(root, file), 'utf8')));
+if (!published.some(tool => tool.id === 'svg-converter')) {
+  assert(!files.some(file => /(?:^|\/)(?:SvgConverter|BitmapStudio|vectorize\.worker|svg-converter\.NOTICE)[.-]/.test(file)),
+    'Draft SVG Converter entries, Worker and notices stay private');
+  assert(!outputCSS.some(source => /\._?compareHandle[_-]/.test(source)), 'Draft SVG comparison styling stays private');
+}
 if (!published.some(tool => tool.id === 'code-image-generator')) {
   assert(!files.some(file => /(?:^|\/)(?:CodeImageGenerator|highlight\.worker|code-image\.NOTICE|code-preset-|(?:jetbrains-mono|fira-code|ibm-plex-mono)-latin)[^/]*\.(?:js|css|woff2|png|webp|txt)$/.test(file)),
     'Draft code image entry, syntax worker, artwork, licenses and fonts stay private');
