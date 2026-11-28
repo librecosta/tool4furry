@@ -317,26 +317,80 @@
   .flagSummary { display: flex; flex-wrap: wrap; gap: 4px 10px; border-top: 1px solid var(--rx-rule); padding-top: 8px; }
   .flagSummary code { color: var(--t4f-accent); }
   .testsSlot { border-top: 1px solid var(--rx-rule); }
+  .testsHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    min-height: 48px;
+    padding: 4px 14px;
+    strong { font-size: 14px; font-weight: 650; }
+  }
   .caseTable {
     border-collapse: collapse;
     width: 100%;
     table-layout: fixed;
     font-size: 13px;
-    th, td { padding: 8px 12px; border-bottom: 1px solid var(--rx-rule); text-align: start; }
-    th { color: var(--t4f-text-secondary); font-weight: 600; }
-    th:first-child { width: 36%; }
-    th:nth-child(2) { width: 28%; }
+    th, td { padding: 6px 14px; text-align: start; }
+    th { color: var(--t4f-text-secondary); font-size: 12px; font-weight: 600; }
+    th:first-child { width: 40%; }
+    th:nth-child(2) { width: 25%; }
     th:nth-last-child(2) { width: 12%; }
-    th:last-child { width: 58px; }
-    textarea { min-height: 44px; }
+    th:last-child { width: 52px; }
+    tbody tr { border-block-start: 1px solid var(--rx-rule); }
+    td { vertical-align: top; }
+    td:last-child { padding-inline: 6px; }
+    .caseField {
+      min-height: 36px;
+      border-radius: 7px;
+      padding: 7px 10px;
+      font: 13px/1.5 var(--t4f-font-mono);
+      &:focus { outline: none; box-shadow: none; background-color: var(--rx-selected); }
+    }
+    textarea.caseField {
+      field-sizing: content;
+      max-height: 8.5rem;
+      overflow: auto;
+      scrollbar-width: none;
+      resize: none;
+    }
   }
-  .assertion > div + div { margin-top: 6px; }
-  .caseTable td:first-child > div > label, .assertion > div:first-child > label {
+  .assertion {
+    > div { gap: 4px; }
+    > div + div { margin-top: 6px; }
+    label, p { font-size: 12px; }
+    button[role='combobox'] {
+      min-height: 36px;
+      padding: 5px 10px;
+      font-size: 13px;
+      border-radius: 7px;
+      background-color: var(--rx-low);
+      &:is(:hover, :focus-visible, [data-popup-open]) { background-color: var(--rx-selected); }
+      svg { width: 14px; height: 14px; }
+    }
+  }
+  .caseInput > div > label, .assertion > div:first-child > label {
     position: absolute;
     inline-size: 1px;
     block-size: 1px;
     overflow: hidden;
     clip-path: inset(50%);
+  }
+  .caseTable td:is(:nth-child(3), :nth-child(4)) { padding-block-start: 14px; }
+  .testStatus {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--t4f-text-secondary);
+    &::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      flex: none;
+      border-radius: 50%;
+      background: currentColor;
+    }
   }
   .testStatus[data-state='pass'] { color: var(--rx-teal); }
   .testStatus:is([data-state='fail'], [data-state='error']) { color: var(--rx-error); }
@@ -473,13 +527,16 @@
     .statusBar { padding-inline: 8px; }
     .extractSettings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 8px; }
     .extractSettings > div { min-width: 0; }
+    .testsHeader { padding-inline: 8px; }
     .caseTable {
       display: block;
       thead { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); }
       tbody { display: block; }
-      tr { display: grid; grid-template-columns: minmax(0,1fr) auto auto; padding: 5px 8px; border-bottom: 1px solid var(--rx-rule); }
-      td { padding: 4px 3px; border: 0; align-self: center; }
+      tr { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 6px 8px; padding: 8px; }
+      td, td:is(:nth-child(3), :nth-child(4)), td:last-child { padding: 0; }
       td:nth-child(-n + 2) { grid-column: 1 / -1; }
+      .caseInput > div { gap: 4px; }
+      .caseInput > div > label { position: static; inline-size: auto; block-size: auto; clip-path: none; font-size: 12px; }
       td[data-label]::before { content: attr(data-label) ' '; color: var(--t4f-text-secondary); }
     }
   }

@@ -113,12 +113,13 @@ export function TestsPanel({ cases, update, add, remove, result, error, t, runni
     ['count', t('匹配数量', 'Match count')], ['replace', t('替换结果', 'Replacement result')],
   ].map(([value, label]) => ({ value, label }));
   return <section aria-label={t('测试用例', 'Test cases')}>
-    <header className={s.paneHeader}>
+    <header className={s.testsHeader}>
       <strong>{t('测试用例', 'Test cases')}</strong>
       <div className={s.actions}>
-        <Button size="sm" variant="ghost" disabled={cases.length >= limits.tests}
+        <Button size="sm" variant="ghost" className={s.compactButton} disabled={cases.length >= limits.tests}
           onClick={() => { add(); setPage(Math.floor(cases.length / size)); }}><PlusIcon />{t('新增用例', 'Add case')}</Button>
-        <Button size="sm" variant="primary" disabled={running || !cases.length} onClick={run}>{t('运行全部测试', 'Run all tests')}</Button>
+        <Button size="sm" variant="primary" className={s.compactButton} disabled={running || !cases.length}
+          onClick={run}>{t('运行全部测试', 'Run all tests')}</Button>
       </div>
     </header>
     {cases.length ? <table className={s.caseTable} aria-label={t('测试结果', 'Test results')}>
@@ -133,16 +134,21 @@ export function TestsPanel({ cases, update, add, remove, result, error, t, runni
         const status = actual?.status ?? (error ? 'error' : undefined);
         const issue = actual?.issue ?? error;
         return <tr key={test.id}>
-          <td><TextAreaField label={t('用例文本 ', 'Case text ') + (index + 1)} rows={2} value={test.text}
-            onChange={text => update(index, { text })} /></td>
+          <td className={s.caseInput}>
+            <TextAreaField label={t('用例文本 ', 'Case text ') + (index + 1)} className={s.caseField} rows={2}
+              placeholder={t('输入测试文本', 'Enter test text')} spellCheck={false} value={test.text}
+              onChange={text => update(index, { text })} />
+          </td>
           <td className={s.assertion}>
             <SelectField label={t('预期类型 ', 'Assertion ') + (index + 1)} appearance="quiet" options={assertions}
               value={test.assertion} onValueChange={assertion => {
                 if (assertion) update(index, { assertion: assertion as Assertion, expected: '' });
               }} />
             {test.assertion === 'count'
-              ? <TextField label={t('预期数量', 'Expected count')} inputMode="numeric" value={test.expected} onChange={expected => update(index, { expected })} />
-              : test.assertion === 'replace' && <TextAreaField label={t('预期替换内容', 'Expected replacement')} rows={2}
+              ? <TextField label={t('预期数量', 'Expected count')} className={s.caseField} inputMode="numeric"
+                value={test.expected} onChange={expected => update(index, { expected })} />
+              : test.assertion === 'replace' && <TextAreaField label={t('预期替换内容', 'Expected replacement')} className={s.caseField}
+                rows={2} spellCheck={false}
                 hint={t('使用替换模式中的替换表达式。', 'Uses the expression from Replace mode.')}
                 value={test.expected} onChange={expected => update(index, { expected })} />}
           </td>
