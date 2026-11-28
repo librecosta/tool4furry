@@ -8,15 +8,16 @@ import { QuickReference } from './Inspector';
 import { flagHelp, type Translate } from './reference';
 import s from './workbench.module.scss';
 
-function DetailsPopover({ label, icon, wide, children }: {
-  label: string; icon?: ReactNode; wide?: boolean; children: ReactNode;
+function DetailsPopover({ label, icon, wide, side = 'bottom', children }: {
+  label: string; icon?: ReactNode; wide?: boolean; side?: 'top' | 'bottom'; children: ReactNode;
 }) {
   return <Popover.Root>
     <Popover.Trigger render={<Button size="sm" variant="ghost" className={s.compactButton} />}>
       {label}{icon}
     </Popover.Trigger>
     <Popover.Portal>
-      <Popover.Positioner className={s.positioner} sideOffset={8} align="end" collisionPadding={12}>
+      <Popover.Positioner className={s.positioner} side={side} sideOffset={8} align="end" collisionPadding={12}
+        collisionAvoidance={{ side: 'none', align: 'shift', fallbackAxisSide: 'none' }}>
         <Popover.Popup className={s.popover} data-wide={wide || undefined}>
           <Popover.Title>{label}</Popover.Title>
           {children}
@@ -72,7 +73,7 @@ export function ExecutionOptions({ t, live, setLive, timeout, setTimeoutChoice, 
   t: Translate; live: boolean; setLive: (value: boolean) => void; timeout: number; setTimeoutChoice: (value: number) => void;
   run: () => void; busy: boolean; tests: boolean; elapsed?: number; clear: () => void;
 }) {
-  return <DetailsPopover label={t('执行详情', 'Execution details')} icon={<CaretRightIcon />}>
+  return <DetailsPopover label={t('执行详情', 'Execution details')} icon={<CaretRightIcon />} side="top">
     <dl className={s.executionFacts}>
       <dt>{t('正则引擎', 'Engine')}</dt><dd>JavaScript RegExp</dd>
       <dt>{t('索引单位', 'Indices')}</dt><dd>UTF-16</dd>

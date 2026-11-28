@@ -91,7 +91,7 @@
   .expression { padding: 7px 16px 4px; display: grid; gap: 5px; }
   .bar { min-height: 36px; flex-wrap: wrap; }
   .bar strong, .paneHeader strong { font-size: 14px; font-weight: 650; }
-  .expressionStatus, .note, .empty, .statusBar, .actual, .flagSummary, .resultCount, .resultEmpty {
+  .expressionStatus, .note, .empty, .statusBar, .actual, .flagSummary, .resultEmpty {
     color: var(--t4f-text-secondary);
     font-size: 13px;
     line-height: 1.5;
@@ -108,18 +108,19 @@
   .pattern {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto auto;
-    align-items: start;
+    align-items: center;
     gap: 3px 5px;
     padding: 4px 6px 4px 12px;
     color: var(--t4f-text-secondary);
     font: 15px/1.65 var(--t4f-font-mono);
-    > span { padding-top: 6px; }
     > button { background: var(--rx-low); white-space: nowrap; font-family: var(--t4f-font-sans); }
-    :global(.cm-editor) { min-height: 36px; max-height: 9rem; font-size: 15px; }
-    :global(.cm-content) { padding: 6px 0; }
-    :global(.cm-line) { padding-inline: 5px; }
   }
-  .patternFlags { color: var(--t4f-accent); white-space: nowrap; font-size: 13px; }
+  .patternEditor {
+    :global(.cm-editor) { min-height: 36px; max-height: 9rem; }
+    &:focus-within { background-color: var(--rx-selected); }
+  }
+  .patternEditor:focus-within, .testEditor:focus-within { outline: none; }
+  .patternFlags { color: var(--t4f-accent); white-space: nowrap; }
   .explainLine {
     p {
       display: flex;
@@ -188,7 +189,6 @@
     &:hover span, &:focus-visible span { background: var(--t4f-accent); }
     &:focus-visible { outline: 2px solid var(--t4f-focus); outline-offset: -2px; }
   }
-  .resultCount { color: var(--t4f-accent); font-variant-numeric: tabular-nums; }
   .resultEmpty { margin: 0; padding: 16px 14px; }
   .resultFooter { justify-content: flex-end; min-height: 43px; padding-inline: 8px; }
   .matchScroll { overflow: auto; scrollbar-width: thin; overflow-anchor: none; }
@@ -438,13 +438,12 @@
     .toolbar .actions button { padding-inline: 7px; min-height: 36px; }
     .expression { padding-inline: 9px; }
     .pattern { font-size: 13px; padding-inline: 5px; }
-    .pattern :global(.cm-editor) { font-size: 13px; }
     .pattern button { font-size: 12px; }
     .paneHeader { padding-inline: 8px; }
     .testSource { height: 15rem; }
     .resultSlot { height: 14rem; }
     .resultFooter { justify-content: flex-start; }
-    .liveHint, .resultCount { display: none; }
+    .liveHint { display: none; }
     .statusBar { padding-inline: 8px; }
     .formGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 8px; }
     .formGrid > div { min-width: 0; }

@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { CopyIcon, DownloadSimpleIcon, PlusIcon, TrashIcon } from '@phosphor-icons/react';
+import { DownloadSimpleIcon, PlusIcon, TrashIcon } from '@phosphor-icons/react';
 import { Button, IconButton } from '../../ui/Button';
 import { CheckboxField } from '../../ui/CheckboxField';
 import { SelectField } from '../../ui/SelectField';
 import { TextAreaField, TextField } from '../../ui/TextField';
 import { TextEditor } from '../../ui/text-editor/TextEditor';
+import { CopyAction } from './CopyAction';
 import { Pager } from './Inspector';
 import {
   limits, type Assertion, type Capture, type ExtractFormat, type ExtractSettings, type Issue,
@@ -13,9 +14,9 @@ import {
 import { issueText, type Translate } from './reference';
 import s from './workbench.module.scss';
 
-export function Output({ title, value, format, copy, download, t, view, note, children }: {
+export function Output({ title, value, format, download, t, view, note, children }: {
   title: string; value?: string; format: ExtractFormat;
-  copy: (value: string) => void; download: (format: ExtractFormat, value: string) => void; t: Translate;
+  download: (format: ExtractFormat, value: string) => void; t: Translate;
   view?: React.ReactNode; note?: string; children?: React.ReactNode;
 }) {
   return <div className={s.resultPane}>
@@ -23,8 +24,7 @@ export function Output({ title, value, format, copy, download, t, view, note, ch
       <strong>{title}</strong>
       <div className={s.actions}>
         {view}
-        <IconButton size="sm" variant="ghost" className={s.compactButton} label={t('复制结果', 'Copy result')}
-          disabled={value === undefined} onClick={() => copy(value!)}><CopyIcon size={16} /></IconButton>
+        <CopyAction label={t('复制结果', 'Copy result')} value={value} t={t} />
         <Button size="sm" variant="ghost" className={s.compactButton} disabled={value === undefined} onClick={() => download(format, value!)}>
           <DownloadSimpleIcon size={16} />{t('下载 ', 'Download ') + format.toUpperCase()}
         </Button>
@@ -41,12 +41,12 @@ export function Output({ title, value, format, copy, download, t, view, note, ch
   </div>;
 }
 
-export function ReplacePreview({ result, t, copy, download }: {
-  result?: RegexResult; t: Translate; copy: (value: string) => void; download: (format: ExtractFormat, value: string) => void;
+export function ReplacePreview({ result, t, download }: {
+  result?: RegexResult; t: Translate; download: (format: ExtractFormat, value: string) => void;
 }) {
   const [diff, setDiff] = useState(false);
   const value = result?.replaced;
-  return <Output title={t('替换结果', 'Replacement result')} value={value} format="txt" {...{ t, copy, download }}
+  return <Output title={t('替换结果', 'Replacement result')} value={value} format="txt" {...{ t, download }}
     note={value !== undefined ? t(result!.count + ' 次替换', result!.count + ' replacements') : undefined}
     view={<Button size="sm" variant="ghost" className={s.compactButton} aria-pressed={diff} disabled={value === undefined}
       onClick={() => setDiff(previous => !previous)}>{t('差异', 'Changes')}</Button>}>

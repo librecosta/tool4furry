@@ -1,6 +1,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { CaretDownIcon, CaretRightIcon } from '@phosphor-icons/react';
 import { Button } from '../../ui/Button';
+import { CopyAction } from './CopyAction';
 import { captureColor } from './editor';
 import { Pager, rangeLabel, valueLabel } from './Inspector';
 import { matchLines, matchRowHeight, matchWindow } from './match-window';
@@ -55,25 +56,20 @@ function Captures({ match, analysis, locate, measure, t }: {
   </div>;
 }
 
-export function MatchResults({ result, text, active, analysis, onSelect, locate, copy, t }: {
+export function MatchResults({ result, text, active, analysis, onSelect, locate, t }: {
   result?: RegexResult; text: string; active: number; analysis?: Analysis;
-  onSelect: (index: number) => void; locate: (range: Range) => void;
-  copy: (text: string) => void; t: Translate;
+  onSelect: (index: number) => void; locate: (range: Range) => void; t: Translate;
 }) {
+  const copyValue = result?.matches.length && !result.issue && !result.partial
+    ? () => result.matches.map(match => match.value).join('\n') : undefined;
   return <div className={s.resultPane}>
     <header className={s.paneHeader}>
       <strong>{t('匹配结果', 'Matches')}</strong>
-      {result && <span className={s.resultCount}>{result.count === null
-        ? result.matches.length + t(' 条已保留', ' retained')
-        : result.count + t(' 处匹配', ' matches')}</span>}
+      <CopyAction label={t('复制全部结果', 'Copy all matches')} value={copyValue} t={t} />
     </header>
     {!!result?.matches.length && <MatchList {...{ result, text, active, analysis, onSelect, locate, t }} />}
     {!result?.matches.length && <div className={s.resultEmpty}>{result?.count === 0
       ? t('未找到匹配。', 'No matches found.') : t('匹配结果将在这里显示。', 'Matches will appear here.')}</div>}
-    <footer className={s.resultFooter}>
-      <Button variant="ghost" size="sm" disabled={!result?.matches.length || !!result.issue || result.partial}
-        onClick={() => copy(result!.matches.map(match => match.value).join('\n'))}>{t('复制全部结果', 'Copy all matches')}</Button>
-    </footer>
   </div>;
 }
 

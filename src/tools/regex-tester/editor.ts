@@ -23,6 +23,12 @@ function brackets(node: ExpressionNode) {
   return ['group', 'capture', 'class', 'assertion'].includes(node.kind) && node.children.length > 0 && node.to - node.from >= 2;
 }
 
+const patternLayout = EditorView.theme({
+  '&': { fontSize: 'inherit' },
+  '.cm-scroller > .cm-content': { paddingBlock: '6px' },
+  '.cm-content .cm-line': { paddingInline: '5px' },
+});
+
 export function patternTools(nodes: ExpressionNode[], error: number | undefined, onPick: (node: ExpressionNode) => void): Extension {
   const syntax: EditorRange<Decoration>[] = [];
   for (const node of nodes) {
@@ -54,6 +60,7 @@ export function patternTools(nodes: ExpressionNode[], error: number | undefined,
     ] });
   };
   return [
+    patternLayout,
     ViewPlugin.fromClass(class {
       decorations: DecorationSet;
       constructor(view: EditorView) { this.decorations = decorations(view); }

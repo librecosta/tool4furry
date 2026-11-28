@@ -2,13 +2,14 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { Tabs } from '@base-ui/react/tabs';
 import { Dialog } from '@base-ui/react/dialog';
 import {
-  CaretDownIcon, CaretRightIcon, CopyIcon, FolderOpenIcon, InfoIcon, ListBulletsIcon, PlayIcon, StopIcon, TrashIcon, XIcon,
+  CaretDownIcon, CaretRightIcon, FolderOpenIcon, InfoIcon, ListBulletsIcon, PlayIcon, StopIcon, TrashIcon, XIcon,
 } from '@phosphor-icons/react';
 import { Button, IconButton } from '../../ui/Button';
 import { TextEditor, type TextEditorHandle } from '../../ui/text-editor/TextEditor';
 import { ErrorText, errorText, Frame, saveBlob, tr } from '../general/ui';
 import type { ToolProps } from '../types';
 import { runAnalysis } from './client';
+import { CopyAction } from './CopyAction';
 import { createRegexNamer, mime, readTestText } from './delivery';
 import { matchTools, nodeKey, patternTools, selectedMatchTools, walkNodes } from './editor';
 import { Explanation } from './Inspector';
@@ -180,10 +181,6 @@ export default function RegexTester({ locale }: ToolProps) {
       if (id === importID.current) setFileError(errorText(error, locale));
     }
   }
-  async function copy(value: string) {
-    try { await navigator.clipboard.writeText(value); setFeedback(t('已复制', 'Copied')); }
-    catch { setFeedback(t('无法访问剪贴板。', 'Clipboard access failed.')); }
-  }
   function download(format: ExtractFormat, value: string) {
     saveBlob(new Blob([value], { type: mime[format] }), nameOutput(file || 'regex-' + mode, format));
     setFeedback(t('下载已开始', 'Download started'));
@@ -267,13 +264,13 @@ export default function RegexTester({ locale }: ToolProps) {
                 {diagnostic ? issueText(diagnostic, t) : analysis?.literal !== undefined ? t('有效表达式', 'Valid expression')
                   : analysis?.issue ? issueText(analysis.issue, t) : t('正在检查', 'Checking')}
               </span>}
-              <IconButton size="sm" variant="ghost" className={s.compactButton} disabled={analysis?.literal === undefined}
-                label={t('复制正则表达式', 'Copy expression')} onClick={() => void copy(analysis!.literal!)}><CopyIcon size={16} /></IconButton>
+              <CopyAction label={t('复制正则表达式', 'Copy expression')} value={analysis?.literal} t={t} />
             </div>
           </header>
           <div className={s.pattern}>
             <span aria-hidden="true">/</span>
             <TextEditor editorRef={patternEditor} value={pattern} preserveCarriageReturns lineNumbers={false}
+              className={s.patternEditor}
               ariaLabel={t('编辑正则表达式', 'Edit regular expression')} placeholder={t('输入正则表达式', 'Enter an expression')}
               onChange={source => { setPattern(source); setEngaged(true); }} extensions={syntax} />
             <span className={s.patternFlags} aria-label={t('已启用选项 ', 'Active flags ') + flags}>/{flags}</span>
@@ -324,8 +321,7 @@ export default function RegexTester({ locale }: ToolProps) {
                 <Button size="sm" variant="ghost" className={s.compactButton} onClick={() => fileInput.current?.click()}>
                   <FolderOpenIcon />{t('导入', 'Import')}
                 </Button>
-                <IconButton size="sm" variant="ghost" className={s.compactButton} label={t('复制测试文本', 'Copy test text')}
-                  disabled={!text.length} onClick={() => void copy(text)}><CopyIcon /></IconButton>
+                <CopyAction label={t('复制测试文本', 'Copy test text')} value={text || undefined} t={t} />
                 <IconButton size="sm" variant="ghost" className={s.compactButton} label={t('清空测试文本', 'Clear test text')}
                   onClick={() => { changeText(''); setFile(''); }}><TrashIcon /></IconButton>
               </div>
@@ -349,13 +345,13 @@ export default function RegexTester({ locale }: ToolProps) {
               if (Object.hasOwn(keys, event.key)) { event.preventDefault(); setSplit(Math.max(40, Math.min(72, keys[event.key]))); }
             }}><span /></div>
           <Tabs.Panel value="match" className={s.resultSlot}>
-            <MatchResults {...{ result, text, active: selected, analysis, onSelect: select, locate, copy, t }} />
+            <MatchResults {...{ result, text, active: selected, analysis, onSelect: select, locate, t }} />
           </Tabs.Panel>
           <Tabs.Panel value="replace" className={s.resultSlot} keepMounted>
-            <ReplacePreview result={mode === 'replace' ? result : undefined} {...{ t, copy, download }} />
+            <ReplacePreview result={mode === 'replace' ? result : undefined} {...{ t, download }} />
           </Tabs.Panel>
           <Tabs.Panel value="extract" className={s.resultSlot}>
-            <Output title={t('提取结果', 'Extracted text')} value={result?.extraction?.value} format={extract.format} {...{ t, copy, download }}
+            <Output title={t('提取结果', 'Extracted text')} value={result?.extraction?.value} format={extract.format} {...{ t, download }}
               note={result?.extraction ? t(result.extraction.rows + ' 条结果', result.extraction.rows + ' rows') : undefined} />
           </Tabs.Panel>
         </div>
