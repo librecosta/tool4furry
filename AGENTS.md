@@ -19,6 +19,7 @@
 - Code Image Generator 完成 B19-D2 双语静态 SEO、Registry 文案和实际输出复核。维护者明确批准 CN/Global Published。专属 Worker、字体、预设缩图、选择器及 Creative Collection · Vol. 01 随当前地区合格消费者按需交付。[发布复核与证据](docs/evidence/b19-code-image/README.md#b19-d2-发布复核)
 - SVG Converter（`svg-converter`）完成 B20-D2 双语 SEO 与输出复核，取得 CN/Global Published 源码资格。独立静态 SVG 策略验证源码及内嵌资源，预览和导出使用隔离图片上下文。位图工作区、描摹 Worker 和 ImageTracerJS 按需加载。[转换契约与实测](docs/evidence/b20-svg-converter/README.md#b20-d2-正式产物验收)
 - Regex Tester（`regex-tester`）完成 B21-D2 双语静态 SEO 与正式产物复核，取得 CN/Global Published 源码资格。匹配列表窗口化渲染，匹配选项、解释和执行详情按需展开。专属 Worker 执行原生 JavaScript 正则，regexpp 及完整 MIT 通知和工作区按工具交付。[执行边界与实测](docs/evidence/b21-regex-tester/README.md)
+- UUID Generator 完成 B22-D1，保持 CN/Global Draft。快速模式在浏览器打开时生成 UUIDv4，v7 与高级模式共享库的时间状态。高级模式按需加载，提供批量生成、命名空间、格式转换及验证解析。正式构建排除工作区、uuid 库、样式及 NOTICE。[资源边界与验收](docs/evidence/b22-uuid-generator/README.md)
 
 - JSON Formatter 完成 B10-D2 双语 SEO 与输出复核，具备 CN/Global Published 源码资格。复用 CodeMirror 双编辑器，支持严格保真的格式化与压缩、行列定位、分页只读树和完整 JSON 下载。专属同源 Worker、按需 JSON 语言包及 MIT 通知受正式产物守卫约束。验证和实际资源边界见 [通用工具说明](docs/general-toolbox-v0.8.md#json-formatter--v08-b10-d2-seo-与-beta-资格)。
 

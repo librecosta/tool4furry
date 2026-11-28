@@ -1406,6 +1406,9 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
   if (!published.some(tool => tool.id === 'regex-tester'))
     assert(!/data-regex-workbench|data-regex-railroad|t4f-regex/.test(js),
       'Draft Regex Tester code leaked: ' + file);
+  if (!published.some(tool => tool.id === 'uuid-generator'))
+    assert(!/data-uuid-workbench|data-uuid-structure|Random bytes length must be >= 16/.test(js),
+      'Draft UUID Generator code leaked: ' + file);
   assert(!/@stylexjs|virtual:stylex|stylex-dev-css/.test(js), `Retired styling runtime leaked: ${file}`);
   for (const id of ['image-compressor', 'comic-page-organizer', 'image-watermark', 'exif-metadata'])
     if (!files.includes(`tools/${id}/index.html`)) assert(!js.includes(`data-${id}`), `Draft ${id} implementation leaked: ${file}`);
@@ -1449,8 +1452,11 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
 // extracting native modules must not pull private Draft/Lab CSS into production.
 const cssFiles = files.filter(file => file.endsWith('.css'));
 const outputCSS = await Promise.all(cssFiles.map(file => readFile(resolve(root, file), 'utf8')));
-if (!published.some(tool => tool.id === 'uuid-generator'))
-  assert(!files.some(file => /(?:^|\/)UuidGenerator[.-]/.test(file)), 'Draft UUID Generator entry leaked');
+if (!published.some(tool => tool.id === 'uuid-generator')) {
+  assert(!files.some(file => /(?:^|\/)(?:UuidGenerator|uuid\.NOTICE|time-v7)[.-]/.test(file)),
+    'Draft UUID Generator entry, v7 generator or notice leaked');
+  assert(!outputCSS.some(source => source.includes('--uuid-accent-soft')), 'Draft UUID Generator stylesheet leaked');
+}
 if (!published.some(tool => tool.id === 'regex-tester')) {
   assert(!files.some(file => /(?:^|\/)(?:RegexTester|regex\.worker|regexpp\.NOTICE)[.-]/.test(file)),
     'Draft Regex Tester entries, Worker and notices stay private');

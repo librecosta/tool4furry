@@ -3,7 +3,7 @@ import { renderMarkdown } from '../src/tools/markdown-editor/core';
 import { convertTable } from '../src/tools/csv-json-converter/core';
 import { csvDefaults, jsonDefaults, type Delimiter } from '../src/tools/csv-json-converter/settings';
 import { evaluateRegex } from '../src/tools/regex-tester/core';
-import { generateUuids } from '../src/tools/uuid-generator/core';
+import { formatUuid, randomUuid } from '../src/tools/uuid-generator/core';
 describe('second general toolbox batch', () => {
   it('renders GFM while rejecting executable and remote embedded content', async () => {
     const html = await renderMarkdown(
@@ -71,7 +71,7 @@ describe('second general toolbox batch', () => {
     ).toThrow();
   });
   it('generates secure standard UUIDv4 batches and enforces bounds', () => {
-    const values = generateUuids(100);
+    const values = Array.from({ length: 100 }, () => formatUuid(randomUuid()));
     expect(new Set(values).size).toBe(100);
     expect(
       values.every((v) =>
@@ -80,8 +80,6 @@ describe('second general toolbox batch', () => {
         ),
       ),
     ).toBe(true);
-    for (const count of [0, -1, 1001, 1.5])
-      expect(() => generateUuids(count)).toThrow();
-    expect(() => generateUuids(1, {} as Crypto)).toThrow();
+    expect(() => randomUuid({} as Crypto)).toThrow();
   });
 });

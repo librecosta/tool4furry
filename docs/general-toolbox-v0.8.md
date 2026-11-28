@@ -439,3 +439,9 @@ D1 阶段保持 CN/Global Draft，正式构建排除工具及专属资产。[B21
 正则测试取得 CN/Global Published 源码资格。每地区生成 54 个工具详情页。中英文页面有专属像素图标、四项使用步骤、六项限制和四组 FAQ，并进入目录、相关推荐、Sitemap 和 llms.txt。
 
 工作区、解释、结构图和示例随工具入口加载。regexpp 4.12.3 及正则执行留在专属 Worker。提取 CSV 的序列化使用现有 Papa Parse，完整 regexpp MIT 通知按工具交付。[正式产物、文件复检与 L3 范围](evidence/b21-regex-tester/README.md#b21-d2-正式产物验收)
+
+## UUID Generator — V0.8-B22-D1
+
+快速模式在浏览器初始化时生成一个 UUIDv4，可切换 v7 和 1、5、10、50 条。高级模式提供 v1、v3、v4、v5、v6、v7、Nil 与 Max，保留原始 16 字节及实际生成参数。表示格式及交付格式可以独立切换。验证与解析支持十六进制文本表示、显式 Base64 与 Base64URL 输入、嵌入时间戳及 128 位字段。
+
+普通生成、命名空间生成、验证每批最多 10,000 条。批量工作分段执行，结果区每页最多渲染 50 行，完整批次可复制或下载。快速 UUIDv4 使用 Web Crypto，按需加载的 uuid 14.0.3 提供其他生成版本及 MIT 通知。Draft 状态与正式构建隔离见 [B22 工作区、文件契约与实际验收](evidence/b22-uuid-generator/README.md)。

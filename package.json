@@ -73,6 +73,7 @@
     "react-image-crop": "11.1.2",
     "three": "0.187.0",
     "tm-grammars": "1.32.22",
+    "uuid": "14.0.3",
     "wavesurfer.js": "8.1.0"
   },
   "devDependencies": {
