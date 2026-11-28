@@ -229,7 +229,15 @@
     overflow: hidden;
     span { background: var(--field-color); min-width: 0; box-shadow: inset -1px 0 var(--t4f-surface-floating); }
   }
-  .bulkInput { font-family: var(--uuid-mono); scrollbar-width: thin; }
+  .bulkInput {
+    font-family: var(--uuid-mono);
+    scrollbar-width: thin;
+
+    &:focus-visible {
+      box-shadow: none;
+      background-color: color-mix(in srgb, var(--t4f-input-surface), var(--t4f-accent) 10%);
+    }
+  }
   .batchActions { justify-content: space-between; padding-top: 8px; align-items: end; }
   .stats { gap: 6px 22px; padding-block: 12px 5px; font-size: 13px; }
   .stats strong { margin-inline-start: 4px; color: var(--t4f-accent); font-variant-numeric: tabular-nums; }
