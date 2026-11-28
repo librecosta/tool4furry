@@ -5,6 +5,32 @@ import { toolLoaders } from '../src/tools/loaders';
 import { groups } from '../src/site/taxonomy';
 import { draftIds, generalToolboxIds, firstBatchIds, secondBatchIds } from './fixtures/general-toolbox';
 
+it('publishes UUID Generator in both regions with bilingual copy and accurate limits', () => {
+  const tool = tools.find(tool => tool.id === 'uuid-generator')!;
+  expect(tool).toMatchObject({
+    slug: 'uuid-generator', category: 'development', group: 'developer-utilities',
+    roles: ['developer'], mode: 'form', status: 'published', regions: ['cn', 'global'],
+    copy: {
+      zh: { title: 'UUID 生成器', summary: '生成、转换与验证 UUID。' },
+      en: { title: 'UUID Generator', summary: 'Generate, convert and validate UUIDs.' },
+    },
+  });
+  const titles = {
+    zh: '在线 UUID 生成器 - UUIDv4、UUIDv7 批量生成与解析 | Tool4Furry',
+    en: 'Online UUID Generator - UUIDv4, UUIDv7 & Bulk Generation | Tool4Furry',
+  };
+  for (const region of tool.regions) for (const locale of ['zh', 'en'] as const) {
+    const content = getToolPageContent(tool, region, toolPageContents, false, locale);
+    expect(content.title).toBe(titles[locale]);
+    expect(content.h1).toBe(tool.copy[locale].title);
+    expect(content.description).toMatch(/UUIDv4.*UUIDv7.*TXT.*JSON.*CSV.*SQL/);
+    expect(content.steps).toHaveLength(4);
+    expect(content.limitations).toHaveLength(6);
+    expect(content.limitations![1]).toMatch(/10,000.*2 MiB.*4 KiB/);
+    expect(content.faq).toHaveLength(4);
+  }
+});
+
 it('publishes Regex Tester in both regions with a static guide for the JavaScript workbench', () => {
   const tool = tools.find(tool => tool.id === 'regex-tester')!;
   expect(tool).toMatchObject({
@@ -110,7 +136,7 @@ it('publishes File Hash bilingual static SEO and concise metadata matching its f
   expect(tool.copy.zh).toEqual({ title: '文件哈希', description: '批量计算 MD5、SHA 系列与 CRC32，支持本地哈希比对。', summary: '拖入文件自动计算哈希，支持多种算法与批量导出。' });
   expect(tool.copy.en).toEqual({ title: 'File Hash', description: 'Calculate MD5, SHA and CRC32 checksums locally for multiple files.', summary: 'Automatically hash files, compare checksums and export results.' });
 });
-it('keeps both implementation batches intact with twenty-seven Published and two Draft tools', () => {
+it('keeps both implementation batches intact with twenty-eight Published tools and one Draft', () => {
   expect(tools).toHaveLength(29);
   expect(firstBatchIds).toHaveLength(15);
   expect(firstBatchIds).toContain('pdf-merge');
@@ -121,12 +147,12 @@ it('keeps both implementation batches intact with twenty-seven Published and two
   expect(firstBatchIds).toContain('file-hash');
   expect(firstBatchIds).toContain('text-cleaner');
   expect(secondBatchIds).toHaveLength(7);
-  expect(draftIds).toEqual(['qr-code-generator', 'uuid-generator']);
+  expect(draftIds).toEqual(['qr-code-generator']);
   expect(tools.filter((t) => t.status === 'draft').map((t) => t.id)).toEqual(
     draftIds,
   );
   for (const region of ['cn', 'global'] as const) {
-    expect(getAvailableTools(region, false)).toHaveLength(27);
+    expect(getAvailableTools(region, false)).toHaveLength(28);
     expect(getAvailableTools(region, true)).toHaveLength(29);
     for (const id of generalToolboxIds) {
       const tool = tools.find((t) => t.id === id)!;

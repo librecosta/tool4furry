@@ -137,7 +137,7 @@ it('publishes a single SVG Converter entry in both regions', () => {
   expect(tool).toMatchObject({ status: 'published', slug: 'svg-converter', regions: ['cn', 'global'], copy: { zh: { title: 'SVG 转换' }, en: { title: 'SVG Converter' } } });
   expect(tools).toHaveLength(29);
   for (const region of ['cn', 'global'] as const) {
-    expect(getAvailableTools(region, false)).toHaveLength(27);
+    expect(getAvailableTools(region, false)).toHaveLength(28);
     expect(getAvailableTools(region, false)).toContain(tool);
     expect(getAvailableTools(region, true).some(item => item.slug === 'svg-to-png')).toBe(false);
   }

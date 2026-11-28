@@ -1,0 +1,100 @@
+{
+  "chromium": "156.0.8078.4",
+  "builtPages": [
+    "https://tool4furry.cn/tools/uuid-generator/",
+    "https://tool4furry.cn/en/tools/uuid-generator/",
+    "https://tool4furry.com/tools/uuid-generator/",
+    "https://tool4furry.com/zh/tools/uuid-generator/"
+  ],
+  "unrelatedRequests": [
+    {
+      "route": "https://tool4furry.cn/",
+      "uuidAssets": 0
+    },
+    {
+      "route": "https://tool4furry.cn/tools/",
+      "uuidAssets": 0
+    },
+    {
+      "route": "https://tool4furry.cn/tools/regex-tester/",
+      "uuidAssets": 0
+    },
+    {
+      "route": "https://tool4furry.com/",
+      "uuidAssets": 0
+    },
+    {
+      "route": "https://tool4furry.com/tools/",
+      "uuidAssets": 0
+    },
+    {
+      "route": "https://tool4furry.com/tools/regex-tester/",
+      "uuidAssets": 0
+    }
+  ],
+  "downloads": {
+    "uuid-v7.txt": {
+      "mime": "text/plain;charset=utf-8",
+      "bytes": 369999,
+      "filename": "uuid-v7-20261128-185404-539.txt"
+    },
+    "uuid-v7.json": {
+      "mime": "application/json;charset=utf-8",
+      "bytes": 390001,
+      "filename": "uuid-v7-20261128-185404-788.json"
+    },
+    "uuid-v7.csv": {
+      "mime": "text/csv;charset=utf-8",
+      "bytes": 380004,
+      "filename": "uuid-v7-20261128-185404-971.csv"
+    },
+    "uuid-v7.sql": {
+      "mime": "application/sql;charset=utf-8",
+      "bytes": 399998,
+      "filename": "uuid-v7-20261128-185405-151.sql"
+    },
+    "uuid-v7-repeat.sql": {
+      "mime": "application/sql;charset=utf-8",
+      "bytes": 399998,
+      "filename": "uuid-v7-20261128-185405-286.sql"
+    },
+    "uuid-v3-names.json": {
+      "mime": "application/json;charset=utf-8",
+      "bytes": 118,
+      "filename": "uuid-v3-20261128-185408-770.json"
+    },
+    "uuid-validation.json": {
+      "mime": "application/json;charset=utf-8",
+      "bytes": 2838608,
+      "filename": "uuid-validation-20261128-185412-208.json"
+    },
+    "uuid-validation.csv": {
+      "mime": "text/csv;charset=utf-8",
+      "bytes": 1588769,
+      "filename": "uuid-validation-20261128-185412-377.csv"
+    }
+  },
+  "generation": {
+    "records": 10000,
+    "unique": 10000,
+    "visibleRows": 50,
+    "wallMs": 258
+  },
+  "validation": {
+    "total": 10000,
+    "valid": 9998,
+    "invalid": 2,
+    "duplicates": 4,
+    "visibleRows": 50,
+    "wallMs": 486
+  },
+  "requests": {
+    "quickInitialWithoutUuidLibrary": true,
+    "v7WithoutAdvanced": true,
+    "advancedAndInspectionLoadedOnSelection": true
+  },
+  "mobile": {
+    "lines": 1,
+    "width": 390
+  }
+}

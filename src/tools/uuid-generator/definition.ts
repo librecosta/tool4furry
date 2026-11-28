@@ -6,20 +6,18 @@ export const definition = {
   group: 'developer-utilities',
   roles: ['developer'],
   mode: 'form',
-  status: 'draft',
+  status: 'published',
   regions: ['cn', 'global'],
   copy: {
     zh: {
       title: 'UUID 生成器',
-      summary: '使用安全随机数生成单个或批量 UUIDv4。',
-      description: '使用安全随机数生成单个或批量 UUIDv4。',
+      summary: '生成、转换与验证 UUID。',
+      description: '快速或批量生成多版本 UUID，支持格式转换、验证及时间戳解析。',
     },
     en: {
       title: 'UUID Generator',
-      summary:
-        'Generate individual or batch UUIDv4 values using secure randomness.',
-      description:
-        'Generate individual or batch UUIDv4 values using secure randomness.',
+      summary: 'Generate, convert and validate UUIDs.',
+      description: 'Generate individual or batch UUIDs across multiple versions, convert formats, validate identifiers and decode timestamps.',
     },
   },
 } satisfies ToolDefinition;

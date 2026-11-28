@@ -80,7 +80,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64'], generalToolboxContent['timestamp-converter'], generalToolboxContent['color-contrast'], generalToolboxContent['audio-trimmer'], generalToolboxContent['markdown-editor'], generalToolboxContent['csv-json-converter'], generalToolboxContent['code-image-generator'], generalToolboxContent['svg-converter'], generalToolboxContent['regex-tester']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64'], generalToolboxContent['timestamp-converter'], generalToolboxContent['color-contrast'], generalToolboxContent['audio-trimmer'], generalToolboxContent['markdown-editor'], generalToolboxContent['csv-json-converter'], generalToolboxContent['code-image-generator'], generalToolboxContent['svg-converter'], generalToolboxContent['regex-tester'], generalToolboxContent['uuid-generator']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -848,7 +848,7 @@ for (const page of htmlFiles) {
   );
   const dom = new JSDOM(content).window.document;
   const scopedToolStyles = [...dom.head.querySelectorAll('link[rel="stylesheet"]')]
-    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|MarkdownEditor|VideoFrameExtractor|CsvJsonConverter|CodeImageGenerator|SvgConverter|RegexTester|CreativeAssetPicker|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
+    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|MarkdownEditor|VideoFrameExtractor|CsvJsonConverter|CodeImageGenerator|SvgConverter|RegexTester|UuidGenerator|CreativeAssetPicker|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
   const toolId = dom.querySelector('main[data-tool-id]')?.dataset.toolId;
   const expectedToolStyles = [];
   if (toolId === 'subtitle-tools') expectedToolStyles.push('SubtitleTools');
@@ -863,6 +863,7 @@ for (const page of htmlFiles) {
   if (toolId === 'code-image-generator') expectedToolStyles.push('CodeImageGenerator');
   if (toolId === 'svg-converter') expectedToolStyles.push('SvgConverter');
   if (toolId === 'regex-tester') expectedToolStyles.push('RegexTester');
+  if (toolId === 'uuid-generator') expectedToolStyles.push('UuidGenerator');
   if (['color-contrast', 'image-watermark', 'palette-extractor'].includes(toolId) && files.some(file => /\/react-colorful\.[\w-]+\.css$/.test(file)))
     expectedToolStyles.push('react-colorful');
   if (['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64', 'csv-json-converter', 'code-image-generator', 'svg-converter', 'regex-tester'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
@@ -991,6 +992,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/code-image-generator/index.html') assertToolContent(dom, locale, generalToolboxContent['code-image-generator'], 4, 4, 6);
     if (page === 'tools/svg-converter/index.html') assertToolContent(dom, locale, generalToolboxContent['svg-converter'], 4, 4, 6);
     if (page === 'tools/regex-tester/index.html') assertToolContent(dom, locale, generalToolboxContent['regex-tester'], 4, 4, 6);
+    if (page === 'tools/uuid-generator/index.html') assertToolContent(dom, locale, generalToolboxContent['uuid-generator'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1683,6 +1685,40 @@ if (!published.some(tool => tool.id === 'file-hash')) {
   const jsonEntry = entries.get('json-formatter');
   const jsonWorkers = files.filter(file => /(?:^|\/)json\.worker[.-][\w-]+\.js$/.test(file));
   const jsOwners = matches => [...scripts].filter(([, source]) => matches(source)).map(([file]) => file);
+  let uuidAdvanced;
+  if (published.some(tool => tool.id === 'uuid-generator')) {
+    const [entry, ...extraEntries] = findAsset('UuidGenerator', '.js');
+    assert(entry && !extraEntries.length, 'One UUID Generator entry');
+    assert.deepEqual(jsOwners(source => source.includes('data-uuid-workbench')), [entry]);
+    const [loader, ...extraLoaders] = importsOf(entry, true);
+    assert(loader && loader.includes('ToolRuntime') && !extraLoaders.length, 'Only ToolRuntime dynamically imports UUID Generator');
+    const [advanced, ...extraAdvanced] = jsOwners(source => source.includes('data-uuid-license-url'));
+    const [inspect, ...extraInspect] = jsOwners(source => source.includes('data-uuid-structure'));
+    const [v7, ...extraV7] = findAsset('time-v7', '.js');
+    assert(advanced && inspect && v7 && !extraAdvanced.length && !extraInspect.length && !extraV7.length,
+      'UUID advanced generation, inspection and v7 are distinct lazy chunks');
+    uuidAdvanced = advanced;
+    assert.deepEqual(importsOf(advanced, true), [entry]);
+    assert.deepEqual(importsOf(inspect, true), [advanced]);
+    assert.deepEqual(importsOf(v7, true), [entry]);
+    assert(importsOf(v7, false).includes(advanced), 'Quick and Advanced share the same v7 state');
+    for (const file of [entry, advanced, inspect, v7]) {
+      assert(importsOf(file, false).every(owner => [advanced, inspect].includes(owner)),
+        'UUID implementation is absent from public static imports: ' + file);
+    }
+    assert.deepEqual(jsOwners(source => source.includes('Random bytes length must be >= 16')).sort(), [advanced, v7].sort(),
+      'Native Quick v4 does not load the uuid library');
+    assert.deepEqual(cssFiles.filter((_, index) => outputCSS[index].includes('--uuid-accent-soft')),
+      findAsset('UuidGenerator', '.css'), 'UUID styles follow the tool entry');
+    const [notice, ...extraNotices] = findAsset('uuid.NOTICE', '.txt');
+    assert(notice && !extraNotices.length, 'UUID Generator delivers one complete MIT notice');
+    assert.deepEqual(jsOwners(source => source.includes(basenameOf(notice))), [advanced]);
+    const noticeSource = await readFile('src/tools/uuid-generator/uuid.NOTICE.txt');
+    const license = await readFile('node_modules/uuid/LICENSE.md', 'utf8');
+    assert(noticeSource.toString('utf8').replace(/\r\n/g, '\n').includes(license.replace(/\r\n/g, '\n').trimEnd()),
+      'UUID Generator NOTICE includes the full pinned MIT license');
+    assert((await readFile(resolve(root, notice))).equals(noticeSource), 'UUID Generator distributes the complete NOTICE');
+  }
   const regexEntry = entries.get('regex-tester');
   const regexWorkers = files.filter(file => /\/regex\.worker[.-][\w-]+\.js$/.test(file));
   const regexNotices = findAsset('regexpp.NOTICE', '.txt');
@@ -1778,8 +1814,6 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     assert.deepEqual(jsOwners(source => source.includes(basenameOf(worker))), [csvEntry], 'Only CSV / JSON creates its same-origin Worker');
     assert.deepEqual(jsOwners(source => /The converted output exceeds 64 MiB|Could not determine the CSV delimiter/.test(source)),
       [worker], 'Tabular conversion stays in its Worker');
-    assert.deepEqual(jsOwners(source => source.includes('MissingQuotes')).sort(),
-      [...regexWorkers, worker].sort(), 'Papa Parse stays in its CSV conversion and regex extraction Workers');
     const papaNotice = await readFile('src/tools/csv-json-converter/papaparse.NOTICE.txt');
     const [noticeAsset, ...extraNotices] = findAsset('papaparse.NOTICE', '.txt');
     if (noticeAsset) {
@@ -1794,6 +1828,9 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     assert(normalize(papaNotice.toString('utf8')).includes(normalize(await readFile('node_modules/papaparse/LICENSE', 'utf8'))),
       'Papa Parse notice preserves the full installed MIT license');
   }
+  assert.deepEqual(jsOwners(source => source.includes('MissingQuotes')).sort(),
+    [...regexWorkers, ...csvWorkers, ...(uuidAdvanced ? [uuidAdvanced] : [])].sort(),
+    'Papa Parse stays in its CSV and regex Workers and the lazy UUID Advanced chunk');
   if (published.some(tool => tool.id === 'markdown-editor')) {
     const [entry, ...extraEntries] = findAsset('MarkdownEditor', '.js');
     const [style, ...extraStyles] = findAsset('MarkdownEditor', '.css');

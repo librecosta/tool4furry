@@ -1,6 +1,6 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast / Audio Trimmer / Markdown Editor / Video Frame Extractor / CSV / JSON Converter / Code Image Generator / SVG Converter / Regex Tester 已获得 CN/Global Published 源码资格，其余 2 款（QR Code Generator、UUID Generator）保持 Draft。加上七款既有 Published 图片工具，共 29 款（27 Published / 2 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast / Audio Trimmer / Markdown Editor / Video Frame Extractor / CSV / JSON Converter / Code Image Generator / SVG Converter / Regex Tester / UUID Generator 已获得 CN/Global Published 源码资格。QR Code Generator 保持 Draft。加上七款既有 Published 图片工具，共 29 款（28 Published / 1 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。正式产物每地区提供 56 个工具详情页。QR Code Generator 路由及专属实现仍由构建守卫隔离。
 
 ## Video Frame Extractor — V0.8-B17-D1
 
@@ -445,3 +445,9 @@ D1 阶段保持 CN/Global Draft，正式构建排除工具及专属资产。[B21
 快速模式在浏览器初始化时生成一个 UUIDv4，可切换 v7 和 1、5、10、50 条。高级模式提供 v1、v3、v4、v5、v6、v7、Nil 与 Max，保留原始 16 字节及实际生成参数。表示格式及交付格式可以独立切换。验证与解析支持十六进制文本表示、显式 Base64 与 Base64URL 输入、嵌入时间戳及 128 位字段。
 
 普通生成、命名空间生成、验证每批最多 10,000 条。批量工作分段执行，结果区每页最多渲染 50 行，完整批次可复制或下载。快速 UUIDv4 使用 Web Crypto，按需加载的 uuid 14.0.3 提供其他生成版本及 MIT 通知。Draft 状态与正式构建隔离见 [B22 工作区、文件契约与实际验收](evidence/b22-uuid-generator/README.md)。
+
+### B22-D2 双语 SEO 与发布复核
+
+UUID 生成器取得 CN/Global Published 源码资格。每地区 56 个工具详情页，含 UUID 生成器的两个语言版本。专属像素图标、四项使用步骤、六项限制和四组 FAQ 随静态页面提供，并纳入目录、相关推荐、Sitemap 和 llms.txt。
+
+快速与高级模式继续使用同一份 v7 时间状态。高级生成及验证解析各自按需加载，CSV 序列化和 uuid MIT NOTICE 由高级区交付。仅 QR Code Generator 保持 Draft。[双地区正式产物及下载复核](evidence/b22-uuid-generator/README.md#b22-d2-正式产物验收)

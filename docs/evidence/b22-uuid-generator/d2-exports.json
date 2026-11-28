@@ -1,0 +1,46 @@
+{
+  "browserDownloads": {
+    "uuid-v3-names.json": {
+      "bytes": 118,
+      "sha256": "449a7cae6e3ae15fa6475797e7432e9189e53c4d37eda6694e3b2a23b59cb116"
+    },
+    "uuid-v7-repeat.sql": {
+      "bytes": 399998,
+      "sha256": "1c29039976db814d33170705ec2e30bd1f313a5b9adb9e63527252d3f0dfa8c6"
+    },
+    "uuid-v7.csv": {
+      "bytes": 380004,
+      "sha256": "f2511ff64800fced6218990b21526ee1ed80588093a500cd6307f51d6ccf6416"
+    },
+    "uuid-v7.json": {
+      "bytes": 390001,
+      "sha256": "0b39fdb5cec658c52cb359bf8ad51d533478fee6a66981c73dbcdeaf243acdb4"
+    },
+    "uuid-v7.sql": {
+      "bytes": 399998,
+      "sha256": "1c29039976db814d33170705ec2e30bd1f313a5b9adb9e63527252d3f0dfa8c6"
+    },
+    "uuid-v7.txt": {
+      "bytes": 369999,
+      "sha256": "f66de4e3665d776510592ba1c02b45f5e94aae3fc7367405453f301a244d219b"
+    },
+    "uuid-validation.csv": {
+      "bytes": 1588769,
+      "sha256": "9dbf1c6656a4d9395db378c5f5ff8584ff5051c5d9cdf931b5f47e9a8c34ae19"
+    },
+    "uuid-validation.json": {
+      "bytes": 2838608,
+      "sha256": "649fbffda8a174f2741f8071469fa37ef6d7e188a996035885e15c2e00fbac17"
+    }
+  },
+  "generatedRecords": 10000,
+  "reportRecords": 10000,
+  "sampleDuplicates": 4,
+  "sampleInvalid": 2,
+  "independentDecoders": [
+    "Python UTF-8",
+    "uuid",
+    "csv",
+    "json"
+  ]
+}

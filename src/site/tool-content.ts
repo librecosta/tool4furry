@@ -1,6 +1,5 @@
 import { generalToolboxContent } from './general-toolbox-content';
 import { getCatalogEntries } from './catalog';
-import { generalToolboxA2Content } from './general-toolbox-a2-content';
 import { defaultLocale, locales, type Locale } from '../i18n/locale';
 import type { Region } from '../config/region';
 import type { ToolDefinition } from '../tools/types';
@@ -27,7 +26,6 @@ export type ToolContentMap = Readonly<
 >;
 export const toolPageContents: ToolContentMap = {
   ...generalToolboxContent,
-  ...generalToolboxA2Content,
   'image-compressor': imageCompressorContent,
   'comic-page-organizer': comicPageOrganizerContent,
   'image-watermark': imageWatermarkContent,

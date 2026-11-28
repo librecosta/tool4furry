@@ -73,7 +73,7 @@ Code Image Generator（`code-image-generator`）完成 B19-D2 双语 SEO 和输�
 
 SVG Converter（`svg-converter`）依据 V0.8-B20-D2 授权取得 CN/Global Published 源码资格。全站 29 款（26 Published / 3 Draft），每地区 52 个双语工具详情页。XML 工作区、专属样式和完整 NOTICE 随工具加载。普通矢量化由按需 Worker 加载 ImageTracerJS，像素艺术使用独立的同色区域合并。静态 SVG 安全策略和 Image Watermark 的独立限制继续适用。[正式产物与实际输出验收](../docs/evidence/b20-svg-converter/README.md#b20-d2-正式产物验收)
 
-Regex Tester（`regex-tester`）依据 V0.8-B21-D2 授权取得 CN/Global Published 源码资格。全站 29 款（27 Published / 2 Draft），每地区 54 个双语工具详情页。regexpp、正则 Worker、解释、结构图、示例、样式及 NOTICE 由工具按需交付。共享 CodeMirror 由实际编辑器消费方加载，Papa Parse 仅由 CSV / JSON 转换 Worker 和正则提取 Worker 消费。UUID Generator 与 QR Code Generator 继续保持 Draft，正式构建排除二者专属资源。[正式产物及交付验收](../docs/evidence/b21-regex-tester/README.md#b21-d2-正式产物验收)
+Regex Tester（`regex-tester`）依据 V0.8-B21-D2 授权取得 CN/Global Published 源码资格。全站 29 款（27 Published / 2 Draft），每地区 54 个双语工具详情页。regexpp、正则 Worker、解释、结构图、示例、样式及 NOTICE 由工具按需交付。共享 CodeMirror 由实际编辑器消费方加载，Papa Parse 仅由 CSV / JSON 转换 Worker 和正则提取 Worker 消费。B21-D2 时 UUID Generator 与 QR Code Generator 仍为 Draft。[正式产物及交付验收](../docs/evidence/b21-regex-tester/README.md#b21-d2-正式产物验收)
 
 如托管启用 CSP，请允许文档和媒体 Worker 通过 `worker-src 'self'` 创建同源 Worker，并在媒体 Worker 及两个编码 Worker 的响应策略中使用 `script-src 'self' 'wasm-unsafe-eval'`。媒体 Worker 用 WASM SIMD 编译探测能力，在禁用时保留 WAV 及可用的原生编码。页面脚本可使用自身行内脚本的哈希。以上策略已在两地区本地正式产物验证，实际托管响应头仍需在部署阶段单独复核。
 
@@ -83,6 +83,8 @@ Regex Tester（`regex-tester`）依据 V0.8-B21-D2 授权取得 CN/Global Publis
 - robots/Sitemap/llms 从实际公开页面生成，不用 robots 代替 Draft 隔离；不得用假页面、假链接填充空态。
 - 构建产物不是上线证据，localhost HTTP 缓存不等于 CDN/公网 HTTPS 已验证。备案、DNS、CDN 和搜索平台操作均需独立授权。
 - 未经维护者授权不修改发布分支、线上环境或部署服务，不自动合并、部署、创建 Release/Tag。
+
+UUID Generator（`uuid-generator`）依据 V0.8-B22-D2 授权取得 CN/Global Published 源码资格。全站共 29 款工具（28 Published / 1 Draft），每地区 56 个双语工具详情页。Quick v4 使用 Web Crypto，时间型 v7、高级生成和验证解析分别按需加载。Papa Parse 还由 UUID Advanced 用于 CSV 交付，正式构建校验它的消费范围及完整 uuid MIT NOTICE。QR Code Generator 是唯一 Draft，QR 实验、DEV Lab 和 Fixture 继续隔离。[正式产物及交付验收](../docs/evidence/b22-uuid-generator/README.md#b22-d2-正式产物验收)
 
 执行约束见 [playbook](../.agents/playbook.md)；资格审计保留 [L1/L2/L3 政策](../AGENTS.md#mvp-beta-release-policy-2026-10-10)，其中 L2 七项和维护者最终决定不能被状态字段替代。
 
