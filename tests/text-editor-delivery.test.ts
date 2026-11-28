@@ -8,13 +8,14 @@ import { definition as subtitles } from '../src/tools/subtitle-tools/definition'
 import { definition as json } from '../src/tools/json-formatter/definition';
 import { definition as csv } from '../src/tools/csv-json-converter/definition';
 import { definition as codec } from '../src/tools/url-base64/definition';
+import { definition as regex } from '../src/tools/regex-tester/definition';
 import { tools } from '../src/tools/registry';
 import { toolAvailabilityConstant, toolBuildDefines } from '../src/tools/build-availability';
 import { draftIds } from './fixtures/general-toolbox';
 
 const read = (path: string) => readFileSync(path, 'utf8');
-it('shares the editor across Published tools while excluding the three Draft tools', () => {
-  for (const tool of [cleaner, diff, subtitles, json, codec, csv]) {
+it('shares the editor across Published tools while excluding the two Draft tools', () => {
+  for (const tool of [cleaner, diff, subtitles, json, codec, csv, regex]) {
     expect(tool.status).toBe('published');
     expect(tool.regions).toEqual(['cn', 'global']);
   }
@@ -25,12 +26,13 @@ it('shares the editor across Published tools while excluding the three Draft too
     expect(availability['import.meta.env.T4F_TOOL_SUBTITLE_TOOLS_AVAILABLE']).toBe('true');
     expect(availability['import.meta.env.T4F_TOOL_JSON_FORMATTER_AVAILABLE']).toBe('true');
     expect(availability['import.meta.env.T4F_TOOL_URL_BASE64_AVAILABLE']).toBe('true');
-    expect(draftIds).toHaveLength(3);
+    expect(draftIds).toHaveLength(2);
     expect(availability['import.meta.env.T4F_TOOL_MARKDOWN_EDITOR_AVAILABLE']).toBe('true');
     expect(draftIds).not.toContain('url-base64');
     expect(availability['import.meta.env.T4F_TOOL_CSV_JSON_CONVERTER_AVAILABLE']).toBe('true');
     expect(availability['import.meta.env.T4F_TOOL_CODE_IMAGE_GENERATOR_AVAILABLE']).toBe('true');
     expect(availability['import.meta.env.T4F_TOOL_SVG_CONVERTER_AVAILABLE']).toBe('true');
+    expect(availability['import.meta.env.T4F_TOOL_REGEX_TESTER_AVAILABLE']).toBe('true');
     for (const id of draftIds) {
       expect(tools.find(tool => tool.id === id)?.status).toBe('draft');
       expect(availability[toolAvailabilityConstant(id)]).toBe('false');

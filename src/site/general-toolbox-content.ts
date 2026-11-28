@@ -1078,4 +1078,58 @@ export const generalToolboxContent = {
       ],
     },
   },
+  'regex-tester': {
+    zh: {
+      title: '在线正则表达式测试工具 - 匹配、替换与文本提取 | Tool4Furry',
+      description: '在线测试 JavaScript 正则表达式，实时查看文本匹配、捕获组和替换结果，支持内容提取、测试用例、表达式解释、结构图及语法速查。无需上传文本。',
+      h1: '正则测试',
+      intro: '从文本中查找符合条件的内容，批量替换文字，或者提取邮箱、网址、数字等信息。通过实时匹配、表达式解释和内置示例，轻松测试和理解正则表达式，也可以使用测试用例验证匹配规则是否符合预期。',
+      steps: [
+        '**输入正则表达式：** 编写需要测试的表达式，或者从内置示例开始，了解常见匹配规则。',
+        '**添加测试文本：** 粘贴、编辑或导入本地文本，查看实时匹配高亮及对应结果。',
+        '**选择操作：** 根据需要查找匹配、替换文字、提取内容或运行测试用例，并调整相关匹配选项。',
+        '**查看与保存结果：** 检查匹配内容、捕获组及表达式解释，复制结果或下载替换与提取文件。',
+      ],
+      limitations: [
+        '使用浏览器原生 JavaScript RegExp 引擎，支持普通及命名捕获组、断言、反向引用和浏览器支持的匹配标志。与其他正则引擎的语法及行为可能不同。',
+        '支持实时匹配、字符串替换、内容提取及测试用例。替换结果可下载为 TXT，提取结果支持 TXT、JSON 和 CSV。',
+        '正则表达式、测试文本和替换表达式分别支持最多 16 Ki、2 Mi 和 64 Ki UTF-16 代码单元。本地 UTF-8 文件导入上限为 8 MiB，解码后仍受测试文本预算限制。',
+        '最多保留 10,000 条匹配记录，并受累计捕获数据与扫描预算限制。替换及提取输出最多为 16 Mi UTF-16 代码单元。超限或部分结果会明确提示。',
+        '提供表达式解释、结构图及语法速查。复杂表达式可能超出解释或结构图预算，图形仅用于理解语法结构，不代表引擎的实际执行路径。',
+        '正则执行在独立 Worker 中完成，默认执行时限为 1.5 秒，超时任务会被终止。所有文本均在浏览器内处理，不上传或由本站持久保存。',
+      ],
+      faq: [
+        { question: '正则表达式可以用来做什么？', answer: '正则表达式可以根据特定规则查找文本，例如查找数字、提取邮箱和网址、识别日志字段、清理空格或批量替换文字。' },
+        { question: '不熟悉正则表达式，也可以使用这个工具吗？', answer: '可以。从内置示例开始，观察测试文本中的匹配高亮及结果。工具提供简短解释、详细结构图和语法速查，帮助你理解并调整表达式。' },
+        { question: '可以提取文本中的邮箱、网址或其他内容吗？', answer: '可以。选择提取内容模式，输入对应表达式，即可提取完整匹配或指定捕获组。支持去重、自定义文本分隔符，以及 TXT、JSON 和 CSV 导出。' },
+        { question: '为什么有些正则表达式会执行超时？', answer: '复杂的匹配规则可能需要大量回溯计算。工具使用独立 Worker 和执行时限，在超时时终止任务。可以尝试简化表达式、缩短测试文本或调整执行设置。' },
+      ],
+    },
+    en: {
+      title: 'Online Regex Tester - Match, Replace & Extract Text | Tool4Furry',
+      description: 'Test JavaScript regular expressions with live matching, capture groups, replacement previews, text extraction, test cases, explanations and syntax references. No uploads required.',
+      h1: 'Regex Tester',
+      intro: 'Find patterns in text, replace matching content or extract useful information such as email addresses, URLs and numbers. Explore regular expressions with live highlighting, explanations and built-in examples, or validate your patterns against dedicated test cases.',
+      steps: [
+        '**Enter a regular expression:** Write your own pattern or start with a built-in example to explore common matching rules.',
+        '**Add test text:** Paste, edit or import a local text file to see highlighted matches and corresponding results.',
+        '**Choose an operation:** Find matches, replace text, extract content or run test cases. Adjust matching options as needed.',
+        '**Review and save results:** Inspect matches, capture groups and pattern explanations, then copy results or download replacement and extraction files.',
+      ],
+      limitations: [
+        "Uses the browser's native JavaScript RegExp engine, including ordinary and named capture groups, assertions, backreferences and supported flags. Syntax and behavior may differ from other regex engines.",
+        'Supports live matching, string replacement, text extraction and test cases. Replacement results can be downloaded as TXT, while extraction supports TXT, JSON and CSV.',
+        'Patterns, test text and replacement expressions support up to 16 Ki, 2 Mi and 64 Ki UTF-16 code units respectively. Local UTF-8 file imports are limited to 8 MiB and must also fit the decoded text budget.',
+        'Retains up to 10,000 match records, subject to cumulative capture data and scanning budgets. Replacement and extraction outputs are limited to 16 Mi UTF-16 code units. Partial or over-budget results are clearly indicated.',
+        "Includes pattern explanations, structural diagrams and syntax references. Complex patterns may exceed explanation or diagram budgets. Diagrams illustrate syntax structure rather than the engine's actual execution path.",
+        'Regular expressions run in a separate Worker with a default execution deadline of 1.5 seconds. Timed-out tasks are terminated. All text is processed locally in your browser without uploads or persistent storage by the site.',
+      ],
+      faq: [
+        { question: 'What can regular expressions be used for?', answer: 'Regular expressions find text that follows a particular pattern. Common uses include finding numbers, extracting email addresses and URLs, identifying log fields, removing extra spaces and replacing text.' },
+        { question: 'Can I use this tool without knowing regular expressions?', answer: 'Yes. Start with a built-in example and observe the highlighted matches and results. Brief explanations, structural diagrams and syntax references help you understand and modify patterns.' },
+        { question: 'Can I extract email addresses, URLs or other content from text?', answer: 'Yes. Choose Extract mode and enter a suitable pattern to extract complete matches or selected capture groups. The tool supports deduplication, custom text separators and TXT, JSON or CSV exports.' },
+        { question: 'Why do some regular expressions time out?', answer: 'Complex patterns can require extensive backtracking. The tool uses a separate Worker and an execution deadline to terminate timed-out tasks. Try simplifying the pattern, shortening the input or adjusting the execution settings.' },
+      ],
+    },
+  },
 } satisfies ToolContentMap;

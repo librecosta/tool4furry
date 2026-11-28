@@ -1,6 +1,6 @@
 # V0.8 通用工具初版
 
-两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast / Audio Trimmer / Markdown Editor / Video Frame Extractor / CSV / JSON Converter / Code Image Generator / SVG Converter 已获得 CN/Global Published 源码资格，其余 3 款保持 Draft。加上七款既有 Published 图片工具，共 29 款（26 Published / 3 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
+两批共 22 款工具（15 + 7）；PDF Merge / PDF Split / Images to PDF / ZIP Manager / Batch File Renamer / File Hash / Text Cleaner / Text Diff / Subtitle Tools / JSON Formatter / URL & Base64 / Timestamp Converter / Color & Contrast / Audio Trimmer / Markdown Editor / Video Frame Extractor / CSV / JSON Converter / Code Image Generator / SVG Converter / Regex Tester 已获得 CN/Global Published 源码资格，其余 2 款（QR Code Generator、UUID Generator）保持 Draft。加上七款既有 Published 图片工具，共 29 款（27 Published / 2 Draft）。第二批基于第一批本地提交 `e7cd6bf` 继续，未覆盖未推送成果。DEV 入口：CN `http://127.0.0.1:4321/tools/`、Global `http://127.0.0.1:4322/tools/`；非默认语言分别使用 `/en/tools/`、`/zh/tools/`。生产不包含这些 Draft 路由或专用实现。
 
 ## Video Frame Extractor — V0.8-B17-D1
 
@@ -426,10 +426,16 @@ CodeMirror 查找扩展由 SVG 转换和 Markdown 编辑器按需共用。Bitmap
 
 regexpp 4.12.3（MIT）提供 ECMAScript AST，驱动双语解释及 SVG 结构图。编译与执行结果以浏览器原生 RegExp 为准。默认 240 ms 防抖，Worker 默认时限 1500 ms，手动最长 5000 ms，取消和超时均终止当前 Worker。输入变动后即时禁止交付旧结果。
 
-源码继续保持 CN/Global Draft。两地区正式构建排除专属工作区、Worker、regexpp、结构图、示例库、样式和许可证。[B21 预算、浏览器与文件复检](evidence/b21-regex-tester/README.md)
+D1 阶段保持 CN/Global Draft，正式构建排除工具及专属资产。[B21 预算、浏览器与文件复检](evidence/b21-regex-tester/README.md)
 
 ### B21-D1-P1 渐进式工作区
 
 四种模式共享一个连续工作区。中英文默认示例使用 `/\d+/g` 查找订单数字，显示由 AST 生成的简短解释。选项、语法帮助、结构图和执行设置按需展开。匹配列表显示序号、内容和源文本行号，选中匹配后可查看捕获与 UTF-16 索引。连续滚动只渲染视口附近的行，捕获详情按实际高度参与布局。
 
 替换与提取沿用原文和结果双栏，差异可切换查看，测试用例使用连续表格。切换模式可以继续使用与当前输入完全对应的已完成结果，修改相关输入后禁止交付旧结果。Worker、输出预算和发布资格沿用 D1。[P1 视觉和交互回归](evidence/b21-regex-tester/README.md#b21-d1-p1-渐进式工作区)
+
+### B21-D2 双语 SEO 与发布复核
+
+正则测试取得 CN/Global Published 源码资格。每地区生成 54 个工具详情页。中英文页面有专属像素图标、四项使用步骤、六项限制和四组 FAQ，并进入目录、相关推荐、Sitemap 和 llms.txt。
+
+工作区、解释、结构图和示例随工具入口加载。regexpp 4.12.3 及正则执行留在专属 Worker。提取 CSV 的序列化使用现有 Papa Parse，完整 regexpp MIT 通知按工具交付。[正式产物、文件复检与 L3 范围](evidence/b21-regex-tester/README.md#b21-d2-正式产物验收)

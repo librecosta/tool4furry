@@ -80,7 +80,7 @@ async function assertToolIcon(container, id, size) {
   }
 }
 const plain = text => text.replaceAll('**', '').replace(/\s+/g, ' ').trim();
-const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64'], generalToolboxContent['timestamp-converter'], generalToolboxContent['color-contrast'], generalToolboxContent['audio-trimmer'], generalToolboxContent['markdown-editor'], generalToolboxContent['csv-json-converter'], generalToolboxContent['code-image-generator'], generalToolboxContent['svg-converter']].flatMap(contents => Object.values(contents)).flatMap(content => [
+const toolLongCopy = [imageConverterContent, imageResizeCropContent, paletteExtractorContent, imageCompressorContent, comicPageOrganizerContent, imageWatermarkContent, exifMetadataContent, generalToolboxContent['pdf-merge'], generalToolboxContent['pdf-split'], generalToolboxContent['images-to-pdf'], generalToolboxContent['zip-manager'], generalToolboxContent['batch-file-renamer'], generalToolboxContent['file-hash'], generalToolboxContent['text-cleaner'], generalToolboxContent['text-diff'], generalToolboxContent['subtitle-tools'], generalToolboxContent['json-formatter'], generalToolboxContent['url-base64'], generalToolboxContent['timestamp-converter'], generalToolboxContent['color-contrast'], generalToolboxContent['audio-trimmer'], generalToolboxContent['markdown-editor'], generalToolboxContent['csv-json-converter'], generalToolboxContent['code-image-generator'], generalToolboxContent['svg-converter'], generalToolboxContent['regex-tester']].flatMap(contents => Object.values(contents)).flatMap(content => [
   ...content.steps, ...content.limitations, ...content.faq.flatMap(item => [item.question, item.answer]),
 ]);
 function assertToolContent(dom, locale, contents, faqCount = 6, instructionCount = 4, limitationCount = instructionCount) {
@@ -848,7 +848,7 @@ for (const page of htmlFiles) {
   );
   const dom = new JSDOM(content).window.document;
   const scopedToolStyles = [...dom.head.querySelectorAll('link[rel="stylesheet"]')]
-    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|MarkdownEditor|VideoFrameExtractor|CsvJsonConverter|CodeImageGenerator|SvgConverter|CreativeAssetPicker|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
+    .flatMap(link => link.getAttribute('href')?.match(/\/(JsonFormatter|SubtitleTools|UrlBase64|TimestampConverter|ColorContrast|AudioTrimmer|MarkdownEditor|VideoFrameExtractor|CsvJsonConverter|CodeImageGenerator|SvgConverter|RegexTester|CreativeAssetPicker|react-colorful|TextEditor|TextWorkbench)\.[\w-]+\.css$/)?.[1] ?? []);
   const toolId = dom.querySelector('main[data-tool-id]')?.dataset.toolId;
   const expectedToolStyles = [];
   if (toolId === 'subtitle-tools') expectedToolStyles.push('SubtitleTools');
@@ -862,9 +862,10 @@ for (const page of htmlFiles) {
   if (toolId === 'csv-json-converter') expectedToolStyles.push('CsvJsonConverter');
   if (toolId === 'code-image-generator') expectedToolStyles.push('CodeImageGenerator');
   if (toolId === 'svg-converter') expectedToolStyles.push('SvgConverter');
+  if (toolId === 'regex-tester') expectedToolStyles.push('RegexTester');
   if (['color-contrast', 'image-watermark', 'palette-extractor'].includes(toolId) && files.some(file => /\/react-colorful\.[\w-]+\.css$/.test(file)))
     expectedToolStyles.push('react-colorful');
-  if (['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64', 'csv-json-converter', 'code-image-generator', 'svg-converter'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
+  if (['json-formatter', 'subtitle-tools', 'text-cleaner', 'text-diff', 'url-base64', 'csv-json-converter', 'code-image-generator', 'svg-converter', 'regex-tester'].includes(toolId) && files.some(file => /\/TextEditor\.[\w-]+\.css$/.test(file)))
     expectedToolStyles.push('TextEditor');
   if (['json-formatter', 'text-cleaner', 'text-diff', 'url-base64', 'csv-json-converter'].includes(toolId) && files.some(file => /\/TextWorkbench\.[\w-]+\.css$/.test(file)))
     expectedToolStyles.push('TextWorkbench');
@@ -989,6 +990,7 @@ for (const page of htmlFiles) {
     if (page === 'tools/csv-json-converter/index.html') assertToolContent(dom, locale, generalToolboxContent['csv-json-converter'], 4, 4, 6);
     if (page === 'tools/code-image-generator/index.html') assertToolContent(dom, locale, generalToolboxContent['code-image-generator'], 4, 4, 6);
     if (page === 'tools/svg-converter/index.html') assertToolContent(dom, locale, generalToolboxContent['svg-converter'], 4, 4, 6);
+    if (page === 'tools/regex-tester/index.html') assertToolContent(dom, locale, generalToolboxContent['regex-tester'], 4, 4, 6);
     if (page === 'tools/image-converter/index.html') assertToolContent(dom, locale, imageConverterContent);
     if (page === 'tools/image-resize-crop/index.html') assertToolContent(dom, locale, imageResizeCropContent);
     if (page === 'tools/palette-extractor/index.html') assertToolContent(dom, locale, paletteExtractorContent, 5);
@@ -1447,6 +1449,8 @@ for (const file of files.filter((file) => file.endsWith('.js'))) {
 // extracting native modules must not pull private Draft/Lab CSS into production.
 const cssFiles = files.filter(file => file.endsWith('.css'));
 const outputCSS = await Promise.all(cssFiles.map(file => readFile(resolve(root, file), 'utf8')));
+if (!published.some(tool => tool.id === 'uuid-generator'))
+  assert(!files.some(file => /(?:^|\/)UuidGenerator[.-]/.test(file)), 'Draft UUID Generator entry leaked');
 if (!published.some(tool => tool.id === 'regex-tester')) {
   assert(!files.some(file => /(?:^|\/)(?:RegexTester|regex\.worker|regexpp\.NOTICE)[.-]/.test(file)),
     'Draft Regex Tester entries, Worker and notices stay private');
@@ -1605,6 +1609,7 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     ['csv-json-converter', 'CsvJsonConverter'],
     ['code-image-generator', 'CodeImageGenerator'],
     ['svg-converter', 'SvgConverter'],
+    ['regex-tester', 'RegexTester'],
   ].filter(([id]) => published.some(tool => tool.id === id));
   const scripts = new Map(await Promise.all(files.filter(file => file.endsWith('.js'))
     .map(async file => [file, await readFile(resolve(root, file), 'utf8')])));
@@ -1644,7 +1649,8 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     const [entry, ...extraEntries] = findAsset(stem, '.js');
     assert(entry && !extraEntries.length, 'One lazy tool entry: ' + id);
     entries.set(id, entry);
-    const marker = { 'json-formatter': 'data-json-language-license', 'code-image-generator': 'data-code-image-studio', 'svg-converter': 'data-svg-converter-studio' }[id] ?? 'data-' + id;
+    const marker = { 'json-formatter': 'data-json-language-license', 'code-image-generator': 'data-code-image-studio',
+      'svg-converter': 'data-svg-converter-studio', 'regex-tester': 'data-regex-workbench' }[id] ?? 'data-' + id;
     assert(scripts.get(entry).includes(marker), 'Real editor tool implementation: ' + id);
     const [loader, ...extraLoaders] = importsOf(entry, true);
     assert(loader && loader.includes('ToolRuntime') && !extraLoaders.length, 'Only ToolRuntime dynamically imports ' + id);
@@ -1671,6 +1677,27 @@ if (!published.some(tool => tool.id === 'file-hash')) {
   const jsonEntry = entries.get('json-formatter');
   const jsonWorkers = files.filter(file => /(?:^|\/)json\.worker[.-][\w-]+\.js$/.test(file));
   const jsOwners = matches => [...scripts].filter(([, source]) => matches(source)).map(([file]) => file);
+  const regexEntry = entries.get('regex-tester');
+  const regexWorkers = files.filter(file => /\/regex\.worker[.-][\w-]+\.js$/.test(file));
+  const regexNotices = findAsset('regexpp.NOTICE', '.txt');
+  assert.deepEqual(jsOwners(source => /data-regex-workbench|data-regex-railroad|Find consecutive digits in order text\./.test(source)),
+    regexEntry ? [regexEntry] : [], 'Regex workbench, diagram and built-in examples follow their lazy entry');
+  assert.deepEqual(jsOwners(source => source.includes('Invalid set operation in character class')), regexWorkers,
+    'Only the Regex Tester Worker contains the regexpp parser');
+  assert.deepEqual(cssFiles.filter((_, index) => outputCSS[index].includes('.rx-capture-token')),
+    regexEntry ? findAsset('RegexTester', '.css') : [], 'Regex workbench styles follow their entry');
+  assert.equal(regexWorkers.length, regexEntry ? 1 : 0);
+  assert.equal(regexNotices.length, regexEntry ? 1 : 0);
+  if (regexEntry) {
+    for (const asset of [...regexWorkers, ...regexNotices])
+      assert.deepEqual(jsOwners(source => source.includes(basenameOf(asset))), [regexEntry],
+        'Only the lazy Regex Tester references its Worker and NOTICE');
+    const notice = await readFile('src/tools/regex-tester/regexpp.NOTICE.txt');
+    const license = await readFile('node_modules/@eslint-community/regexpp/LICENSE', 'utf8');
+    assert(notice.toString('utf8').replace(/\r\n/g, '\n').includes(license.replace(/\r\n/g, '\n').trimEnd()),
+      'Regex Tester NOTICE includes the full pinned regexpp MIT license');
+    assert((await readFile(resolve(root, regexNotices[0]))).equals(notice), 'Regex Tester distributes the complete NOTICE');
+  }
   const linksNotice = (entry, asset) => jsOwners(source => source.includes(basenameOf(asset)))
     .some(file => file === entry || importsOf(file, false).includes(entry));
   const svgEntry = entries.get('svg-converter');
@@ -1743,8 +1770,10 @@ if (!published.some(tool => tool.id === 'file-hash')) {
   if (csvEntry) {
     const [worker] = csvWorkers;
     assert.deepEqual(jsOwners(source => source.includes(basenameOf(worker))), [csvEntry], 'Only CSV / JSON creates its same-origin Worker');
-    assert.deepEqual(jsOwners(source => /The converted output exceeds 64 MiB|Could not determine the CSV delimiter|MissingQuotes/.test(source)),
-      [worker], 'Conversion and Papa Parse stay in the Worker');
+    assert.deepEqual(jsOwners(source => /The converted output exceeds 64 MiB|Could not determine the CSV delimiter/.test(source)),
+      [worker], 'Tabular conversion stays in its Worker');
+    assert.deepEqual(jsOwners(source => source.includes('MissingQuotes')).sort(),
+      [...regexWorkers, worker].sort(), 'Papa Parse stays in its CSV conversion and regex extraction Workers');
     const papaNotice = await readFile('src/tools/csv-json-converter/papaparse.NOTICE.txt');
     const [noticeAsset, ...extraNotices] = findAsset('papaparse.NOTICE', '.txt');
     if (noticeAsset) {
@@ -1980,7 +2009,7 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     if (markdownEntry) {
       const [core] = codeMirrorCore;
       const directUsers = importsOf(core, false);
-      const privateEditors = [markdownEntry, codeImageEntry, svgEntry].filter(Boolean);
+      const privateEditors = [markdownEntry, codeImageEntry, svgEntry, regexEntry].filter(Boolean);
       const support = directUsers.filter(file => ![editor, ...privateEditors, ...jsonConsumers].includes(file));
       assert(directUsers.includes(markdownEntry) && directUsers.includes(editor), 'Markdown and the shared editor use the same CodeMirror core');
       for (const file of support) {
@@ -2005,7 +2034,7 @@ if (!published.some(tool => tool.id === 'file-hash')) {
       assert(scripts.get(loader).includes(styles[0]), 'ToolRuntime references ' + stem + ' CSS');
     }
     await assertEditorStyle(shared ? (subtitleEntry ? 'TextEditor' : 'TextWorkbench') : editorTools[0][1]);
-    const workbenchEntries = [...entries.values()].filter(entry => ![subtitleEntry, codeImageEntry, svgEntry].includes(entry));
+    const workbenchEntries = [...entries.values()].filter(entry => ![subtitleEntry, codeImageEntry, svgEntry, regexEntry].includes(entry));
     if (subtitleEntry && workbenchEntries.length > 1) {
       const [workbench] = workbenchOwners;
       assert.equal(workbenchOwners.length, 1, 'One separate dual-editor workbench');
@@ -2038,13 +2067,13 @@ if (!published.some(tool => tool.id === 'file-hash')) {
     diffEntry ? [diffEntry] : [], 'Viewer, report and Worker constructor stay in the lazy Text Diff entry');
   assert.equal(workers.length, diffEntry ? 1 : 0, 'Local diff Worker follows Text Diff publication');
   assert.equal(combinedCSS.includes('--diff-row-surface'), Boolean(diffEntry), 'Private Text Diff SCSS follows publication');
+  assert.deepEqual(jsOwners(source => source.includes('oneChangePerToken')).sort(),
+    [...regexWorkers, ...workers].sort(), 'The diff library stays in the Text Diff and Regex Tester Workers');
   if (diffEntry) {
     const [worker] = workers;
     assert.deepEqual([...scripts].filter(([, text]) => text.includes(basenameOf(worker))).map(([file]) => file),
       [diffEntry], 'Only Text Diff owns the local Worker URL');
     assert.match(scripts.get(diffEntry), /new Worker\(new URL\(/, 'Text Diff constructs the bundled Worker');
-    assert.deepEqual([...scripts].filter(([, text]) => text.includes('oneChangePerToken')).map(([file]) => file),
-      [worker], 'Installed diff implementation stays within the Worker');
     assert(scripts.get(worker).includes('self.onmessage') && scripts.get(worker).includes('self.postMessage'),
       'Local Worker contains the comparison message protocol');
     if (noticesOnDisk.length) {

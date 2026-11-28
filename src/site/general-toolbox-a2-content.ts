@@ -1,39 +1,6 @@
 import type { ToolContentMap } from './tool-content';
 // Static Astro content only; never imported by the client or registry.
 export const generalToolboxA2Content = {
-  'regex-tester': {
-    zh: {
-      title: '正则测试 | Tool4Furry',
-      description: '测试 JavaScript 正则，查看匹配与替换结果。',
-      h1: '正则测试',
-      intro: '测试 JavaScript 正则，查看匹配与替换结果。',
-      steps: [
-        '输入表达式并选择 Flags',
-        '输入测试文本和替换表达式',
-        '查看高亮、捕获组并复制替换结果。',
-      ],
-      limitations: [
-        '使用浏览器原生 JavaScript RegExp。表达式最多 16 Ki、测试文本最多 2 Mi UTF-16 单元。匹配记录和捕获数据达到预算后标记为部分结果，超时任务会终止。',
-        '所有文件与文本仅在当前浏览器本地处理，不上传、不持久保存。',
-      ],
-    },
-    en: {
-      title: 'Regex Tester | Tool4Furry',
-      description:
-        'Test JavaScript regular expressions, matches and replacements.',
-      h1: 'Regex Tester',
-      intro: 'Test JavaScript regular expressions, matches and replacements.',
-      steps: [
-        'Enter a pattern and flags',
-        'add test text and a replacement',
-        'review highlights and capture groups, then copy the replacement result.',
-      ],
-      limitations: [
-        'Uses the browser’s native JavaScript RegExp. Expressions and test text are limited to 16 Ki and 2 Mi UTF-16 code units. Match or capture limits produce marked partial results. Timed-out tasks are terminated.',
-        'Files and text stay in your browser, without uploads or persistent storage.',
-      ],
-    },
-  },
   'uuid-generator': {
     zh: {
       title: 'UUID 生成器 | Tool4Furry',

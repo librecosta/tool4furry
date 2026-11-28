@@ -1,0 +1,49 @@
+{
+  "regex-replace.txt": {
+    "bytes": 16,
+    "sha256": "7f455d8af06cf3355481ad7e509539775faad2176398ecbed9f6a913033f6284",
+    "decoded": "Alpha Beta Gamma"
+  },
+  "样本.txt": {
+    "bytes": 13,
+    "sha256": "1c117a2459ec93fb414ec9edd6694fa0c7dce496e2290ad0f3f672e49dbe7f49",
+    "decoded": "中,\"🐱\n\"\n\n"
+  },
+  "样本.json": {
+    "bytes": 26,
+    "sha256": "cf0aeaa2e53392c623b86df85bbecfd010e9aa1f2d33a215049e5dfbf0e6c079",
+    "decoded": [
+      "中,\"🐱\n\"",
+      null,
+      ""
+    ]
+  },
+  "样本.csv": {
+    "bytes": 56,
+    "sha256": "e1343187490abab4c28fc88f94b4cf5226e59659666218397a1411d122fdc2fc",
+    "decoded": [
+      [
+        "status",
+        "value"
+      ],
+      [
+        "matched",
+        "中,\"🐱\n\""
+      ],
+      [
+        "absent",
+        ""
+      ],
+      [
+        "matched",
+        ""
+      ]
+    ]
+  },
+  "full-preview.txt": {
+    "bytes": 2097154,
+    "sha256": "a70921927d95e9bfbaa933efdb904ed00c7f8a602ef19970c4b092c2472b3dc0",
+    "decodedUnits": 2097152,
+    "finalCharacter": "中"
+  }
+}

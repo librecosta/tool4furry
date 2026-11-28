@@ -25,4 +25,4 @@ export const secondBatchIds = [
   'uuid-generator',
 ];
 export const generalToolboxIds = [...firstBatchIds, ...secondBatchIds];
-export const draftIds = generalToolboxIds.filter(id => !['pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash', 'text-cleaner', 'text-diff', 'subtitle-tools', 'json-formatter', 'url-base64', 'timestamp-converter', 'color-contrast', 'audio-trimmer', 'markdown-editor', 'video-frame-extractor', 'csv-json-converter', 'code-image-generator', 'svg-converter'].includes(id));
+export const draftIds = generalToolboxIds.filter(id => !['pdf-merge', 'pdf-split', 'images-to-pdf', 'zip-manager', 'batch-file-renamer', 'file-hash', 'text-cleaner', 'text-diff', 'subtitle-tools', 'json-formatter', 'url-base64', 'timestamp-converter', 'color-contrast', 'audio-trimmer', 'markdown-editor', 'video-frame-extractor', 'csv-json-converter', 'code-image-generator', 'svg-converter', 'regex-tester'].includes(id));

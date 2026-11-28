@@ -4,6 +4,37 @@ import { toolPageContents, getToolPageContent } from '../src/site/tool-content';
 import { toolLoaders } from '../src/tools/loaders';
 import { groups } from '../src/site/taxonomy';
 import { draftIds, generalToolboxIds, firstBatchIds, secondBatchIds } from './fixtures/general-toolbox';
+
+it('publishes Regex Tester in both regions with a static guide for the JavaScript workbench', () => {
+  const tool = tools.find(tool => tool.id === 'regex-tester')!;
+  expect(tool).toMatchObject({
+    slug: 'regex-tester', category: 'development', group: 'developer-utilities',
+    roles: ['developer'], mode: 'form', status: 'published', regions: ['cn', 'global'],
+    copy: {
+      zh: { title: '正则测试', description: '实时测试正则表达式，查找、替换和提取文本，查看匹配结果与表达式解释。', summary: '在线测试正则表达式，匹配、替换与提取文本。' },
+      en: { title: 'Regex Tester', description: 'Test regular expressions with live matching, text replacement, extraction and pattern explanations.', summary: 'Test regular expressions, find matches, replace and extract text.' },
+    },
+  });
+  const expected = {
+    zh: {
+      title: '在线正则表达式测试工具 - 匹配、替换与文本提取 | Tool4Furry',
+      description: '在线测试 JavaScript 正则表达式，实时查看文本匹配、捕获组和替换结果，支持内容提取、测试用例、表达式解释、结构图及语法速查。无需上传文本。',
+    },
+    en: {
+      title: 'Online Regex Tester - Match, Replace & Extract Text | Tool4Furry',
+      description: 'Test JavaScript regular expressions with live matching, capture groups, replacement previews, text extraction, test cases, explanations and syntax references. No uploads required.',
+    },
+  };
+  for (const region of tool.regions) for (const locale of ['zh', 'en'] as const) {
+    const content = getToolPageContent(tool, region, toolPageContents, false, locale);
+    expect(content).toMatchObject({ ...expected[locale], h1: tool.copy[locale].title });
+    expect(content.limitations![0]).toContain('JavaScript RegExp');
+    expect(content.limitations![2]).toMatch(/16 Ki.*2 Mi.*64 Ki.*8 MiB/);
+    expect(content.limitations![3]).toMatch(/10,000.*16 Mi/);
+    expect(content.limitations![5]).toMatch(/Worker.*1\.5/);
+  }
+});
+
 it('publishes the bilingual Video Frame Extractor guide and registry copy', () => {
   const tool = tools.find(tool => tool.id === 'video-frame-extractor')!;
   expect(tool).toMatchObject({
@@ -79,7 +110,7 @@ it('publishes File Hash bilingual static SEO and concise metadata matching its f
   expect(tool.copy.zh).toEqual({ title: '文件哈希', description: '批量计算 MD5、SHA 系列与 CRC32，支持本地哈希比对。', summary: '拖入文件自动计算哈希，支持多种算法与批量导出。' });
   expect(tool.copy.en).toEqual({ title: 'File Hash', description: 'Calculate MD5, SHA and CRC32 checksums locally for multiple files.', summary: 'Automatically hash files, compare checksums and export results.' });
 });
-it('keeps both implementation batches intact with twenty-six Published and three Draft tools', () => {
+it('keeps both implementation batches intact with twenty-seven Published and two Draft tools', () => {
   expect(tools).toHaveLength(29);
   expect(firstBatchIds).toHaveLength(15);
   expect(firstBatchIds).toContain('pdf-merge');
@@ -90,12 +121,12 @@ it('keeps both implementation batches intact with twenty-six Published and three
   expect(firstBatchIds).toContain('file-hash');
   expect(firstBatchIds).toContain('text-cleaner');
   expect(secondBatchIds).toHaveLength(7);
-  expect(draftIds).toHaveLength(3);
+  expect(draftIds).toEqual(['qr-code-generator', 'uuid-generator']);
   expect(tools.filter((t) => t.status === 'draft').map((t) => t.id)).toEqual(
     draftIds,
   );
   for (const region of ['cn', 'global'] as const) {
-    expect(getAvailableTools(region, false)).toHaveLength(26);
+    expect(getAvailableTools(region, false)).toHaveLength(27);
     expect(getAvailableTools(region, true)).toHaveLength(29);
     for (const id of generalToolboxIds) {
       const tool = tools.find((t) => t.id === id)!;

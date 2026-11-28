@@ -71,3 +71,22 @@ Worker 时限包括启动和消息传递。取消及超时实际终止 Worker。
 - `pnpm check`、58 项正则及共享回归测试、两地区正式构建和 Draft 资源隔离均通过。每地区仍生成 52 个正式工具详情页。共 29 项工具，其中 26 Published、3 Draft。
 
 Firefox、Safari、手机真机及峰值内存仍未验证。列表耗时为本机单次点击到结果的测量。
+
+## B21-D2 正式产物验收
+
+2026-11-28 在基线 `22c82f217672` 上验收。基线的 [GitHub Actions CI](https://github.com/librecosta/tool4furry/actions/runs/46130061337) 已通过。Chromium 156.0.8078.4 通过本地 HTTP 加载 CN 和 Global 正式静态产物，分别使用中文深色 1280px 桌面和英文浅色 390px 手机模拟视口。工作区沿用维护者最终验收版本。
+
+| 验收项 | 证据 |
+| --- | --- |
+| CN 工作区 | [匹配](d2/cn-dark-default.jpg) · [替换](d2/cn-replace.jpg) · [提取](d2/cn-extract.jpg) · [测试用例](d2/cn-tests.jpg) |
+| 表达式解释与执行 | [结构图](d2/cn-railroad.jpg) · [Worker 超时](d2/cn-timeout.jpg) |
+| 英文手机模拟视口 | [Global 工作区](d2/global-mobile.jpg) |
+| 实际交付 | [下载名称、MIME、Worker 与网络记录](d2/chromium.json) · [独立 UTF-8、JSON、CSV 解码结果](d2/exports.json) |
+
+- 默认订单示例找到 `1024`、`2048` 和 `4096`。短解释经表达式旁的图标展开。复核了八个 Flags、`u` / `v` 互斥、命名及嵌套组、零宽匹配、Emoji、匹配定位、差异预览、语法帮助、示例和四种测试断言。原生 RegExp / replace 对照和 Sticky 用例状态隔离由定向测试覆盖。
+- Worker 超时和取消均观察到关闭事件，超时后正常表达式可重新执行。输入变动立即禁用旧下载，部分匹配不交付提取结果，超额替换停止构建。AST 或图形超出预算后仍可执行有效表达式。10,000 条匹配时，列表顶部、末尾及展开捕获后分别渲染 13、13 和 15 行。这些数字来自本次浏览器验收。
+- 复核表达式、测试文本及结果剪贴板。替换 TXT、提取 TXT／JSON／CSV 均实际下载。中文文件名保留，连续下载名称不同，同毫秒追加序号由定向测试覆盖。样本含中文、Emoji、引号、逗号及换行。TXT 用空字段表示空捕获和未参与组，JSON 用空字符串和 `null` 区分，CSV 通过 `matched`、`absent` 区分。64 Ki 代码单元的只读预览提示下，完整替换 TXT 独立解码为 2,097,152 个 UTF-16 代码单元，尾字符为 `中`。
+- `pnpm check`、定向测试、`pnpm build:cn` 与 `pnpm build:global` 通过。每区 54 个工具详情页和 64 个可索引地址，正则测试的四个正式页面均通过静态 SEO、专属像素图标、4 项步骤、6 项限制、4 组 FAQ、目录、相关推荐及发现文件核对。当前共 29 款工具，27 Published、2 Draft。UUID、QR 及其实验资源、DEV Lab 和 Fixture 继续隔离。
+- 正则工作区 JS、CSS 和 Worker 只在打开工具后加载，两地区本次抽查的首页和 Text Diff 均未请求这些资源。构建守卫核对 regexpp 仅进入正则 Worker，发出的 [MIT NOTICE](../../../src/tools/regex-tester/regexpp.NOTICE.txt) 与源码逐字节一致。Papa Parse 与差异库分别保留在各自合法消费的 Worker 中。
+
+L3 待验证范围包括 Firefox、Safari、实体手机及峰值内存。源码资格已更新，生产环境未部署。

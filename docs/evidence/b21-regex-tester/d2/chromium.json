@@ -1,0 +1,81 @@
+{
+  "chromium": "156.0.8078.4",
+  "downloads": {
+    "regex-replace-20261128-173936-837.txt": {
+      "type": "text/plain;charset=utf-8",
+      "bytes": 16
+    },
+    "regex-replace-20261128-173937-011.txt": {
+      "type": "text/plain;charset=utf-8",
+      "bytes": 16
+    },
+    "样本-20261128-173938-747.txt": {
+      "type": "text/plain;charset=utf-8",
+      "bytes": 13
+    },
+    "样本-20261128-173939-579.json": {
+      "type": "application/json;charset=utf-8",
+      "bytes": 26
+    },
+    "样本-20261128-173940-563.csv": {
+      "type": "text/csv;charset=utf-8",
+      "bytes": 56
+    },
+    "full-preview-20261128-173949-505.txt": {
+      "type": "text/plain;charset=utf-8",
+      "bytes": 2097154
+    }
+  },
+  "replace": "regex-replace-20261128-173936-837.txt",
+  "repeat": "regex-replace-20261128-173937-011.txt",
+  "txt": "样本-20261128-173938-747.txt",
+  "json": "样本-20261128-173939-579.json",
+  "csv": "样本-20261128-173940-563.csv",
+  "worker": {
+    "timeoutObservedMs": 1846,
+    "terminatedOnTimeout": true,
+    "recovery": true,
+    "terminatedOnCancel": true
+  },
+  "large": {
+    "matches": 10000,
+    "rowsAtStart": 13,
+    "rowsAtEnd": 13,
+    "rowsExpanded": 15,
+    "clickToResultMs": 131,
+    "partialCopyDisabled": true
+  },
+  "full": "full-preview-20261128-173949-505.txt",
+  "fullPreview": {
+    "textUnits": 2097152,
+    "renderedUnits": 9991,
+    "clickToResultMs": 131
+  },
+  "budget": {
+    "replacementRejected": true,
+    "partialExtractionDisabled": true,
+    "astFallback": true
+  },
+  "network": {
+    "homeAndTextDiffPrivateRequests": 0,
+    "workbench": [
+      "/_astro/RegexTester.9TItt6Wr.css",
+      "/_astro/RegexTester.GqmswdrJ.js",
+      "/_astro/regex.worker-CYBOEPqh.js"
+    ],
+    "workers": {
+      "started": 52,
+      "closed": 52
+    }
+  },
+  "mobile": {
+    "inner": 390,
+    "document": 390,
+    "homeAndTextDiffPrivateRequests": 0,
+    "workbench": [
+      "/_astro/RegexTester.9TItt6Wr.css",
+      "/_astro/RegexTester.GqmswdrJ.js",
+      "/_astro/regex.worker-CYBOEPqh.js"
+    ]
+  }
+}
