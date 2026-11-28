@@ -61,7 +61,7 @@ export default function UuidGenerator({ locale }: ToolProps) {
         </Tabs.List>
         {mode === 'advanced' && <span className={s.muted}>RFC 9562</span>}
       </div>
-      <Tabs.Panel value="quick" keepMounted className={s.quick}>
+      <Tabs.Panel value="quick" keepMounted>
         <div className={s.quickBody} aria-busy={working}>
           <Choices<QuickVersion> label={t('UUID 版本', 'UUID version')} value={quickVersion}
             items={[{ value: 'v4', label: t('UUID v4 · 随机', 'UUID v4 · Random') },
