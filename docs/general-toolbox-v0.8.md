@@ -300,7 +300,7 @@
 | `code-image-generator` | CodeMirror、23 种高亮语言及纯文本、12 套语法主题、8 套外观预设、PNG/SVG/JPEG/WebP | Shiki 专属 Worker、按需字体；图像预算 40 MP、单边 8192px。[B19-D1](#code-image-generator--v08-b19-d1) |
 | `svg-converter` | SVG 栅格化、位图矢量化、图片封装 | 独立静态 SVG 校验；PNG、JPEG、WebP、AVIF、多尺寸 ICO 及两种 SVG 输出。[B20-D1](#svg-converter--v08-b20-d1) |
 | `regex-tester` | 匹配、替换、提取、测试用例、AST 解释及结构图 | 原生 JavaScript Worker、精确 UTF-16 索引及有界输出。[B21-D1](#regex-tester--v08-b21-d1) |
-| `uuid-generator` | 安全 UUIDv4 单个/批量、大小写、逐项/全部复制、TXT | 每批 1–1000；仅使用 Crypto.getRandomValues，不提供其他 UUID 版本 |
+| `uuid-generator` | 快速 v4/v7、高级多版本与命名空间生成、七种表示、批量验证与解析 | 每批最多 10,000 条，批量输入上限 2 MiB UTF-8。[B22-D1](#uuid-generator--v08-b22-d1) |
 
 文件和文本均不上传、不持久保存。PDF/原文件归档不承诺清理来源元数据。删除、清空或改变参数会作废结果；有界异步操作取消后仍等实际结束才释放当前执行槽。下载 URL 延时撤销，预览 URL 在失效/卸载时释放。
 
