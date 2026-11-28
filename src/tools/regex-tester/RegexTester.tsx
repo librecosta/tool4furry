@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Tabs } from '@base-ui/react/tabs';
 import { Dialog } from '@base-ui/react/dialog';
 import {
-  CaretDownIcon, CaretRightIcon, FolderOpenIcon, InfoIcon, ListBulletsIcon, PlayIcon, StopIcon, TrashIcon, XIcon,
+  CheckIcon, FolderOpenIcon, InfoIcon, ListBulletsIcon, PlayIcon, StopIcon, TrashIcon, XIcon,
 } from '@phosphor-icons/react';
 import { Button, IconButton } from '../../ui/Button';
+import { Tooltip } from '../../ui/Tooltip';
 import { TextEditor, type TextEditorHandle } from '../../ui/text-editor/TextEditor';
 import { ErrorText, errorText, Frame, saveBlob, tr } from '../general/ui';
 import type { ToolProps } from '../types';
@@ -20,7 +21,7 @@ import {
   flagsOrder, limits, RegexIssue, type Analysis, type ExpressionNode, type ExtractFormat, type ExtractSettings,
   type Issue, type Mode, type Range, type RegexRequest, type RegexResult, type TestCase,
 } from './protocol';
-import { defaultExample, examples, issueText, summarizeExpression, type Translate } from './reference';
+import { defaultExample, examples, issueText, type Translate } from './reference';
 import { useRegexJob } from './use-regex-job';
 import notice from './regexpp.NOTICE.txt?url&no-inline';
 import s from './workbench.module.scss';
@@ -94,6 +95,7 @@ export default function RegexTester({ locale }: ToolProps) {
   const t = useCallback((zh: string, en: string) => tr(locale, zh, en), [locale]);
   const [mode, setMode] = useState<Mode>('match');
   const [explanation, showExplanation] = useState(false);
+  const explanationId = useId();
   const [pattern, setPattern] = useState(example.pattern), [flags, setFlags] = useState(example.flags);
   const [text, setText] = useState(example.text), [replacement, setReplacement] = useState(example.replacement ?? '');
   const [engaged, setEngaged] = useState(true), [live, setLive] = useState(true);
@@ -132,6 +134,11 @@ export default function RegexTester({ locale }: ToolProps) {
   const issue = state.status === 'error' ? state.issue : result?.issue ?? analysis?.issue;
   const diagnostic = analysis?.issue?.code === 'syntax'
     ? analysis.issue : issue?.code === 'syntax' ? issue : undefined;
+  const expressionIssue = diagnostic ?? analysis?.issue;
+  const validExpression = analysis?.literal !== undefined && !expressionIssue;
+  const expressionStatus = expressionIssue ? issueText(expressionIssue, t) : t('有效表达式', 'Valid expression');
+  const explanationOpen = explanation && validExpression;
+  const explanationLabel = explanationOpen ? t('收起解释', 'Hide explanation') : t('展开解释', 'Explain');
   const matches = result?.matches ?? emptyMatches;
   const selected = mode === 'match' && result && selection?.result === result ? selection.index : 0;
   const select = useCallback((index: number) => {
@@ -258,12 +265,24 @@ export default function RegexTester({ locale }: ToolProps) {
       <div className={s.surface}>
         <section className={s.expression} aria-label={t('表达式设置', 'Expression settings')}>
           <header className={s.bar}>
-            <strong>{t('正则表达式', 'Regular expression')}</strong>
+            <div className={s.expressionTitle}>
+              <strong>{t('正则表达式', 'Regular expression')}</strong>
+              {(validExpression || expressionIssue) && <Tooltip borderless content={expressionStatus}>
+                <span className={s.expressionStatus} data-state={expressionIssue ? 'error' : 'valid'}
+                  role="img" aria-label={expressionStatus} tabIndex={0}>
+                  {expressionIssue ? <XIcon size={16} weight="bold" aria-hidden="true" />
+                    : <CheckIcon size={16} weight="bold" aria-hidden="true" />}
+                </span>
+              </Tooltip>}
+            </div>
             <div className={s.actions}>
-              {engaged && <span className={s.expressionStatus} data-state={diagnostic || analysis?.issue ? 'error' : analysis?.literal !== undefined ? 'valid' : 'pending'}>
-                {diagnostic ? issueText(diagnostic, t) : analysis?.literal !== undefined ? t('有效表达式', 'Valid expression')
-                  : analysis?.issue ? issueText(analysis.issue, t) : t('正在检查', 'Checking')}
-              </span>}
+              <Tooltip borderless content={explanationLabel}>
+                <IconButton size="sm" variant="ghost" className={s.compactButton} label={explanationLabel}
+                  disabled={!validExpression} aria-expanded={explanationOpen} aria-controls={explanationOpen ? explanationId : undefined}
+                  onClick={() => showExplanation(value => !value)}>
+                  <InfoIcon size={17} weight={explanationOpen ? 'fill' : 'regular'} aria-hidden="true" />
+                </IconButton>
+              </Tooltip>
               <CopyAction label={t('复制正则表达式', 'Copy expression')} value={analysis?.literal} t={t} />
             </div>
           </header>
@@ -276,24 +295,16 @@ export default function RegexTester({ locale }: ToolProps) {
             <span className={s.patternFlags} aria-label={t('已启用选项 ', 'Active flags ') + flags}>/{flags}</span>
             <MatchOptions {...{ flags, supported, toggle: toggleFlag, t }} />
           </div>
-          {analysis?.literal !== undefined && <div className={s.explainLine}>
-            <p><InfoIcon size={16} aria-hidden="true" />{analysis.root ? summarizeExpression(analysis.root, t)
-              : t('当前表达式可执行，解释不可用。', 'The expression can run. An explanation is unavailable.')}</p>
-            <Button size="sm" variant="ghost" className={s.compactButton} aria-expanded={explanation}
-              onClick={() => showExplanation(value => !value)}>
-              {explanation ? t('收起解释', 'Hide explanation') : t('展开解释', 'Explain')}
-              {explanation ? <CaretDownIcon /> : <CaretRightIcon />}
-            </Button>
-          </div>}
-          {explanation && analysis?.literal !== undefined && <Explanation {...{ analysis, pattern, flags, t }}
-            current={node?.source === pattern ? node.key : undefined} onNode={locateNode} />}
+          {explanationOpen && <section id={explanationId} className={s.explanation} aria-label={t('表达式解释', 'Expression explanation')}>
+            <Explanation {...{ analysis, pattern, flags, t }} current={node?.source === pattern ? node.key : undefined} onNode={locateNode} />
+          </section>}
           <div className={s.replacementField} hidden={mode !== 'replace'}>
             <div className={s.bar}>
               <strong>{t('替换表达式', 'Replacement')}</strong>
               {mode === 'replace' && <SyntaxHelp t={t} insert={insert} replacement />}
             </div>
             <TextEditor ariaLabel={t('编辑替换表达式', 'Edit replacement')} value={replacement} preserveCarriageReturns
-              lineNumbers={false} onChange={setReplacement} editorRef={replacementEditor} />
+              className={s.replacementEditor} lineNumbers={false} onChange={setReplacement} editorRef={replacementEditor} />
           </div>
           {mode === 'extract' && <ExtractRules {...{ captures, settings: extract, update: setExtract, t }} />}
         </section>

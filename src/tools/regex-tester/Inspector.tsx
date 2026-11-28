@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
 import { Popover } from '@base-ui/react/popover';
 import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react';
 import { Button, IconButton } from '../../ui/Button';
 import { TextField } from '../../ui/TextField';
 import { captureColor, nodeKey } from './editor';
-import { describeNode, flagHelp, reference, type Translate } from './reference';
+import { describeNode, flagHelp, reference, summarizeExpression, type Translate } from './reference';
 import { limits, type Analysis, type ExpressionNode, type Range } from './protocol';
 import { Railroad } from './Railroad';
 import s from './workbench.module.scss';
@@ -48,37 +48,50 @@ export function Explanation({ analysis, pattern, flags, current, onNode, t }: {
   const selected = entries.findIndex(entry => nodeKey(entry.node) === current);
   const size = 32;
   const visiblePage = Math.min(page, Math.max(0, Math.ceil(entries.length / size) - 1));
+  const selectedPage = Math.floor(selected / size);
+  const revealSelection = selected >= 0 && selectedPage !== visiblePage;
   const cannotDiagram = !analysis?.nodes || analysis.nodes > limits.diagramNodes;
   if (!analysis?.root) return <p className={s.empty}>{analysis?.limited
     ? (analysis.limited === 'budget'
       ? t('表达式结构超出解释预算。可使用原生引擎继续执行。', 'Expression structure exceeds the explanation budget. Native execution is still available.')
       : t('解释器暂不支持此语法。执行以浏览器原生引擎为准。', 'The explanation parser does not support this syntax. The browser’s native engine controls execution.'))
     : t('输入有效表达式后查看结构解释。', 'Enter a valid expression to inspect its structure.')}</p>;
-  return <div className={s.explanation}>
-    <div className={s.actions}>
-      <Button size="sm" variant="ghost" aria-pressed={!diagram} onClick={() => setDiagram(false)}>{t('逐项解释', 'Explanation')}</Button>
-      <Button size="sm" variant="ghost" aria-pressed={diagram} disabled={cannotDiagram}
-        onClick={() => setDiagram(true)}>{t('结构图', 'Railroad diagram')}</Button>
-      {selected >= 0 && Math.floor(selected / size) !== visiblePage && <Button size="sm" variant="ghost"
-        onClick={() => { setDiagram(false); setPage(Math.floor(selected / size)); }}>{t('查看当前节点', 'Show selected node')}</Button>}
+  return <>
+    <div className={s.explanationHeader}>
+      <p>{summarizeExpression(analysis.root, t)}</p>
+      <div className={s.explanationViews} role="group" aria-label={t('解释视图', 'Explanation view')}>
+        <Button size="sm" variant="ghost" className={s.compactButton} aria-pressed={!diagram}
+          onClick={() => setDiagram(false)}>{t('逐项解释', 'Explanation')}</Button>
+        <Button size="sm" variant="ghost" className={s.compactButton} aria-pressed={diagram} disabled={cannotDiagram}
+          onClick={() => setDiagram(true)}>{t('结构图', 'Railroad diagram')}</Button>
+      </div>
     </div>
     {cannotDiagram ? <p className={s.note}>{t('图形超过复杂度预算。仍可查看逐项解释。', 'The diagram exceeds its complexity budget. The text explanation remains available.')}</p> : null}
     {diagram && !cannotDiagram
       ? <Railroad root={analysis.root} pattern={pattern} active={current} onPick={onNode} t={t} />
-      : <>
-        {entries.slice(visiblePage * size, (visiblePage + 1) * size).map(({ node, depth }) =>
-          <button type="button" className={s.astRow} aria-current={nodeKey(node) === current || undefined}
-            style={{ paddingInlineStart: Math.min(depth, 5) * 10 + 8 }}
-            key={nodeKey(node)} onClick={() => onNode(node)}>
-            <code className={node.group ? captureColor(node.group) : undefined}>{valueLabel(pattern.slice(node.from, node.to), t, 36)}</code>
-            <span>{describeNode(node, t)}</span>
-          </button>)}
-        <Pager t={t} page={visiblePage} size={size} count={entries.length} onChange={setPage} />
-      </>}
+      : <ul className={s.astList}>
+          {entries.slice(visiblePage * size, (visiblePage + 1) * size).map(({ node, depth }) =>
+            <li key={nodeKey(node)}>
+              <button type="button" className={s.astRow} aria-current={nodeKey(node) === current || undefined} onClick={() => onNode(node)}>
+                <span className={s.astToken} data-nested={depth > 0 || undefined}
+                  style={{ '--rx-depth': Math.min(depth, 5) } as CSSProperties}>
+                  <code className={node.group ? captureColor(node.group) : undefined}>{valueLabel(pattern.slice(node.from, node.to), t, 36)}</code>
+                </span>
+                <span>{describeNode(node, t)}</span>
+              </button>
+            </li>)}
+        </ul>}
+    {(revealSelection || (!diagram && entries.length > size)) && <div className={s.explanationNav}>
+      {revealSelection && <Button size="sm" variant="ghost" className={s.compactButton} onClick={() => {
+        setDiagram(false);
+        setPage(selectedPage);
+      }}>{t('查看当前节点', 'Show selected node')}</Button>}
+      {!diagram && <Pager t={t} page={visiblePage} size={size} count={entries.length} onChange={setPage} />}
+    </div>}
     {!!flags.length && <div className={s.flagSummary}>
       {[...flags].map(flag => <span key={flag}><code>{flag}</code> {flagHelp[flag] && t(...flagHelp[flag])}</span>)}
     </div>}
-  </div>;
+  </>;
 }
 
 export function QuickReference({ t, insert, initial = 'all' }: {
@@ -89,7 +102,7 @@ export function QuickReference({ t, insert, initial = 'all' }: {
   const groups = reference.filter(group => category === 'all' || group.id === category)
     .map(group => ({ ...group, entries: group.entries.filter(entry => entry.some(part => part.toLowerCase().includes(normalized))) }));
   return <div className={s.reference}>
-    <TextField label={t('搜索语法', 'Search syntax')} value={query} onChange={setQuery} />
+    <TextField label={t('搜索语法', 'Search syntax')} className={s.referenceSearch} value={query} onChange={setQuery} />
     <div className={s.actions}>
       <Button size="sm" variant="ghost" aria-pressed={category === 'all'} onClick={() => setCategory('all')}>{t('全部', 'All')}</Button>
       {reference.map(group => <Button key={group.id} size="sm" variant="ghost" aria-pressed={category === group.id}
@@ -97,7 +110,7 @@ export function QuickReference({ t, insert, initial = 'all' }: {
     </div>
     {groups.map(group => group.entries.length > 0 && <section key={group.id}>
       <h3>{t(group.title[0], group.title[1])}</h3>
-      {group.entries.map(([value, zh, en]) => <Popover.Close key={value} className={s.astRow}
+      {group.entries.map(([value, zh, en]) => <Popover.Close key={value} className={s.referenceRow}
         onClick={() => requestAnimationFrame(() => insert(value, group.id === 'replacement'))} aria-label={t('插入 ', 'Insert ') + value}>
         <code>{value}</code><span>{t(zh, en)}</span>
       </Popover.Close>)}

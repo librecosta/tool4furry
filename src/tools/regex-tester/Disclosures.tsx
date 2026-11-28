@@ -1,20 +1,23 @@
 import { useState, type ReactNode } from 'react';
 import { Popover } from '@base-ui/react/popover';
-import { CaretDownIcon, CaretRightIcon, PlayIcon, QuestionIcon } from '@phosphor-icons/react';
+import { CaretDownIcon, CaretRightIcon, PlayIcon, QuestionIcon, SlidersHorizontalIcon } from '@phosphor-icons/react';
 import { Button } from '../../ui/Button';
 import { CheckboxField } from '../../ui/CheckboxField';
 import { SelectField } from '../../ui/SelectField';
+import { Tooltip } from '../../ui/Tooltip';
 import { QuickReference } from './Inspector';
 import { flagHelp, type Translate } from './reference';
 import s from './workbench.module.scss';
 
-function DetailsPopover({ label, icon, wide, side = 'bottom', children }: {
-  label: string; icon?: ReactNode; wide?: boolean; side?: 'top' | 'bottom'; children: ReactNode;
+function DetailsPopover({ label, icon, iconOnly, wide, side = 'bottom', children }: {
+  label: string; icon?: ReactNode; iconOnly?: boolean; wide?: boolean; side?: 'top' | 'bottom'; children: ReactNode;
 }) {
-  return <Popover.Root>
-    <Popover.Trigger render={<Button size="sm" variant="ghost" className={s.compactButton} />}>
-      {label}{icon}
+  const trigger = <Popover.Trigger render={<Button size="sm" variant="ghost" className={s.compactButton}
+    aria-label={iconOnly ? label : undefined} />}>
+      {!iconOnly && label}{icon}
     </Popover.Trigger>
+  return <Popover.Root>
+    {iconOnly ? <Tooltip borderless content={label}>{trigger}</Tooltip> : trigger}
     <Popover.Portal>
       <Popover.Positioner className={s.positioner} side={side} sideOffset={8} align="end" collisionPadding={12}
         collisionAvoidance={{ side: 'none', align: 'shift', fallbackAxisSide: 'none' }}>
@@ -73,7 +76,7 @@ export function ExecutionOptions({ t, live, setLive, timeout, setTimeoutChoice, 
   t: Translate; live: boolean; setLive: (value: boolean) => void; timeout: number; setTimeoutChoice: (value: number) => void;
   run: () => void; busy: boolean; tests: boolean; elapsed?: number; clear: () => void;
 }) {
-  return <DetailsPopover label={t('执行详情', 'Execution details')} icon={<CaretRightIcon />} side="top">
+  return <DetailsPopover label={t('执行详情', 'Execution details')} icon={<SlidersHorizontalIcon size={17} aria-hidden="true" />} iconOnly side="top">
     <dl className={s.executionFacts}>
       <dt>{t('正则引擎', 'Engine')}</dt><dd>JavaScript RegExp</dd>
       <dt>{t('索引单位', 'Indices')}</dt><dd>UTF-16</dd>

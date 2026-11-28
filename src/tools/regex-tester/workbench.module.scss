@@ -41,7 +41,7 @@
   :global([data-appearance='dark']) .surface {
     background: color-mix(in srgb, var(--t4f-workspace) 76%, var(--t4f-surface-floating));
   }
-  .toolbar, .bar, .paneHeader, .statusBar, .explainLine, .resultFooter {
+  .toolbar, .bar, .paneHeader, .statusBar, .resultFooter {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -88,18 +88,18 @@
     background-color: var(--rx-low);
     border-width: 0;
   }
-  .expression { padding: 7px 16px 4px; display: grid; gap: 5px; }
+  .expression { padding: 7px 16px 10px; display: grid; gap: 5px; }
   .bar { min-height: 36px; flex-wrap: wrap; }
   .bar strong, .paneHeader strong { font-size: 14px; font-weight: 650; }
-  .expressionStatus, .note, .empty, .statusBar, .actual, .flagSummary, .resultEmpty {
+  .expressionTitle { display: flex; align-items: center; gap: 8px; }
+  .expressionStatus { display: inline-flex; color: var(--rx-green); }
+  .expressionStatus[data-state='error'] { color: var(--rx-error); }
+  .note, .empty, .statusBar, .actual, .flagSummary, .resultEmpty {
     color: var(--t4f-text-secondary);
     font-size: 13px;
     line-height: 1.5;
   }
-  .expressionStatus[data-state='valid'] { color: var(--rx-teal); }
-  .expressionStatus[data-state='error'] { color: var(--rx-error); }
-  .expressionStatus { overflow-wrap: anywhere; text-align: end; }
-  .pattern, .replacementField > div:last-child {
+  .pattern, .replacementEditor {
     --t4f-editor-font: var(--t4f-font-mono);
     --t4f-input-surface: transparent;
     background: var(--rx-low);
@@ -115,34 +115,34 @@
     font: 15px/1.65 var(--t4f-font-mono);
     > button { background: var(--rx-low); white-space: nowrap; font-family: var(--t4f-font-sans); }
   }
-  .patternEditor {
-    :global(.cm-editor) { min-height: 36px; max-height: 9rem; }
-    &:focus-within { background-color: var(--rx-selected); }
-  }
-  .patternEditor:focus-within, .testEditor:focus-within { outline: none; }
+  .patternEditor :global(.cm-editor) { min-height: 36px; max-height: 9rem; }
+  :is(.patternEditor, .testEditor, .replacementEditor):focus-within { outline: none; }
   .patternFlags { color: var(--t4f-accent); white-space: nowrap; }
-  .explainLine {
-    p {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      color: var(--t4f-text-secondary);
-      margin: 0;
-      svg { color: var(--t4f-accent); flex: none; }
-    }
-    button { color: var(--t4f-accent); white-space: nowrap; }
-  }
   .explanation {
     display: grid;
-    gap: 5px;
+    gap: 8px;
+    margin-block-start: 5px;
     border-block-start: 1px solid var(--rx-rule);
-    padding: 8px 0;
+    padding-block-start: 8px;
     max-height: 32rem;
     overflow: auto;
   }
-  .replacementField { display: grid; grid-template-rows: auto 48px; margin-bottom: 8px; }
-  .replacementField > div:last-child { overflow: hidden; }
+  .explanationHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    p { margin: 0; color: var(--t4f-text-secondary); font-size: 13px; overflow-wrap: anywhere; }
+  }
+  .explanationViews {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    button[aria-pressed='true'] { background: var(--rx-selected); }
+  }
+  .explanationNav { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 4px; }
+  .replacementField { display: grid; grid-template-rows: auto 48px; gap: 7px; margin-block-start: 4px; }
   .extractSettings { padding-block: 8px 5px; border-top: 1px solid var(--rx-rule); }
   .formGrid { display: flex; align-items: end; flex-wrap: wrap; gap: 6px 14px; }
   .formGrid > div { min-width: 8rem; }
@@ -251,6 +251,8 @@
     width: min(22rem, calc(100vw - 24px));
     max-height: min(70dvh, var(--available-height, 70dvh));
     overflow: auto;
+    scrollbar-width: none;
+    overscroll-behavior-y: contain;
     padding: 12px;
     background: var(--t4f-surface-floating);
     border-radius: 12px;
@@ -267,8 +269,9 @@
   .executionFacts dt { color: var(--t4f-text-secondary); }
   .executionFacts dd { margin: 0; font-family: var(--t4f-font-mono); }
   .reference { display: grid; gap: 5px; }
+  .referenceSearch:focus { outline: none; box-shadow: none; }
   .reference h3 { margin: 8px 2px 2px; font-size: 13px; }
-  .astRow, .exampleRow {
+  .astRow, .referenceRow, .exampleRow {
     display: grid;
     width: 100%;
     align-items: baseline;
@@ -283,11 +286,34 @@
     min-width: 0;
     overflow-wrap: anywhere;
     cursor: pointer;
-    &:hover, &[aria-current], &[aria-pressed='true'] { background: var(--rx-low); }
+    &:hover, &[aria-pressed='true'] { background: var(--rx-low); }
     &:focus-visible { outline: 2px solid var(--t4f-focus); outline-offset: -2px; }
   }
-  .astRow { grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr); font-size: 13px; border-bottom: 1px solid var(--rx-rule); }
-  .astRow code { color: var(--rx-capture, var(--t4f-accent)); font-family: var(--t4f-font-mono); white-space: pre-wrap; }
+  .referenceRow { grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr); font-size: 13px; border-bottom: 1px solid var(--rx-rule); }
+  :is(.astRow, .referenceRow) code { color: var(--rx-capture, var(--t4f-accent)); font-family: var(--t4f-font-mono); white-space: pre-wrap; }
+  .astList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-block-start: 1px solid var(--rx-rule);
+    li + li { border-block-start: 1px solid var(--rx-rule); }
+  }
+  .astRow {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-items: center;
+    gap: 10px;
+    min-height: 36px;
+    padding: 5px 10px 5px 0;
+    border-radius: 0;
+    font-size: 13px;
+    &[aria-current] { background: var(--rx-selected); box-shadow: inset 2px 0 var(--t4f-accent); }
+  }
+  .astToken {
+    margin-inline-start: calc(var(--rx-depth) * clamp(7px, 1vw, 14px));
+    padding-inline-start: 8px;
+    border-inline-start: 1px solid transparent;
+    &[data-nested] { border-color: var(--rx-rule); }
+  }
   .pager { display: flex; justify-content: flex-end; align-items: center; padding-inline: 4px; color: var(--t4f-text-secondary); font-size: 12px; }
   .flagSummary { display: flex; flex-wrap: wrap; gap: 4px 10px; border-top: 1px solid var(--rx-rule); padding-top: 8px; }
   .flagSummary code { color: var(--t4f-accent); }
