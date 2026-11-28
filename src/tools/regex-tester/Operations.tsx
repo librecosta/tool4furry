@@ -61,10 +61,20 @@ export function ReplacePreview({ result, t, download }: {
   </Output>;
 }
 
+const separatorEscapes = { n: '\n', r: '\r', t: '\t', '\\': '\\' };
+
+function displaySeparator(value: string) {
+  return value.replaceAll('\\', '\\\\').replaceAll('\n', '\\n').replaceAll('\r', '\\r').replaceAll('\t', '\\t');
+}
+
 export function ExtractRules({ captures, settings, update, t }: {
   captures: Capture[]; settings: ExtractSettings; update: (settings: ExtractSettings) => void;
   t: Translate;
 }) {
+  const [draft, setDraft] = useState<{ entry: string; value: string }>();
+  const separator = draft?.value === settings.separator ? draft.entry : displaySeparator(settings.separator);
+  const separatorHelp = t('用 \\n 表示换行，\\r 表示回车，\\t 表示制表符，\\\\ 表示反斜杠。',
+    'Use \\n for a line break, \\r for a carriage return, \\t for a tab, and \\\\ for a backslash.');
   const named = [...new Set(captures.flatMap(capture => capture.name === undefined ? [] : [capture.name]))];
   const options = [
     { value: '#0', label: t('完整匹配', 'Entire match') },
@@ -74,22 +84,20 @@ export function ExtractRules({ captures, settings, update, t }: {
   const selected = (typeof settings.group === 'number' ? '#' : ':') + settings.group;
   if (!options.some(option => option.value === selected)) options.push({ value: selected, label: selected.slice(1) });
   return <div className={s.extractSettings}>
-    <div className={s.formGrid}>
-      <SelectField label={t('提取来源', 'Extract from')} options={options} value={selected} appearance="quiet"
-        onValueChange={value => { if (value) update({ ...settings, group: value[0] === ':' ? value.slice(1) : Number(value.slice(1)) }); }} />
-      <SelectField label={t('输出格式', 'Output format')} options={['txt', 'json', 'csv'].map(value => ({ value, label: value.toUpperCase() }))}
-        appearance="quiet" value={settings.format} onValueChange={format => {
-          if (format) update({ ...settings, format: format as ExtractFormat });
-        }} />
-      {settings.format === 'txt' && <TextAreaField label={t('TXT 分隔符', 'TXT separator')} rows={1}
-        value={settings.separator} onChange={separator => update({ ...settings, separator })} />}
-      <CheckboxField label={t('去重', 'Remove duplicates')} checked={settings.unique} onCheckedChange={unique => update({ ...settings, unique })} />
-    </div>
-    <details className={s.extractHelp}><summary>{t('空捕获的输出方式', 'How empty captures are exported')}</summary><p className={s.note}>
-      {settings.format === 'txt' ? t('空捕获与未参与的捕获都输出为空字段。', 'Empty and nonparticipating captures both produce empty fields.')
-        : settings.format === 'json' ? t('空捕获输出为空字符串，未参与的捕获输出为 null。', 'Empty captures are empty strings. Nonparticipating captures are null.')
-          : t('status 列使用 matched 或 absent 区分空捕获和未参与的捕获。', 'The status column uses matched or absent to distinguish empty and nonparticipating captures.')}
-    </p></details>
+    <SelectField label={t('提取来源', 'Extract from')} options={options} value={selected} appearance="quiet"
+      onValueChange={value => { if (value) update({ ...settings, group: value[0] === ':' ? value.slice(1) : Number(value.slice(1)) }); }} />
+    <SelectField label={t('输出格式', 'Output format')} options={['txt', 'json', 'csv'].map(value => ({ value, label: value.toUpperCase() }))}
+      appearance="quiet" value={settings.format} onValueChange={format => {
+        if (format) update({ ...settings, format: format as ExtractFormat });
+      }} />
+    {settings.format === 'txt' && <TextField label={t('TXT 分隔符', 'TXT separator')} className={s.separatorInput}
+      value={separator} title={separatorHelp} aria-description={separatorHelp} spellCheck={false}
+      onChange={entry => {
+        const value = entry.replace(/\\([nrt\\])/g, (_, escape: keyof typeof separatorEscapes) => separatorEscapes[escape]);
+        setDraft({ entry, value });
+        update({ ...settings, separator: value });
+      }} />}
+    <CheckboxField label={t('去重', 'Remove duplicates')} checked={settings.unique} onCheckedChange={unique => update({ ...settings, unique })} />
   </div>;
 }
 
