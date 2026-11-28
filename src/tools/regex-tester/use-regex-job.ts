@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { runRegex } from './client';
-import { limits, RegexIssue, type Issue, type RegexRequest, type RegexResult } from './protocol';
+import { limits, RegexIssue, type Issue, type Mode, type RegexRequest, type RegexResult } from './protocol';
 
 type RunState =
   | { status: 'idle' | 'waiting' | 'running' | 'cancelled' }
   | { status: 'error'; issue: Issue }
   | { status: 'result'; result: RegexResult };
 
-export function useRegexJob(request: RegexRequest | undefined, live: boolean) {
+export function useRegexJob(mode: Mode, request: RegexRequest | undefined, live: boolean) {
   const [record, setRecord] = useState<{ request: RegexRequest; state: RunState }>();
+  const completed = useRef<Partial<Record<Mode, { request: RegexRequest; result: RegexResult }>>>({});
   const active = useRef<{ controller: AbortController; timer?: ReturnType<typeof setTimeout> } | null>(null);
   const stop = useCallback(() => {
     if (!active.current) return;
@@ -20,12 +21,17 @@ export function useRegexJob(request: RegexRequest | undefined, live: boolean) {
   const start = useCallback((delay: number, timeout: number) => {
     stop();
     if (!request) return;
+    delete completed.current[mode];
     const controller = new AbortController();
     const update = (state: RunState) => setRecord({ request, state });
     const execute = () => {
       update({ status: 'running' });
       void runRegex(request, controller.signal, timeout).then(
-        result => { if (!controller.signal.aborted) update({ status: 'result', result }); },
+        result => {
+          if (controller.signal.aborted) return;
+          completed.current[mode] = { request, result };
+          update({ status: 'result', result });
+        },
         error => {
           if (!controller.signal.aborted)
             update({ status: 'error', issue: error instanceof RegexIssue ? error.issue : { code: 'worker' } });
@@ -37,12 +43,15 @@ export function useRegexJob(request: RegexRequest | undefined, live: boolean) {
       update({ status: 'waiting' });
       active.current.timer = setTimeout(execute, delay);
     } else execute();
-  }, [request, stop]);
+  }, [mode, request, stop]);
 
   useEffect(() => {
-    if (live && request) start(240, limits.defaultTimeout);
+    if (!request || completed.current[mode]?.request !== request) {
+      delete completed.current[mode];
+      if (live && request) start(240, limits.defaultTimeout);
+    }
     return stop;
-  }, [request, live, start, stop]);
+  }, [mode, request, live, start, stop]);
 
   const run = useCallback((timeout: number) => start(0, timeout), [start]);
   let state: RunState = { status: request && live ? 'waiting' : 'idle' };
@@ -50,6 +59,8 @@ export function useRegexJob(request: RegexRequest | undefined, live: boolean) {
     state = record.state;
     if (!live && !active.current && (state.status === 'waiting' || state.status === 'running')) state = { status: 'idle' };
   }
+  const cached = completed.current[mode];
+  if (request && cached?.request === request) state = { status: 'result', result: cached.result };
   return {
     state,
     run,

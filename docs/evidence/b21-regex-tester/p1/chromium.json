@@ -1,0 +1,24 @@
+{
+  "chromium": "156.0.8078.4",
+  "replace": "regex-replace-20261128-155624-259.txt",
+  "txt": "regex-extract-20261128-155625-041.txt",
+  "json": "regex-extract-20261128-155625-592.json",
+  "csv": "regex-extract-20261128-155626-142.csv",
+  "worker": {
+    "timeout": true,
+    "recovery": true,
+    "cancel": true
+  },
+  "large": {
+    "matches": 10000,
+    "rowsAtStart": 12,
+    "rowsAtEnd": 12,
+    "rowsExpanded": 14,
+    "clickToResultMs": 132,
+    "partialCopyDisabled": true
+  },
+  "mobile": {
+    "inner": 390,
+    "document": 390
+  }
+}

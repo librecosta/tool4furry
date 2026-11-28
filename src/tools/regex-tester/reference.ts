@@ -1,4 +1,4 @@
-import type { ExpressionNode, Issue } from './protocol';
+import type { ExpressionNode, ExtractSettings, Issue, Mode, TestCase } from './protocol';
 
 export type Translate = (zh: string, en: string) => string;
 type Bilingual = readonly [string, string];
@@ -9,28 +9,42 @@ type Example = {
   flags: string;
   text: string;
   replacement?: string;
+  mode?: Mode;
+  extract?: Partial<ExtractSettings>;
+  cases?: Omit<TestCase, 'id'>[];
+};
+
+export const defaultExample: Example = {
+  title: ['查找数字', 'Find numbers'], detail: ['找出订单文本中的连续数字。', 'Find consecutive digits in order text.'],
+  pattern: '\\d+', flags: 'g', text: 'Order #1024\nOrder #2048\nOrder #4096', replacement: '[$&]',
 };
 
 export const examples: Example[] = [
+  defaultExample,
+  { title: ['提取邮箱', 'Extract email addresses'], detail: ['识别常见格式。', 'Find addresses in a common format.'], pattern: '[\\w.+-]+@[\\w.-]+\\.[A-Za-z]{2,}', flags: 'g', text: 'Mail editor@example.com or help@example.org.', mode: 'extract', extract: { unique: true } },
+  { title: ['提取网址', 'Extract URLs'], detail: ['提取常见的 HTTP 和 HTTPS 地址。', 'Find simple HTTP and HTTPS addresses.'], pattern: 'https?://[^\\s<>()]+', flags: 'g', text: 'Docs at https://example.com/docs and http://example.org', mode: 'extract' },
+  { title: ['测试日期格式', 'Test date formats'], detail: ['检查年月日的书写形式。', 'Check the year-month-day format.'], pattern: '\\b\\d{4}-\\d{2}-\\d{2}\\b', flags: 'g', text: 'From 2026-01-05 to 2026-03-24',
+    mode: 'tests', cases: [
+      { text: '2026-01-05', assertion: 'match', expected: '' },
+      { text: '2026/01/05', assertion: 'no-match', expected: '' },
+      { text: 'From 2026-01-05 to 2026-03-24', assertion: 'count', expected: '2' },
+    ] },
+  { title: ['清理空格', 'Normalize spaces'], detail: ['将连续空白替换为一个空格。', 'Replace repeated whitespace with one space.'], pattern: '[ \\t]{2,}', flags: 'g', text: 'Alpha   Beta\t\tGamma', replacement: ' ', mode: 'replace' },
+  { title: ['查找重复单词', 'Find repeated words'], detail: ['使用反向引用匹配连续重复。', 'Use a backreference to find consecutive duplicates.'], pattern: '\\b(\\w+)\\s+\\1\\b', flags: 'gi', text: 'The the fox ran ran home.', replacement: '$1' },
   {
-    title: ['HTTP 日志', 'HTTP log'], detail: ['捕获日志级别及三位状态码。', 'Capture a log level and its three-digit status code.'],
+    title: ['分析 HTTP 日志', 'Analyze HTTP logs'], detail: ['捕获日志级别及三位状态码。', 'Capture a log level and its three-digit status code.'],
     pattern: '(?<level>INFO|WARN|ERROR)\\s+(?<code>\\d{3})', flags: 'g', replacement: '[$<level>] $<code>',
     text: '10:42:01 INFO 200 Request received\n10:42:03 WARN 429 Rate limit reached\n10:42:08 ERROR 500 Database timeout\n10:42:12 INFO 200 Request completed',
   },
+  { title: ['查找 UUID', 'Find UUIDs'], detail: ['识别带连字符的 UUID 字面形式。', 'Find UUIDs in their hyphenated form.'], pattern: '\\b[\\da-f]{8}(?:-[\\da-f]{4}){3}-[\\da-f]{12}\\b', flags: 'gi', text: 'id=550e8400-e29b-41d4-a716-446655440000' },
+  { title: ['数字提取', 'Number extraction'], detail: ['提取示例中的有符号整数和小数。', 'Find signed integers and decimals in the sample.'], pattern: '[-+]?\\d+(?:\\.\\d+)?', flags: 'g', text: 'Temperature: -12.5 C, previous +3.2 C, count 20' },
   { title: ['字符类', 'Character class'], detail: ['查找十六进制字符。', 'Find hexadecimal characters.'], pattern: '[A-F0-9]', flags: 'gi', text: 'Keys: A9, ff, xZ' },
   { title: ['分支', 'Alternation'], detail: ['匹配两种文件扩展名。', 'Match either file extension.'], pattern: '\\.(?:png|webp)\\b', flags: 'gi', text: 'title.png poster.webp photo.jpg' },
   { title: ['量词', 'Quantifier'], detail: ['匹配连续出现的三到五个数字。', 'Match runs of three to five digits.'], pattern: '\\b\\d{3,5}\\b', flags: 'g', text: '7 42 123 99999 100000' },
   { title: ['行首与行尾', 'Line boundaries'], detail: ['匹配整行状态。', 'Match a status on its own line.'], pattern: '^Ready$', flags: 'gm', text: 'Ready\nNot Ready\nReady' },
   { title: ['单词提取', 'Word extraction'], detail: ['提取示例中的拉丁字母单词。', 'Extract Latin-letter words from the sample.'], pattern: '\\b[A-Za-z]+\\b', flags: 'g', text: 'Hello, world! Ship it at 12:00.' },
-  { title: ['空白清理', 'Whitespace cleanup'], detail: ['将连续空白替换为一个空格。', 'Replace repeated whitespace with one space.'], pattern: '[ \\t]{2,}', flags: 'g', text: 'Alpha   Beta\t\tGamma', replacement: ' ' },
-  { title: ['重复单词', 'Repeated words'], detail: ['使用反向引用匹配连续重复。', 'Use a backreference to find consecutive duplicates.'], pattern: '\\b(\\w+)\\s+\\1\\b', flags: 'gi', text: 'The the fox ran ran home.', replacement: '$1' },
-  { title: ['邮件地址提取', 'Email extraction'], detail: ['识别常见格式。', 'Find addresses in a common format.'], pattern: '[\\w.+-]+@[\\w.-]+\\.[A-Za-z]{2,}', flags: 'g', text: 'Mail editor@example.com or help@example.org.' },
-  { title: ['URL 提取', 'URL extraction'], detail: ['提取常见的 HTTP 和 HTTPS 地址。', 'Find simple HTTP and HTTPS addresses.'], pattern: 'https?://[^\\s<>()]+', flags: 'g', text: 'Docs at https://example.com/docs and http://example.org' },
   { title: ['IPv4 形式', 'IPv4 shape'], detail: ['识别四段数字形式，不检查每段的范围。', 'Find four-part addresses without validating octet ranges.'], pattern: '\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b', flags: 'g', text: 'Servers 192.0.2.1 and 203.0.113.10' },
-  { title: ['UUID 形式', 'UUID shape'], detail: ['识别带连字符的 UUID 字面形式。', 'Find UUIDs in their hyphenated form.'], pattern: '\\b[\\da-f]{8}(?:-[\\da-f]{4}){3}-[\\da-f]{12}\\b', flags: 'gi', text: 'id=550e8400-e29b-41d4-a716-446655440000' },
   { title: ['HEX 颜色', 'HEX colors'], detail: ['识别三位和六位颜色代码。', 'Find three- and six-digit color codes.'], pattern: '#(?:[\\da-f]{6}|[\\da-f]{3})\\b', flags: 'gi', text: 'Accent #72618a on #fff; invalid #abcdefg.' },
-  { title: ['日期形式', 'Date shape'], detail: ['识别年月日形式，不检查日历日期。', 'Find year-month-day text without validating calendar dates.'], pattern: '\\b\\d{4}-\\d{2}-\\d{2}\\b', flags: 'g', text: 'From 2026-01-05 to 2026-03-24' },
-  { title: ['数字提取', 'Number extraction'], detail: ['提取示例中的有符号整数和小数。', 'Find signed integers and decimals in the sample.'], pattern: '[-+]?\\d+(?:\\.\\d+)?', flags: 'g', text: 'Temperature: -12.5 C, previous +3.2 C, count 20' },
   { title: ['简单 CSV 字段', 'Simple CSV fields'], detail: ['匹配示例中非空字段及双引号转义。', 'Match non-empty fields and doubled quotes in the sample.'], pattern: '"(?:[^"]|"")*"|[^,\\r\\n"]+', flags: 'g', text: 'Avery,"Designer, lead","Said ""hello"""' },
 ];
 
@@ -109,6 +123,30 @@ export function describeNode(node: ExpressionNode, t: Translate): string {
   if (node.children.length > 1 && ['pattern', 'group'].includes(node.kind))
     return labels + ' · ' + t('分支', 'Alternatives');
   return node.detail && node.detail !== 'negated' ? labels + ' · ' + node.detail : labels;
+}
+
+export function summarizeExpression(root: ExpressionNode, t: Translate): string {
+  const alternatives = root.children;
+  if (alternatives.length > 1) return t('匹配任一备选形式。', 'Matches any of the alternatives.');
+  const parts = alternatives[0]?.children ?? [];
+  if (!parts.length) return t('匹配没有字符的位置。', 'Matches a position without consuming characters.');
+  if (parts.length > 1) {
+    const grouped = parts.some(part => part.kind === 'capture' && part.name);
+    return grouped
+      ? t('按顺序匹配 ' + parts.length + ' 个部分，包含命名捕获组。', 'Matches ' + parts.length + ' parts in order, including named groups.')
+      : t('按顺序匹配 ' + parts.length + ' 个部分。', 'Matches ' + parts.length + ' parts in order.');
+  }
+  const [node] = parts;
+  if (node.kind === 'quantifier') {
+    const child = node.children[0];
+    if (child.kind === 'set' && child.detail === 'digit' && node.min === 1 && node.max === Infinity) {
+      return t('匹配一个或多个连续数字。', 'Matches one or more consecutive digits.');
+    }
+    return t('按指定次数匹配同一部分。', 'Matches the same part the specified number of times.');
+  }
+  if (node.kind === 'character') return t('匹配指定字符。', 'Matches the specified character.');
+  if (node.kind === 'assertion') return t('检查匹配位置或相邻字符。', 'Checks the position or surrounding characters.');
+  return t('匹配所指定的结构。', 'Matches the specified structure.') + ' ' + describeNode(node, t);
 }
 
 export function issueText(issue: Issue, t: Translate) {

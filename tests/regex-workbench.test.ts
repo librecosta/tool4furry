@@ -4,7 +4,8 @@ import { analyzePattern } from '../src/tools/regex-tester/analysis';
 import { evaluateRegex, supportedFlags } from '../src/tools/regex-tester/core';
 import { createRegexNamer } from '../src/tools/regex-tester/delivery';
 import { limits, type ExpressionNode, type RegexRequest } from '../src/tools/regex-tester/protocol';
-import { examples } from '../src/tools/regex-tester/reference';
+import { defaultExample, examples, summarizeExpression } from '../src/tools/regex-tester/reference';
+import { matchLines, matchRowHeight, matchWindow } from '../src/tools/regex-tester/match-window';
 
 const run = (input: Partial<RegexRequest>) =>
   evaluateRegex({ pattern: 'a', flags: 'g', text: 'a b a', replacement: 'X', ...input });
@@ -121,7 +122,7 @@ it('reports a test-time error for the case that reaches the suite deadline and l
 });
 
 it('returns the native safe literal, typed AST with source spans and enforced AST bounds', () => {
-  const fixture = examples[0];
+  const fixture = examples.find(item => item.title[1] === 'Analyze HTTP logs')!;
   const result = analyzePattern(fixture.pattern, fixture.flags);
   const group = (node: ExpressionNode): ExpressionNode[] => node.children.flatMap(child => [child, ...group(child)]);
   expect(result.captures).toEqual([{ index: 1, name: 'level' }, { index: 2, name: 'code' }]);
@@ -136,12 +137,35 @@ it('returns the native safe literal, typed AST with source spans and enforced AS
   expect(analyzePattern('[\\p{Letter}&&\\p{ASCII}]', 'v').root).toBeDefined();
 });
 
-it('runs all 16 built-in examples against the native engine', () => {
-  expect(examples).toHaveLength(16);
-  for (const sample of examples) {
-    const result = run({ ...sample, mode: 'match' });
-    expect(result.matches.length, sample.title[1]).toBeGreaterThan(0);
-    expect(analyzePattern(sample.pattern, sample.flags).root).toBeDefined();
+it('runs the new default and all 16 existing examples against the native engine', () => {
+  expect(examples).toHaveLength(17);
+  for (const { pattern, flags, text, title } of examples) {
+    const result = run({ pattern, flags, text, mode: 'match' });
+    expect(result.matches.length, title[1]).toBeGreaterThan(0);
+    expect(analyzePattern(pattern, flags).root).toBeDefined();
   }
-  expect(run({ ...examples[0], mode: 'match' }).count).toBe(4);
+  const { pattern, flags, text } = defaultExample;
+  expect(run({ pattern, flags, text, mode: 'match' }).matches.map(match => match.value)).toEqual(['1024', '2048', '4096']);
+  const root = analyzePattern(defaultExample.pattern, defaultExample.flags).root!;
+  expect(summarizeExpression(root, (_, en) => en)).toBe('Matches one or more consecutive digits.');
+  const different = analyzePattern('A|B', 'g').root!;
+  expect(summarizeExpression(different, (_, en) => en)).toBe('Matches any of the alternatives.');
+});
+
+it('derives source lines at zero-width, CRLF and UTF-16 boundaries', () => {
+  const text = '🦊x\r\ny\n';
+  const result = run({ pattern: '(?=x|y)|$', text, mode: 'match' });
+  expect(matchLines(text, result.matches)).toEqual([1, 2, 3]);
+});
+
+it('windows 10,000 rows while measuring one expandable row independently', () => {
+  const count = 10_000, expanded = 50, extra = 168, row = matchRowHeight;
+  const inside = matchWindow(count, expanded, extra, expanded * row + 150, 320);
+  expect(inside.start).toBe(expanded - 4);
+  expect(inside.offset(expanded)).toBe(expanded * row);
+  expect(inside.offset(expanded + 1)).toBe((expanded + 1) * row + extra);
+  expect(inside.height).toBe(count * row + extra);
+  const tail = matchWindow(count, expanded, extra, inside.height - 320, 320);
+  expect(tail.end).toBe(count);
+  expect(tail.end - tail.start).toBeLessThan(20);
 });

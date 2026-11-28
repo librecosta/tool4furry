@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react';
-import { Tabs } from '@base-ui/react/tabs';
+import { Popover } from '@base-ui/react/popover';
 import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react';
 import { Button, IconButton } from '../../ui/Button';
 import { TextField } from '../../ui/TextField';
 import { captureColor, nodeKey } from './editor';
 import { describeNode, flagHelp, reference, type Translate } from './reference';
-import { limits, type Analysis, type ExpressionNode, type Range, type RegexMatch, type RegexResult } from './protocol';
+import { limits, type Analysis, type ExpressionNode, type Range } from './protocol';
 import { Railroad } from './Railroad';
 import s from './workbench.module.scss';
 
@@ -23,65 +23,14 @@ export function Pager({ page, size, count, onChange, t }: {
   </div>;
 }
 
-function valueLabel(value: string | null, t: Translate, max = 512) {
+export function valueLabel(value: string | null, t: Translate, max = 512) {
   if (value === null) return t('未参与匹配', 'Did not participate');
   if (value === '') return t('空字符串', 'Empty string');
   return value.length <= max ? value : value.slice(0, max) + '…';
 }
-const rangeLabel = (range?: Range | null) => range && '[' + range[0] + ', ' + range[1] + ')';
+export const rangeLabel = (range?: Range | null) => range && '[' + range[0] + ', ' + range[1] + ')';
 
-function MatchDetails({ result, selected, analysis, t, select, locate }: {
-  result?: RegexResult; selected: number; analysis?: Analysis; t: Translate;
-  select: (index: number) => void; locate: (range: Range) => void;
-}) {
-  const [groupsAt, setGroupsAt] = useState({ match: -1, page: 0 });
-  const match = result?.matches[selected];
-  if (!match) {
-    return <p className={s.empty}>{result?.count === 0
-      ? t('当前表达式在测试文本中没有匹配。', 'The expression found no match in the test text.')
-      : t('运行表达式后可检查匹配及捕获组。', 'Run the expression to inspect matches and captures.')}</p>;
-  }
-  const names = analysis?.captures;
-  const groups: { title: string; value: string | null; range?: Range | null; color: number }[] =
-    match.groups.map((value, offset) => {
-      const name = names?.[offset]?.name;
-      return { title: t('组 ', 'Group ') + (offset + 1) + (name ? ' · ' + name : ''),
-        value, range: match.ranges?.[offset], color: offset + 1 };
-    });
-  if (!names) for (const [name, value] of Object.entries(match.named))
-    groups.push({ title: name, value, range: match.namedRanges?.[name], color: groups.length + 1 });
-  const groupPage = groupsAt.match === selected ? groupsAt.page : 0;
-  const size = 10, page = Math.floor(selected / size);
-  const start = page * size;
-  return <div className={s.details}>
-    <button type="button" className={s.selectedMatch} onClick={() => locate([match.index, match.end])}>
-      <span><strong>{t('匹配 ', 'Match ') + (selected + 1)}</strong><small>{rangeLabel([match.index, match.end])}</small></span>
-      <code>{valueLabel(match.value, t)}</code>
-    </button>
-    {groups.slice(groupPage * size, (groupPage + 1) * size).map((group, index) => {
-      const content = <>
-        <span><strong><i aria-hidden="true" className={captureColor(group.color)} />{group.title}</strong><small>{rangeLabel(group.range)}</small></span>
-        <code data-empty={!group.value || undefined}>{valueLabel(group.value, t)}</code>
-      </>;
-      return group.range
-        ? <button type="button" className={s.capture} key={index} onClick={() => locate(group.range!)}>{content}</button>
-        : <div className={s.capture} key={index}>{content}</div>;
-    })}
-    <Pager t={t} page={groupPage} size={size} count={groups.length} onChange={next => setGroupsAt({ match: selected, page: next })} />
-    {!analysis?.indices && !match.ranges && groups.length > 0 &&
-      <p className={s.note}>{t('此浏览器不提供精确捕获范围。', 'This browser does not provide capture indices.')}</p>}
-    {result!.matches.length > 1 && <div className={s.matchList}>
-      {result!.matches.slice(start, start + size).map((item: RegexMatch, index: number) =>
-        <button type="button" key={start + index} className={s.matchRow} aria-current={start + index === selected || undefined}
-          onClick={() => select(start + index)}>
-          <span>{t('匹配 ', 'Match ') + (start + index + 1)}</span><code>{valueLabel(item.value, t, 80)}</code>
-        </button>)}
-      <Pager t={t} page={page} size={size} count={result!.matches.length} onChange={next => select(next * size)} />
-    </div>}
-  </div>;
-}
-
-function Explanation({ analysis, pattern, flags, current, onNode, t }: {
+export function Explanation({ analysis, pattern, flags, current, onNode, t }: {
   analysis?: Analysis; pattern: string; flags: string; current?: string;
   onNode: (node: ExpressionNode) => void; t: Translate;
 }) {
@@ -148,31 +97,11 @@ export function QuickReference({ t, insert, initial = 'all' }: {
     </div>
     {groups.map(group => group.entries.length > 0 && <section key={group.id}>
       <h3>{t(group.title[0], group.title[1])}</h3>
-      {group.entries.map(([value, zh, en]) => <button type="button" key={value} className={s.astRow}
-        onClick={() => insert(value, group.id === 'replacement')} aria-label={t('插入 ', 'Insert ') + value}>
+      {group.entries.map(([value, zh, en]) => <Popover.Close key={value} className={s.astRow}
+        onClick={() => requestAnimationFrame(() => insert(value, group.id === 'replacement'))} aria-label={t('插入 ', 'Insert ') + value}>
         <code>{value}</code><span>{t(zh, en)}</span>
-      </button>)}
+      </Popover.Close>)}
     </section>)}
     {groups.every(group => !group.entries.length) && <p className={s.empty}>{t('没有找到相关语法。', 'No syntax matches your search.')}</p>}
   </div>;
-}
-
-export function Inspector({ tab, onTab, result, selected, analysis, pattern, flags, current, onNode, select, locate, insert, referenceRequest, t }: {
-  tab: string; onTab: (tab: string) => void; result?: RegexResult; selected: number; analysis?: Analysis;
-  pattern: string; flags: string; current?: string; onNode: (node: ExpressionNode) => void;
-  select: (index: number) => void; locate: (range: Range) => void;
-  insert: (value: string, replacement: boolean) => void; referenceRequest: number; t: Translate;
-}) {
-  return <Tabs.Root value={tab} onValueChange={value => onTab(String(value))} className={s.inspectRoot}>
-    <Tabs.List aria-label={t('结果检查器', 'Result inspector')} className={s.tabs}>
-      <Tabs.Tab value="matches" className={s.tab}>{t('匹配详情', 'Match details')}</Tabs.Tab>
-      <Tabs.Tab value="explain" className={s.tab}>{t('表达式解释', 'Explanation')}</Tabs.Tab>
-      <Tabs.Tab value="reference" className={s.tab}>{t('语法速查', 'Quick reference')}</Tabs.Tab>
-    </Tabs.List>
-    <Tabs.Panel className={s.inspectorPanel} value="matches"><MatchDetails {...{ result, selected, analysis, t, select, locate }} /></Tabs.Panel>
-    <Tabs.Panel className={s.inspectorPanel} value="explain"><Explanation {...{ analysis, pattern, flags, current, onNode, t }} /></Tabs.Panel>
-    <Tabs.Panel className={s.inspectorPanel} value="reference">
-      <QuickReference key={referenceRequest} t={t} insert={insert} initial={referenceRequest ? 'replacement' : 'all'} />
-    </Tabs.Panel>
-  </Tabs.Root>;
 }

@@ -51,3 +51,23 @@ Worker 时限包括启动和消息传递。取消及超时实际终止 Worker。
 `pnpm check`、56 项定向测试（执行、Worker、编辑器、文件交付及发布回归）与 CN/Global 正式构建均已通过。每地区包含 52 个正式工具详情页。两区均隔离 Regex Tester 工作区、Worker、regexpp、结构图、示例、专属 CSS 和 NOTICE，以及原有的 Draft、DEV Lab 和夹具。工具计数为 29 项，其中 26 Published、3 Draft。
 
 浏览器交互覆盖 Chromium 桌面和手机模拟视口。Firefox、Safari、实体手机及浏览器 / Worker 峰值内存留待后续验证。本地测量对应上述单次测试环境。
+
+## B21-D1-P1 渐进式工作区
+
+2026-11-28 使用 Chromium 156.0.8078.4 验收 CN 中文浅色、深色 1280px 桌面及 Global 英文浅色 390px 手机模拟视口。截图仅隐藏站点公共滚动进度浮标，工作区布局和控件使用实际页面。
+
+| 验收项 | 截图 |
+| --- | --- |
+| 默认订单示例与单一工作区 | [CN 浅色](p1/cn-light-default.jpg) · [CN 深色](p1/cn-dark-default.jpg) · [Global 手机模拟视口](p1/global-mobile.jpg) |
+| 按需显示的选项和详情 | [匹配选项](p1/cn-flags.jpg) · [行内捕获组](p1/cn-captures.jpg) · [AST 解释](p1/cn-explanation.jpg) · [结构图](p1/cn-railroad.jpg) |
+| 结果与测试用例 | [替换](p1/cn-replace.jpg) · [提取](p1/cn-extract.jpg) · [用例表格](p1/cn-tests.jpg) |
+| Worker 状态 | [执行超时](p1/cn-timeout.jpg) |
+
+- 默认 `/\d+/g` 实际找到 `1024`、`2048`、`4096`。短解释来自 AST。匹配选项折叠四个高级 Flag，执行详情收纳引擎、索引单位、超时和实时开关。
+- 验证八个 Flags 与 `u` / `v` 互斥、嵌套和命名捕获组、空捕获和未参与组、零长度匹配、源码与结果双向定位，以及桌面拖动分栏和键盘调整。键盘可用方向键或 Home / End 在匹配行之间移动，Enter 定位源码。
+- 10,000 项匹配连续滚动时观察列表顶部、尾部及行内捕获展开后的 DOM 行数。验证跳转到第 10,000 行、展开详细索引后的行高和 10,001 项输入触发的部分结果。部分结果禁用全部复制。实测耗时与 DOM 数量见 [Chromium 记录](p1/chromium.json)。
+- 四个模式均完成真实点击回归。示例确认后可载入模式和相应设置。关闭实时执行后，切换模式仍可继续交付与当前输入对应的结果。输入变化时立即禁用过期交付。
+- Chromium 复检了匹配、表达式和替换结果的剪贴板。读取实际下载的替换 TXT、提取 TXT、JSON 和 CSV 的内容，并核对文件扩展名和时间戳。默认 Worker 超时后可运行新的表达式，主动取消观察到 Worker 关闭事件。
+- `pnpm check`、58 项正则及共享回归测试、两地区正式构建和 Draft 资源隔离均通过。每地区仍生成 52 个正式工具详情页。共 29 项工具，其中 26 Published、3 Draft。
+
+Firefox、Safari、手机真机及峰值内存仍未验证。列表耗时为本机单次点击到结果的测量。

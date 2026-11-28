@@ -92,7 +92,11 @@ function matchDecorationRanges(ranges: ReturnType<typeof Decoration.set>): Exten
 }
 
 export function selectedMatchTools(match: RegexMatch | undefined, index: number): Extension {
-  if (!match || match.index === match.end) return [];
+  if (!match) return [];
+  if (match.index === match.end) {
+    const widget = new EmptyRange('rx-current-empty', index);
+    return matchDecorationRanges(Decoration.set([Decoration.widget({ widget, side: -2 }).range(match.index)]));
+  }
   const mark = Decoration.mark({ class: 'rx-selected', attributes: { 'data-regex-match': String(index) } });
   return Prec.low(matchDecorationRanges(Decoration.set([mark.range(match.index, match.end)])));
 }
